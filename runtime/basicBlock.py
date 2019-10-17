@@ -1,0 +1,107 @@
+import six
+
+from disassembler.wasmConvention import opcodes
+
+
+class BasicBlock:
+    def __init__(self, start_address, end_address=None, start_inst= None, end_inst = None):
+        self.start = start_address
+        self.start_inst = start_inst
+        self.end = end_address
+        self.end_inst = end_inst
+        self.instructions = []  # each instruction is a string
+        self.jump_target = 0 #target for if conditional True and unconditional jump
+        self.jump_from = []  #all blocks from which can jump to this
+        self.jump_to = [] #all blocks which this can jump to
+        # self.jump_tables = []
+        self.jump_targets = [] #all true target for br_ indexed by array index
+        self.type = None
+
+    def set_jump_to(self, to):
+        self.jump_to.append(to)
+
+    def set_type(self, type):
+        self.type = type
+
+    def get_start_address(self):
+        return self.start
+
+    def get_end_address(self):
+        return self.end
+
+    def add_instruction(self, instruction):
+        self.instructions.append(instruction)
+
+    def get_instructions(self):
+        return self.instructions
+
+    def set_block_type(self, type):
+        self.type = type
+
+    def get_block_type(self):
+        return self.type
+
+    def set_falls_to(self, address):
+        self.falls_to = address #target for fall through
+
+    def get_falls_to(self):
+        return self.falls_to
+
+    def set_jump_target(self, address):
+        # TODO: ethereum different to wasm?
+        # if isinstance(address, six.integer_types):
+        #     self.jump_target = address
+        # else:
+        #     self.jump_target = -1
+        self.jump_target = address
+
+    def set_jump_targets(self,address):
+        self.jump_targets.append(address)
+
+    def get_jump_target(self):
+        return self.jump_target
+
+    def set_branch_expression(self, branch):
+        self.branch_expression = branch
+
+    def set_jump_from(self,block):
+        self.jump_from.append(block)
+
+    def get_jump_from(self):
+        return self.jump_from
+
+    def get_branch_expression(self):
+        return self.branch_expression
+
+    def set_taint_branch_expression(self, taint_branch):
+        self.taint_branch_expression = taint_branch
+
+    def get_taint_branch_expression(self):
+        return self.taint_branch_expression
+
+    def instructions_details(self, format='hex'):
+        out = ''
+        line = ''
+        for i in self.instructions:
+            line = '%x: ' % i.offset
+            if i.immediate_arguments is not None and not i.xref:
+                line += '%s' % str(i)
+            elif isinstance(i.xref, list) and i.xref:
+                line += '%s %s' % (opcodes[i.code][0], i.xref)
+            elif isinstance(i.xref, int) and i.xref:
+                line += '%s %x' % (opcodes[i.code][0], i.xref)
+            # elif i.operand_interpretation:
+            #     line += i.operand_interpretation
+            else:
+                line += opcodes[i.code][0] + ' '
+
+            out += line + '\n'
+        return out
+
+    def display(self):
+        six.print_("================")
+        six.print_("start address: %d" % self.start)
+        six.print_("end address: %d" % self.end)
+        six.print_("end statement type: " + self.type)
+        for instr in self.instructions:
+            six.print_(instr)
