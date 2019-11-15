@@ -2,3 +2,5 @@
 *.pyc
 *.pdf
 __pycache__
+*.gv
+*.png
