@@ -1,9 +1,13 @@
 from z3 import *
 
-def BitVecVar(name, valtype):
-    if "32" in valtype:
+def produce_symbolic_var(name, valtype):
+    if "i32" == valtype:
         return BitVec(name, 32)
-    elif "64" in valtype:
-        return BitVec(name, 64)
+    elif "i64" == valtype:
+        return BitVec((name, 64))
+    elif "f64" == valtype:
+        return FP(name,Float32())
+    elif "f32" == valtype:
+        return FP(name, Float64())
     else:
         raise Exception("wrong type")

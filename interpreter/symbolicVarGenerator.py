@@ -61,3 +61,9 @@ class Generator:
 
     def gen_import_global_var(self, module, name):
         return "global_"+str(module)+str(name)
+
+    def gen_input_var(self, index):
+        return "param_" + str(index)
+
+    def gen_local_var(self, index):
+        return "local_" + str(index)

@@ -8,7 +8,10 @@ import subprocess
 import interpreter.params
 import reporter.params
 import disassembler.params
+from disassembler import wasmConvention
 from interpreter.evmInterpreter import EVMInterpreter
+# from interpreter.wasmInterpreter import WASMInterpreter
+from reporter.cfgPrinter import CFGPrinter
 from runtime.evmRuntime import EvmRuntime
 from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
 
@@ -37,6 +40,22 @@ def main():
     parser.add_argument("-glt", "--global-timeout", help="Timeout for symbolic execution", action="store", dest="global_timeout", type=int)
 
     parser.add_argument("-vb", "--verbose", help="Verbose output, print everything.", action="store_true")
+
+    parser.add_argument('-g', '--cfg',
+                          action='store_true',
+                          help='generate the control flow graph (CFG)')
+    parser.add_argument('-c', '--call',
+                          action='store_true',
+                          help='generate the call flow graph')
+
+    graph = parser.add_argument_group('Graph options')
+    graph.add_argument('--simplify', action='store_true',
+                       help='generate a simplify CFG')
+    graph.add_argument('--onlyfunc', type=str,
+                       nargs="*",
+                       default=[],
+                       help='only generate the CFG for this list of function name')
+    # graph.add_argument('--visualize',
 
     parser.add_argument("-destpath", "--destpath", help="File path for results", action="store", dest="destpath",type=str)
     args = parser.parse_args()
@@ -151,6 +170,29 @@ def analyze_wasm_bytecode():
     inp = helper.get_inputs()[0]
 
     runtime = WASMRuntime(inp["module"])
+    #print cfg if needed
+    cprinter = None
+    if args.cfg:
+        if args.onlyfunc:
+            func_name = args.onlyfunc[0]
+            for key in runtime.module.functions_name.keys():
+                if runtime.module.functions_name[key] == func_name:
+                    cprinter = CFGPrinter(runtime.store.funcs[key], func_name)
+            if cprinter == None:
+                for export in runtime.module.exports:
+                    if export.kind == wasmConvention.extern_func and export.name == func_name:
+                        cprinter = CFGPrinter(runtime.store.funcs[export.desc], func_name)
+
+    if cprinter != None:
+        cprinter.print_CFG()
+
+    runtime.__repr__()
+    # engine = WASMInterpreter(runtime)
+    # engine.exec("_initialize")
+
+
+
+
 
 
 

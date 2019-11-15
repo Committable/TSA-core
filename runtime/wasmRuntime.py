@@ -1,11 +1,15 @@
 import typing
+
+from z3 import simplify
+
 from disassembler import wasmModule, wasmConvention
 import log
 from disassembler.wasmConvention import valtype, opcodes, EDGE_UNCONDITIONAL, EDGE_CONDITIONAL_IF, EDGE_CONDITIONAL_BR, \
-    EDGE_FALLTHROUGH
+    EDGE_FALLTHROUGH, EDGE_TERMINAL
 from interpreter import symbolicVarGenerator
 from runtime.basicBlock import BasicBlock
 from solver import symbolicVar
+from utils import custom_deepcopy, isSymbolic
 
 
 class WASMRuntime:
@@ -38,13 +42,13 @@ class WASMRuntime:
                 externvals.append(ExternValue(e.kind, len(self.store.mems) - 1))
                 continue
             if e.kind == wasmConvention.extern_global:
-                v = symbolicVar.BitVecVar(self.gen.gen_import_global_var(e.module, e.name), valtype[e.desc.valtype][0])
+                v = symbolicVar.produce_symbolic_var(self.gen.gen_import_global_var(e.module, e.name), valtype[e.desc.valtype][0])
                 a = GlobalInstance(Value(e.desc.valtype, v), e.desc.mut)
                 self.store.globals.append(a)
                 externvals.append(ExternValue(e.kind, len(self.store.globals) - 1))
                 continue
         self.module_instance.instantiate(self.module, self.store, externvals)
-        self.contruct_cfg()
+        self.construct_cfg()
 
     def func_addr(self, name: str):
         # Get a function address denoted by the function name
@@ -72,7 +76,7 @@ class WASMRuntime:
         #     return r[0].n
         return None
 
-    def contruct_cfg(self):
+    def construct_cfg(self):
         for addr in self.module_instance.funcaddrs:
             func = self.store.funcs[addr]
             if not isinstance(func, WasmFunc):
@@ -102,7 +106,7 @@ class WASMRuntime:
         # we need to do that because jump label are relative to the current block index
         for index, inst in enumerate(instructions[:-1]):
 
-            if inst.is_block_terminator:
+            if inst.is_block_terminator: #[else, end]
                 start, name = blocks_tmp.pop()
                 if opcodes[inst.code][0] == 'else':
                     end = inst.offset - 1
@@ -110,10 +114,10 @@ class WASMRuntime:
                     end = inst.offset
                 blocks_list.append((intent, start, end, name))
                 intent -= 1
-            if inst.is_block_starter:  # in ['block', 'loop']:
+            if inst.is_block_starter:  # in ['block', 'loop', 'if', 'else']:
                 blocks_tmp.append((inst.offset, opcodes[inst.code][0]))
                 intent += 1
-            if inst.is_branch:
+            if inst.is_branch: #[br, br_if, br_table, if]
                 branches.append((intent, inst))
 
         # add function body end
@@ -246,9 +250,9 @@ class WASMRuntime:
                     WASMRuntime._addEdge(edges, block.start, inst.offset + 1)
             # instruction that end the flow
             elif [opcodes[i.code][0] for i in block.instructions if i.is_halt]:
-                pass
+                block.set_block_type(EDGE_TERMINAL)
             elif inst.is_halt:
-                pass
+                block.set_block_type(EDGE_TERMINAL)
 
             # handle the case when you have if and else following
             elif inst.offset != instructions[-1].offset and \
@@ -299,9 +303,9 @@ class WASMRuntime:
             print(name + "\n")
             table = runtime.store.tables[i]
             print(str(table.module) + "." + str(table.name) + "\n")
-            for i in range(len(table.elem)):
-                if table.elem[i] != None:
-                    print(str(i) + ":" + str(table.elem[i]) + "\n")
+            # for i in range(len(table.elem)):
+            #     if table.elem[i] != None:
+            #         print(str(i) + ":" + str(table.elem[i]) + "\n")
             if len(table.elements) > 0:
                 print(str(table.elements) + "\n")
 
@@ -311,9 +315,9 @@ class WASMRuntime:
             print(name)
             memory = runtime.store.mems[i]
             print(str(memory.module) + "." + str(memory.name))
-            for i in range(len(memory.data)):
-                if memory.data[i] != 0x00:
-                    print(str(i) + ":" + str(memory.data[i]))
+            # for i in range(len(memory.data)):
+            #     if memory.data[i] != 0x00:
+            #         print(str(i) + ":" + str(memory.data[i]))
             if len(memory.datas) > 0:
                 print(str(memory.datas) + "\n")
 
@@ -353,18 +357,26 @@ class Value:
 
     @classmethod
     def from_i32(cls, n):
+        if isSymbolic(n):
+            n = simplify(n)
         return Value(wasmConvention.i32, n)
 
     @classmethod
     def from_i64(cls, n):
+        if isSymbolic(n):
+            n = simplify(n)
         return Value(wasmConvention.i64, n)
 
     @classmethod
     def from_f32(cls, n):
+        if isSymbolic(n):
+            n = simplify(n)
         return Value(wasmConvention.f32, n)
 
     @classmethod
     def from_f64(cls, n):
+        if isSymbolic(n):
+            n = simplify(n)
         return Value(wasmConvention.f64, n)
 
 class Label:
@@ -440,6 +452,12 @@ class TableInstance:
         self.elem = [None for _ in range(limits.minimum)]
         self.elements = {}
 
+    def copy(self):
+        o = TableInstance(self.module, self.name, self.elemtype, self.limits)
+        o.elem = list(self.elem)
+        o.elements = custom_deepcopy(self.elements)
+        return o
+
 
 class MemoryInstance:
     # A memory instance is the runtime representation of a linear memory. It holds a vector of bytes and an optional
@@ -461,14 +479,21 @@ class MemoryInstance:
         self.name = name
         self.limits = limits
         self.size = limits.minimum
-        self.data = bytearray([0x00 for _ in range(limits.minimum * 64 * 1024)])
-        self.datas = {}
+        # self.data = {} #for int index {offset:(size, value)}
+        self.datas = {} #{root_address:{offset:(size,value)}:
 
     def grow(self, n: int):
-        if self.limits.maximum and self.size + n > self.limits.maximum:
-            raise Exception('pywasm: out of memory limit')
-        self.data.extend([0 for _ in range(n * 64 * 1024)])
+        #todo: check if out of bound
+        # if self.limits.maximum and self.size + n > self.limits.maximum:
+            #raise Exception('pywasm: out of memory limit')
+        # self.data.extend([0 for _ in range(n * 64 * 1024)])
         self.size += n
+
+    def copy(self):
+        o = MemoryInstance(self.module, self.name, self.limits)
+        #o.data = list(self.data)
+        o.datas = custom_deepcopy(self.datas)
+        return o
 
 
 class GlobalInstance:
@@ -482,6 +507,10 @@ class GlobalInstance:
     def __init__(self, value: 'Value', mut: bool):
         self.value = value
         self.mut = mut
+
+    def copy(self):
+        o = GlobalInstance(Value(self.value.valtype, self.value.n), self.mut)
+        return o
 
 
 class ExportInstance:
@@ -606,9 +635,10 @@ class ModuleInstance:
             t = store.tables[self.tableaddrs[e.tableidx]]
             for i, e in enumerate(e.init):
                 if isinstance(offset.n, int):
-                    t.elem[offset.n + i] = e
+                    t.elements[offset.n + i] = e
                 else:
-                    t.elements[str(offset.n)+"+"+str(i)] = e
+                    key = str(simplify(offset.n + i))
+                    t.elements[key] = e
         # For each data segment in module.data, do:
         for e in module.data:
             #TODO
@@ -617,11 +647,11 @@ class ModuleInstance:
             # offset = Value(wasmConvention.i32, 0)
             if isinstance(offset.n, int):
                 m = store.mems[self.memaddrs[e.memidx]]
-                end = offset.n + len(e.init)
-                assert end <= len(m.data)
-                m.data[offset.n: offset.n + len(e.init)] = e.init
+                m.datas[0] = {}
+                m.datas[0][offset.n] =  (len(e.init), e.init)
             else:
-                m.datas[str(offset.n) + ":" + str(offset.n)+str(len(e.init))] = e.init
+                m.datas[str(offset.n)] = {}
+                m.datas[str(offset.n)][0] = (len(e.init), e.init)
 
         # Assert: due to validation, the frame F is now on the top of the stack.
         assert isinstance(stack.pop(), Frame)
@@ -683,7 +713,7 @@ class Frame:
     #
     # activation ::= framen{frame}
     # frame ::= {locals val∗, module moduleinst}
-    def __init__(self, module: 'ModuleInstance', locs: typing.List[Value], arity: int, continuation: int):
+    def __init__(self, module: '', locs: typing.List[Value], arity: int, continuation: int):
         self.module = module
         self.locals = locs
         self.arity = arity
@@ -691,6 +721,10 @@ class Frame:
 
     def __repr__(self):
         return '*'
+
+    def copy(self):
+        o = Frame(self.module, list(self.locals), self.arity, self.continuation)
+        return o
 
 class Stack:
     # Besides the store, most instructions interact with an implicit stack. The stack contains three kinds of entries:
@@ -706,6 +740,18 @@ class Stack:
 
     def __repr__(self):
         return self.data.__repr__()
+
+    def copy(self):
+        o = Stack()
+        o.data = []
+        for e in self.data:
+            if isinstance(e, Value):
+                o.data.append(e)
+            elif isinstance(e, Frame):
+                o.data.append(e.copy())
+            else:
+                raise("unkonw element type in stack")
+
 
     def add(self, e):
         self.data.append(e)

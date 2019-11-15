@@ -47,10 +47,13 @@ def custom_deepcopy(input):
     return output
 
 def isReal(value):
-    return isinstance(value, six.integer_types)
+    return isinstance(value, six.integer_types) or isinstance(value, float)
 
 def isSymbolic(value):
-    return not isinstance(value, six.integer_types)
+    return not (isinstance(value, six.integer_types) or isinstance(value, float))
+
+def isDecisiable(value):
+    return not (isinstance(value, six.integer_types) or isinstance(value, float) or isinstance(value, z3.BitVecNumRef) or isinstance(value, z3.FPNumRef))
 
 def isAllReal(*args):
     for element in args:
@@ -76,7 +79,6 @@ def check_sat(solver, pop_if_exception=True):
     except Exception as e:
         if pop_if_exception:
             solver.pop()
-        raise e
     return ret
 
 def to_signed(number):

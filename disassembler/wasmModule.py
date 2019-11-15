@@ -380,9 +380,9 @@ class Expression:
                 composition[block[0]] = block
                 continue
         if data[-1].code != wasmConvention.end:
-            raise Exception('pywasm: function block did not end with 0xb')
+            raise Exception('function block did not end with 0xb')
         if stack:
-            raise Exception('pywasm: function ended in middle of block')
+            raise Exception('function ended in middle of block')
         return composition
 
     @classmethod

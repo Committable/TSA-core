@@ -23,6 +23,9 @@ class BasicBlock:
     def set_type(self, type):
         self.type = type
 
+    def get_type(self):
+        return self.type
+
     def get_start_address(self):
         return self.start
 
@@ -42,7 +45,7 @@ class BasicBlock:
         return self.type
 
     def set_falls_to(self, address):
-        self.falls_to = address #target for fall through
+        self.falls_to = address #target for fall through and false branch for conditional jump
 
     def get_falls_to(self):
         return self.falls_to
@@ -95,7 +98,7 @@ class BasicBlock:
             else:
                 line += opcodes[i.code][0] + ' '
 
-            out += line + '\n'
+            out = out + line + "\n"
         return out
 
     def display(self):

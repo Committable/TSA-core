@@ -1,0 +1,21 @@
+digraph G {
+	rankdir=TB
+	overlap=scale
+	splines=polyline
+	ratio=fill
+	subgraph initialize {
+		node [fontname=Courier fontsize=30.0 rank=same shape=box]
+		label=initialize
+		color=grey
+		fontsize=50.0
+		overlap=false
+		splines=polyline
+		ratio=fill
+		0 [label="0: global.get 16\\l1: local.set 2\\l2: global.get 16\\l3: i32.const 16\\l4: i32.add \\l5: global.set 16\\l6: global.get 16\\l7: global.get 17\\l8: i32.ge_s \\l9: if [13]\\l"]
+		0 -> 10 [color=green]
+		0 -> 13 [color=red]
+		10 [label="a: i32.const 16\\lb: call 0\\lc: end \\l"]
+		10 -> 13 [color=cyan]
+		13 [label="d: local.get 2\\le: local.set 0\\lf: local.get 0\\l10: call 37\\l11: local.get 0\\l12: call 38\\l13: local.get 0\\l14: call 39\\l15: local.get 2\\l16: global.set 16\\l17: return \\l18: end \\l"]
+	}
+}
