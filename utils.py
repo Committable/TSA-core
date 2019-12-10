@@ -52,6 +52,9 @@ def isReal(value):
 def isSymbolic(value):
     return not (isinstance(value, six.integer_types) or isinstance(value, float))
 
+def isBitVec(value):
+    return isinstance(value, z3.BitVec) or isinstance(value, z3.BitVecNumRef)
+
 def isDecisiable(value):
     return not (isinstance(value, six.integer_types) or isinstance(value, float) or isinstance(value, z3.BitVecNumRef) or isinstance(value, z3.FPNumRef))
 
@@ -68,7 +71,7 @@ def to_unsigned(number):
 
 def to_symbolic(number):
     if isReal(number):
-        return BitVecVal(number, 256)
+        return BitVecVal(number, 32)
     return number
 
 def check_sat(solver, pop_if_exception=True):
@@ -89,3 +92,6 @@ def to_signed(number):
 
 def ceil32(x):
     return x if x % 32 == 0 else x + 32 - (x % 32)
+
+def from_bool_to_BitVec(value):
+    return simplify(If(value, BitVecVal(1, 32), BitVecVal(0, 32)))

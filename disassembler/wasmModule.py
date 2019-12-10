@@ -53,7 +53,7 @@ class Module:
             n = read_count(r, 32)
             data = r.read(n)
             if len(data) != n:
-                raise Exception('pywasm: invalid section size')
+                raise Exception('invalid section size')
             if section_id == wasmConvention.custom_section:
                 custom_section = CustomSection.from_reader(io.BytesIO(data))
                 log.debugln(f'{wasmConvention.section[section_id][0]:>9} {custom_section.name}')
@@ -311,6 +311,10 @@ class Instruction:
     def is_branch_conditional(self):
         """ Return True if the instruction is a conditional jump """
         return opcodes[self.code][0] in ['br_if', 'br_table', 'if']
+
+    @property
+    def is_function_call(self):
+        return opcodes[self.code][0] in ["call", "call_indirect"]
 
     @property
     def is_branch_unconditional(self):

@@ -61,6 +61,9 @@ class BasicBlock:
     def set_jump_targets(self,address):
         self.jump_targets.append(address)
 
+    def get_jump_targets(self):
+        return self.jump_targets
+
     def get_jump_target(self):
         return self.jump_target
 

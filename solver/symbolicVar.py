@@ -11,3 +11,4 @@ def produce_symbolic_var(name, valtype):
         return FP(name, Float64())
     else:
         raise Exception("wrong type")
+

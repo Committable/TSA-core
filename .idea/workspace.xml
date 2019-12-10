@@ -2,10 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/seraph-V1.0.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/seraph-V1.0.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/disassembler/wasmModule.py" beforeDir="false" afterPath="$PROJECT_DIR$/disassembler/wasmModule.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interpreter/wasmInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/wasmInterpreter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/basicBlock.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/basicBlock.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/wasmRuntime.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/wasmRuntime.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/seraph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/solver/symbolicVar.py" beforeDir="false" afterPath="$PROJECT_DIR$/solver/symbolicVar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -70,7 +75,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/seraph.py" />
-      <option name="PARAMETERS" value="-s $PROJECT_DIR$/test_contracts/erc203.wasm -w -p xuperchain" />
+      <option name="PARAMETERS" value="-s $PROJECT_DIR$/test_contracts/erc202.wasm -g -w -p xuperchain --onlyfunc _initialize" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -100,8 +105,18 @@
       <workItem from="1570585838114" duration="27380000" />
       <workItem from="1571060809982" duration="27944000" />
       <workItem from="1571112833748" duration="6786000" />
-      <workItem from="1573783697777" duration="624000" />
+      <workItem from="1573783697777" duration="6615000" />
+      <workItem from="1573816625544" duration="19941000" />
+      <workItem from="1575007652430" duration="61905000" />
     </task>
+    <task id="LOCAL-00001" summary="delete unnecessary files">
+      <created>1573785113280</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1573785113280</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,11 +127,17 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="delete unnecessary files" />
+    <option name="LAST_COMMIT_MESSAGE" value="delete unnecessary files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -133,46 +154,48 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/seraph.py</url>
-          <line>158</line>
+          <line>208</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/disassembler/wasmModule.py</url>
-          <line>700</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/disassembler/wasmModule.py</url>
-          <line>689</line>
-          <option name="timeStamp" value="23" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/disassembler/wasmModule.py</url>
-          <line>683</line>
-          <option name="timeStamp" value="24" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/disassembler/wasmModule.py</url>
-          <line>57</line>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/disassembler/wasmModule.py</url>
-          <line>19</line>
-          <option name="timeStamp" value="26" />
+          <url>file://$PROJECT_DIR$/interpreter/wasmInterpreter.py</url>
+          <line>286</line>
+          <option name="timeStamp" value="89" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="TEST_NUMBER" language="Python" />
         <watch expression="store.tables[self.tableaddrs[e.tableidx]]" language="Python" />
         <watch expression="runtime" language="Python" />
+        <watch expression="ctx.stack" language="Python" />
+        <watch expression="a" language="Python" />
+        <watch expression="ctx.mems" language="Python" />
+        <watch expression="pre_block" language="Python" />
+        <watch expression="If(cond != 0, b, a)" language="Python" />
+        <watch expression="type(a)" language="Python" />
+        <watch expression="simplify(If(cond != 0, b.n, a.n))" language="Python" />
+        <watch expression="If(cond, b.n, a.n)" language="Python" />
+        <watch expression="len(func.code.expr.data)" language="Python" />
+        <watch expression="self.runtime.store.funcs[12]" language="Python" />
+        <watch expression="self.runtime.store.funcs.index(func)" language="Python" />
+        <watch expression="func.blocks" language="Python" />
+        <watch expression="func.blocks[block].get_instructions()[-1]" language="Python" />
+        <watch expression="wasmConvention.br_if" language="Python" />
+        <watch expression="func.blocks[block]" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/seraphV1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1573783876188" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/seraphV1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1575943227278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/seraph_V1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1571114738343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

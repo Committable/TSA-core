@@ -11,6 +11,7 @@ import disassembler.params
 from disassembler import wasmConvention
 from interpreter.evmInterpreter import EVMInterpreter
 # from interpreter.wasmInterpreter import WASMInterpreter
+from interpreter.wasmInterpreter import WASMInterpreter
 from reporter.cfgPrinter import CFGPrinter
 from runtime.evmRuntime import EvmRuntime
 from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
@@ -60,6 +61,7 @@ def main():
     parser.add_argument("-destpath", "--destpath", help="File path for results", action="store", dest="destpath",type=str)
     args = parser.parse_args()
 
+    #根据输入参数配置运行相关变量
     if args.timeout:
         interpreter.params.TIMEOUT = args.timeout
     if args.global_timeout:
@@ -73,7 +75,12 @@ def main():
     if args.destpath:
         reporter.params.DEST_PATH = args.destpath
 
+    # 根据退出代码，返回运行的情况：
+    # 0表示正常退出
+    #todo:继续完善不同情况下退出代码
     exit_code = 0
+
+    #根据待分析的不同文件，进行不同的处理，主要是编译、反编译、符号执行、依赖分析
     if args.evm:
         if has_dependencies_installed(evm=True):
             exit_code = analyze_evm_bytecode()
@@ -178,6 +185,7 @@ def analyze_wasm_bytecode():
             for key in runtime.module.functions_name.keys():
                 if runtime.module.functions_name[key] == func_name:
                     cprinter = CFGPrinter(runtime.store.funcs[key], func_name)
+            # cprinter = CFGPrinter(runtime.store.funcs[257], func_name)
             if cprinter == None:
                 for export in runtime.module.exports:
                     if export.kind == wasmConvention.extern_func and export.name == func_name:
@@ -187,8 +195,8 @@ def analyze_wasm_bytecode():
         cprinter.print_CFG()
 
     runtime.__repr__()
-    # engine = WASMInterpreter(runtime)
-    # engine.exec("_initialize")
+    engine = WASMInterpreter(runtime)
+    engine.exec("_initialize")
 
 
 

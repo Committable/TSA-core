@@ -1,6 +1,6 @@
 import typing
 
-from z3 import simplify
+from z3 import simplify, BitVecVal, FPVal, Float64, Float32
 
 from disassembler import wasmModule, wasmConvention
 import log
@@ -9,7 +9,7 @@ from disassembler.wasmConvention import valtype, opcodes, EDGE_UNCONDITIONAL, ED
 from interpreter import symbolicVarGenerator
 from runtime.basicBlock import BasicBlock
 from solver import symbolicVar
-from utils import custom_deepcopy, isSymbolic
+from utils import custom_deepcopy, isSymbolic, isBitVec
 
 
 class WASMRuntime:
@@ -189,6 +189,9 @@ class WASMRuntime:
             # conditionnal jump - br_if
             elif inst.is_branch_conditional:
                 new_block = True
+
+            elif inst.is_function_call:
+                new_block = True
             # is_block_terminator
             # GRAPHICAL OPTIMIZATION: merge end together
             elif index < (len(instructions) - 1) and \
@@ -203,7 +206,7 @@ class WASMRuntime:
                 block.end_instr = inst
                 basicblocks.append(block)
                 vertices[block.start] = block
-                new_block = True
+                # new_block = True
 
         # enumerate edges
         for index, block in enumerate(basicblocks):
@@ -243,7 +246,7 @@ class WASMRuntime:
                             vertices[ref].set_jump_from(block.start)
                             WASMRuntime._addEdge(edges, block.start, ref)
                     # create conditionnal false edge
-                    block.set_block_type(EDGE_CONDITIONAL_IF)
+                    # block.set_block_type(EDGE_CONDITIONAL_IF)
                     block.set_falls_to(inst.offset + 1)
                     block.set_jump_to(inst.offset + 1)
                     vertices[inst.offset + 1].set_jump_from(block.start)
@@ -252,6 +255,8 @@ class WASMRuntime:
             elif [opcodes[i.code][0] for i in block.instructions if i.is_halt]:
                 block.set_block_type(EDGE_TERMINAL)
             elif inst.is_halt:
+                block.set_block_type(EDGE_TERMINAL)
+            elif block.end == len(instructions)-1:
                 block.set_block_type(EDGE_TERMINAL)
 
             # handle the case when you have if and else following
@@ -358,25 +363,33 @@ class Value:
     @classmethod
     def from_i32(cls, n):
         if isSymbolic(n):
-            n = simplify(n)
+                n = simplify(n)
+        else:
+            n = BitVecVal(n, 32)
         return Value(wasmConvention.i32, n)
 
     @classmethod
     def from_i64(cls, n):
         if isSymbolic(n):
             n = simplify(n)
+        else:
+            n = BitVecVal(n, 64)
         return Value(wasmConvention.i64, n)
 
     @classmethod
     def from_f32(cls, n):
         if isSymbolic(n):
             n = simplify(n)
+        else:
+            n = FPVal(n, Float32())
         return Value(wasmConvention.f32, n)
 
     @classmethod
     def from_f64(cls, n):
         if isSymbolic(n):
             n = simplify(n)
+        else:
+            n = FPVal(n, Float64())
         return Value(wasmConvention.f64, n)
 
 class Label:
@@ -645,13 +658,10 @@ class ModuleInstance:
             offset = exec_expr(store, frame, stack, e.expr)[0]
             #assert offset.valtype == wasmConvention.i32
             # offset = Value(wasmConvention.i32, 0)
-            if isinstance(offset.n, int):
-                m = store.mems[self.memaddrs[e.memidx]]
-                m.datas[0] = {}
-                m.datas[0][offset.n] =  (len(e.init), e.init)
-            else:
-                m.datas[str(offset.n)] = {}
-                m.datas[str(offset.n)][0] = (len(e.init), e.init)
+            m = store.mems[self.memaddrs[e.memidx]]
+
+            m.datas[str(offset.n)] = {}
+            m.datas[str(offset.n)][0] = (len(e.init), e.init)
 
         # Assert: due to validation, the frame F is now on the top of the stack.
         assert isinstance(stack.pop(), Frame)
@@ -751,6 +761,7 @@ class Stack:
                 o.data.append(e.copy())
             else:
                 raise("unkonw element type in stack")
+        return o
 
 
     def add(self, e):

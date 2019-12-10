@@ -67,3 +67,11 @@ class Generator:
 
     def gen_local_var(self, index):
         return "local_" + str(index)
+
+    def gen_select_var(self, index):
+        self.count += 1
+        return "select_"+str(index)+"_"+str(self.count)
+
+    def gen_func_call(self, addr):
+        self.count += 1
+        return "call_"+str(addr)+"_"+str(self.count)
