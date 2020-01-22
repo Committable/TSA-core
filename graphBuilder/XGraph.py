@@ -84,7 +84,7 @@ class SelfDefinedNode(VariableNode):
 class ArithNode(Node):
 
     def __init__(self, operation, operand, expression, isStartNode):
-        super.__init__(isStartNode)
+        super().__init__(isStartNode)
         self.operation = operation
         self.operand = operand
         self.expression = expression
@@ -92,7 +92,7 @@ class ArithNode(Node):
 
 class FlowEdge:
 
-    def __init__(self, expression: 'ArithNode'):
+    def __init__(self, expression):
         self.expression = expression
 
     def getExpression(self):
@@ -110,11 +110,11 @@ class ControlEdge:
 
 class XGraph:
 
-    def __init__(self, ContractName):
-        self.graph = nx.DiGraph(Contract=ContractName)
+    def __init__(self):
+        self.graph = nx.DiGraph()
 
     def addNode(self, nodeId):
         self.graph.add_node(nodeId)
 
-    def addEdge(self, head, tail, edge):
-        self.graph.add_edge(head, tail, edgeType=edge)
+    def addEdges(self, edgeList, edge):
+        self.graph.add_edges_from(edgeList, edgeType=edge)

@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/graphBuilder/XGraph.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/interpreter/opcodes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/seraph-V1.0.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/seraph-V1.0.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphBuilder/XGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/XGraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/interpreter/evmInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/evmInterpreter.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,6 +11,20 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -106,7 +117,7 @@
       <workItem from="1573783697777" duration="6615000" />
       <workItem from="1573816625544" duration="19941000" />
       <workItem from="1575007652430" duration="61905000" />
-      <workItem from="1578896751171" duration="42549000" />
+      <workItem from="1578896751171" duration="53462000" />
     </task>
     <task id="LOCAL-00001" summary="delete unnecessary files">
       <created>1573785113280</created>

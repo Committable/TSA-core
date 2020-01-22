@@ -89,7 +89,6 @@ class EVMInterpreter:
         if self.runtime.jump_type[block] == "terminal" or depth > interpreter.params.DEPTH_LIMIT:
             global total_no_of_paths
             global no_of_test_cases
-
             total_no_of_paths += 1
 
             if interpreter.params.GENERATE_TEST_CASES:
@@ -232,6 +231,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("ADD", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -250,6 +253,10 @@ class EVMInterpreter:
                 computed = simplify(computed) if is_expr(computed) else computed
                 operand = [node_first, node_second]
                 computedNode = ArithNode("MUL", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
                 stack.insert(0, computed)
             else:
@@ -273,6 +280,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("SUB", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -304,6 +315,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("DIV", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -351,6 +366,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("SDIV", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -386,6 +405,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("MOD", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -431,6 +454,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("SMOD", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -466,6 +493,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second, node_third]
                 computedNode = ArithNode("ADDMOD", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -501,6 +532,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second, node_third]
                 computedNode = ArithNode("MULMOD", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -523,6 +558,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_base, node_exponent]
                 computedNode = ArithNode("EXP", operand, computed, False)
+                edges = [(node_base, computedNode), (node_exponent, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -563,6 +602,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("SIGNEXTEND", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -589,6 +632,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("LT", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -611,7 +658,11 @@ class EVMInterpreter:
                 computed = simplify(computed) if is_expr(computed) else computed
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
-                computedNode = ArithNode("LT", operand, computed, False)
+                computedNode = ArithNode("GT", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -635,6 +686,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("SLT", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -658,6 +713,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("SGT", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -679,6 +738,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("EQ", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -701,6 +764,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first]
                 computedNode = ArithNode("ISZERO", operand, computed, False)
+                edges = [(node_first, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -716,6 +783,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("AND", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -746,6 +817,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first, node_second]
                 computedNode = ArithNode("XOR", operand, computed, False)
+                edges = [(node_first, computedNode), (node_second, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -758,7 +833,11 @@ class EVMInterpreter:
                 computed = simplify(computed) if is_expr(computed) else computed
                 stack.insert(0, computed)
                 operand = [node_first]
-                computedNode = ArithNode("XOR", operand, computed, False)
+                computedNode = ArithNode("NOT", operand, computed, False)
+                edges = [(node_first, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -790,6 +869,10 @@ class EVMInterpreter:
                 stack.insert(0, computed)
                 operand = [node_first]
                 computedNode = ArithNode("BYTE", operand, computed, False)
+                edges = [(node_first, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')
@@ -833,6 +916,10 @@ class EVMInterpreter:
                     operand = [node_s0, node_s1]
                     computedNode = ArithNode("SHA3", operand, new_var, False)
                     node_stack.insert(0, computedNode)
+                edges = [(node_s0, computedNode), (node_s1, computedNode)]
+                edgeType = FlowEdge(computedNode)
+                self.graph.addNode(computedNode)
+                self.graph.addEdges(edges, edgeType)
             else:
                 raise ValueError('STACK underflow')
         #
@@ -867,7 +954,7 @@ class EVMInterpreter:
             # that is directly responsible for this execution
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["sender_address"])
-            callerNode = StateNode("sender_address", "msg.sender", global_state["sender_address"], 0, False)
+            callerNode = MsgDataNode("sender_address", global_state["sender_address"], False)
             node_stack.insert(0, callerNode)
         elif opcode == "ORIGIN":  # get execution origination address
             global_state["pc"] = global_state["pc"] + 1
@@ -876,7 +963,8 @@ class EVMInterpreter:
         elif opcode == "CALLVALUE":  # get value of this transaction
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["value"])
-            node_stack.insert(0, global_state["value"])
+            callvalueNode = MsgDataNode("CALLVALUE", global_state["value"], False)
+            node_stack.insert(0, callvalueNode)
         elif opcode == "CALLDATALOAD":  # from input data from environment
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
@@ -1274,8 +1362,11 @@ class EVMInterpreter:
                     # note that the stored_value could be unknown
                     global_state["Ia"][str(stored_address)] = stored_value
                 arguments = [node_stored_address, node_stored_value]
-                sload_node = InstructionNode("SSTORE", arguments, global_state["pc"], path_conditions_and_vars["path_condition"], False)
-
+                sstore_node = InstructionNode("SSTORE", arguments, global_state["pc"], path_conditions_and_vars["path_condition"], False)
+                edges = [(node_stored_value, sstore_node)]
+                edgeType = FlowEdge(sstore_node)
+                self.graph.addNode(sstore_node)
+                self.graph.addEdges(edges, edgeType)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "JUMP":
@@ -1304,6 +1395,7 @@ class EVMInterpreter:
                         raise TypeError("Target address must be an integer")
                 self.runtime.vertices[block].set_jump_target(target_address)
                 flag = stack.pop(0)
+                node_flag = node_stack.pop(0)
                 branch_expression = (BitVecVal(0, 1) == BitVecVal(1, 1))
                 if isReal(flag):
                     if flag != 0:
@@ -1347,6 +1439,7 @@ class EVMInterpreter:
             pushed_value = int(instr_parts[1], 16)
             stack.insert(0, pushed_value)
             push_node = ConstNode("", pushed_value, False)
+            node_stack.insert(0, push_node)
         #
         #  80s: Duplication Operations
         #
@@ -1480,7 +1573,7 @@ class EVMInterpreter:
                         new_balance = (old_balance + transfer_amount)
                         global_state["balance"][new_address_name] = new_balance
                 arguments = [node_outgas, node_recipient, node_transfer_amount, node_start_data_input, node_size_data_input, node_start_data_output, node_size_data_ouput]
-                sstore_node = InstructionNode("SSTORE", arguments, global_state["pc"], path_conditions_and_vars["path_condition"], False)
+                call_node = InstructionNode("call", arguments, global_state["pc"], path_conditions_and_vars["path_condition"], False)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLCODE":
