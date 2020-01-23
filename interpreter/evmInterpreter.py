@@ -237,9 +237,11 @@ class EVMInterpreter:
                 operand = [node_first, node_second]
                 computedNode = ArithNode("ADD", operand, computed, False)
                 edges = [(node_first, computedNode), (node_second, computedNode)]
-                edgeType = FlowEdge(computedNode)
+                flowEdge = FlowEdge(computedNode)
                 self.graph.addNode(computedNode)
-                self.graph.addEdges(edges, edgeType)
+                self.graph.addEdges(edges, flowEdge)
+                controlEdge = ControlEdge(path_conditions_and_vars["path_condition"])
+                self.graph.addEdgeList(path_conditions_and_vars["path_condition_node"], computedNode, controlEdge)
                 node_stack.insert(0, computedNode)
             else:
                 raise ValueError('STACK underflow')

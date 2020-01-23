@@ -116,5 +116,9 @@ class XGraph:
     def addNode(self, nodeId):
         self.graph.add_node(nodeId)
 
-    def addEdges(self, edgeList, edge):
-        self.graph.add_edges_from(edgeList, edgeType=edge)
+    def addEdges(self, edgeList, edgeType):
+        self.graph.add_edges_from(edgeList, edgeType=edgeType)
+
+    def addEdgeList(self, fromList, toNode, edgeType):
+        for fromNode in fromList:
+            self.graph.add_edges_from(fromNode, toNode, edgeType=edgeType)
