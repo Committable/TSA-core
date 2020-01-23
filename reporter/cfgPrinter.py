@@ -1,4 +1,4 @@
-from graphviz import Digraph
+#from graphviz import Digraph
 from disassembler.wasmConvention import EDGE_UNCONDITIONAL, EDGE_CONDITIONAL_IF, EDGE_CONDITIONAL_BR, \
     EDGE_FALLTHROUGH
 

@@ -5,7 +5,7 @@ from utils import compare_versions
 from runtime.basicBlock import BasicBlock
 import disassembler.params
 from tokenize import NUMBER, NAME, NEWLINE
-from graphviz import Digraph
+# from graphviz import Digraph
 
 
 log=logging.getLogger()

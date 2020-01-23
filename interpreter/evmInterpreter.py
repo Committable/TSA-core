@@ -1786,6 +1786,7 @@ class Parameter:
             "node_mem": {},
             "analysis": {},
             "sha3_list": {},
+            "global_state": {},
             "state_to_node": {},
             "path_conditions_and_vars": {},
             "gas": 0,
