@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/test_contracts/ree" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/interpreter/evmInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/evmInterpreter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interpreter/params.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/params.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reporter/cfgPrinter.py" beforeDir="false" afterPath="$PROJECT_DIR$/reporter/cfgPrinter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/runtime/evmRuntime.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/evmRuntime.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/basicBlock.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/basicBlock.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -120,7 +117,7 @@
       <workItem from="1573783697777" duration="6615000" />
       <workItem from="1573816625544" duration="19941000" />
       <workItem from="1575007652430" duration="61905000" />
-      <workItem from="1578896751171" duration="60783000" />
+      <workItem from="1578896751171" duration="65388000" />
     </task>
     <task id="LOCAL-00001" summary="delete unnecessary files">
       <created>1573785113280</created>

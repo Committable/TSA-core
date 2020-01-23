@@ -1,5 +1,5 @@
 import six
-
+from graphBuilder.XGraph import *
 from disassembler.wasmConvention import opcodes
 
 
@@ -70,6 +70,12 @@ class BasicBlock:
     def set_branch_expression(self, branch):
         self.branch_expression = branch
 
+    def set_branch_node(self, branch_node):
+        self.branch_expression_node = branch_node
+
+    def set_negated_branch_expression_node(self, negated_branch_node):
+        self.negated_branch_expression_node = negated_branch_node
+
     def set_jump_from(self,block):
         self.jump_from.append(block)
 
@@ -78,6 +84,12 @@ class BasicBlock:
 
     def get_branch_expression(self):
         return self.branch_expression
+
+    def get_branch_expression_node(self):
+        return self.branch_expression_node
+
+    def get_negated_branch_expression_node(self):
+        return self.negated_branch_expression_node
 
     def set_taint_branch_expression(self, taint_branch):
         self.taint_branch_expression = taint_branch

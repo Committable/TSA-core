@@ -30,7 +30,7 @@ class EVMInterpreter:
         pass
 
     def sym_exec(self):
-        path_conditions_and_vars = {"path_condition": []}
+        path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
         global_state = self._get_init_global_state(path_conditions_and_vars)
         params = Parameter(path_conditions_and_vars=path_conditions_and_vars, global_state=global_state)
         return self._sym_exec_block(params, 0, 0, 0, -1)
@@ -121,8 +121,11 @@ class EVMInterpreter:
             # A choice point, we proceed with depth first search
 
             branch_expression = self.runtime.vertices[block].get_branch_expression()
+            branch_expression_node = self.runtime.vertices[block].get_branch_expression_node()
+            negated_branch_expression_node = self.runtime.vertices[block].get_negated_branch_expression()
 
             log.debug("Branch expression: " + str(branch_expression))
+            log.debug("Branch Node Expression" + branch_expression_node)
 
             self.solver.push()  # SET A BOUNDARY FOR SOLVER
             self.solver.add(branch_expression)
@@ -135,6 +138,7 @@ class EVMInterpreter:
                     new_params = params.copy()
                     new_params.global_state["pc"] = left_branch
                     new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
+                    new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
                     last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
                     self._sym_exec_block(new_params, left_branch, block, depth, func_call)
             except TimeoutError:
@@ -162,6 +166,7 @@ class EVMInterpreter:
                     new_params = params.copy()
                     new_params.global_state["pc"] = right_branch
                     new_params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
+                    new_params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
                     last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
                     new_params.analysis["time_dependency_bug"][last_idx] = global_state["pc"]
                     self._sym_exec_block(new_params, right_branch, block, depth, func_call)
@@ -1397,12 +1402,20 @@ class EVMInterpreter:
                 flag = stack.pop(0)
                 node_flag = node_stack.pop(0)
                 branch_expression = (BitVecVal(0, 1) == BitVecVal(1, 1))
+                branch_expression_node = ""
+                negated_branch_expression_node = ""
                 if isReal(flag):
                     if flag != 0:
                         branch_expression = True
                 else:
                     branch_expression = (flag != 0)
+                    compare_node = ConstNode("", 0, False)
+                    operand = [node_flag, compare_node]
+                    branch_expression_node = ArithNode("!=", operand, branch_expression, False)
+                    negated_branch_expression_node = ArithNode("==", operand, Not(branch_expression), False)
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
+                self.runtime.vertices[block].set_branch_node_experssion(branch_expression_node)
+                self.runtime.vertices[block].set_negated_branch_node_experssion(negated_branch_expression_node)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
             else:
