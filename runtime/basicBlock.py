@@ -70,10 +70,10 @@ class BasicBlock:
     def set_branch_expression(self, branch):
         self.branch_expression = branch
 
-    def set_branch_node(self, branch_node):
+    def set_branch_node_experssion(self, branch_node):
         self.branch_expression_node = branch_node
 
-    def set_negated_branch_expression_node(self, negated_branch_node):
+    def set_negated_branch_node_experssion(self, negated_branch_node):
         self.negated_branch_expression_node = negated_branch_node
 
     def set_jump_from(self,block):

@@ -29,7 +29,7 @@ class InstructionNode(Node):
         return self.arguments
 
 
-class VariableNode:
+class VariableNode(Node):
 
     def __init__(self, name, value, isStartNode):
         super().__init__(isStartNode)
@@ -59,7 +59,7 @@ class InputDataNode(VariableNode):
         super().__init__(name, value, isStartNode)
 
 
-class BlockVariable(VariableNode):
+class BlockDataNode(VariableNode):
 
     def __init__(self, name, value, blockNumber, isStartNode):
         super().__init__(name, value, isStartNode)
