@@ -18,6 +18,8 @@ from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
 
 from utils import run_command,compare_versions
 from inputDealer.inputHelper import InputHelper
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def main():
     global args
@@ -161,6 +163,10 @@ def analyze_evm_bytecode():
 
     interpreter=EVMInterpreter(env)
     interpreter.sym_exec()
+    nx.draw(interpreter.graph.graph, with_labels=True)
+    # output_graph = nx.nx_agraph.to_agraph(interpreter.graph)
+    # print(output_graph)
+    plt.show()
 
 
 

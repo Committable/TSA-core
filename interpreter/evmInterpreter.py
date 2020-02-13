@@ -11,6 +11,7 @@ from interpreter.symbolicVarGenerator import *
 from utils import *
 import interpreter.opcodes as opcodes
 from graphBuilder.evmGraph import *
+import networkx as nx
 
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
@@ -123,10 +124,10 @@ class EVMInterpreter:
 
             branch_expression = self.runtime.vertices[block].get_branch_expression()
             branch_expression_node = self.runtime.vertices[block].get_branch_expression_node()
-            negated_branch_expression_node = self.runtime.vertices[block].get_negated_branch_expression()
+            negated_branch_expression_node = self.runtime.vertices[block].get_negated_branch_expression_node()
 
-            log.debug("Branch expression: " + str(branch_expression))
-            log.debug("Branch Node Expression" + branch_expression_node)
+            # log.debug("Branch expression: " + str(branch_expression))
+            # log.debug("Branch Node Expression" + branch_expression_node)
 
             self.solver.push()  # SET A BOUNDARY FOR SOLVER
             self.solver.add(branch_expression)
@@ -753,22 +754,22 @@ class EVMInterpreter:
             # that is directly responsible for this execution
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["sender_address"])
-            callerNode = MsgDataNode("sender_address", global_state["sender_address"], False)
-            node_stack.insert(0, callerNode)
+            # callerNode = MsgDataNode("sender_address", global_state["sender_address"], False)
+            # node_stack.insert(0, callerNode)
         elif opcode == "ORIGIN":  # get execution origination address
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["origin"])
-            node_stack.insert(0, global_state["origin"])
+            # node_stack.insert(0, global_state["origin"])
         elif opcode == "CALLVALUE":  # get value of this transaction
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["value"])
-            callvalueNode = MsgDataNode("CALLVALUE", global_state["value"], False)
-            node_stack.insert(0, callvalueNode)
+            # callvalueNode = MsgDataNode("CALLVALUE", global_state["value"], False)
+            # node_stack.insert(0, callvalueNode)
         elif opcode == "CALLDATALOAD":  # from input data from environment
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 position = stack.pop(0)
-                node_position = node_stack.pop(0)
+                # node_position = node_stack.pop(0)
                 new_var_name = self.gen.gen_data_var(position)
                 if new_var_name in path_conditions_and_vars:
                     new_var = path_conditions_and_vars[new_var_name]
@@ -776,8 +777,7 @@ class EVMInterpreter:
                     new_var = BitVec(new_var_name, 256)
                     path_conditions_and_vars[new_var_name] = new_var
                 stack.insert(0, new_var)
-                node_new_var = InputDataNode(new_var_name, new_var)
-                node_stack.insert(0, node_new_var)
+                update_graph_inputdata(self.graph, node_stack, new_var, new_var_name)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLDATASIZE":
@@ -1147,18 +1147,13 @@ class EVMInterpreter:
                         raise TypeError("Target address must be an integer")
                 self.runtime.vertices[block].set_jump_target(target_address)
                 flag = stack.pop(0)
-                node_flag = node_stack.pop(0)
+                # node_flag = node_stack.pop(0)
                 branch_expression = (BitVecVal(0, 1) == BitVecVal(1, 1))
                 if isReal(flag):
                     if flag != 0:
                         branch_expression = True
                 else:
                     branch_expression = (flag != 0)
-                    compare_node = ConstNode("", 0, False)
-                    operand = [node_flag, compare_node]
-                    branch_expression_node = ArithNode("!=", operand, branch_expression, False)
-                    negated_branch_expression_node = ArithNode("==", operand, Not(branch_expression), False)
-                    # ADD Edge
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
@@ -1345,11 +1340,11 @@ class EVMInterpreter:
                     # this means not enough fund, thus the execution will result in exception
                     self.solver.pop()
                     stack.insert(0, 0)  # x = 0
-                    node_stack.insert(0, 0)
+                    # node_stack.insert(0, 0)
                 else:
                     # the execution is possibly okay
                     stack.insert(0, 1)  # x = 1
-                    node_stack.insert(0, 0)
+                    # node_stack.insert(0, 0)
                     self.solver.pop()
                     self.solver.add(is_enough_fund)
                     path_conditions_and_vars["path_condition"].append(is_enough_fund)
@@ -1407,12 +1402,15 @@ class EVMInterpreter:
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
-        if opcode in two_operand_opcode or three_operand_opcode or one_operand_opcode:
+        if (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
+            print(opcode)
             update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars)
         elif opcode in pass_opcode:
             update_pass(node_stack, opcode)
         elif opcode in block_opcode:
             update_graph_block(self.graph, node_stack, block_related_value, global_state["currentNumber"], False)
+        elif opcode in msg_opcode:
+            update_graph_msg(self.graph, node_stack, opcode, global_state)
 
 
     def _get_init_global_state(self,path_conditions_and_vars):

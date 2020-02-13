@@ -23,7 +23,7 @@ pass_opcode = ("ADDRESS", "CALLDATASIZE", "CODESIZE", "RETURNDATASIZE", "GASPRIC
                "EXTCODESIZE", "BLOCKHASH", "PC", "MSIZE", "GAS", "CREATE",
                "EXTCODECOPY", "POP", "LOG0", "LOG1", "LOG2", "LOG3", "LOG4",
                "RETURN", "REVERT", "CALLDATACOPY", "CODECOPY", "RETURNDATACOPY"
-               "JUMP")
+               "JUMP", "ORIGIN")
 
 msg_opcode = ("CALLER", "CALLVALUE")
 
@@ -77,8 +77,11 @@ def update_pass(node_stack, opcode):
         node_stack.insert(0, 0)
 
 
-def update_graph_msg(graph, node_stack, opcode, value):
-    msgNode = MsgDataNode(opcode, value, False)
+def update_graph_msg(graph, node_stack, opcode, global_state):
+    if opcode == "CALLER":
+        msgNode = MsgDataNode(opcode, global_state["sender_address"], False)
+    else:
+        msgNode = MsgDataNode(opcode, global_state["sender_address"], False)
     graph.addNode(msgNode)
     node_stack.insert(0, msgNode)
 
@@ -153,8 +156,9 @@ def update_graph_sstore(graph, node_stack, stored_address, global_state, path_co
     graph.addEdgeList(path_conditions_and_vars["path_condition_node"], sstore_node, controlEdge)
 
 
-def update_jumpi(graph, node_stack, block, flag, node_flag, branch_expression):
+def update_jumpi(graph, node_stack, block, flag, branch_expression):
     node_target_address = node_stack.pop(0)
+    node_flag = node_stack.pop(0)
     branch_expression_node = ""
     negated_branch_expression_node = ""
     if not isReal(flag):
@@ -253,6 +257,13 @@ def update_suicide(graph, node_stack, global_state, path_conditions_and_vars):
                                    path_conditions_and_vars["path_condition"], False)
 
     graph.addNode(suicide_node)
+
+
+def update_graph_inputdata(graph, node_stack, new_var, new_var_name):
+    node_position = node_stack.pop(0)
+    node_new_var = InputDataNode(new_var_name, new_var)
+    graph.addNode(node_new_var)
+    node_stack.insert(0, node_new_var)
 
 
 
