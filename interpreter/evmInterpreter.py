@@ -1154,10 +1154,13 @@ class EVMInterpreter:
                         branch_expression = True
                 else:
                     branch_expression = (flag != 0)
+                    # compare_node = ConstNode("", 0, False)
+                    # operand = [node_flag, compare_node]
+                    # ADD Edge
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
-                update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, node_flag, branch_expression)
+                update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, branch_expression)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "PC":

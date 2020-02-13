@@ -3,11 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphBuilder/evmGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/evmGraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/interpreter/evmInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/evmInterpreter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/seraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/seraph.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_contracts/rre.bin.evm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_contracts/rre.bin.evm.disasm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_contracts/rre.bin" beforeDir="false" afterPath="$PROJECT_DIR$/test_contracts/rre.bin" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -122,7 +120,8 @@
       <workItem from="1575007652430" duration="61905000" />
       <workItem from="1578896751171" duration="109976000" />
       <workItem from="1581431526461" duration="6068000" />
-      <workItem from="1581478620995" duration="11855000" />
+      <workItem from="1581478620995" duration="13564000" />
+      <workItem from="1581596008889" duration="648000" />
     </task>
     <task id="LOCAL-00001" summary="delete unnecessary files">
       <created>1573785113280</created>
@@ -173,19 +172,34 @@
           <option name="timeStamp" value="89" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/seraph.py</url>
-          <line>172</line>
-          <option name="timeStamp" value="91" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/seraph.py</url>
-          <line>165</line>
-          <option name="timeStamp" value="95" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file:///usr/local/lib/python3.7/site-packages/networkx/classes/graph.py</url>
           <line>566</line>
           <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/graphBuilder/XGraph.py</url>
+          <line>58</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/interpreter/evmInterpreter.py</url>
+          <line>779</line>
+          <option name="timeStamp" value="98" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/interpreter/evmInterpreter.py</url>
+          <line>768</line>
+          <option name="timeStamp" value="99" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/interpreter/evmInterpreter.py</url>
+          <line>41</line>
+          <option name="timeStamp" value="100" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/runtime/basicBlock.py</url>
+          <line>38</line>
+          <option name="timeStamp" value="101" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -227,12 +241,14 @@
         <watch expression="nx.draw(interpreter.graph, with_labels=True)" language="Python" />
         <watch expression="nx.draw(interpreter.graph, with_labels=True)" language="Python" />
         <watch expression="nodes_for_adding" language="Python" />
+        <watch expression="block" language="Python" />
+        <watch expression="self" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/seraphV1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1575943227278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Seraph$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1581585212125" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Seraph$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1581596570685" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/seraph_V1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1571114738343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

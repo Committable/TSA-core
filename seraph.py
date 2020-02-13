@@ -166,7 +166,7 @@ def analyze_evm_bytecode():
     nx.draw(interpreter.graph.graph, with_labels=True)
     # output_graph = nx.nx_agraph.to_agraph(interpreter.graph)
     # print(output_graph)
-    plt.show()
+    plt.savefig("path.png")
 
 
 
