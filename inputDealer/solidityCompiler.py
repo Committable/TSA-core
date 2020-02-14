@@ -5,31 +5,31 @@ import shlex
 import logging
 from utils import run_command, run_command_with_err
 
-class solidityCompiler:
-    def __init(self, inputHelper):
-        self.inputHelpr = inputHelper
+class SolidityCompiler:
+    def __init__(self, inputHelper):
+        self.inputHelper = inputHelper
 
     def get_compiled_contracts(self):
         if not self.inputHelper.compiled_contracts:
-            self.inputHelpr.compiled_contracts = self._compile_solidity()
-        return self.inputHelpr.compiled_contracts
+            self.inputHelper.compiled_contracts = self._compile_solidity()
+        return self.inputHelper.compiled_contracts
 
     def _compile_solidity(self):
-        if not self.inputHelpr.allow_paths:
-            cmd = "solc --bin-runtime %s %s" % (self.inputHelpr.remap, self.inputHelpr.source)
+        if not self.inputHelper.allow_paths:
+            cmd = "solc --bin-runtime %s %s" % (self.inputHelper.remap, self.inputHelper.source)
         else:
-            cmd = "solc --bin-runtime %s %s --allow-paths %s" % (self.inputHelpr.remap, self.inputHelpr.source, self.inputHelpr.allow_paths)
+            cmd = "solc --bin-runtime %s %s --allow-paths %s" % (self.inputHelper.remap, self.inputHelper.source, self.inputHelper.allow_paths)
         err = ''
-        if self.inputHelpr.compilation_err:
+        if self.inputHelper.compilation_err:
             out, err = run_command_with_err(cmd)
-            err = re.sub(self.inputHelpr.root_path, "", err)
+            err = re.sub(self.inputHelper.root_path, "", err)
         else:
             out = run_command(cmd)
 
         libs = re.findall(r"_+(.*?)_+", out)
         libs = set(libs)
         if libs:
-            return self._link_libraries(self.inputHelpr.source, libs)
+            return self._link_libraries(self.inputHelper.source, libs)
         else:
             return self._extract_bin_str(out, err)
 
@@ -39,10 +39,10 @@ class solidityCompiler:
             lib_address = "0x" + hex(idx+1)[2:].zfill(40)
             option += " --libraries %s:%s" % (lib, lib_address)
         FNULL = open(os.devnull, 'w')
-        if not self.inputHelpr.allow_paths:
-            cmd = "solc --bin-runtime %s %s" % (self.inputHelpr.remap, self.inputHelpr.source)
+        if not self.inputHelper.allow_paths:
+            cmd = "solc --bin-runtime %s %s" % (self.inputHelper.remap, self.inputHelper.source)
         else:
-            cmd = "solc --bin-runtime %s %s --allow-paths %s" % (self.inputHelpr.remap, self.inputHelpr.source, self.inputHelpr.allow_paths)
+            cmd = "solc --bin-runtime %s %s --allow-paths %s" % (self.inputHelper.remap, self.inputHelper.source, self.inputHelper.allow_paths)
         p1 = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=FNULL)
         cmd = "solc --link%s" %option
         p2 = subprocess.Popen(shlex.split(cmd), stdin=p1.stdout, stdout=subprocess.PIPE, stderr=FNULL)
@@ -55,7 +55,7 @@ class solidityCompiler:
         contracts = re.findall(binary_regex, s)
         contracts = [contract for contract in contracts if contract[1]]
         if not contracts:
-            if not self.inputHelpr.compilation_err:
+            if not self.inputHelper.compilation_err:
                 logging.critical("Solidity compilation failed. Please use -ce flag to see the detail.")
             else:
                 logging.critical(err)
@@ -66,4 +66,4 @@ class solidityCompiler:
 
     def rm_tmp_files_of_multiple_contracts(self, contracts):
         for contract, _ in contracts:
-            self.inputHelpr.disassembler.rm_tmp_files(contract)
+            self.inputHelper.disassembler.rm_tmp_files(contract)

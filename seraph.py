@@ -96,7 +96,7 @@ def main():
         if has_dependencies_installed(golang=True):
             exit_code = analyze_go_code()
     else:
-        if has_dependencies_installed(solc=True):
+        if has_dependencies_installed(solc=True, evm=True):
             exit_code = analyze_solidity_code()
 
 
@@ -159,10 +159,10 @@ def analyze_evm_bytecode():
     inp = helper.get_inputs()[0]
 
     env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'])
-    exit_code = env.build_runtime_env()
+    env.build_runtime_env()
 
     interpreter=EVMInterpreter(env)
-    interpreter.sym_exec()
+    exit_code = interpreter.sym_exec()
     nx.draw(interpreter.graph.graph, with_labels=True)
     # output_graph = nx.nx_agraph.to_agraph(interpreter.graph)
     # print(output_graph)
@@ -204,14 +204,6 @@ def analyze_wasm_bytecode():
     engine = WASMInterpreter(runtime)
     engine.exec("_initialize")
 
-
-
-
-
-
-
-
-
     return
 
 def analyze_cpp_code():
@@ -223,8 +215,31 @@ def analyze_go_code():
     pass
 
 def analyze_solidity_code():
-    #TODO
-    pass
+    global args
+
+    exit_code = 0
+    helper = InputHelper(InputHelper.SOLIDITY, source=args.source, compilation_err=True, root_path="", remap="", allow_paths="")
+    inputs = helper.get_inputs()
+    for inp in inputs:
+        logging.info("contract %s:", inp['contract'])
+        env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'], source_map=inp["source_map"], source_file=inp["source"])
+
+        return_code = env.build_runtime_env()
+
+        interpreter = EVMInterpreter(env)
+        interpreter.sym_exec()
+
+        nx.draw(interpreter.graph.graph, with_labels=True)
+        plt.savefig("path.png")
+
+        helper.rm_tmp_files()
+
+        if return_code != 0:
+            exit_code = 1
+
+    helper.rm_tmp_files()
+
+    return exit_code
 
 if __name__ == '__main__':
     main()

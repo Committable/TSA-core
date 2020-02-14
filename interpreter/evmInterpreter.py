@@ -29,8 +29,6 @@ class EVMInterpreter:
         self.path_conditions = []
         self.runtime = runtime
 
-        pass
-
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
         global_state = self._get_init_global_state(path_conditions_and_vars)
@@ -53,7 +51,7 @@ class EVMInterpreter:
 
         if block < 0:
             log.debug("UNKNOWN JUMP ADDRESS. TERMINATING THIS PATH")
-            return ["ERROR"]
+            return 1
 
         log.debug("Reach block address %d \n", block)
 
@@ -67,19 +65,19 @@ class EVMInterpreter:
 
         if self.visited_edges[current_edge] > interpreter.params.LOOP_LIMIT:
             log.debug("Overcome a number of loop limit. Terminating this path ...")
-            return stack
+            return 0
 
         current_gas_used = params.gas
         if current_gas_used > interpreter.params.GAS_LIMIT:
             log.debug("Run out of gas. Terminating this path ... ")
-            return stack
+            return 0
 
         # Execute every instruction, one at a time
         try:
             block_ins = self.runtime.vertices[block].get_instructions()
         except KeyError:
             log.debug("This path results in an exception, possibly an invalid jump address")
-            return ["ERROR"]
+            return 1
 
         for instr in block_ins:
             self._sym_exec_ins(params, block, instr, func_call)
@@ -90,22 +88,8 @@ class EVMInterpreter:
         # Go to next Basic Block(s)
         if self.runtime.jump_type[block] == "terminal" or depth > interpreter.params.DEPTH_LIMIT:
             global total_no_of_paths
-            global no_of_test_cases
             total_no_of_paths += 1
 
-            if interpreter.params.GENERATE_TEST_CASES:
-                try:
-                    model = self.solver.model()
-                    no_of_test_cases += 1
-                    filename = "test%s.otest" % no_of_test_cases
-                    with open(filename, 'w') as f:
-                        for variable in model.decls():
-                            f.write(str(variable) + " = " + str(model[variable]) + "\n")
-                    if os.stat(filename).st_size == 0:
-                        os.remove(filename)
-                        no_of_test_cases -= 1
-                except Exception as e:
-                    pass
             log.debug("TERMINATING A PATH ...")
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"

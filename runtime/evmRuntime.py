@@ -11,10 +11,11 @@ from tokenize import NUMBER, NAME, NEWLINE
 log=logging.getLogger()
 
 class EvmRuntime:
-    def __init__(self,disasm_file=None,source_map=None, platform=None):
+    def __init__(self, platform=None, disasm_file=None,source_map=None, source_file=None):
         self.disasm_file = disasm_file
         self.source_map = source_map
         self.platFrom = platform
+        self.source_file = source_file
 
     def build_cfg(self):
         self.change_format()

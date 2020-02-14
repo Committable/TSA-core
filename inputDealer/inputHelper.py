@@ -1,6 +1,6 @@
 import re
 import logging
-from inputDealer import solidityCompiler
+from inputDealer.solidityCompiler import SolidityCompiler
 from disassembler.evmDisassembler import EvmDisassembler
 from disassembler.wasmModule import Module
 from inputDealer.soliditySouceMap import SourceMap
@@ -70,7 +70,7 @@ class InputHelper:
             disasm_file = self.disassembler.get_temporary_files(self.source)['disasm']
             inputs.append({'disasm_file': disasm_file})
         elif self.input_type == InputHelper.SOLIDITY:
-            self.compiler = solidityCompiler(self)
+            self.compiler = SolidityCompiler(self)
             contracts = self.compiler.get_compiled_contracts()
             self.disassembler = EvmDisassembler(self)
             for contract, bytecode in contracts:
