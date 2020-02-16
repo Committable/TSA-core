@@ -20,6 +20,7 @@ from utils import run_command,compare_versions
 from inputDealer.inputHelper import InputHelper
 import networkx as nx
 import matplotlib.pyplot as plt
+from networkx.drawing.nx_pydot import write_dot
 
 def main():
     global args
@@ -61,6 +62,7 @@ def main():
     # graph.add_argument('--visualize',
 
     parser.add_argument("-destpath", "--destpath", help="File path for results", action="store", dest="destpath",type=str)
+    # parser.add_argument("-db", "--debug", help="Display debug information", action="store_true")
     args = parser.parse_args()
 
     #根据输入参数配置运行相关变量
@@ -170,7 +172,7 @@ def analyze_evm_bytecode():
 
 
 
-    helper.rm_tmp_files()
+    # helper.rm_tmp_files()
 
     return exit_code
 
@@ -229,15 +231,23 @@ def analyze_solidity_code():
         interpreter = EVMInterpreter(env)
         interpreter.sym_exec()
 
-        nx.draw(interpreter.graph.graph, with_labels=True)
-        plt.savefig("path.png")
+        options = {
+            'node_size': 1000,
+            'width': 3,
+            'with_labels': True
+        }
+        pos = nx.nx_agraph.graphviz_layout(interpreter.graph.graph)
+        nx.draw(interpreter.graph.graph, pos=pos)
+        write_dot(interpreter.graph.graph, 'file.dot')
+        # A = nx.nx_agraph.to_agraph(interpreter.graph.graph)
+        # plt.savefig("path.png")
 
-        helper.rm_tmp_files()
+        # helper.rm_tmp_files()
 
         if return_code != 0:
             exit_code = 1
 
-    helper.rm_tmp_files()
+    # helper.rm_tmp_files()
 
     return exit_code
 

@@ -22,6 +22,9 @@ class InstructionNode(Node):
         self.global_pc = global_pc
         self.constraint = constraint
 
+    def __str__(self):
+        return "InstructionNode " + self.name
+
     def getConstraints(self):
         return self.constraint
 
@@ -36,6 +39,9 @@ class VariableNode(Node):
         self.name = name
         self.value = value
 
+    # def __str__(self):
+    #     return self.name
+
 
 class StateNode(VariableNode):
 
@@ -46,17 +52,26 @@ class StateNode(VariableNode):
         else:
             self.position = -1
 
+    def __str__(self):
+        return "StateNode " + self.name
+
 
 class ConstNode(VariableNode):
 
     def __init__(self, name, value, isStartNode):
         super().__init__(name, value, isStartNode)
 
+    def __str__(self):
+        return "ConstNode " + str(self.value)
+
 
 class InputDataNode(VariableNode):
 
     def __init__(self, name, value, isStartNode):
         super().__init__(name, value, isStartNode)
+
+    def __str__(self):
+        return "InputDataNode " + self.name
 
 
 class BlockDataNode(VariableNode):
@@ -68,17 +83,26 @@ class BlockDataNode(VariableNode):
         else:
             self.blockNumber = -1
 
+    def __str__(self):
+        return "BlockDataNode " + self.name
+
 
 class MsgDataNode(VariableNode):
 
     def __init__(self, name, value, isStartNode):
         super().__init__(name, value, isStartNode)
 
+    def __str__(self):
+        return "MsgDataNode " + self.name
+
 
 class SelfDefinedNode(VariableNode):
 
     def __init__(self, name, value, isStartNode):
         super().__init__(name, value, isStartNode)
+
+    def __str__(self):
+        return "SelfDefinedNode " + self.name
 
 
 class ArithNode(Node):
@@ -88,6 +112,9 @@ class ArithNode(Node):
         self.operation = operation
         self.operand = operand
         self.expression = expression
+
+    def __str__(self):
+        return "ArithNode " + self.operation
 
 
 class FlowEdge:
@@ -121,4 +148,5 @@ class XGraph:
 
     def addEdgeList(self, fromList, toNode, edgeType):
         for fromNode in fromList:
-            self.graph.add_edges_from(fromNode, toNode, edgeType=edgeType)
+            itemEdge = [(fromNode, toNode)]
+            self.graph.add_edges_from(itemEdge, edgeType=edgeType)

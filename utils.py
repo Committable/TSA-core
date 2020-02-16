@@ -71,8 +71,13 @@ def to_unsigned(number):
 
 def to_symbolic(number):
     if isReal(number):
-        return BitVecVal(number, 32)
+        return BitVecVal(number, 256)
     return number
+
+# def evm_to_symbolic(number):
+#     if isReal(number):
+#         return BitVecVal(number, 256)
+#     return number
 
 def check_sat(solver, pop_if_exception=True):
     try:

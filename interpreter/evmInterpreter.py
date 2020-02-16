@@ -125,7 +125,7 @@ class EVMInterpreter:
                     new_params.global_state["pc"] = left_branch
                     new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
                     new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
-                    last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
+                    # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
                     self._sym_exec_block(new_params, left_branch, block, depth, func_call)
             except TimeoutError:
                 raise
@@ -153,8 +153,8 @@ class EVMInterpreter:
                     new_params.global_state["pc"] = right_branch
                     new_params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
                     new_params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
-                    last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
-                    new_params.analysis["time_dependency_bug"][last_idx] = global_state["pc"]
+                    # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
+                    # new_params.analysis["time_dependency_bug"][last_idx] = global_state["pc"]
                     self._sym_exec_block(new_params, right_branch, block, depth, func_call)
             except TimeoutError:
                 raise
@@ -185,7 +185,9 @@ class EVMInterpreter:
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[0]
         instr_opcode = opcodes.opcode_by_name(opcode)
-
+        print(opcode)
+        if global_state["pc"] == 144:
+            print(...)
         if opcode == "INVALID":
             return
         elif opcode == "ASSERTFAIL":
@@ -773,7 +775,7 @@ class EVMInterpreter:
                 new_var = BitVec(new_var_name, 256)
                 path_conditions_and_vars[new_var_name] = new_var
             stack.insert(0, new_var)
-            node_stack.insert(0, 0)
+            # node_stack.insert(0, 0)
         elif opcode == "CALLDATACOPY":  # Copy input data to memory
             #  TODO: Don't know how to simulate this yet
             if len(stack) > 2:
@@ -1088,8 +1090,7 @@ class EVMInterpreter:
                             global_state["Ia"][position] = new_var
                         else:
                             global_state["Ia"][str(position)] = new_var
-                update_graph_sload(self.graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name,
-                                   new_var)
+                update_graph_sload(self.graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, new_var)
             else:
                 raise ValueError('STACK underflow')
 
@@ -1248,7 +1249,7 @@ class EVMInterpreter:
                 if isReal(transfer_amount):
                     if transfer_amount == 0:
                         stack.insert(0, 1)  # x = 0
-                        node_stack.insert(0, 0)
+                        # node_stack.insert(0, 0)
                         return
 
                 # Let us ignore the call depth
@@ -1398,7 +1399,12 @@ class EVMInterpreter:
             update_graph_block(self.graph, node_stack, block_related_value, global_state["currentNumber"], False)
         elif opcode in msg_opcode:
             update_graph_msg(self.graph, node_stack, opcode, global_state)
-
+        print("stack: ")
+        print(stack)
+        print("node_stack: ")
+        print(node_stack)
+        if len(stack) != len(node_stack):
+            print("node_stack is wrong" + str(opcode) + str(global_state["pc"]))
 
     def _get_init_global_state(self,path_conditions_and_vars):
         global_state = {"balance": {}, "pc": 0}

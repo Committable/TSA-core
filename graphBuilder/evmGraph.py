@@ -22,7 +22,7 @@ one_operand_opcode = ("ISZERO", "NOT")
 pass_opcode = ("ADDRESS", "CALLDATASIZE", "CODESIZE", "RETURNDATASIZE", "GASPRICE",
                "EXTCODESIZE", "BLOCKHASH", "PC", "MSIZE", "GAS", "CREATE",
                "EXTCODECOPY", "POP", "LOG0", "LOG1", "LOG2", "LOG3", "LOG4",
-               "RETURN", "REVERT", "CALLDATACOPY", "CODECOPY", "RETURNDATACOPY"
+               "RETURN", "REVERT", "CALLDATACOPY", "CODECOPY", "RETURNDATACOPY",
                "JUMP", "ORIGIN")
 
 msg_opcode = ("CALLER", "CALLVALUE")
@@ -72,9 +72,10 @@ def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_a
 
 def update_pass(node_stack, opcode):
     OPCODE = opcodes.opcode_by_name(opcode)
-    [node_stack.pop() for _ in range(OPCODE.pop)]
+    [node_stack.pop(0) for _ in range(OPCODE.pop)]
     if OPCODE.push == 1:
-        node_stack.insert(0, 0)
+        new_selfDefinedNode = SelfDefinedNode(opcode, 0, False)
+        node_stack.insert(0, new_selfDefinedNode)
 
 
 def update_graph_msg(graph, node_stack, opcode, global_state):
@@ -116,11 +117,11 @@ def update_graph_mstore(graph, stored_address, stored_value, current_miu_i, node
 
 def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, new_var):
     node_position = node_stack.pop(0)
-    if isReal(position) and position in global_state["Ia"]:
+    if isReal(position) and position in global_state["pos_to_node"]:
         pos_node = global_state["pos_to_node"][position]
         node_stack.insert(0, pos_node)
     else:
-        if str(position) in global_state["Ia"]:
+        if str(position) in global_state["pos_to_node"]:
             pos_node = global_state["pos_to_node"][str(position)]
             node_stack.insert(0, pos_node)
         else:
@@ -172,6 +173,7 @@ def update_jumpi(graph, node_stack, block, flag, branch_expression):
         negated_branch_edges = [(node_flag, negated_branch_expression_node), (compare_node, negated_branch_expression_node)]
         branch_flowEdge = FlowEdge(branch_expression_node)
         negated_branch_flowEdge = FlowEdge(negated_branch_expression_node)
+        graph.addNode(compare_node)
         graph.addNode(branch_expression_node)
         graph.addEdges(branch_edges, branch_flowEdge)
         graph.addNode(negated_branch_expression_node)
@@ -261,7 +263,7 @@ def update_suicide(graph, node_stack, global_state, path_conditions_and_vars):
 
 def update_graph_inputdata(graph, node_stack, new_var, new_var_name):
     node_position = node_stack.pop(0)
-    node_new_var = InputDataNode(new_var_name, new_var)
+    node_new_var = InputDataNode(new_var_name, new_var, False)
     graph.addNode(node_new_var)
     node_stack.insert(0, node_new_var)
 
