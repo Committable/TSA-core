@@ -184,10 +184,10 @@ class EVMInterpreter:
 
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[0]
-        instr_opcode = opcodes.opcode_by_name(opcode)
-        print(opcode)
-        if global_state["pc"] == 144:
-            print(...)
+        # instr_opcode = opcodes.opcode_by_name(opcode)
+        # print(opcode)
+        # if global_state["pc"] == 144:
+        #     print(...)
         if opcode == "INVALID":
             return
         elif opcode == "ASSERTFAIL":
@@ -1391,7 +1391,7 @@ class EVMInterpreter:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
         if (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
-            print(opcode)
+            # print(opcode)
             update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars)
         elif opcode in pass_opcode:
             update_pass(node_stack, opcode)
@@ -1399,12 +1399,12 @@ class EVMInterpreter:
             update_graph_block(self.graph, node_stack, block_related_value, global_state["currentNumber"], False)
         elif opcode in msg_opcode:
             update_graph_msg(self.graph, node_stack, opcode, global_state)
-        print("stack: ")
-        print(stack)
-        print("node_stack: ")
-        print(node_stack)
-        if len(stack) != len(node_stack):
-            print("node_stack is wrong" + str(opcode) + str(global_state["pc"]))
+        # print("stack: ")
+        # print(stack)
+        # print("node_stack: ")
+        # print(node_stack)
+        # if len(stack) != len(node_stack):
+        #     print("node_stack is wrong" + str(opcode) + str(global_state["pc"]))
 
     def _get_init_global_state(self,path_conditions_and_vars):
         global_state = {"balance": {}, "pc": 0}
