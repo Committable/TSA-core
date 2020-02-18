@@ -39,6 +39,7 @@ class VariableNode(Node):
         self.name = name
         self.value = value
 
+
     # def __str__(self):
     #     return self.name
 
@@ -53,7 +54,7 @@ class StateNode(VariableNode):
             self.position = -1
 
     def __str__(self):
-        return "StateNode " + self.name
+        return "StateNode " + str(self.name)
 
 
 class ConstNode(VariableNode):
@@ -139,9 +140,11 @@ class XGraph:
 
     def __init__(self):
         self.graph = nx.DiGraph()
+        self.count = 0
 
     def addNode(self, nodeId):
-        self.graph.add_node(nodeId)
+        self.count += 1
+        self.graph.add_node(nodeId, count=self.count)
 
     def addEdges(self, edgeList, edgeType):
         self.graph.add_edges_from(edgeList, edgeType=edgeType)

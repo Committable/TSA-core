@@ -1100,11 +1100,12 @@ class EVMInterpreter:
                 stored_address = stack.pop(0)
                 stored_value = stack.pop(0)
                 if isReal(stored_address):
-                    # note that the stored_value could be unknown
+                    # if stored_address in global_state["Ia"]:
                     global_state["Ia"][stored_address] = stored_value
                 else:
                     # note that the stored_value could be unknown
                     global_state["Ia"][str(stored_address)] = stored_value
+                update_graph_sstore(self.graph, node_stack, stored_address, global_state, path_conditions_and_vars)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "JUMP":

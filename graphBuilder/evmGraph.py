@@ -99,20 +99,22 @@ def update_graph_mload(graph, address, current_miu_i, mem, node_stack, new_var, 
         node_value = node_mem[address]
         node_stack.insert(0, node_value)
     else:
-        node_stack.insert(0, 0)
+        temp_new_selfDefinedNode = SelfDefinedNode("MLOAD", 0, False)
+        node_stack.insert(0, temp_new_selfDefinedNode)
+        new_selfDefinedNode = SelfDefinedNode("MLOAD", new_var, False)
         if isReal(address):
-            node_mem[address] = new_var
+            node_mem[address] = new_selfDefinedNode
         else:
-            node_mem[str(address)] = new_var
+            node_mem[str(address)] = new_selfDefinedNode
 
 
 def update_graph_mstore(graph, stored_address, stored_value, current_miu_i, node_mem, node_stack):
     node_stored_address = node_stack.pop(0)
     node_stored_value = node_stack.pop(0)
     if isAllReal(stored_address, current_miu_i):
-        node_mem[stored_address] = stored_value
+        node_mem[stored_address] = node_stored_value
     else:
-        node_mem[str(stored_address)] = stored_value
+        node_mem[str(stored_address)] = node_stored_value
 
 
 def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, new_var):
@@ -127,7 +129,7 @@ def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state
         else:
             node_new_var = StateNode("Ia", new_var_name, new_var, position, False)
             graph.addNode(node_new_var)
-            node_stack.insert(0, new_var)
+            node_stack.insert(0, node_new_var)
             if isReal(position):
                 global_state["pos_to_node"][position] = node_new_var
             else:
@@ -142,15 +144,23 @@ def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state
 def update_graph_sstore(graph, node_stack, stored_address, global_state, path_conditions_and_vars):
     node_stored_address = node_stack.pop(0)
     node_stored_value = node_stack.pop(0)
+
     if isReal(stored_address):
-        global_state["pos_to_node"][stored_address] = node_stored_value
+        if not stored_address in global_state['pos_to_node']:
+            node_new_var = StateNode("Ia", global_state["Ia"][stored_address], node_stored_value, stored_address, False)
+            graph.addNode(node_new_var)
+            global_state["pos_to_node"][stored_address] = node_new_var
     else:
-        global_state["pos_to_node"][str(stored_address)] = node_stored_value
+        if not str(stored_address) in global_state['pos_to_node']:
+            node_new_var = StateNode("Ia", global_state["Ia"][str(stored_address)], node_stored_value, str(stored_address), False)
+            graph.addNode(node_new_var)
+            global_state["pos_to_node"][str(stored_address)] = node_new_var
+
     arguments = [node_stored_address, node_stored_value]
     sstore_node = InstructionNode("SSTORE", arguments, global_state["pc"], path_conditions_and_vars["path_condition"],
                                   False)
     graph.addNode(sstore_node)
-    edges = [(node_stored_value, sstore_node)]
+    edges = [(node_stored_value, sstore_node), (sstore_node, global_state['pos_to_node'][stored_address])]
     edgeType = FlowEdge(sstore_node)
     graph.addEdges(edges, edgeType)
     controlEdge = ControlEdge(path_conditions_and_vars["path_condition"])
@@ -215,8 +225,12 @@ def update_call(graph, node_stack, global_state, path_conditions_and_vars):
                  node_start_data_output, node_size_data_ouput]
     call_node = InstructionNode("CALL", arguments, global_state["pc"], path_conditions_and_vars["path_condition"],
                                 False)
+    edgeType = FlowEdge(call_node)
 
     graph.addNode(call_node)
+    graph.addEdgeList(arguments, call_node, edgeType)
+    controlEdge = ControlEdge(path_conditions_and_vars["path_condition"])
+    graph.addEdgeList(path_conditions_and_vars["path_condition_node"], call_node, controlEdge)
 
 
 def update_callcode(graph, node_stack, global_state, path_conditions_and_vars ):
@@ -233,6 +247,8 @@ def update_callcode(graph, node_stack, global_state, path_conditions_and_vars ):
     callcode_node = InstructionNode("CALLCODE", arguments, global_state["pc"],
                                     path_conditions_and_vars["path_condition"], False)
     graph.addNode(callcode_node)
+    edgeType = FlowEdge(callcode_node)
+    graph.addEdgeList(arguments, callcode_node, edgeType)
 
 
 def update_delegatecall(graph, node_stack, global_state, path_conditions_and_vars):
@@ -250,7 +266,8 @@ def update_delegatecall(graph, node_stack, global_state, path_conditions_and_var
                                         path_conditions_and_vars["path_condition"], False)
 
     graph.addNode(delegatecall_node)
-
+    edgeType = FlowEdge(delegatecall_node)
+    graph.addEdgeList(arguments, delegatecall_node, edgeType)
 
 def update_suicide(graph, node_stack, global_state, path_conditions_and_vars):
     node_recipient = node_stack.pop(0)
@@ -259,6 +276,8 @@ def update_suicide(graph, node_stack, global_state, path_conditions_and_vars):
                                    path_conditions_and_vars["path_condition"], False)
 
     graph.addNode(suicide_node)
+    edgeType = FlowEdge(suicide_node)
+    graph.addEdgeList(arguments, suicide_node, edgeType)
 
 
 def update_graph_inputdata(graph, node_stack, new_var, new_var_name):
