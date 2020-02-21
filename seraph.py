@@ -230,11 +230,11 @@ def analyze_solidity_code():
 
         interpreter = EVMInterpreter(env)
         interpreter.sym_exec()
-
+        node_labels = nx.get_node_attributes(interpreter.graph.graph, 'count')
         options = {
             'node_size': 1000,
             'width': 3,
-            'with_labels': True
+            'with_labels': node_labels
         }
         pos = nx.nx_agraph.graphviz_layout(interpreter.graph.graph)
         nx.draw(interpreter.graph.graph, pos=pos)

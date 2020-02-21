@@ -763,7 +763,7 @@ class EVMInterpreter:
                     new_var = BitVec(new_var_name, 256)
                     path_conditions_and_vars[new_var_name] = new_var
                 stack.insert(0, new_var)
-                update_graph_inputdata(self.graph, node_stack, new_var, new_var_name)
+                update_graph_inputdata(self.graph, node_stack, new_var, new_var_name, global_state)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLDATASIZE":
@@ -986,7 +986,7 @@ class EVMInterpreter:
                         mem[str(address)] = new_var
                         # node_mem[str(address)] = new_var
                 global_state["miu_i"] = current_miu_i
-                update_graph_mload(self.graph, address, current_miu_i, mem, node_stack, new_var, node_mem)
+                update_graph_mload(self.graph, address, current_miu_i, mem, node_stack, new_var, node_mem, global_state)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MSTORE":
@@ -1146,7 +1146,7 @@ class EVMInterpreter:
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
-                update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, branch_expression)
+                update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, branch_expression, global_state)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "PC":
@@ -1177,7 +1177,7 @@ class EVMInterpreter:
             global_state["pc"] = global_state["pc"] + 1 + position
             pushed_value = int(instr_parts[1], 16)
             stack.insert(0, pushed_value)
-            update_graph_const(self.graph, node_stack, pushed_value)
+            update_graph_const(self.graph, node_stack, pushed_value, global_state)
         #
         #  80s: Duplication Operations
         #
@@ -1393,11 +1393,11 @@ class EVMInterpreter:
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
         if (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
             # print(opcode)
-            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars)
+            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state)
         elif opcode in pass_opcode:
-            update_pass(node_stack, opcode)
+            update_pass(node_stack, opcode, global_state)
         elif opcode in block_opcode:
-            update_graph_block(self.graph, node_stack, block_related_value, global_state["currentNumber"], False)
+            update_graph_block(self.graph, node_stack, opcode, block_related_value, global_state["currentNumber"], global_state)
         elif opcode in msg_opcode:
             update_graph_msg(self.graph, node_stack, opcode, global_state)
         # print("stack: ")
@@ -1470,6 +1470,7 @@ class EVMInterpreter:
 
         # the state of the current current contract
         global_state["Ia"] = {}
+        global_state["nodeID"] = 0
         global_state["pos_to_node"] = {}
         global_state["miu_i"] = 0
         global_state["value"] = deposited_value

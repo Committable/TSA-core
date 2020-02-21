@@ -1,10 +1,11 @@
 import networkx as nx
 
 
+
 class Node:
 
-    def __init__(self, isStartNode):
-        self.isStartNode = isStartNode
+    def __init__(self, nodeID):
+        self.nodeID = nodeID
 
     def getFromNodes(self, graph):
         return list(graph.perdecessors(self))
@@ -15,15 +16,12 @@ class Node:
 
 class InstructionNode(Node):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint, isStartNode):
-        super().__init__(isStartNode)
+    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
+        super().__init__(nodeID)
         self.name = instruction_name
         self.arguments = arguments
         self.global_pc = global_pc
         self.constraint = constraint
-
-    def __str__(self):
-        return "InstructionNode " + self.name
 
     def getConstraints(self):
         return self.constraint
@@ -32,90 +30,101 @@ class InstructionNode(Node):
         return self.arguments
 
 
+class MessageCallNode(InstructionNode):
+
+    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
+        super().__init__(instruction_name, arguments, global_pc, constraint, nodeID)
+
+    def __str__(self):
+        return "MessageCallNode " + self.name + " " + str(self.nodeID)
+
+
+class StateOPNode(InstructionNode):
+
+    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
+        super().__init__(instruction_name, arguments, global_pc, constraint, nodeID)
+
+    def __str__(self):
+        return "StateOPNode " + self.name + " " + str(self.nodeID)
+
+
 class VariableNode(Node):
 
-    def __init__(self, name, value, isStartNode):
-        super().__init__(isStartNode)
+    def __init__(self, name, value, nodeID):
+        super().__init__(nodeID)
         self.name = name
         self.value = value
 
 
-    # def __str__(self):
-    #     return self.name
-
-
 class StateNode(VariableNode):
 
-    def __init__(self, source, name, value, position, isStartNode):
-        super().__init__(name, value, isStartNode)
+    def __init__(self, source, name, value, position, nodeID):
+        super().__init__(name, value, nodeID)
         if source == "Ia":
             self.position = position
         else:
             self.position = -1
 
     def __str__(self):
-        return "StateNode " + str(self.name)
+        return "StateNode " + str(self.name) + " " + str(self.nodeID)
 
 
 class ConstNode(VariableNode):
 
-    def __init__(self, name, value, isStartNode):
-        super().__init__(name, value, isStartNode)
+    def __init__(self, name, value, nodeID):
+        super().__init__(name, value, nodeID)
 
     def __str__(self):
-        return "ConstNode " + str(self.value)
+        return "ConstNode " + str(self.value) + " " + str(self.nodeID)
 
 
 class InputDataNode(VariableNode):
 
-    def __init__(self, name, value, isStartNode):
-        super().__init__(name, value, isStartNode)
+    def __init__(self, name, value, nodeID):
+        super().__init__(name, value, nodeID)
 
     def __str__(self):
-        return "InputDataNode " + self.name
+        return "InputDataNode " + self.name + " " + str(self.nodeID)
 
 
 class BlockDataNode(VariableNode):
 
-    def __init__(self, name, value, blockNumber, isStartNode):
-        super().__init__(name, value, isStartNode)
+    def __init__(self, name, value, blockNumber, nodeID):
+        super().__init__(name, value, nodeID)
         if blockNumber > 0:
             self.blockNumber = blockNumber
         else:
             self.blockNumber = -1
 
     def __str__(self):
-        return "BlockDataNode " + self.name
+        return "BlockDataNode " + self.name + " " + str(self.nodeID)
 
 
 class MsgDataNode(VariableNode):
 
-    def __init__(self, name, value, isStartNode):
-        super().__init__(name, value, isStartNode)
+    def __init__(self, name, value, nodeID):
+        super().__init__(name, value, nodeID)
 
     def __str__(self):
-        return "MsgDataNode " + self.name
+        return "MsgDataNode " + self.name + " " + str(self.nodeID)
 
 
 class SelfDefinedNode(VariableNode):
 
-    def __init__(self, name, value, isStartNode):
-        super().__init__(name, value, isStartNode)
+    def __init__(self, name, value, nodeID):
+        super().__init__(name, value, nodeID)
 
     def __str__(self):
-        return "SelfDefinedNode " + self.name
+        return "SelfDefinedNode " + self.name + " " + str(self.nodeID)
 
 
-class ArithNode(Node):
+class ArithNode(InstructionNode):
 
-    def __init__(self, operation, operand, expression, isStartNode):
-        super().__init__(isStartNode)
-        self.operation = operation
-        self.operand = operand
-        self.expression = expression
+    def __init__(self, operation, operand, global_pc, expression, nodeID):
+        super().__init__(operation, operand, global_pc, expression, nodeID)
 
     def __str__(self):
-        return "ArithNode " + self.operation
+        return "ArithNode " + self.name + " " + str(self.nodeID)
 
 
 class FlowEdge:
