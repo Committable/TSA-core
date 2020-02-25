@@ -16,6 +16,7 @@ class BasicBlock:
         # self.jump_tables = []
         self.jump_targets = [] #all true target for br_ indexed by array index
         self.type = None
+        self.branch_id = []
 
     def set_jump_to(self, to):
         self.jump_to.append(to)

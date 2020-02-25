@@ -3,6 +3,7 @@ class Generator:
         self.countstack = 0
         self.countdata = 0
         self.count = 0
+        self.branch = 0
 
     def gen_stack_var(self):
         self.countstack += 1
@@ -75,3 +76,7 @@ class Generator:
     def gen_func_call(self, addr):
         self.count += 1
         return "call_"+str(addr)+"_"+str(self.count)
+
+    def gen_branch_id(self):
+        self.branch += 1
+        return "branch_"+str(self.branch)

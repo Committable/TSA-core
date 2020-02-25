@@ -48,6 +48,9 @@ class EVMInterpreter:
         sha3_list = params.sha3_list
         path_conditions_and_vars = params.path_conditions_and_vars
         calls = params.calls
+        control_edge_list = params.control_edge_list
+        flow_edge_list = params.flow_edge_list
+
 
         if block < 0:
             log.debug("UNKNOWN JUMP ADDRESS. TERMINATING THIS PATH")
@@ -87,9 +90,13 @@ class EVMInterpreter:
 
         # Go to next Basic Block(s)
         if self.runtime.jump_type[block] == "terminal" or depth > interpreter.params.DEPTH_LIMIT:
-            global total_no_of_paths
-            total_no_of_paths += 1
-
+            # global total_no_of_paths
+            # total_no_of_paths += 1
+            branch_id = self.gen.gen_branch_id()
+            control_edge_list = params.control_edge_list
+            flow_edge_list = params.flow_edge_list
+            self.graph.addBranchEdge(flow_edge_list, "flowEdge", branch_id)
+            self.graph.addBranchEdge(control_edge_list, "controlEdge", branch_id)
             log.debug("TERMINATING A PATH ...")
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
@@ -169,7 +176,7 @@ class EVMInterpreter:
             self.visited_edges.update({current_edge: updated_count_number})
             raise Exception('Unknown Jump-Type')
 
-    def _sym_exec_ins(self, params, block, instr, func_call):
+    def _sym_exec_ins(self, params, block, instr,func_call):
 
         stack = params.stack
         node_stack = params.node_stack
@@ -181,6 +188,8 @@ class EVMInterpreter:
         sha3_list = params.sha3_list
         path_conditions_and_vars = params.path_conditions_and_vars
         calls = params.calls
+        control_edge_list = params.control_edge_list
+        flow_edge_list = params.flow_edge_list
 
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[0]
@@ -1090,7 +1099,7 @@ class EVMInterpreter:
                             global_state["Ia"][position] = new_var
                         else:
                             global_state["Ia"][str(position)] = new_var
-                update_graph_sload(self.graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, new_var)
+                update_graph_sload(self.graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, new_var, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
 
@@ -1105,7 +1114,7 @@ class EVMInterpreter:
                 else:
                     # note that the stored_value could be unknown
                     global_state["Ia"][str(stored_address)] = stored_value
-                update_graph_sstore(self.graph, node_stack, stored_address, global_state, path_conditions_and_vars)
+                update_graph_sstore(self.graph, node_stack, stored_address, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "JUMP":
@@ -1146,7 +1155,8 @@ class EVMInterpreter:
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
-                update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, branch_expression, global_state)
+                update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, branch_expression,
+                             global_state, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "PC":
@@ -1295,7 +1305,7 @@ class EVMInterpreter:
                         path_conditions_and_vars["path_condition"].append(constraint)
                         new_balance = (old_balance + transfer_amount)
                         global_state["balance"][new_address_name] = new_balance
-                update_call(self.graph, node_stack, global_state, path_conditions_and_vars)
+                update_call(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLCODE":
@@ -1338,7 +1348,7 @@ class EVMInterpreter:
                     self.solver.add(is_enough_fund)
                     path_conditions_and_vars["path_condition"].append(is_enough_fund)
                     last_idx = len(path_conditions_and_vars["path_condition"]) - 1
-                update_callcode(self.graph, node_stack, global_state, path_conditions_and_vars)
+                update_callcode(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
 
             else:
                 raise ValueError('STACK underflow')
@@ -1354,7 +1364,7 @@ class EVMInterpreter:
                 new_var_name = self.gen.gen_arbitrary_var()
                 new_var = BitVec(new_var_name, 256)
                 stack.insert(0, new_var)
-                update_delegatecall(self.graph, node_stack, global_state, path_conditions_and_vars)
+                update_delegatecall(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
 
             else:
                 raise ValueError('STACK underflow')
@@ -1386,14 +1396,14 @@ class EVMInterpreter:
             global_state["balance"][new_address_name] = new_balance
             # TODO
 
-            update_suicide(self.graph, node_stack, global_state, path_conditions_and_vars)
+            update_suicide(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             return
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
         if (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
             # print(opcode)
-            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state)
+            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state, control_edge_list, flow_edge_list)
         elif opcode in pass_opcode:
             update_pass(node_stack, opcode, global_state)
         elif opcode in block_opcode:
@@ -1491,6 +1501,8 @@ class Parameter:
         attr_defaults = {
             "stack": [],
             "node_stack": [],
+            "control_edge_list": [],
+            "flow_edge_list": [],
             "calls": [],
             "memory": [],
             "node_memory": [],

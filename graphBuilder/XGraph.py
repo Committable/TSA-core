@@ -1,7 +1,6 @@
 import networkx as nx
 
 
-
 class Node:
 
     def __init__(self, nodeID):
@@ -155,10 +154,18 @@ class XGraph:
         self.count += 1
         self.graph.add_node(nodeId, count=self.count)
 
-    def addEdges(self, edgeList, edgeType):
-        self.graph.add_edges_from(edgeList, edgeType=edgeType)
+    def addEdges(self, edgeList, edgeType, branch):
+        branchList = [branch]
+        self.graph.add_edges_from(edgeList, label=edgeType, branchList=branchList)
 
     def addEdgeList(self, fromList, toNode, edgeType):
         for fromNode in fromList:
             itemEdge = [(fromNode, toNode)]
-            self.graph.add_edges_from(itemEdge, edgeType=edgeType)
+            self.graph.add_edges_from(itemEdge, label=edgeType)
+
+    def addBranchEdge(self, edgeList, edgeType, branch):
+        for edge in edgeList:
+            if self.graph.has_edge(edge[0], edge[1]) and self.graph[edge[0]][edge[1]]["label"] == edgeType:
+                self.graph[edge[0]][edge[1]]["branchList"].append(branch)
+            else:
+                self.graph.add_edge(edge[0], edge[1], label=edgeType, branchList=[branch])
