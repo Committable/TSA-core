@@ -15,7 +15,7 @@ two_operand_opcode = ("ADD", "MUL", "SUB", "DIV", "SDIV", "SMOD", "MOD", "EQ",
                       "EXP", "SIGNEXTEND", "LT", "GT", "SLT", "SGT",
                       "AND", "OR", "XOR", "BYTE", "SHA3")
 
-overflow_related  = ("ADD", "MUL", "SUB", "EXP")
+overflow_related = ("ADD", "MUL", "SUB", "EXP")
 
 three_operand_opcode = ("ADDMOD", "MULMOD")
 
@@ -77,7 +77,8 @@ def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_a
         node_stack.insert(0, computedNode)
 
     pushEdgesToNode(operand, computedNode, flow_edge_list)
-    pushEdgesToNode(path_conditions_and_vars["path_condition_node"], computedNode, control_edge_list)
+    if opcode in overflow_related:
+        pushEdgesToNode(path_conditions_and_vars["path_condition_node"], computedNode, control_edge_list)
 
 
 def update_pass(node_stack, opcode, global_state):
@@ -142,8 +143,8 @@ def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state
             pos_node = global_state["pos_to_node"][str(position)]
             node_stack.insert(0, pos_node)
         else:
-            global_state["nodeID"] += 1
-            node_new_var = StateNode("Ia", new_var_name, new_var, position, global_state["nodeID"])
+            # global_state["nodeID"] += 1
+            node_new_var = StateNode("Ia", new_var_name, new_var, position, global_state["pc"])
             graph.addNode(node_new_var)
             node_stack.insert(0, node_new_var)
             if isReal(position):
@@ -186,8 +187,8 @@ def update_graph_sstore(graph, node_stack, stored_address, global_state, path_co
     edges = [(node_stored_value, sstore_node), (sstore_node, global_state['pos_to_node'][stored_address])]
     # edgeType = FlowEdge(sstore_node)
     # graph.addEdges(edges, edgeType)
-    # removeEdge(sstore_node, flow_edge_list)
-    # removeEdge(sstore_node, control_edge_list)
+    removeEdge(sstore_node, flow_edge_list)
+    removeEdge(sstore_node, control_edge_list)
     pushEdges(edges, flow_edge_list)
     pushEdgesToNode(path_conditions_and_vars["path_condition_node"], sstore_node, control_edge_list)
     # controlEdge = ControlEdge(path_conditions_and_vars["path_condition"])
@@ -200,7 +201,7 @@ def update_jumpi(graph, node_stack, block, flag, branch_expression, global_state
     branch_expression_node = ""
     negated_branch_expression_node = ""
     if not isReal(flag):
-        global_state["nodeID"] += 1
+        # global_state["nodeID"] += 1
         compare_node = ConstNode("", 0, global_state["nodeID"])
         operand = [node_flag, compare_node]
         # global_state["nodeID"] += 1
@@ -256,13 +257,13 @@ def update_call(graph, node_stack, global_state, path_conditions_and_vars, contr
 
     arguments = [node_outgas, node_recipient, node_transfer_amount, node_start_data_input, node_size_data_input,
                  node_start_data_output, node_size_data_ouput]
-    # global_state["nodeID"] += 1
+    # global_state["nodeID"] += 1call
     call_node = MessageCallNode("CALL", arguments, global_state["pc"], path_conditions_and_vars["path_condition"],
                                 global_state["pc"])
-    edgeType = FlowEdge(call_node)
+    # edgeType = FlowEdge(call_node)
 
     graph.addNode(call_node)
-    # graph.addEdgeList(arguments, call_node, edgeType)
+    # graph.addEdgeList(arguments, _node, edgeType)
     # controlEdge = ControlEdge(path_conditions_and_vars["path_condition"])
     # graph.addEdgeList(path_conditions_and_vars["path_condition_node"], call_node, controlEdge)
     pushEdgesToNode(arguments, call_node, flow_edge_list)
@@ -336,6 +337,15 @@ def update_graph_inputdata(graph, node_stack, new_var, new_var_name, global_stat
     node_stack.insert(0, node_new_var)
 
 
+def update_graph_balance(graph, node_stack, global_state, flow_edge_list):
+    node_address = node_stack.pop(0)
+    node_balance = SelfDefinedNode("BALANCE", node_address, global_state["pc"])
+    graph.addNode(node_balance)
+    node_stack.insert(0, node_balance)
+    pushEdge(node_address, node_balance, flow_edge_list)
+
+
+
 def pushEdgesToNode(fromNodeList, toNode, edgelist):
     for fromNode in fromNodeList:
         edgelist.append((fromNode, toNode))
@@ -352,6 +362,6 @@ def pushEdges(nodesList, edgelist):
 
 def removeEdge(toNode, edgelist):
     for edge in edgelist:
-        if toNode == edge[2]:
+        if toNode == edge[1]:
             del edge
 

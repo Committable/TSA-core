@@ -15,7 +15,7 @@ class Generator:
 
     def gen_data_var(self, position):
         self.countdata += 1
-        return "Id_" + str(self.countdata)
+        return "Id_" + str(self.countdata) + str(position)
 
     def gen_data_size(self):
         return "Id_size"

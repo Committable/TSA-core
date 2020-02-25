@@ -195,7 +195,7 @@ class EVMInterpreter:
         opcode = instr_parts[0]
         # instr_opcode = opcodes.opcode_by_name(opcode)
         # print(opcode)
-        # if global_state["pc"] == 144:
+        # if global_state["pc"] == 478:
         #     print(...)
         if opcode == "INVALID":
             return
@@ -743,6 +743,8 @@ class EVMInterpreter:
                     hashed_address = str(address)
                 global_state["balance"][hashed_address] = new_var
                 stack.insert(0, new_var)
+
+                update_graph_balance(self.graph, node_stack, global_state, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLER":  # get caller address
