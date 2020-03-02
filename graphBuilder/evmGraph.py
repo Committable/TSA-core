@@ -95,7 +95,7 @@ def update_graph_msg(graph, node_stack, opcode, global_state):
     if opcode == "CALLER":
         msgNode = MsgDataNode(opcode, global_state["sender_address"], global_state["pc"])
     else:
-        msgNode = MsgDataNode(opcode, global_state["sender_address"], global_state["pc"])
+        msgNode = MsgDataNode(opcode, global_state["value"], global_state["pc"])
     graph.addNode(msgNode)
     node_stack.insert(0, msgNode)
 
@@ -184,7 +184,10 @@ def update_graph_sstore(graph, node_stack, stored_address, global_state, path_co
     sstore_node = StateOPNode("SSTORE", arguments, global_state["pc"], path_conditions_and_vars["path_condition"],
                               global_state["pc"])
     graph.addNode(sstore_node)
-    edges = [(node_stored_value, sstore_node), (sstore_node, global_state['pos_to_node'][stored_address])]
+    if isReal(stored_address):
+        edges = [(node_stored_value, sstore_node), (sstore_node, global_state['pos_to_node'][stored_address])]
+    else:
+        edges = [(node_stored_value, sstore_node), (sstore_node, global_state['pos_to_node'][str(stored_address)])]
     # edgeType = FlowEdge(sstore_node)
     # graph.addEdges(edges, edgeType)
     removeEdge(sstore_node, flow_edge_list)

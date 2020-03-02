@@ -90,10 +90,10 @@ class BlockDataNode(VariableNode):
 
     def __init__(self, name, value, blockNumber, nodeID):
         super().__init__(name, value, nodeID)
-        if blockNumber > 0:
-            self.blockNumber = blockNumber
-        else:
-            self.blockNumber = -1
+        # if blockNumber > 0:
+        self.blockNumber = blockNumber
+        # else:
+        #     self.blockNumber = -1
 
     def __str__(self):
         return "BlockDataNode " + self.name + " " + str(self.nodeID)
@@ -150,6 +150,7 @@ class XGraph:
         self.graph = nx.DiGraph()
         self.count = 0
 
+    # The function for construct the graph for the contract
     def addNode(self, nodeId):
         self.count += 1
         self.graph.add_node(nodeId, count=self.count)
@@ -169,3 +170,5 @@ class XGraph:
                 self.graph[edge[0]][edge[1]]["branchList"].append(branch)
             else:
                 self.graph.add_edge(edge[0], edge[1], label=edgeType, branchList=[branch])
+
+    # For Checker
