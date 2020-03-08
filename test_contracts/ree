@@ -2,7 +2,7 @@ pragma solidity ^0.4.19;
 contract Ownable {
   address public owner;
   uint count;
-  function Ownable() public {
+  function Ownab() public {
     owner = msg.sender;
   }
   modifier onlyOwner() {
@@ -10,11 +10,12 @@ contract Ownable {
     _;
   }
 
+
   function changeCount(uint newBase, uint newExp) public {
     count = newBase**newExp;
   }
 
-  function transfer() public onlyOwner returns(bool){
+  function transfer() public returns(bool){
     owner.call.value(this.balance)();
   }
 }

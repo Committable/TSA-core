@@ -149,11 +149,44 @@ class XGraph:
     def __init__(self):
         self.graph = nx.DiGraph()
         self.count = 0
+        self.overflow_related = ('ADD', 'SUB', 'MUL', 'EXP')
+        self.instruction_nodes = []
+        self.message_call_nodes = []
+        self.msg_data_nodes = []
+        self.arith_nodes = []
+        self.input_data_nodes = []
+        self.block_data_nodes = []
+        self.state_op_nodes = []
+        self.call_nodes = []
+        self.msg_sender_nodes = []
+        self.state_nodes = []
+        self.sstore_nodes = []
 
     # The function for construct the graph for the contract
     def addNode(self, nodeId):
         self.count += 1
         self.graph.add_node(nodeId, count=self.count)
+        if type(nodeId) == MessageCallNode:
+            self.message_call_nodes.append(nodeId)
+            if nodeId.name == "CALL":
+                self.call_nodes.append(nodeId)
+        elif type(nodeId) == StateOPNode:
+            self.state_op_nodes.append(nodeId)
+            if nodeId.name == "SSTORE":
+                self.sstore_nodes.append(nodeId)
+        elif type(nodeId) == InputDataNode:
+            self.input_data_nodes.append(nodeId)
+        elif type(nodeId) == BlockDataNode:
+            self.block_data_nodes.append(nodeId)
+        elif type(nodeId) == MsgDataNode:
+            self.msg_data_nodes.append(nodeId)
+            if nodeId.name == "CALLER":
+                self.msg_sender_nodes.append(nodeId)
+        elif type(nodeId) == StateNode:
+            self.state_nodes.append(nodeId)
+        elif type(nodeId) == ArithNode and nodeId.name in self.overflow_related:
+            self.arith_nodes.append(nodeId)
+
 
     def addEdges(self, edgeList, edgeType, branch):
         branchList = [branch]
@@ -170,5 +203,6 @@ class XGraph:
                 self.graph[edge[0]][edge[1]]["branchList"].append(branch)
             else:
                 self.graph.add_edge(edge[0], edge[1], label=edgeType, branchList=[branch])
+
 
     # For Checker

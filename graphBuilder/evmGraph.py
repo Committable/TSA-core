@@ -73,7 +73,7 @@ def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_a
         edges = [(node_first, computedNode), (node_second, computedNode), (node_third, computedNode)]
         edgeType = FlowEdge(computedNode)
         graph.addNode(computedNode)
-        graph.addEdges(edges, edgeType)
+        # graph.addEdges(edges, edgeType)
         node_stack.insert(0, computedNode)
 
     pushEdgesToNode(operand, computedNode, flow_edge_list)
@@ -143,14 +143,18 @@ def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state
             pos_node = global_state["pos_to_node"][str(position)]
             node_stack.insert(0, pos_node)
         else:
-            # global_state["nodeID"] += 1
-            node_new_var = StateNode("Ia", new_var_name, new_var, position, global_state["pc"])
-            graph.addNode(node_new_var)
-            node_stack.insert(0, node_new_var)
-            if isReal(position):
-                global_state["pos_to_node"][position] = node_new_var
+            check_result, state_position, state_node = check_state_node(graph, position)
+            if check_result:
+                node_stack.insert(0, state_position)
+                global_state["pos_to_node"][position] = state_node
             else:
-                global_state["pos_to_node"][str(position)] = node_new_var
+                node_new_var = StateNode("Ia", new_var_name, new_var, position, global_state["pc"])
+                graph.addNode(node_new_var)
+                node_stack.insert(0, node_new_var)
+                if isReal(position):
+                    global_state["pos_to_node"][position] = node_new_var
+                else:
+                    global_state["pos_to_node"][str(position)] = node_new_var
     arguments = [node_position]
     # global_state["nodeID"] += 1
     sload_node = StateOPNode("SLOAD", arguments, global_state["pc"], path_conditions_and_vars["path_condition"],
@@ -348,7 +352,6 @@ def update_graph_balance(graph, node_stack, global_state, flow_edge_list):
     pushEdge(node_address, node_balance, flow_edge_list)
 
 
-
 def pushEdgesToNode(fromNodeList, toNode, edgelist):
     for fromNode in fromNodeList:
         edgelist.append((fromNode, toNode))
@@ -368,3 +371,13 @@ def removeEdge(toNode, edgelist):
         if toNode == edge[1]:
             del edge
 
+
+def check_state_node(graph, position):
+    if isReal(position):
+        state_position = position
+    else:
+        state_position = str(position)
+    for state_node in graph.state_nodes:
+        if state_node.position == state_position:
+            return True, state_position, state_node
+    return False, state_position, 0

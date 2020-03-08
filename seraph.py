@@ -21,7 +21,10 @@ from inputDealer.inputHelper import InputHelper
 import networkx as nx
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_pydot import write_dot
-
+from checker.algorithm import *
+from checker.overflow import *
+from checker.reentrancy import *
+from checker.tod import *
 def main():
     global args
     parser = argparse.ArgumentParser(prog="seraph")
@@ -230,6 +233,12 @@ def analyze_solidity_code():
 
         interpreter = EVMInterpreter(env)
         interpreter.sym_exec()
+        # overflowChecker = Overflow(interpreter.graph)
+        # overflowChecker.check()
+        # reentrancyChecker = Reentrancy(interpreter.graph)
+        # reentrancyChecker.check()
+        todChecker = TOD(interpreter.graph)
+        todChecker.check()
         node_labels = nx.get_node_attributes(interpreter.graph.graph, 'count')
         options = {
             'node_size': 1000,

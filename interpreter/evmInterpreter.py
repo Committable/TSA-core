@@ -96,7 +96,7 @@ class EVMInterpreter:
             control_edge_list = params.control_edge_list
             flow_edge_list = params.flow_edge_list
             self.graph.addBranchEdge(flow_edge_list, "flowEdge", branch_id)
-            # self.graph.addBranchEdge(control_edge_list, "controlEdge", branch_id)
+            self.graph.addBranchEdge(control_edge_list, "controlEdge", branch_id)
             log.debug("TERMINATING A PATH ...")
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
