@@ -59,6 +59,7 @@ class StateNode(VariableNode):
 
     def __init__(self, source, name, value, position, nodeID):
         super().__init__(name, value, nodeID)
+        self.source = source
         if source == "Ia":
             self.position = position
         else:
@@ -117,13 +118,35 @@ class SelfDefinedNode(VariableNode):
         return "SelfDefinedNode " + self.name + " " + str(self.nodeID)
 
 
+class ReturnDataNode(VariableNode):
+
+    def __init__(self, name, value, nodeID):
+        super().__init__(name, value, nodeID)
+
+    def __str__(self):
+        return "ReturnDataNode " + self.name + " " + str(self.nodeID)
+
+
+class TerminalNode(InstructionNode):
+
+    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
+        super().__init__(instruction_name, arguments, global_pc, constraint, nodeID)
+
+    def __str__(self):
+        return "TerminalNode " + self.name + " " + str(self.nodeID)
+
 class ArithNode(InstructionNode):
 
-    def __init__(self, operation, operand, global_pc, expression, nodeID):
-        super().__init__(operation, operand, global_pc, expression, nodeID)
+    def __init__(self, operation, operand, global_pc, constraint, expression, param, nodeID):
+        super().__init__(operation, operand, global_pc, constraint, nodeID)
+        self.expression = expression
+        self.params = param
 
     def __str__(self):
         return "ArithNode " + self.name + " " + str(self.nodeID)
+
+
+
 
 
 class FlowEdge:
@@ -161,6 +184,7 @@ class XGraph:
         self.msg_sender_nodes = []
         self.state_nodes = []
         self.sstore_nodes = []
+        self.sender_node = ""
 
     # The function for construct the graph for the contract
     def addNode(self, nodeId):
@@ -183,10 +207,12 @@ class XGraph:
             if nodeId.name == "CALLER":
                 self.msg_sender_nodes.append(nodeId)
         elif type(nodeId) == StateNode:
-            self.state_nodes.append(nodeId)
+            if nodeId.source == "Ia":
+                self.state_nodes.append(nodeId)
+            elif nodeId.source == "Is":
+                self.sender_node = nodeId
         elif type(nodeId) == ArithNode and nodeId.name in self.overflow_related:
             self.arith_nodes.append(nodeId)
-
 
     def addEdges(self, edgeList, edgeType, branch):
         branchList = [branch]
@@ -203,6 +229,3 @@ class XGraph:
                 self.graph[edge[0]][edge[1]]["branchList"].append(branch)
             else:
                 self.graph.add_edge(edge[0], edge[1], label=edgeType, branchList=[branch])
-
-
-    # For Checker

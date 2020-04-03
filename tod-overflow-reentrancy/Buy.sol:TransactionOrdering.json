@@ -1,0 +1,19 @@
+{
+ "vulnerabilities": {
+  "reentrancy": [], 
+  "prng_bug": [], 
+  "assertion_failure": [], 
+  "tod_bug": [], 
+  "dos_bug": [], 
+  "integer_overflow": [], 
+  "integer_underflow": [], 
+  "money_concurrency": [], 
+  "tod": [
+   "/home/yangzq18/Documents/merify/1221/seraph/dataset/114-tod/Buy.sol:29:13: Warning: Transaction-Ordering Dependency.\n            price = _price", 
+   "/home/yangzq18/Documents/merify/1221/seraph/dataset/114-tod/Buy.sol:22:13: Warning: Transaction-Ordering Dependency.\n            msg.sender.transfer(price)", 
+   "/home/yangzq18/Documents/merify/1221/seraph/dataset/114-tod/Buy.sol:21:12: Warning: Transaction-Ordering Dependency.\n        if(flag", 
+   "/home/yangzq18/Documents/merify/1221/seraph/dataset/114-tod/Buy.sol:30:13: Warning: Transaction-Ordering Dependency.\n            flag = true"
+  ]
+ }, 
+ "evm_code_coverage": "99.7"
+}

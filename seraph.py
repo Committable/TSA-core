@@ -11,10 +11,10 @@ import disassembler.params
 from disassembler import wasmConvention
 from interpreter.evmInterpreter import EVMInterpreter
 # from interpreter.wasmInterpreter import WASMInterpreter
-from interpreter.wasmInterpreter import WASMInterpreter
+# from interpreter.wasmInterpreter import WASMInterpreter
 from reporter.cfgPrinter import CFGPrinter
 from runtime.evmRuntime import EvmRuntime
-from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
+# from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
 
 from utils import run_command,compare_versions
 from inputDealer.inputHelper import InputHelper
@@ -25,6 +25,10 @@ from checker.algorithm import *
 from checker.overflow import *
 from checker.reentrancy import *
 from checker.tod import *
+from reporter.vulnerability import *
+from reporter.result import *
+import log
+
 def main():
     global args
     parser = argparse.ArgumentParser(prog="seraph")
@@ -68,7 +72,6 @@ def main():
     # parser.add_argument("-db", "--debug", help="Display debug information", action="store_true")
     args = parser.parse_args()
 
-    #根据输入参数配置运行相关变量
     if args.timeout:
         interpreter.params.TIMEOUT = args.timeout
     if args.global_timeout:
@@ -82,19 +85,15 @@ def main():
     if args.destpath:
         reporter.params.DEST_PATH = args.destpath
 
-    # 根据退出代码，返回运行的情况：
-    # 0表示正常退出
-    #todo:继续完善不同情况下退出代码
     exit_code = 0
 
-    #根据待分析的不同文件，进行不同的处理，主要是编译、反编译、符号执行、依赖分析
-    if args.evm:
-        if has_dependencies_installed(evm=True):
-            exit_code = analyze_evm_bytecode()
-    elif args.wasm:
-        if has_dependencies_installed():
-            exit_code = analyze_wasm_bytecode()
-    elif args.cpp:
+    # if args.evm:
+    #     if has_dependencies_installed(evm=True):
+    #         exit_code = analyze_evm_bytecode()
+    # elif args.wasm:
+    #     if has_dependencies_installed():
+    #         exit_code = analyze_wasm_bytecode()
+    if args.cpp:
         if has_dependencies_installed(emcc=True):
             exit_code = analyze_cpp_code()
     elif args.golang:
@@ -157,59 +156,59 @@ def has_dependencies_installed(evm=False, emcc=False, golang=False, solc=False):
 
     return True
 
-def analyze_evm_bytecode():
-    global args
+# def analyze_evm_bytecode():
+#     global args
+#
+#     helper = InputHelper(InputHelper.EVM_BYTECODE, source=args.source)
+#     inp = helper.get_inputs()[0]
+#
+#     env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'])
+#     env.build_runtime_env()
+#
+#     interpreter=EVMInterpreter(env)
+#     exit_code = interpreter.sym_exec()
+#     nx.draw(interpreter.graph.graph, with_labels=True)
+#     # output_graph = nx.nx_agraph.to_agraph(interpreter.graph)
+#     # print(output_graph)
+#     plt.savefig("path.png")
+#
+#
+#
+#     # helper.rm_tmp_files()
+#
+#     return exit_code
 
-    helper = InputHelper(InputHelper.EVM_BYTECODE, source=args.source)
-    inp = helper.get_inputs()[0]
 
-    env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'])
-    env.build_runtime_env()
-
-    interpreter=EVMInterpreter(env)
-    exit_code = interpreter.sym_exec()
-    nx.draw(interpreter.graph.graph, with_labels=True)
-    # output_graph = nx.nx_agraph.to_agraph(interpreter.graph)
-    # print(output_graph)
-    plt.savefig("path.png")
-
-
-
-    # helper.rm_tmp_files()
-
-    return exit_code
-
-
-def analyze_wasm_bytecode():
-    #TODO
-    global args
-
-    helper = InputHelper(InputHelper.WASM_BYTECODE, source=args.source)
-    inp = helper.get_inputs()[0]
-
-    runtime = WASMRuntime(inp["module"])
-    #print cfg if needed
-    cprinter = None
-    if args.cfg:
-        if args.onlyfunc:
-            func_name = args.onlyfunc[0]
-            for key in runtime.module.functions_name.keys():
-                if runtime.module.functions_name[key] == func_name:
-                    cprinter = CFGPrinter(runtime.store.funcs[key], func_name)
-            # cprinter = CFGPrinter(runtime.store.funcs[257], func_name)
-            if cprinter == None:
-                for export in runtime.module.exports:
-                    if export.kind == wasmConvention.extern_func and export.name == func_name:
-                        cprinter = CFGPrinter(runtime.store.funcs[export.desc], func_name)
-
-    if cprinter != None:
-        cprinter.print_CFG()
-
-    runtime.__repr__()
-    engine = WASMInterpreter(runtime)
-    engine.exec("_initialize")
-
-    return
+# def analyze_wasm_bytecode():
+#     #TODO
+#     global args
+#
+#     helper = InputHelper(InputHelper.WASM_BYTECODE, source=args.source)
+#     inp = helper.get_inputs()[0]
+#
+#     runtime = WASMRuntime(inp["module"])
+#     #print cfg if needed
+#     cprinter = None
+#     if args.cfg:
+#         if args.onlyfunc:
+#             func_name = args.onlyfunc[0]
+#             for key in runtime.module.functions_name.keys():
+#                 if runtime.module.functions_name[key] == func_name:
+#                     cprinter = CFGPrinter(runtime.store.funcs[key], func_name)
+#             # cprinter = CFGPrinter(runtime.store.funcs[257], func_name)
+#             if cprinter == None:
+#                 for export in runtime.module.exports:
+#                     if export.kind == wasmConvention.extern_func and export.name == func_name:
+#                         cprinter = CFGPrinter(runtime.store.funcs[export.desc], func_name)
+#
+#     if cprinter != None:
+#         cprinter.print_CFG()
+#
+#     runtime.__repr__()
+#     engine = WASMInterpreter(runtime)
+#     engine.exec("_initialize")
+#
+#     return
 
 def analyze_cpp_code():
     #TODO
@@ -230,15 +229,50 @@ def analyze_solidity_code():
         env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'], source_map=inp["source_map"], source_file=inp["source"])
 
         return_code = env.build_runtime_env()
-
+        reentrancy_node_list = []
         interpreter = EVMInterpreter(env)
         interpreter.sym_exec()
-        # overflowChecker = Overflow(interpreter.graph)
-        # overflowChecker.check()
-        # reentrancyChecker = Reentrancy(interpreter.graph)
-        # reentrancyChecker.check()
+        overflowChecker = Overflow(interpreter.graph)
+        overflow_node_list, underflow_node_list = overflowChecker.check()
+        reentrancyChecker = Reentrancy(interpreter.graph)
+        reentrancy_node_list = reentrancyChecker.check()
         todChecker = TOD(interpreter.graph)
-        todChecker.check()
+        tod_node_list = todChecker.check()
+
+        detect_result = Result()
+
+
+        overflow_pcs = []
+        for overflow_node in overflow_node_list:
+            overflow_pcs.append(overflow_node.global_pc)
+        overflow_info = IntegerOverflowInfo(inp["source_map"], overflow_pcs)
+        detect_result.results["vulnerabilities"]["integer_overflow"] = overflow_info.get_warnings()
+
+        underflow_pcs = []
+        for underflow_node in underflow_node_list:
+            underflow_pcs.append(underflow_node.global_pc)
+        underflow_info = IntegerUnderflowInfo(inp["source_map"], underflow_pcs)
+        detect_result.results["vulnerabilities"]["integer_underflow"] = underflow_info.get_warnings()
+
+        reentrancy_pcs = []
+        # if reentrancy_node_list == None:
+        for reentrancy_node in reentrancy_node_list:
+            reentrancy_pcs.append(reentrancy_node.global_pc)
+        reentrancy_info = ReentrancyInfo(inp["source_map"], reentrancy_pcs)
+        detect_result.results["vulnerabilities"]["reentrancy"] = reentrancy_info.get_warnings()
+
+        tod_pcs = []
+        for tod_node in tod_node_list:
+            tod_pcs.append(tod_node.global_pc)
+        tod_info = TodBugInfo(inp["source_map"], tod_pcs)
+        detect_result.results["vulnerabilities"]["tod_bug"] = tod_info.get_warnings()
+        separator = '\\' if sys.platform in ('win32', 'cygwin') else '/'
+        result_file = "./tmp" + separator+inp['disasm_file'].split(separator)[-1].split('.evm.disasm')[0] + '.json'
+        of = open(result_file, "w+")
+        of.write(json.dumps(detect_result.results, indent=1))
+        print("Wrote results to %s.", result_file)
+
+
         node_labels = nx.get_node_attributes(interpreter.graph.graph, 'count')
         options = {
             'node_size': 1000,

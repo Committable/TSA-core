@@ -9,16 +9,16 @@ class Generator:
         self.countstack += 1
         return "s" + str(self.countstack)
 
-    def gen_data_var(self):
-        self.countdata += 1
-        return "Id_" + str(self.countdata)
+    # def gen_data_var(self):
+    #     self.countdata += 1
+    #     return "Id_" + str(self.countdata)
 
     def gen_data_var(self, position):
         self.countdata += 1
-        return "Id_" + str(self.countdata) + str(position)
+        return "Id_" + str(self.countdata) + "_" + str(position)
 
     def gen_data_size(self):
-        return "Id_size"
+        return "Id_size_" + str(self.branch)
 
     def gen_mem_var(self, address):
         return "mem_" + str(address)
@@ -50,6 +50,21 @@ class Generator:
     def gen_origin_var(self):
         return "Io"
 
+    def gen_coin_base(self):
+        return "IH_c"
+
+    def gen_difficult(self):
+        return "IH_d"
+
+    def gen_gas_limit(self):
+        return "IH_l"
+
+    def gen_number(self):
+        return "IH_i"
+
+    def gen_timestamp(self):
+        return "IH_s"
+
     def gen_balance_var(self):
         self.count += 1
         return "balance_" + str(self.count)
@@ -79,4 +94,7 @@ class Generator:
 
     def gen_branch_id(self):
         self.branch += 1
+        return "branch_"+str(self.branch)
+
+    def get_branch_id(self):
         return "branch_"+str(self.branch)

@@ -31,7 +31,8 @@ class EVMInterpreter:
 
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
-        global_state = self._get_init_global_state(path_conditions_and_vars)
+        global_state = {"balance": {}, "pc": 0}
+        self._init_global_state(path_conditions_and_vars, global_state, True)
         params = Parameter(path_conditions_and_vars=path_conditions_and_vars, global_state=global_state)
         return self._sym_exec_block(params, 0, 0, 0, -1)
 
@@ -97,6 +98,7 @@ class EVMInterpreter:
             flow_edge_list = params.flow_edge_list
             self.graph.addBranchEdge(flow_edge_list, "flowEdge", branch_id)
             self.graph.addBranchEdge(control_edge_list, "controlEdge", branch_id)
+            # self._init_global_state(path_conditions_and_vars, global_state, False)
             log.debug("TERMINATING A PATH ...")
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
@@ -124,16 +126,14 @@ class EVMInterpreter:
             self.solver.add(branch_expression)
 
             try:
-                if self.solver.check() == unsat:
-                    log.debug("INFEASIBLE PATH DETECTED")
-                else:
-                    left_branch = self.runtime.vertices[block].get_jump_target()
-                    new_params = params.copy()
-                    new_params.global_state["pc"] = left_branch
-                    new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
-                    new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
-                    # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
-                    self._sym_exec_block(new_params, left_branch, block, depth, func_call)
+
+                left_branch = self.runtime.vertices[block].get_jump_target()
+                new_params = params.copy()
+                new_params.global_state["pc"] = left_branch
+                new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
+                new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
+                # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
+                self._sym_exec_block(new_params, left_branch, block, depth, func_call)
             except TimeoutError:
                 raise
             except Exception as e:
@@ -149,20 +149,20 @@ class EVMInterpreter:
             log.debug("Negated branch expression: " + str(negated_branch_expression))
 
             try:
-                if self.solver.check() == unsat:
-                    # Note that this check can be optimized. I.e. if the previous check succeeds,
-                    # no need to check for the negated condition, but we can immediately go into
-                    # the else branch
-                    log.debug("INFEASIBLE PATH DETECTED")
-                else:
-                    right_branch = self.runtime.vertices[block].get_falls_to()
-                    new_params = params.copy()
-                    new_params.global_state["pc"] = right_branch
-                    new_params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
-                    new_params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
-                    # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
-                    # new_params.analysis["time_dependency_bug"][last_idx] = global_state["pc"]
-                    self._sym_exec_block(new_params, right_branch, block, depth, func_call)
+                # if self.solver.check() == unsat:
+                #     # Note that this check can be optimized. I.e. if the previous check succeeds,
+                #     # no need to check for the negated condition, but we can immediately go into
+                #     # the else branch
+                #     log.debug("INFEASIBLE PATH DETECTED")
+                # else:
+                right_branch = self.runtime.vertices[block].get_falls_to()
+                new_params = params.copy()
+                new_params.global_state["pc"] = right_branch
+                new_params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
+                new_params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
+                # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
+                # new_params.analysis["time_dependency_bug"][last_idx] = global_state["pc"]
+                self._sym_exec_block(new_params, right_branch, block, depth, func_call)
             except TimeoutError:
                 raise
             except Exception as e:
@@ -195,8 +195,8 @@ class EVMInterpreter:
         opcode = instr_parts[0]
         # instr_opcode = opcodes.opcode_by_name(opcode)
         # print(opcode)
-        # if global_state["pc"] == 478:
-        #     print(...)
+        if len(stack) != len(node_stack):
+            print(...)
         if opcode == "INVALID":
             return
         elif opcode == "ASSERTFAIL":
@@ -1178,6 +1178,7 @@ class EVMInterpreter:
             new_var = BitVec(new_var_name, 256)
             path_conditions_and_vars[new_var_name] = new_var
             stack.insert(0, new_var)
+            update_gas(node_stack, opcode, new_var, global_state)
         elif opcode == "JUMPDEST":
             # Literally do nothing
             global_state["pc"] = global_state["pc"] + 1
@@ -1375,6 +1376,8 @@ class EVMInterpreter:
             if len(stack) > 1:
                 stack.pop(0)
                 stack.pop(0)
+                if opcode == "REVERT":
+                    update_graph_terminal(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list)
                 # TODO
                 pass
             else:
@@ -1403,15 +1406,23 @@ class EVMInterpreter:
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
-        if (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
+        if opcode in overflow_related:
+            if opcode == "EXP":
+                param = [base, exponent]
+            else:
+                param = [first, second]
+            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state,
+                                  control_edge_list, flow_edge_list, param)
+        elif (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
             # print(opcode)
-            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state, control_edge_list, flow_edge_list)
+            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state, control_edge_list, flow_edge_list, "")
         elif opcode in pass_opcode:
             update_pass(node_stack, opcode, global_state)
         elif opcode in block_opcode:
             update_graph_block(self.graph, node_stack, opcode, block_related_value, global_state["currentNumber"], global_state)
         elif opcode in msg_opcode:
             update_graph_msg(self.graph, node_stack, opcode, global_state)
+
         # print("stack: ")
         # print(stack)
         # print("node_stack: ")
@@ -1419,32 +1430,32 @@ class EVMInterpreter:
         # if len(stack) != len(node_stack):
         #     print("node_stack is wrong" + str(opcode) + str(global_state["pc"]))
 
-    def _get_init_global_state(self,path_conditions_and_vars):
-        global_state = {"balance": {}, "pc": 0}
+    def _init_global_state(self,path_conditions_and_vars, global_state, init_flag):
+
         init_is = init_ia = deposited_value = sender_address = receiver_address = gas_price = origin = currentCoinbase = currentNumber = currentDifficulty = currentGasLimit = callData = None
 
+        if init_flag:
+            sender_address = BitVec("Is", 256)
+            receiver_address = BitVec("Ia", 256)
+            deposited_value = BitVec("Iv", 256)
+            init_is = BitVec("init_Is", 256)
+            init_ia = BitVec("init_Ia", 256)
 
-        sender_address = BitVec("Is", 256)
-        receiver_address = BitVec("Ia", 256)
-        deposited_value = BitVec("Iv", 256)
-        init_is = BitVec("init_Is", 256)
-        init_ia = BitVec("init_Ia", 256)
+            path_conditions_and_vars["Is"] = sender_address
+            path_conditions_and_vars["Ia"] = receiver_address
+            path_conditions_and_vars["Iv"] = deposited_value
 
-        path_conditions_and_vars["Is"] = sender_address
-        path_conditions_and_vars["Ia"] = receiver_address
-        path_conditions_and_vars["Iv"] = deposited_value
-
-        constraint = (deposited_value >= BitVecVal(0, 256))
-        path_conditions_and_vars["path_condition"].append(constraint)
-        constraint = (init_is >= deposited_value)
-        path_conditions_and_vars["path_condition"].append(constraint)
-        constraint = (init_ia >= BitVecVal(0, 256))
-        path_conditions_and_vars["path_condition"].append(constraint)
+            constraint = (deposited_value >= BitVecVal(0, 256))
+            path_conditions_and_vars["path_condition"].append(constraint)
+            constraint = (init_is >= deposited_value)
+            path_conditions_and_vars["path_condition"].append(constraint)
+            constraint = (init_ia >= BitVecVal(0, 256))
+            path_conditions_and_vars["path_condition"].append(constraint)
 
         # update the balances of the "caller" and "callee"
 
-        global_state["balance"]["Is"] = (init_is - deposited_value)
-        global_state["balance"]["Ia"] = (init_ia + deposited_value)
+            global_state["balance"]["Is"] = (init_is - deposited_value)
+            global_state["balance"]["Ia"] = (init_ia + deposited_value)
 
         if not gas_price:
             new_var_name = self.gen.gen_gas_price_var()
@@ -1457,37 +1468,38 @@ class EVMInterpreter:
             path_conditions_and_vars[new_var_name] = origin
 
         if not currentCoinbase:
-            new_var_name = "IH_c"
+            new_var_name = self.gen.gen_coin_base()
             currentCoinbase = BitVec(new_var_name, 256)
             path_conditions_and_vars[new_var_name] = currentCoinbase
 
         if not currentNumber:
-            new_var_name = "IH_i"
+            new_var_name = self.gen.gen_number()
             currentNumber = BitVec(new_var_name, 256)
             path_conditions_and_vars[new_var_name] = currentNumber
 
         if not currentDifficulty:
-            new_var_name = "IH_d"
+            new_var_name = self.gen.gen_difficult()
             currentDifficulty = BitVec(new_var_name, 256)
             path_conditions_and_vars[new_var_name] = currentDifficulty
 
         if not currentGasLimit:
-            new_var_name = "IH_l"
+            new_var_name = self.gen.gen_gas_limit()
             currentGasLimit = BitVec(new_var_name, 256)
             path_conditions_and_vars[new_var_name] = currentGasLimit
 
-        new_var_name = "IH_s"
+        new_var_name = self.gen.gen_timestamp()
         currentTimestamp = BitVec(new_var_name, 256)
         path_conditions_and_vars[new_var_name] = currentTimestamp
 
         # the state of the current current contract
-        global_state["Ia"] = {}
-        global_state["nodeID"] = 0
-        global_state["pos_to_node"] = {}
-        global_state["miu_i"] = 0
-        global_state["value"] = deposited_value
-        global_state["sender_address"] = sender_address
-        global_state["receiver_address"] = receiver_address
+        if init_flag:
+            global_state["Ia"] = {}
+            global_state["nodeID"] = 0
+            global_state["pos_to_node"] = {}
+            global_state["miu_i"] = 0
+            global_state["value"] = deposited_value
+            global_state["sender_address"] = sender_address
+            global_state["receiver_address"] = receiver_address
         global_state["gas_price"] = gas_price
         global_state["origin"] = origin
         global_state["currentCoinbase"] = currentCoinbase
@@ -1496,7 +1508,9 @@ class EVMInterpreter:
         global_state["currentDifficulty"] = currentDifficulty
         global_state["currentGasLimit"] = currentGasLimit
 
-        return global_state
+        if init_flag:
+            init_state(self.graph, global_state)
+
 
 class Parameter:
     def __init__(self, **kwargs):

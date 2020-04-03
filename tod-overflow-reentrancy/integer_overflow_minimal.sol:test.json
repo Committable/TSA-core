@@ -1,0 +1,21 @@
+{
+ "vulnerabilities": {
+  "reentrancy": [
+   "../../dataset/101-integer_overflow_underflow/integer_overflow_minimal.sol:9:9: Warning: Re-Entrancy Vulnerability.\n        myaddress.call.value(1)()", 
+   "../../dataset/101-integer_overflow_underflow/integer_overflow_minimal.sol:17:9: Warning: Re-Entrancy Vulnerability.\n        my.call.value(1)()"
+  ], 
+  "prng_bug": [], 
+  "tod_bug": [], 
+  "dos_bug": [], 
+  "integer_overflow": [
+   "../../dataset/101-integer_overflow_underflow/integer_overflow_minimal.sol:6:13: Warning: IntegerOverflow Vulnerability.\n        a = a+x"
+  ], 
+  "integer_underflow": [], 
+  "tod": [
+   "../../dataset/101-integer_overflow_underflow/integer_overflow_minimal.sol:13:9: Warning: Transaction-Ordering Dependency.\n        my = taint", 
+   "../../dataset/101-integer_overflow_underflow/integer_overflow_minimal.sol:17:9: Warning: Transaction-Ordering Dependency.\n        my.call.value(1)()"
+  ]
+ }, 
+ "run_time": "1.30s", 
+ "evm_code_coverage": "99.6"
+}

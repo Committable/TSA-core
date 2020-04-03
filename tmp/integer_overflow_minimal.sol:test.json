@@ -1,0 +1,19 @@
+{
+ "evm_code_coverage": "",
+ "vulnerabilities": {
+  "integer_underflow": [],
+  "integer_overflow": [
+   "tod-overflow-reentrancy//integer_overflow_minimal.sol:6:9: Warning: IntegerOverflow Vulnerability.\n        a"
+  ],
+  "reentrancy": [
+   "tod-overflow-reentrancy//integer_overflow_minimal.sol:9:9: Warning: Re-Entrancy Vulnerability.\n        myaddress.call.value(1)()",
+   "tod-overflow-reentrancy//integer_overflow_minimal.sol:17:9: Warning: Re-Entrancy Vulnerability.\n        my.call.value(1)()"
+  ],
+  "prng_bug": [],
+  "dos_bug": [],
+  "tod_bug": [
+   "tod-overflow-reentrancy//integer_overflow_minimal.sol:13:9: Warning: Transaction-Ordering Dependency.\n        my = taint"
+  ]
+ },
+ "run_time": 0
+}

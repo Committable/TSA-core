@@ -22,30 +22,36 @@ three_operand_opcode = ("ADDMOD", "MULMOD")
 one_operand_opcode = ("ISZERO", "NOT")
 
 pass_opcode = ("ADDRESS", "CALLDATASIZE", "CODESIZE", "RETURNDATASIZE", "GASPRICE",
-               "EXTCODESIZE", "BLOCKHASH", "PC", "MSIZE", "GAS", "CREATE",
+               "EXTCODESIZE", "PC", "MSIZE", "CREATE",
                "EXTCODECOPY", "POP", "LOG0", "LOG1", "LOG2", "LOG3", "LOG4",
-               "RETURN", "REVERT", "CALLDATACOPY", "CODECOPY", "RETURNDATACOPY",
+               "RETURN", "CALLDATACOPY", "CODECOPY", "RETURNDATACOPY",
                "JUMP", "ORIGIN")
 
 msg_opcode = ("CALLER", "CALLVALUE")
 
-block_opcode = ("COINBASE", "TIMESTAMP", "NUMBER", "DIFFICULTY", "GASLIMIT")
+block_opcode = ("COINBASE", "TIMESTAMP", "NUMBER", "DIFFICULTY", "GASLIMIT", "BLOCKHASH")
 
 mem_opcode = ("MLOAD", "MSTORE")
 
+overflow_opcode = ('ADD', 'MUL', 'EXP')
 
-def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_and_vars, global_state, control_edge_list, flow_edge_list):
+underflow_opcode = ('SUB')
+
+
+def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_and_vars, global_state, control_edge_list, flow_edge_list, param):
     if opcode in one_operand_opcode:
         node_first = node_stack.pop(0)
 
         operand = [node_first]
+        param = param
         # global_state["nodeID"] += 1
-        computedNode = ArithNode(opcode, operand, global_state["pc"], computed, global_state["pc"])
+        computedNode = ArithNode(opcode, operand, global_state["pc"],
+                                 path_conditions_and_vars["path_condition"], computed, param, global_state["pc"])
         # edges = [(node_first, computedNode)]
         # edgeType = FlowEdge(computedNode)
         graph.addNode(computedNode)
         # graph.addEdges(edges, edgeType)
-        pushEdge(node_first, computedNode, flow_edge_list)
+        # pushEdge(node_first, computedNode, flow_edge_list)
         node_stack.insert(0, computedNode)
     elif opcode in two_operand_opcode:
         node_first = node_stack.pop(0)
@@ -53,7 +59,9 @@ def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_a
 
         operand = [node_first, node_second]
         # global_state["nodeID"] += 1
-        computedNode = ArithNode(opcode, operand, global_state["pc"], computed, global_state["pc"])
+        computedNode = ArithNode(opcode, operand, global_state["pc"], path_conditions_and_vars["path_condition"],
+                                 computed, param, global_state["pc"])
+
         # edges = [(node_first, computedNode), (node_second, computedNode)]
         # flowEdge = FlowEdge(computedNode)
         graph.addNode(computedNode)
@@ -69,7 +77,8 @@ def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_a
 
         operand = [node_first, node_second, node_third]
         # global_state["nodeID"] += 1
-        computedNode = ArithNode(opcode, operand, global_state["pc"], computed, global_state["pc"])
+        computedNode = ArithNode(opcode, operand, global_state["pc"], path_conditions_and_vars["path_condition"],
+                                 computed, param, global_state["pc"])
         edges = [(node_first, computedNode), (node_second, computedNode), (node_third, computedNode)]
         edgeType = FlowEdge(computedNode)
         graph.addNode(computedNode)
@@ -88,6 +97,11 @@ def update_pass(node_stack, opcode, global_state):
         # global_state["nodeID"] += 1
         new_selfDefinedNode = SelfDefinedNode(opcode, 0, global_state["pc"])
         node_stack.insert(0, new_selfDefinedNode)
+
+
+def update_gas(node_stack, opcode, value, global_state):
+    gas_node = SelfDefinedNode(opcode, value, global_state["pc"])
+    node_stack.insert(0, gas_node)
 
 
 def update_graph_msg(graph, node_stack, opcode, global_state):
@@ -145,7 +159,7 @@ def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state
         else:
             check_result, state_position, state_node = check_state_node(graph, position)
             if check_result:
-                node_stack.insert(0, state_position)
+                node_stack.insert(0, state_node)
                 global_state["pos_to_node"][position] = state_node
             else:
                 node_new_var = StateNode("Ia", new_var_name, new_var, position, global_state["pc"])
@@ -212,9 +226,9 @@ def update_jumpi(graph, node_stack, block, flag, branch_expression, global_state
         compare_node = ConstNode("", 0, global_state["nodeID"])
         operand = [node_flag, compare_node]
         # global_state["nodeID"] += 1
-        branch_expression_node = ArithNode("!=", operand, 0, branch_expression, global_state["pc"])
+        branch_expression_node = ArithNode("!=", operand, 0, "", branch_expression, "", global_state["pc"])
         # global_state["nodeID"] += 1
-        negated_branch_expression_node = ArithNode("==", operand, 0, Not(branch_expression), global_state["pc"])
+        negated_branch_expression_node = ArithNode("==", operand, 0, "", Not(branch_expression), "", global_state["pc"])
 
         branch_edges = [(node_flag, branch_expression_node), (compare_node, branch_expression_node)]
         negated_branch_edges = [(node_flag, negated_branch_expression_node),
@@ -260,14 +274,17 @@ def update_call(graph, node_stack, global_state, path_conditions_and_vars, contr
     node_start_data_output = node_stack.pop(0)
     node_size_data_ouput = node_stack.pop(0)
 
-    node_stack.insert(0, 0)
+    # node_stack.insert(0, 0)
+
 
     arguments = [node_outgas, node_recipient, node_transfer_amount, node_start_data_input, node_size_data_input,
                  node_start_data_output, node_size_data_ouput]
-    # global_state["nodeID"] += 1call
+    # global_state["nodeID"] += call
     call_node = MessageCallNode("CALL", arguments, global_state["pc"], path_conditions_and_vars["path_condition"],
                                 global_state["pc"])
     # edgeType = FlowEdge(call_node)
+    call_return_node = ReturnDataNode("CALLRETURN", "0", global_state["pc"])
+    node_stack.insert(0, call_return_node)
 
     graph.addNode(call_node)
     # graph.addEdgeList(arguments, _node, edgeType)
@@ -275,6 +292,7 @@ def update_call(graph, node_stack, global_state, path_conditions_and_vars, contr
     # graph.addEdgeList(path_conditions_and_vars["path_condition_node"], call_node, controlEdge)
     pushEdgesToNode(arguments, call_node, flow_edge_list)
     pushEdgesToNode(path_conditions_and_vars["path_condition_node"], call_node, control_edge_list)
+    pushEdge(call_node, call_return_node, flow_edge_list)
 
 
 def update_callcode(graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list):
@@ -352,6 +370,18 @@ def update_graph_balance(graph, node_stack, global_state, flow_edge_list):
     pushEdge(node_address, node_balance, flow_edge_list)
 
 
+def update_graph_terminal(graph, node_stack, global_state, path_conditions_and_vars, control_edge_list):
+    node_stack.pop(0)
+    node_stack.pop(0)
+    # instruction_name, arguments, global_pc, constraint, nodeID
+    node_revert = TerminalNode("REVERT", [], global_state["pc"], path_conditions_and_vars["path_condition"],
+                               global_state["pc"])
+    graph.addNode(node_revert)
+    pushEdgesToNode(path_conditions_and_vars["path_condition_node"], node_revert, control_edge_list)
+
+
+
+
 def pushEdgesToNode(fromNodeList, toNode, edgelist):
     for fromNode in fromNodeList:
         edgelist.append((fromNode, toNode))
@@ -378,6 +408,12 @@ def check_state_node(graph, position):
     else:
         state_position = str(position)
     for state_node in graph.state_nodes:
-        if state_node.position == state_position:
+        if str(state_node.position) == str(state_position):
             return True, state_position, state_node
     return False, state_position, 0
+
+
+def init_state(graph, global_state):
+    if "sender_address" in global_state:
+        sender_node = StateNode("Is", "Is", global_state["sender_address"], "-1", "-1")
+        graph.addNode(sender_node)

@@ -2,8 +2,15 @@ pragma solidity ^0.4.19;
 contract Ownable {
   address public owner;
   uint count;
-  function Ownab() public {
+  function Ownble() public {
+    require(block.number < 5);
+    owner.call.value(this.balance)();
+    //require(block.number > 5);
     owner = msg.sender;
+  }
+
+
+
   }
   modifier onlyOwner() {
     require(msg.sender == owner);
@@ -16,6 +23,7 @@ contract Ownable {
   }
 
   function transfer() public returns(bool){
-    owner.call.value(this.balance)();
+    require(block.number < 5); IH_d_2
+
   }
 }

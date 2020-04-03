@@ -1,0 +1,967 @@
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//Buy_fixed_2.sol:SolutionTransactionOrdering:
+Wrote results to %s. ./tmp/Buy_fixed_2.sol:SolutionTransactionOrdering.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11366.sol:CryptotalksWorld:
+INFO:root:contract tod-overflow-reentrancy//11366.sol:Owned:
+INFO:root:contract tod-overflow-reentrancy//11366.sol:SafeMath:
+Wrote results to %s. ./tmp/11366.sol:CryptotalksWorld.json
+Wrote results to %s. ./tmp/11366.sol:Owned.json
+Wrote results to %s. ./tmp/11366.sol:SafeMath.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//overflow_single_tx.sol:IntegerOverflowSingleTransaction:
+Wrote results to %s. ./tmp/overflow_single_tx.sol:IntegerOverflowSingleTransaction.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//TDT_MNW.sol:Migrations:
+Wrote results to %s. ./tmp/TDT_MNW.sol:Migrations.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//1145.sol:SafeMathLibExt:
+Wrote results to %s. ./tmp/1145.sol:SafeMathLibExt.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//ERC20.sol:ERC20:
+INFO:root:contract tod-overflow-reentrancy//ERC20.sol:SafeMath:
+Wrote results to %s. ./tmp/ERC20.sol:ERC20.json
+Wrote results to %s. ./tmp/ERC20.sol:SafeMath.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//test01.sol:Auction:
+Wrote results to %s. ./tmp/test01.sol:Auction.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_minimal.sol:test:
+Wrote results to %s. ./tmp/integer_overflow_minimal.sol:test.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//Buy.sol:TransactionOrdering:
+Wrote results to %s. ./tmp/Buy.sol:TransactionOrdering.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//1144.sol:TokenERC20:
+Wrote results to %s. ./tmp/1144.sol:TokenERC20.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_mul_fixed.sol:IntegerOverflowMul:
+Wrote results to %s. ./tmp/integer_overflow_mul_fixed.sol:IntegerOverflowMul.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//modifier_reentrancy.sol:Bank:
+INFO:root:contract tod-overflow-reentrancy//modifier_reentrancy.sol:ModifierEntrancy:
+INFO:root:contract tod-overflow-reentrancy//modifier_reentrancy.sol:attack:
+Wrote results to %s. ./tmp/modifier_reentrancy.sol:Bank.json
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Wrote results to %s. ./tmp/modifier_reentrancy.sol:ModifierEntrancy.json
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Wrote results to %s. ./tmp/modifier_reentrancy.sol:attack.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_multitx_multifunc_feasible_fixed.sol:IntegerOverflowMultiTxMultiFuncFeasible:
+Wrote results to %s. ./tmp/integer_overflow_multitx_multifunc_feasible_fixed.sol:IntegerOverflowMultiTxMultiFuncFeasible.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_benign_1_fixed.sol:IntegerOverflowBenign1:
+Wrote results to %s. ./tmp/integer_overflow_benign_1_fixed.sol:IntegerOverflowBenign1.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_benign_1.sol:IntegerOverflowBenign1:
+Wrote results to %s. ./tmp/integer_overflow_benign_1.sol:IntegerOverflowBenign1.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11311.sol:GLXToken:
+INFO:root:contract tod-overflow-reentrancy//11311.sol:Owned:
+INFO:root:contract tod-overflow-reentrancy//11311.sol:SafeMath:
+Wrote results to %s. ./tmp/11311.sol:GLXToken.json
+Wrote results to %s. ./tmp/11311.sol:Owned.json
+Wrote results to %s. ./tmp/11311.sol:SafeMath.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11339.sol:MAYA:
+INFO:root:contract tod-overflow-reentrancy//11339.sol:StandardToken:
+INFO:root:contract tod-overflow-reentrancy//11339.sol:Token:
+Wrote results to %s. ./tmp/11339.sol:MAYA.json
+Wrote results to %s. ./tmp/11339.sol:StandardToken.json
+Wrote results to %s. ./tmp/11339.sol:Token.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//TIDT_MNW.sol:generic_holder:
+Wrote results to %s. ./tmp/TIDT_MNW.sol:generic_holder.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//WithdrawBonus.sol:WithdrawBonus:
+Wrote results to %s. ./tmp/WithdrawBonus.sol:WithdrawBonus.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11458.sol:HumanStandardToken:
+INFO:root:contract tod-overflow-reentrancy//11458.sol:StandardToken:
+Wrote results to %s. ./tmp/11458.sol:HumanStandardToken.json
+Wrote results to %s. ./tmp/11458.sol:StandardToken.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//114.sol:FixedSupplyToken:
+INFO:root:contract tod-overflow-reentrancy//114.sol:Owned:
+INFO:root:contract tod-overflow-reentrancy//114.sol:SafeMath:
+Wrote results to %s. ./tmp/114.sol:FixedSupplyToken.json
+Wrote results to %s. ./tmp/114.sol:Owned.json
+Wrote results to %s. ./tmp/114.sol:SafeMath.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//EtherStore.sol:test:
+Wrote results to %s. ./tmp/EtherStore.sol:test.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11275.sol:ArabGoldToken:
+Wrote results to %s. ./tmp/11275.sol:ArabGoldToken.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//eth_tx_order_dependence_minimal.sol:EthTxOrderDependenceMinimal:
+Wrote results to %s. ./tmp/eth_tx_order_dependence_minimal.sol:EthTxOrderDependenceMinimal.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_mapping_sym_1.sol:IntegerOverflowMappingSym1:
+Wrote results to %s. ./tmp/integer_overflow_mapping_sym_1.sol:IntegerOverflowMappingSym1.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//1129.sol:ADZbuzzCommunityToken:
+INFO:root:contract tod-overflow-reentrancy//1129.sol:Owned:
+INFO:root:contract tod-overflow-reentrancy//1129.sol:SafeMath:
+Wrote results to %s. ./tmp/1129.sol:ADZbuzzCommunityToken.json
+Wrote results to %s. ./tmp/1129.sol:Owned.json
+Wrote results to %s. ./tmp/1129.sol:SafeMath.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11443.sol:Owned:
+INFO:root:contract tod-overflow-reentrancy//11443.sol:SafeMath:
+INFO:root:contract tod-overflow-reentrancy//11443.sol:ethereumhorse:
+Wrote results to %s. ./tmp/11443.sol:Owned.json
+Wrote results to %s. ./tmp/11443.sol:SafeMath.json
+Wrote results to %s. ./tmp/11443.sol:ethereumhorse.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11456.sol:Haltable:
+INFO:root:contract tod-overflow-reentrancy//11456.sol:NullFinalizeAgentExt:
+INFO:root:contract tod-overflow-reentrancy//11456.sol:Ownable:
+INFO:root:contract tod-overflow-reentrancy//11456.sol:SafeMathLibExt:
+Wrote results to %s. ./tmp/11456.sol:Haltable.json
+Wrote results to %s. ./tmp/11456.sol:NullFinalizeAgentExt.json
+Wrote results to %s. ./tmp/11456.sol:Ownable.json
+Wrote results to %s. ./tmp/11456.sol:SafeMathLibExt.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+CRITICAL:root:tod-overflow-reentrancy//overflow_simple_add.sol:1:1: Error: Source file requires different compiler version (current compiler is 0.4.26+commit.4563c3fc.Darwin.appleclang - note that nightly builds are considered to be strictly less than the released version
+pragma solidity 0.4.24;
+^---------------------^
+
+CRITICAL:root:Solidity compilation failed.
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11333.sol:TokenERC20:
+Wrote results to %s. ./tmp/11333.sol:TokenERC20.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+CRITICAL:root:""tod-overflow-reentrancy//WithDraw"" is not found
+
+CRITICAL:root:Solidity compilation failed.
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_mul.sol:IntegerOverflowMul:
+Wrote results to %s. ./tmp/integer_overflow_mul.sol:IntegerOverflowMul.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_mapping_sym_1_fixed.sol:IntegerOverflowMappingSym1:
+Wrote results to %s. ./tmp/integer_overflow_mapping_sym_1_fixed.sol:IntegerOverflowMappingSym1.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//modifier_reentrancy_fixed.sol:Bank:
+INFO:root:contract tod-overflow-reentrancy//modifier_reentrancy_fixed.sol:ModifierEntrancy:
+INFO:root:contract tod-overflow-reentrancy//modifier_reentrancy_fixed.sol:attack:
+Wrote results to %s. ./tmp/modifier_reentrancy_fixed.sol:Bank.json
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Wrote results to %s. ./tmp/modifier_reentrancy_fixed.sol:ModifierEntrancy.json
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Ellipsis
+Wrote results to %s. ./tmp/modifier_reentrancy_fixed.sol:attack.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//overflow_simple_add_fixed.sol:Overflow_Add:
+Wrote results to %s. ./tmp/overflow_simple_add_fixed.sol:Overflow_Add.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+CRITICAL:root:tod-overflow-reentrancy//overflow_vulnerable_and_fixed.sol:6:1: Error: Source file requires different compiler version (current compiler is 0.4.26+commit.4563c3fc.Darwin.appleclang - note that nightly builds are considered to be strictly less than the released version
+pragma solidity 0.4.24;
+^---------------------^
+
+CRITICAL:root:Solidity compilation failed.
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//LockTime_fixed.sol:TimeLock:
+Wrote results to %s. ./tmp/LockTime_fixed.sol:TimeLock.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11453.sol:Haltable:
+INFO:root:contract tod-overflow-reentrancy//11453.sol:NullFinalizeAgentExt:
+INFO:root:contract tod-overflow-reentrancy//11453.sol:Ownable:
+INFO:root:contract tod-overflow-reentrancy//11453.sol:SafeMathLibExt:
+Wrote results to %s. ./tmp/11453.sol:Haltable.json
+Wrote results to %s. ./tmp/11453.sol:NullFinalizeAgentExt.json
+Wrote results to %s. ./tmp/11453.sol:Ownable.json
+Wrote results to %s. ./tmp/11453.sol:SafeMathLibExt.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_minimal_fixed.sol:IntegerOverflowMinimal:
+Wrote results to %s. ./tmp/integer_overflow_minimal_fixed.sol:IntegerOverflowMinimal.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//1360.sol:Ownable:
+INFO:root:contract tod-overflow-reentrancy//1360.sol:SafeMath:
+INFO:root:contract tod-overflow-reentrancy//1360.sol:lockEtherPay:
+Wrote results to %s. ./tmp/1360.sol:Ownable.json
+Wrote results to %s. ./tmp/1360.sol:SafeMath.json
+Wrote results to %s. ./tmp/1360.sol:lockEtherPay.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//WithDrawFixed1.sol:WithDrawFixed:
+Wrote results to %s. ./tmp/WithDrawFixed1.sol:WithDrawFixed.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_multitx_multifunc_feasible.sol:IntegerOverflowMultiTxMultiFuncFeasible:
+Wrote results to %s. ./tmp/integer_overflow_multitx_multifunc_feasible.sol:IntegerOverflowMultiTxMultiFuncFeasible.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+CRITICAL:root:tod-overflow-reentrancy//simple_dao_fixed.sol:6:1: Error: Source file requires different compiler version (current compiler is 0.4.26+commit.4563c3fc.Darwin.appleclang - note that nightly builds are considered to be strictly less than the released version
+pragma solidity 0.4.24;
+^---------------------^
+
+CRITICAL:root:Solidity compilation failed.
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//transferWithdraw.sol:transferWithdraw:
+Wrote results to %s. ./tmp/transferWithdraw.sol:transferWithdraw.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11346.sol:ASEBToken:
+INFO:root:contract tod-overflow-reentrancy//11346.sol:StandardToken:
+INFO:root:contract tod-overflow-reentrancy//11346.sol:Token:
+Wrote results to %s. ./tmp/11346.sol:ASEBToken.json
+Wrote results to %s. ./tmp/11346.sol:StandardToken.json
+Wrote results to %s. ./tmp/11346.sol:Token.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//LockTime.sol:TimeLock:
+Wrote results to %s. ./tmp/LockTime.sol:TimeLock.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//WithDrawFixed2.sol:WithDrawLock:
+Wrote results to %s. ./tmp/WithDrawFixed2.sol:WithDrawLock.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_multitx_onefunc_feasible_fixed.sol:IntegerOverflowMultiTxOneFuncFeasible:
+Wrote results to %s. ./tmp/integer_overflow_multitx_onefunc_feasible_fixed.sol:IntegerOverflowMultiTxOneFuncFeasible.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_multitx_onefunc_infeasible.sol:IntegerOverflowMultiTxOneFuncInfeasible:
+Wrote results to %s. ./tmp/integer_overflow_multitx_onefunc_infeasible.sol:IntegerOverflowMultiTxOneFuncInfeasible.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//EtherStore_fixed.sol:EtherStore_fixed:
+Wrote results to %s. ./tmp/EtherStore_fixed.sol:EtherStore_fixed.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11350.sol:AFEBToken:
+INFO:root:contract tod-overflow-reentrancy//11350.sol:StandardToken:
+INFO:root:contract tod-overflow-reentrancy//11350.sol:Token:
+Wrote results to %s. ./tmp/11350.sol:AFEBToken.json
+Wrote results to %s. ./tmp/11350.sol:StandardToken.json
+Wrote results to %s. ./tmp/11350.sol:Token.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//11230.sol:TokenERC20:
+INFO:root:contract tod-overflow-reentrancy//11230.sol:YumeriumToken:
+INFO:root:contract tod-overflow-reentrancy//11230.sol:owned:
+Wrote results to %s. ./tmp/11230.sol:TokenERC20.json
+Wrote results to %s. ./tmp/11230.sol:YumeriumToken.json
+Wrote results to %s. ./tmp/11230.sol:owned.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//integer_overflow_multitx_onefunc_feasible.sol:IntegerOverflowMultiTxOneFuncFeasible:
+Wrote results to %s. ./tmp/integer_overflow_multitx_onefunc_feasible.sol:IntegerOverflowMultiTxOneFuncFeasible.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//simple_dao.sol:SimpleDAO:
+Wrote results to %s. ./tmp/simple_dao.sol:SimpleDAO.json
+WARNING:root:You are using evm version 1.9.9. The supported version is 1.8.27
+WARNING:root:You are using solc version 0.4.26, The latest supported version is 0.4.25
+INFO:root:contract tod-overflow-reentrancy//Buy_fixed.sol:TransactionOrdering:
+Wrote results to %s. ./tmp/Buy_fixed.sol:TransactionOrdering.json

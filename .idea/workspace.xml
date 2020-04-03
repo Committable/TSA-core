@@ -2,16 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/checker/algorithm.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checker/overflow.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checker/reentrancy.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checker/test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checker/tod.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checker/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reporter/result.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/reporter/vulnerability.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/file.dot" beforeDir="false" afterPath="$PROJECT_DIR$/file.dot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checker/algorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/algorithm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checker/overflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/overflow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checker/reentrancy.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/reentrancy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checker/test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/checker/tod.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/tod.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/file.dot" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/graphBuilder/XGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/XGraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/graphBuilder/evmGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/evmGraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/interpreter/evmInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/evmInterpreter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/seraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/seraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_contracts/ree" beforeDir="false" afterPath="$PROJECT_DIR$/test_contracts/ree" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_contracts/ree:Ownable.evm" beforeDir="false" afterPath="$PROJECT_DIR$/test_contracts/ree:Ownable.evm" afterDir="false" />
@@ -104,7 +108,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="seraph" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="seraph" type="PythonConfigurationType" factoryName="Python">
       <module name="seraph-V1.0" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -118,9 +122,9 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/seraph.py" />
-      <option name="PARAMETERS" value="-s $PROJECT_DIR$/test_contracts/ree -sol -p ethereum -vb" />
+      <option name="PARAMETERS" value="-s $PROJECT_DIR$/tod-overflow-reentrancy/TIDT_MNW.sol -sol -p ethereum" />
       <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="EMULATE_TERMINAL" value="true" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
@@ -149,13 +153,12 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.networktest" />
       <item itemvalue="Python.seraph" />
+      <item itemvalue="Python.networktest" />
       <item itemvalue="Python.test" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.seraph" />
         <item itemvalue="Python.networktest" />
         <item itemvalue="Python.test" />
       </list>
@@ -188,7 +191,15 @@
       <workItem from="1582209839439" duration="40751000" />
       <workItem from="1583130305476" duration="7023000" />
       <workItem from="1583150572818" duration="58771000" />
-      <workItem from="1583467341574" duration="2846000" />
+      <workItem from="1583467341574" duration="33165000" />
+      <workItem from="1583906462332" duration="18756000" />
+      <workItem from="1584266637452" duration="11756000" />
+      <workItem from="1584620657032" duration="5315000" />
+      <workItem from="1584633461842" duration="2602000" />
+      <workItem from="1584671265878" duration="8132000" />
+      <workItem from="1584938795665" duration="4494000" />
+      <workItem from="1584980203061" duration="21024000" />
+      <workItem from="1585642835624" duration="10899000" />
     </task>
     <task id="LOCAL-00001" summary="delete unnecessary files">
       <created>1573785113280</created>
@@ -244,54 +255,39 @@
           <option name="timeStamp" value="130" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/test.py</url>
-          <line>15</line>
-          <option name="timeStamp" value="162" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/test.py</url>
-          <line>8</line>
-          <option name="timeStamp" value="163" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/test.py</url>
-          <line>14</line>
-          <option name="timeStamp" value="164" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/../../network/networktest.py</url>
           <line>14</line>
           <option name="timeStamp" value="165" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/reentrancy.py</url>
-          <line>26</line>
-          <option name="timeStamp" value="192" />
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>266</line>
+          <option name="timeStamp" value="234" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/reentrancy.py</url>
-          <line>27</line>
-          <option name="timeStamp" value="193" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/reentrancy.py</url>
-          <line>34</line>
-          <option name="timeStamp" value="194" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/reentrancy.py</url>
-          <line>11</line>
-          <option name="timeStamp" value="202" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checker/algorithm.py</url>
-          <line>168</line>
-          <option name="timeStamp" value="204" />
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>257</line>
+          <option name="timeStamp" value="238" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/checker/tod.py</url>
-          <line>21</line>
-          <option name="timeStamp" value="207" />
+          <line>31</line>
+          <option name="timeStamp" value="259" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/checker/tod.py</url>
+          <line>26</line>
+          <option name="timeStamp" value="261" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/checker/algorithm.py</url>
+          <line>219</line>
+          <option name="timeStamp" value="262" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/checker/algorithm.py</url>
+          <line>243</line>
+          <option name="timeStamp" value="263" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -304,76 +300,19 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="check_reachable_to_list(self.XGraph.graph, arith_node, state_related_node)" language="Python" />
-        <watch expression="arith_node" language="Python" />
-        <watch expression="path_list = get_labeled_paths_between_nodes(graph, &quot;controlEdge&quot;, from_node, to_node_list)" language="Python" />
-        <watch expression="len(path)" language="Python" />
-        <watch expression="graph[path[index]][path[index + 1]]['label']" language="Python" />
-        <watch expression="graph[path[index]][path[index + 1]]['label']" language="Python" />
-        <watch expression="path[8]" language="Python" />
-        <watch expression="check_reachable_to_list(self.XGraph.graph, arith_node, state_related_node)" language="Python" />
-        <watch expression="arith_nodes" language="Python" />
-        <watch expression="self.XGraph.arith_nodes" language="Python" />
-        <watch expression="taint_node_list" language="Python" />
-        <watch expression="check_reachable_from_list(self.XGraph.graph, taint_node_list, self.XGraph.arith_nodes[4])" language="Python" />
-        <watch expression="check_reachable(self.XGraph.graph,taint_node_list[2], self.XGraph.arith_nodes[4] )" language="Python" />
-        <watch expression="check_reachable_to_list(self.XGraph.graph, arith_node, state_related_node)" language="Python" />
-        <watch expression="get_argument_or_flow_node(self.XGraph.graph, call_node)" language="Python" />
-        <watch expression="self.XGraph.graph[call_param[0]][call_node]['branchList']" language="Python" />
-        <watch expression="check_state_change(self.XGraph.graph, branch_id, call_node)" language="Python" />
-        <watch expression="check_state_change(self.XGraph.graph, branch_id, call_node)" language="Python" />
-        <watch expression="get_nodes_in_same_branch(graph, branch_id)" language="Python" />
-        <watch expression="check_state_change(self.XGraph.graph, branch_id, call_node)" language="Python" />
-        <watch expression="get_nodes_in_same_branch(graph, branch_id)" language="Python" />
-        <watch expression="get_edges_in_same_branch(graph, branch_id)" language="Python" />
-        <watch expression="check_state_change(self.XGraph.graph, branch_id, call_node)" language="Python" />
-        <watch expression="get_nodes_in_same_branch(graph, branch_id)" language="Python" />
-        <watch expression="edge" language="Python" />
-        <watch expression="graph[edge[0]][edge[1]]" language="Python" />
-        <watch expression="node_list" language="Python" />
-        <watch expression="recipient_node" language="Python" />
-        <watch expression="check_reachable_from_list(self.XGraph.graph, taint_node_list, recipient_node)" language="Python" />
-        <watch expression="from_taint_list" language="Python" />
-        <watch expression="check_reachable(self.XGraph.graph, from_taint_list[1], recipient_node)" language="Python" />
-        <watch expression="path_list" language="Python" />
-        <watch expression="path_list" language="Python" />
-        <watch expression="path" language="Python" />
-        <watch expression="graph[path[4]][path[5]]['label'] == &quot;controlEdge&quot;" language="Python" />
-        <watch expression="get_reachable_list(graph, from_node_list, to_node)" language="Python" />
-        <watch expression="get_labeled_paths_between_nodes(graph, &quot;controlEdge&quot;, from_node, to_node)" language="Python" />
-        <watch expression="check_path_label(graph, path_list[0], label)" language="Python" />
-        <watch expression="path_list" language="Python" />
-        <watch expression="check_path_label(graph, path, label)" language="Python" />
-        <watch expression="check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list, self.XGraph.msg_sender_nodes)" language="Python" />
-        <watch expression="check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list, self.XGraph.msg_sender_nodes)" language="Python" />
-        <watch expression="check_reachable_from_list(graph, taint_node_list, state_node)" language="Python" />
-        <watch expression="check_reachable(graph, from_node, to_node)" language="Python" />
-        <watch expression="check_reachable_from_list(graph, taint_node_list, state_node)" language="Python" />
-        <watch expression="sstore_nodes = graph.predecessors(state_node)" language="Python" />
-        <watch expression="list(graph.predecessors(state_node))" language="Python" />
-        <watch expression="get_labeled_paths_between_nodes(graph, &quot;controlEdge&quot;, from_node, to_node)" language="Python" />
-        <watch expression="path_list" language="Python" />
-        <watch expression="list(nx.all_simple_paths(graph, source=from_node, target=to_node))" language="Python" />
-        <watch expression="global_state" language="Python" />
-        <watch expression="global_state" language="Python" />
-        <watch expression="check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list, self.XGraph.msg_sender_nodes)" language="Python" />
-        <watch expression="from_taint_list" language="Python" />
-        <watch expression="check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list, self.XGraph.msg_sender_nodes)" language="Python" />
-        <watch expression="check_reachable_from_list(graph, taint_node_list, state_node)" language="Python" />
-        <watch expression="state_node" />
-        <watch expression="check_reachable_from_list(graph, taint_node_list, sstore_node)" language="Python" />
-        <watch expression="get_control_node(graph, sstore_nodes)" language="Python" />
-        <watch expression="check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list, self.XGraph.msg_sender_nodes)" language="Python" />
-        <watch expression="check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list, self.XGraph.msg_sender_nodes)" language="Python" />
-        <watch expression="get_taint_sstore_list(self.XGraph.graph, state_node, taint_node_list, msg_sender_nodes)" language="Python" />
-        <watch expression="self.XGraph" language="Python" />
+        <watch expression="solver_test_2 = Solver()" language="Python" />
+        <watch expression="solver_test_2.push()" language="Python" />
+        <watch expression="solver_test_2.add(message_call.constraint)" language="Python" />
+        <watch expression="check_sat(solver_test_2)" language="Python" />
+        <watch expression="new_first_constraint, new_second_constraint = refine_constrain(node_first.constraint, node_second.constraint)" language="Python" />
+        <watch expression="condition = z3.substitute(condition, (str(var_name), new_var_name))" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/seraphV1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1575943227278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Seraph$test.coverage" NAME="test Coverage Results" MODIFIED="1583153565623" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/checker" />
-    <SUITE FILE_PATH="coverage/Seraph$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1583505955091" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Seraph$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1585893035010" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/seraph_V1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1571114738343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Seraph$networktest.coverage" NAME="networktest Coverage Results" MODIFIED="1583153790566" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../network" />
   </component>

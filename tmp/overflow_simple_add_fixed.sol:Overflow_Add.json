@@ -1,0 +1,14 @@
+{
+ "evm_code_coverage": "",
+ "vulnerabilities": {
+  "integer_underflow": [],
+  "integer_overflow": [
+   "tod-overflow-reentrancy//overflow_simple_add_fixed.sol:12:7: Warning: IntegerOverflow Vulnerability.\n      uint256 c = a + b"
+  ],
+  "reentrancy": [],
+  "prng_bug": [],
+  "dos_bug": [],
+  "tod_bug": []
+ },
+ "run_time": 0
+}
