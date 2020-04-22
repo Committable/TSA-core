@@ -1,7 +1,7 @@
 class OpCode:
     """An EVM opcode."""
 
-    def __init__(self, name: str, code: int, pop: int, push: int):
+    def __init__(self, name, code, pop, push):
         """
         Args:
           name (str): Human-readable opcode.
@@ -14,75 +14,75 @@ class OpCode:
         self.pop = pop
         self.push = push
 
-    def stack_delta(self) -> int:
+    def stack_delta(self):
         """Return the net effect on the stack size of running this operation."""
         return self.push - self.pop
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return "<{0} object {1}, {2}>".format(
             self.__class__.__name__,
             hex(id(self)),
             self.__str__()
         )
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other):
         return self.code == other.code
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         return self.code.__hash__()
 
-    def is_push(self) -> bool:
+    def is_push(self):
         """Predicate: opcode is a push operation."""
         return PUSH1.code <= self.code <= PUSH32.code
 
-    def is_swap(self) -> bool:
+    def is_swap(self):
         """Predicate: opcode is a swap operation."""
         return SWAP1.code <= self.code <= SWAP16.code
 
-    def is_dup(self) -> bool:
+    def is_dup(self):
         """Predicate: opcode is a dup operation."""
         return DUP1.code <= self.code <= DUP16.code
 
-    def is_log(self) -> bool:
+    def is_log(self):
         """Predicate: opcode is a log operation."""
         return LOG0.code <= self.code <= LOG4.code
 
-    def is_missing(self) -> bool:
+    def is_missing(self):
         return self.code not in BYTECODES
 
-    def is_invalid(self) -> bool:
+    def is_invalid(self):
         return (self.code == INVALID.code) or self.is_missing()
 
-    def is_arithmetic(self) -> bool:
+    def is_arithmetic(self):
         """Predicate: opcode's result can be calculated from its inputs alone."""
         return (ADD.code <= self.code <= SIGNEXTEND.code) or \
                (LT.code <= self.code <= SAR.code)
 
-    def is_memory(self) -> bool:
+    def is_memory(self):
         """Predicate: opcode operates on memory"""
         return MLOAD.code <= self.code <= MSTORE8.code
 
-    def is_storage(self) -> bool:
+    def is_storage(self):
         """Predicate: opcode operates on storage ('the tape')"""
         return SLOAD.code <= self.code <= SSTORE.code
 
-    def is_call(self) -> bool:
+    def is_call(self):
         """Predicate: opcode calls an external contract"""
         return self in (CALL, CALLCODE, DELEGATECALL, STATICCALL,)
 
-    def alters_flow(self) -> bool:
+    def alters_flow(self):
         """Predicate: opcode alters EVM control flow."""
         return (self.code in (JUMP.code, JUMPI.code,)) or self.possibly_halts()
 
-    def is_exception(self) -> bool:
+    def is_exception(self):
         """Predicate: opcode causes the EVM to throw an exception."""
         return (self.code in (THROW.code, THROWI.code, REVERT.code)) \
                or self.is_invalid()
 
-    def halts(self) -> bool:
+    def halts(self):
         """Predicate: opcode causes the EVM to halt."""
         halt_codes = (
             STOP.code,
@@ -93,15 +93,15 @@ class OpCode:
         )
         return (self.code in halt_codes) or self.is_invalid()
 
-    def possibly_halts(self) -> bool:
+    def possibly_halts(self):
         """Predicate: opcode MAY cause the EVM to halt. (halts + THROWI)"""
         return self.halts() or self.code == THROWI.code
 
-    def push_len(self) -> int:
+    def push_len(self):
         """Return the number of bytes the given PUSH instruction pushes."""
         return self.code - PUSH1.code + 1 if self.is_push() else 0
 
-    def log_len(self) -> int:
+    def log_len(self):
         """Return the number of topics the given LOG instruction includes."""
         return self.code - LOG0.code if self.is_log() else 0
 
@@ -291,7 +291,7 @@ BYTECODES = {code.code: code for code in OPCODES.values()}
 """Dictionary mapping of byte values to EVM OpCode objects"""
 
 
-def opcode_by_name(name: str) -> OpCode:
+def opcode_by_name(name):
     """
     Mapping: Retrieves the named OpCode object (case-insensitive).
 
@@ -304,7 +304,7 @@ def opcode_by_name(name: str) -> OpCode:
     return OPCODES[name]
 
 
-def opcode_by_value(val: int) -> OpCode:
+def opcode_by_value(val):
     """
     Mapping: Retrieves the OpCode object with the given value.
 
@@ -316,7 +316,7 @@ def opcode_by_value(val: int) -> OpCode:
     return BYTECODES[val]
 
 
-def missing_opcode(val: int) -> OpCode:
+def missing_opcode(val):
     """
     Produces a new OpCode with the given value, as long as that is
     an unknown code.

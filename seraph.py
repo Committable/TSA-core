@@ -10,11 +10,11 @@ import reporter.params
 import disassembler.params
 from disassembler import wasmConvention
 from interpreter.evmInterpreter import EVMInterpreter
-# from interpreter.wasmInterpreter import WASMInterpreter
-# from interpreter.wasmInterpreter import WASMInterpreter
+from interpreter.wasmInterpreter import WASMInterpreter
+from interpreter.wasmInterpreter import WASMInterpreter
 from reporter.cfgPrinter import CFGPrinter
 from runtime.evmRuntime import EvmRuntime
-# from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
+from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
 
 from utils import run_command,compare_versions
 from inputDealer.inputHelper import InputHelper
@@ -28,6 +28,7 @@ from checker.tod import *
 from reporter.vulnerability import *
 from reporter.result import *
 import log
+
 
 def main():
     global args
@@ -87,9 +88,9 @@ def main():
 
     exit_code = 0
 
-    # if args.evm:
-    #     if has_dependencies_installed(evm=True):
-    #         exit_code = analyze_evm_bytecode()
+    if args.evm:
+        if has_dependencies_installed(evm=True):
+            exit_code = analyze_evm_bytecode()
     # elif args.wasm:
     #     if has_dependencies_installed():
     #         exit_code = analyze_wasm_bytecode()
@@ -99,7 +100,7 @@ def main():
     elif args.golang:
         if has_dependencies_installed(golang=True):
             exit_code = analyze_go_code()
-    else:
+    elif args.solidity:
         if has_dependencies_installed(solc=True, evm=True):
             exit_code = analyze_solidity_code()
 
@@ -156,27 +157,27 @@ def has_dependencies_installed(evm=False, emcc=False, golang=False, solc=False):
 
     return True
 
-# def analyze_evm_bytecode():
-#     global args
-#
-#     helper = InputHelper(InputHelper.EVM_BYTECODE, source=args.source)
-#     inp = helper.get_inputs()[0]
-#
-#     env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'])
-#     env.build_runtime_env()
-#
-#     interpreter=EVMInterpreter(env)
-#     exit_code = interpreter.sym_exec()
-#     nx.draw(interpreter.graph.graph, with_labels=True)
-#     # output_graph = nx.nx_agraph.to_agraph(interpreter.graph)
-#     # print(output_graph)
-#     plt.savefig("path.png")
-#
-#
-#
-#     # helper.rm_tmp_files()
-#
-#     return exit_code
+def analyze_evm_bytecode():
+    global args
+
+    helper = InputHelper(InputHelper.EVM_BYTECODE, source=args.source)
+    inp = helper.get_inputs()[0]
+
+    env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'])
+    env.build_runtime_env()
+
+    interpreter=EVMInterpreter(env)
+    exit_code = interpreter.sym_exec()
+    # nx.draw(interpreter.graph.graph, with_labels=True)
+    # output_graph = nx.nx_agraph.to_agraph(interpreter.graph)
+    # print(output_graph)
+    # plt.savefig("path.png")
+
+
+
+    # helper.rm_tmp_files()
+
+    return exit_code
 
 
 # def analyze_wasm_bytecode():

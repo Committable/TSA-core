@@ -162,7 +162,6 @@ def check_state_change(graph, branch_id, call_node):
     return False
 
 
-# 任意一个没有only_owner约束, True表示没有onlyowner约束
 def only_owner_check(graph, control_nodes, msg_sender_nodes, state_node_list, sender_node):
     for node in msg_sender_nodes:
         nodes_reached = get_reachable_to_list(graph, node, control_nodes)
@@ -170,7 +169,6 @@ def only_owner_check(graph, control_nodes, msg_sender_nodes, state_node_list, se
             constraint = node_reached.constraint
             # storage_value = state_node.value
             sender_value = sender_node.value
-            # 求解成功表示没有约束onlyowner的
             if check_constraint(constraint, sender_value, state_node_list):
                 return True
     return False
@@ -278,7 +276,7 @@ def query_satisfy_add_expr(first_node, expression):
 
 def refine_constrain(first_constraint, second_constraint):
     new_first_constraint = []
-    new_second_constraint =[]
+    new_second_constraint = []
     for condition in first_constraint:
         all_vars = get_vars(condition)
         new_condition = change_vars(all_vars, condition, 1)

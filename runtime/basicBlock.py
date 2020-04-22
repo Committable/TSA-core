@@ -1,6 +1,6 @@
 import six
 from graphBuilder.XGraph import *
-from disassembler.wasmConvention import opcodes
+# from disassembler.wasmConvention import opcodes
 
 
 class BasicBlock:

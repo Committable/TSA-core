@@ -8,11 +8,15 @@ import six
 from z3 import *
 import zlib, base64
 from interpreter.symbolicVarGenerator import *
+from uinttest.global_test_params import PICKLE_PATH
 from utils import *
 import interpreter.opcodes as opcodes
 from graphBuilder.evmGraph import *
 import networkx as nx
+import global_params
+import pickle
 
+# PICKLE_PATH = 'current_test.pickle'
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
 
@@ -88,6 +92,8 @@ class EVMInterpreter:
         # Mark that this basic block in the visited blocks
         visited.append(block)
         depth += 1
+        if self.is_testing_evm():
+            self.compare_storage_and_gas_unit_test(global_state, global_params.UNIT_TEST)
 
         # Go to next Basic Block(s)
         if self.runtime.jump_type[block] == "terminal" or depth > interpreter.params.DEPTH_LIMIT:
@@ -196,7 +202,7 @@ class EVMInterpreter:
         # instr_opcode = opcodes.opcode_by_name(opcode)
         # print(opcode)
         if len(stack) != len(node_stack):
-            print(...)
+            print("...")
         if opcode == "INVALID":
             return
         elif opcode == "ASSERTFAIL":
@@ -708,7 +714,7 @@ class EVMInterpreter:
                         computed = sha3_list[position]
                     else:
                         new_var_name = self.gen.gen_arbitrary_var()
-                        new_var = BitVec(new_var_name, 256)
+                        new_var = BitVec(new_var_name , 256)
                         sha3_list[position] = new_var
                         stack.insert(0, new_var)
                         computed = new_var
@@ -1511,6 +1517,13 @@ class EVMInterpreter:
         if init_flag:
             init_state(self.graph, global_state)
 
+    def is_testing_evm(self):
+        return global_params.UNIT_TEST != 0
+
+    def compare_storage_and_gas_unit_test(self, global_state, UNIT_TEST):
+        unit_test = pickle.load(open(PICKLE_PATH, 'rb'))
+        test_status = unit_test.compare_with_symExec_result(global_state, UNIT_TEST)
+        exit(test_status)
 
 class Parameter:
     def __init__(self, **kwargs):

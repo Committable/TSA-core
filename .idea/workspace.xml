@@ -2,24 +2,36 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/checker/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reporter/result.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/reporter/vulnerability.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/global_params.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/evm_uint_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/global_test_params.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/run_tests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/msize0.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/msize1.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/msize2.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/msize3.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstore0.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstore1.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstore8MemExp.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstore8WordToBigError.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstore8_0.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstore8_1.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstoreMemExp.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstoreWordToBigError.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/mstore_mload0.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/vmArithmeticTest.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/vmBitwiseLogicOperationTest.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/uinttest/test_data/vmPushDupSwapTest.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checker/algorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/algorithm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checker/overflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/overflow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checker/reentrancy.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/reentrancy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checker/test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/checker/tod.py" beforeDir="false" afterPath="$PROJECT_DIR$/checker/tod.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/file.dot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphBuilder/XGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/XGraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/graphBuilder/evmGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/evmGraph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/inputHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/inputHelper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/interpreter/evmInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/evmInterpreter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interpreter/opcodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/opcodes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/log.py" beforeDir="false" afterPath="$PROJECT_DIR$/log.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/basicBlock.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/basicBlock.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/seraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/seraph.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_contracts/ree" beforeDir="false" afterPath="$PROJECT_DIR$/test_contracts/ree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_contracts/ree:Ownable.evm" beforeDir="false" afterPath="$PROJECT_DIR$/test_contracts/ree:Ownable.evm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_contracts/ree:Ownable.evm.disasm" beforeDir="false" afterPath="$PROJECT_DIR$/test_contracts/ree:Ownable.evm.disasm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seraph_info.log" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -69,6 +81,10 @@
     </option>
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/uinttest" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/disassembler" />
     </key>
@@ -85,7 +101,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.seraph">
+  <component name="RunManager" selected="Python.run_tests">
     <configuration name="networktest" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="seraph-V1.0" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -108,6 +124,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="run_tests" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="seraph-V1.0" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/local/bin/python3.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/uinttest" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/uinttest/run_tests.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="seraph" type="PythonConfigurationType" factoryName="Python">
       <module name="seraph-V1.0" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -122,7 +160,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/seraph.py" />
-      <option name="PARAMETERS" value="-s $PROJECT_DIR$/tod-overflow-reentrancy/TIDT_MNW.sol -sol -p ethereum" />
+      <option name="PARAMETERS" value="-s $PROJECT_DIR$/uinttest/bytecode -e -p ethereum" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="true" />
       <option name="MODULE_MODE" value="false" />
@@ -156,9 +194,11 @@
       <item itemvalue="Python.seraph" />
       <item itemvalue="Python.networktest" />
       <item itemvalue="Python.test" />
+      <item itemvalue="Python.run_tests" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.run_tests" />
         <item itemvalue="Python.networktest" />
         <item itemvalue="Python.test" />
       </list>
@@ -199,7 +239,7 @@
       <workItem from="1584671265878" duration="8132000" />
       <workItem from="1584938795665" duration="4494000" />
       <workItem from="1584980203061" duration="21024000" />
-      <workItem from="1585642835624" duration="10899000" />
+      <workItem from="1585642835624" duration="34250000" />
     </task>
     <task id="LOCAL-00001" summary="delete unnecessary files">
       <created>1573785113280</created>
@@ -246,12 +286,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file:///usr/local/lib/python3.7/site-packages/networkx/classes/graph.py</url>
-          <line>566</line>
+          <line>510</line>
           <option name="timeStamp" value="96" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/interpreter/evmInterpreter.py</url>
-          <line>198</line>
+          <line>204</line>
           <option name="timeStamp" value="130" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -261,12 +301,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/seraph.py</url>
-          <line>266</line>
+          <line>267</line>
           <option name="timeStamp" value="234" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/seraph.py</url>
-          <line>257</line>
+          <line>258</line>
           <option name="timeStamp" value="238" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -281,13 +321,38 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/checker/algorithm.py</url>
-          <line>219</line>
+          <line>217</line>
           <option name="timeStamp" value="262" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/checker/algorithm.py</url>
-          <line>243</line>
+          <line>241</line>
           <option name="timeStamp" value="263" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/uinttest/evm_uint_test.py</url>
+          <line>57</line>
+          <option name="timeStamp" value="269" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/interpreter/evmInterpreter.py</url>
+          <line>37</line>
+          <option name="timeStamp" value="270" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>92</line>
+          <option name="timeStamp" value="271" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/uinttest/evm_uint_test.py</url>
+          <line>34</line>
+          <option name="timeStamp" value="273" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/interpreter/evmInterpreter.py</url>
+          <line>95</line>
+          <option name="timeStamp" value="274" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -310,9 +375,10 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Seraph$run_tests.coverage" NAME="run_tests Coverage Results" MODIFIED="1587519439400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/uinttest" />
     <SUITE FILE_PATH="coverage/seraphV1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1575943227278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Seraph$test.coverage" NAME="test Coverage Results" MODIFIED="1583153565623" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/checker" />
-    <SUITE FILE_PATH="coverage/Seraph$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1585893035010" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Seraph$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1587455409372" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/seraph_V1_0$seraph.coverage" NAME="seraph Coverage Results" MODIFIED="1571114738343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Seraph$networktest.coverage" NAME="networktest Coverage Results" MODIFIED="1583153790566" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../network" />
   </component>
