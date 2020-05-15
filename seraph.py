@@ -239,7 +239,11 @@ def analyze_solidity_code():
         reentrancy_node_list = reentrancyChecker.check()
         todChecker = TOD(interpreter.graph)
         tod_node_list = todChecker.check()
-
+        
+        # unfairpayment detection
+        unfairapyChecker = Unfairpay(interpreter.graph)
+        unfairapy_node_list = unfairapyChecker.check()
+        
         detect_result = Result()
 
 
@@ -267,6 +271,14 @@ def analyze_solidity_code():
             tod_pcs.append(tod_node.global_pc)
         tod_info = TodBugInfo(inp["source_map"], tod_pcs)
         detect_result.results["vulnerabilities"]["tod_bug"] = tod_info.get_warnings()
+        
+        # unfairpayment detection
+        unfairpayment_pcs = []
+        for unfairpayment_node in unfairapy_node_list:
+            unfairpayment_pcs.append(unfairpayment_node.global_pc)
+        unfairpayment_info = UnfairpaymentInfo(inp["source_map"], unfairpayment_pcs)
+        detect_result.results["vulnerabilities"]["unfairpayment"] = unfairpayment_info.get_warnings()
+        
         separator = '\\' if sys.platform in ('win32', 'cygwin') else '/'
         result_file = "./tmp" + separator+inp['disasm_file'].split(separator)[-1].split('.evm.disasm')[0] + '.json'
         of = open(result_file, "w+")
