@@ -694,12 +694,12 @@ class ModuleInstance:
         for table in module.tables:
             tabletype = table.tabletype
             elemtype = tabletype.elemtype
-            tableinst = TableInstance(elemtype, tabletype.limits)
+            tableinst = TableInstance(module.module_name,"0",elemtype, tabletype.limits)
             store.tables.append(tableinst)
             self.tableaddrs.append(len(store.tables) - 1)
         # For each memory module.mems, do:
         for mem in module.mems:
-            meminst = MemoryInstance(mem.memtype)
+            meminst = MemoryInstance(module.module_name,"0",mem.memtype)
             store.mems.append(meminst)
             self.memaddrs.append(len(store.mems) - 1)
         # For each global in module.globals, do:
