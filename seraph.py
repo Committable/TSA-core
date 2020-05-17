@@ -1,44 +1,38 @@
 #!/usr/bin/env python
 
-import re
-from sys import exit
-import logging
 import argparse
-import subprocess
+from sys import exit
+
+from networkx.drawing.nx_pydot import write_dot
+
+import disassembler.params
 import interpreter.params
 import reporter.params
-import disassembler.params
-from disassembler import wasmConvention
-from interpreter.evmInterpreter import EVMInterpreter
-from interpreter.wasmInterpreter import WASMInterpreter
-from interpreter.wasmInterpreter import WASMInterpreter
-from reporter.cfgPrinter import CFGPrinter
-from runtime.evmRuntime import EvmRuntime
-from runtime.wasmRuntime import WASMRuntime, WasmFunc, HostFunc
-
-from utils import run_command,compare_versions
-from inputDealer.inputHelper import InputHelper
-import networkx as nx
-import matplotlib.pyplot as plt
-from networkx.drawing.nx_pydot import write_dot
-from checker.algorithm import *
 from checker.overflow import *
 from checker.reentrancy import *
 from checker.tod import *
-from reporter.vulnerability import *
+from checker.unfairpay import *
+from disassembler import wasmConvention
+from inputDealer.inputHelper import InputHelper
+from interpreter.evmInterpreter import EVMInterpreter
+from interpreter.wasmInterpreter import WASMInterpreter
+from reporter.cfgPrinter import CFGPrinter
 from reporter.result import *
-import log
+from reporter.vulnerability import *
+from runtime.evmRuntime import EvmRuntime
+from runtime.wasmRuntime import WASMRuntime
+from utils import run_command, compare_versions
 
 
 def main():
     global args
     parser = argparse.ArgumentParser(prog="seraph")
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-e", "--evm", help="read evm bytecode in source file.", action="store_true")
-    group.add_argument("-w", "--wasm", help="read wasm bytecode in source file.",action="store_true")
-    group.add_argument("-sol", "--solidity", help="read solidity in source", action="store_true")
-    group.add_argument("-cc", "--cpp", help="read cpp in source file.", action="store_true")
-    group.add_argument("-go", "--golang", help="read golang in source file", action="store_true")
+    group0 = parser.add_mutually_exclusive_group(required=True)
+    group0.add_argument("-evm", "--evm", help="read evm bytecode in source file.", action="store_true")
+    group0.add_argument("-wasm", "--wasm", help="read wasm bytecode in source file.", action="store_true")
+    group0.add_argument("-sol", "--solidity", help="read solidity in source", action="store_true")
+    group0.add_argument("-cc", "--cpp", help="read cpp in source file.", action="store_true")
+    group0.add_argument("-go", "--golang", help="read golang in source file", action="store_true")
 
     group1 = parser.add_mutually_exclusive_group(required=True)
     group1.add_argument("-p", "--platform", type=str, help="indicate on which blockchain blockchainPlatform the file is being verfied")
@@ -48,10 +42,11 @@ def main():
 
     parser.add_argument("-v", "--version", action="version", version="%(prog)s 1.0.0")
 
-    parser.add_argument("-t", "--timeout", help="Timeout for Z3 in ms.", action="store", type=int)
-    parser.add_argument("-glt", "--global-timeout", help="Timeout for symbolic execution", action="store", dest="global_timeout", type=int)
+    parser.add_argument("-t", "--timeout", help="timeout for Z3 in ms.", type=int)
+    parser.add_argument("-glt", "--global-timeout", help="timeout for tool check execution time", action="store",
+                        dest="global_timeout", type=int)
 
-    parser.add_argument("-vb", "--verbose", help="Verbose output, print everything.", action="store_true")
+    parser.add_argument("-vb", "--verbose", help="verbose output, print everything.", action="store_true")
 
     parser.add_argument('-g', '--cfg',
                           action='store_true',
@@ -63,14 +58,16 @@ def main():
     graph = parser.add_argument_group('Graph options')
     graph.add_argument('--simplify', action='store_true',
                        help='generate a simplify CFG')
+
     graph.add_argument('--onlyfunc', type=str,
                        nargs="*",
                        default=[],
                        help='only generate the CFG for this list of function name')
-    # graph.add_argument('--visualize',
 
-    parser.add_argument("-destpath", "--destpath", help="File path for results", action="store", dest="destpath",type=str)
-    # parser.add_argument("-db", "--debug", help="Display debug information", action="store_true")
+    parser.add_argument("-o", "--output", help="file path for results", type=str)
+
+    parser.add_argument("-db", "--debug", help="display debug information", action="store_true")
+
     args = parser.parse_args()
 
     if args.timeout:
@@ -83,17 +80,17 @@ def main():
     else:
         logging.basicConfig(level=logging.INFO)
 
-    if args.destpath:
-        reporter.params.DEST_PATH = args.destpath
+    if args.output:
+        reporter.params.DEST_PATH = args.output
 
     exit_code = 0
 
     if args.evm:
         if has_dependencies_installed(evm=True):
             exit_code = analyze_evm_bytecode()
-    # elif args.wasm:
-    #     if has_dependencies_installed():
-    #         exit_code = analyze_wasm_bytecode()
+    elif args.wasm:
+        if has_dependencies_installed():
+            exit_code = analyze_wasm_bytecode()
     if args.cpp:
         if has_dependencies_installed(emcc=True):
             exit_code = analyze_cpp_code()
@@ -180,36 +177,36 @@ def analyze_evm_bytecode():
     return exit_code
 
 
-# def analyze_wasm_bytecode():
-#     #TODO
-#     global args
-#
-#     helper = InputHelper(InputHelper.WASM_BYTECODE, source=args.source)
-#     inp = helper.get_inputs()[0]
-#
-#     runtime = WASMRuntime(inp["module"])
-#     #print cfg if needed
-#     cprinter = None
-#     if args.cfg:
-#         if args.onlyfunc:
-#             func_name = args.onlyfunc[0]
-#             for key in runtime.module.functions_name.keys():
-#                 if runtime.module.functions_name[key] == func_name:
-#                     cprinter = CFGPrinter(runtime.store.funcs[key], func_name)
-#             # cprinter = CFGPrinter(runtime.store.funcs[257], func_name)
-#             if cprinter == None:
-#                 for export in runtime.module.exports:
-#                     if export.kind == wasmConvention.extern_func and export.name == func_name:
-#                         cprinter = CFGPrinter(runtime.store.funcs[export.desc], func_name)
-#
-#     if cprinter != None:
-#         cprinter.print_CFG()
-#
-#     runtime.__repr__()
-#     engine = WASMInterpreter(runtime)
-#     engine.exec("_initialize")
-#
-#     return
+def analyze_wasm_bytecode():
+    # TODO
+    global args
+
+    helper = InputHelper(InputHelper.WASM_BYTECODE, source=args.source)
+    inp = helper.get_inputs()[0]
+
+    runtime = WASMRuntime(inp["module"])
+    # print cfg if needed
+    cprinter = None
+    if args.cfg:
+        if args.onlyfunc:
+            func_name = args.onlyfunc[0]
+            for key in runtime.module.functions_name.keys():
+                if runtime.module.functions_name[key] == func_name:
+                    cprinter = CFGPrinter(runtime.store.funcs[key], func_name)
+            # cprinter = CFGPrinter(runtime.store.funcs[257], func_name)
+            if cprinter == None:
+                for export in runtime.module.exports:
+                    if export.kind == wasmConvention.extern_func and export.name == func_name:
+                        cprinter = CFGPrinter(runtime.store.funcs[export.desc], func_name)
+
+    if cprinter != None:
+        cprinter.print_CFG()
+
+    runtime.__repr__()
+    engine = WASMInterpreter(runtime)
+    engine.exec("_initialize")
+
+    return
 
 def analyze_cpp_code():
     #TODO
@@ -271,13 +268,14 @@ def analyze_solidity_code():
             tod_pcs.append(tod_node.global_pc)
         tod_info = TodBugInfo(inp["source_map"], tod_pcs)
         detect_result.results["vulnerabilities"]["tod_bug"] = tod_info.get_warnings()
-        
+
+        # todo: unresolved unfairpaymentInfo
         # unfairpayment detection
-        unfairpayment_pcs = []
-        for unfairpayment_node in unfairapy_node_list:
-            unfairpayment_pcs.append(unfairpayment_node.global_pc)
-        unfairpayment_info = UnfairpaymentInfo(inp["source_map"], unfairpayment_pcs)
-        detect_result.results["vulnerabilities"]["unfairpayment"] = unfairpayment_info.get_warnings()
+        # unfairpayment_pcs = []
+        # for unfairpayment_node in unfairapy_node_list:
+        #     unfairpayment_pcs.append(unfairpayment_node.global_pc)
+        # unfairpayment_info = UnfairpaymentInfo(inp["source_map"], unfairpayment_pcs)
+        # detect_result.results["vulnerabilities"]["unfairpayment"] = unfairpayment_info.get_warnings()
         
         separator = '\\' if sys.platform in ('win32', 'cygwin') else '/'
         result_file = "./tmp" + separator+inp['disasm_file'].split(separator)[-1].split('.evm.disasm')[0] + '.json'
