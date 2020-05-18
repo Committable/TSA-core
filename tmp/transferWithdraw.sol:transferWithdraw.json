@@ -1,0 +1,16 @@
+{
+ "evm_code_coverage": "",
+ "vulnerabilities": {
+  "integer_underflow": [],
+  "integer_overflow": [
+   "tod-overflow-reentrancy//transferWithdraw.sol:6:12: Warning: IntegerOverflow Vulnerability.\n           userBalances[to] += amount"
+  ],
+  "reentrancy": [
+   "tod-overflow-reentrancy//transferWithdraw.sol:13:15: Warning: Re-Entrancy Vulnerability.\n        if (!(msg.sender.call.value(amountToWithdraw)()"
+  ],
+  "prng_bug": [],
+  "dos_bug": [],
+  "tod_bug": []
+ },
+ "run_time": 0
+}

@@ -1,8 +1,16 @@
-import re
 import shlex
 import subprocess
-
+import json
+import mmap
+import os
+import errno
+import signal
+import csv
+import re
+import difflib
 import six
+import logging
+
 from z3 import *
 
 
@@ -12,6 +20,7 @@ def run_command(cmd):
     return solc_p.communicate()[0].decode('utf-8', 'strict')
 
 def run_command_with_err(cmd):
+    FNULL = open(os.devnull, 'w')
     solc_p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = solc_p.communicate()
     out = out.decode('utf-8', 'strict')
