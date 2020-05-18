@@ -1,9 +1,11 @@
-import re
-import six
 import ast
 import json
+
+import six
+
+from inputDealer.solidiytAstHelper import AstHelper
 from utils import run_command
-from inputDealer.astHelper import AstHelper
+
 
 class Source:
     def __init__(self, filename):
@@ -27,6 +29,7 @@ class SourceMap:
     func_to_sig_by_contract = {}
     remap = ""
     allow_paths = ""
+    cname_to_sourcefile = {}
 
     def __init__(self, cname, parent_filename, input_type, root_path="", remap="", allow_paths=""):
         self.root_path = root_path
@@ -42,6 +45,12 @@ class SourceMap:
                 raise Exception("There is no such type of input")
             SourceMap.ast_helper = AstHelper(SourceMap.parent_filename, input_type, SourceMap.remap, SourceMap.allow_paths)
             SourceMap.func_to_sig_by_contract = SourceMap._get_sig_to_func_by_contract()
+
+        for x in SourceMap.func_to_sig_by_contract:
+            c_name = x.split(":")[-1]
+            SourceMap.cname_to_sourcefile[c_name] = x
+            if c_name == self.cname:
+                self.cname = x
         self.source = self._get_source()
         self.positions = self._get_positions()
         self.instr_positions = {}
@@ -59,51 +68,6 @@ class SourceMap:
         begin = pos['begin']
         end = pos['end']
         return self.source.content[begin:end]
-
-    def get_source_code_for_block(self,pc_start,pc_end,instructions):
-        try:
-            pos1 = self.instr_positions[pc_start]
-            pos2 = self.instr_positions[pc_end]
-        except:
-            return ""
-        lines={}
-        lines_count={}
-        for pc in range(pc_start,pc_end):
-            count = 0
-            if self.instr_positions.has_key(pc):
-                location = self.get_location(pc)
-                line = location['begin']['line'] + 1
-                if line != 1:
-                    if not lines.has_key(pc) and lines_count.has_key(line):
-                        lines[line] = pc
-                    lines_count[line] = 1
-
-
-        if lines != {}:
-            s =""
-            for key in sorted(lines.keys()):
-                pc = lines[key]
-                location = self.get_location(pc)
-                begin = self.source.line_break_positions[location['begin']['line'] - 1] + 1
-                end = self.source.line_break_positions[location['begin']['line']] + 1
-                s += self.source.content[begin:end]
-            # print("lines:"+str(lines))
-            # print("line"+s)
-            return s.decode("utf-8")
-            # return s
-
-        begin = pos1['begin']
-        end = pos2['end']
-        if begin <= 0:
-            if "JUMPI" in instructions[pc_end]:
-                return "function select"
-            return "contract start"
-
-        if end >= len(self.source.content)-1:
-            return "contract end"
-
-
-        return "none code"
 
     def get_source_code_from_src(self, src):
         src = src.split(":")

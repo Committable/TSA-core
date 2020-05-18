@@ -1,36 +1,41 @@
-import re
-import os
 import logging
+import os
+import re
 import subprocess
 
+
 class EvmDisassembler:
-    def __init__(self, inputHelper):
-        self.inputHelpr = inputHelper
+    def __init__(self, source, contract, path):
+        self.source = source
+        self.contract = contract
+        if not os.path.exists(path):
+            os.mkdir(path)
+        self.tmp = {
+            "evm": os.path.join(path, contract.split(os.path.sep)[-1] + ".evm"),
+            "disasm": os.path.join(path, contract.split(os.path.sep)[-1] + ".disasm")
+        }
 
-    def prepare_disasm_file(self, target, bytecode):
-        self._write_evm_file(target, bytecode)
-        self._write_disasm_file(target)
+    def prepare_disasm_file(self):
+        with open(self.contract, 'r') as f:
+            bytecode = f.read()
+        self._write_evm_file(bytecode)
+        self._write_disasm_file()
 
-    def _write_evm_file(self, target, bytecode):
-        evm_file = self.get_temporary_files(target)["evm"]
+    def _write_evm_file(self, bytecode):
+        evm_file = self.tmp["evm"]
         with open(evm_file, 'w') as of:
             of.write(self._removeSwarmHash(bytecode))
 
-    def get_temporary_files(self, target):
-        return {
-            "evm": target + ".evm",
-            "disasm": target + ".evm.disasm",
-            "log": target + ".evm.disasm.log"
-        }
+    def get_temporary_files(self):
+        return self.tmp
 
     def _removeSwarmHash(self, evm):
         evm_without_hash = re.sub(r"a165627a7a72305820\S{64}0029$", "", evm)
         return evm_without_hash
 
-    def _write_disasm_file(self, target):
-        tmp_files = self.get_temporary_files(target)
-        evm_file = tmp_files["evm"]
-        disasm_file = tmp_files["disasm"]
+    def _write_disasm_file(self):
+        evm_file = self.tmp["evm"]
+        disasm_file = self.tmp["disasm"]
         disasm_out = ""
         try:
             disasm_p = subprocess.Popen(["evm", "disasm", evm_file], stdout=subprocess.PIPE)
@@ -41,14 +46,3 @@ class EvmDisassembler:
 
         with open(disasm_file, 'w') as of:
             of.write(disasm_out)
-
-    def rm_tmp_files(self, target):
-        tmp_files = self.get_temporary_files(target)
-        if not self.inputHelpr.evm:
-            self._rm_file(tmp_files["evm"])
-            self._rm_file(tmp_files["disasm"])
-        self._rm_file(tmp_files["log"])
-
-    def _rm_file(self, path):
-        if os.path.isfile(path):
-            os.unlink(path)
