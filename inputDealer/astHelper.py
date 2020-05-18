@@ -1,8 +1,6 @@
-import json
-
-from inputDealer.solidityAstWalker import AstWalker
 from utils import run_command
-
+from inputDealer.astWalker import AstWalker
+import json
 
 class AstHelper:
     def __init__(self, filename, input_type, remap, allow_paths=""):

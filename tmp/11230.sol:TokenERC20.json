@@ -1,0 +1,14 @@
+{
+ "evm_code_coverage": "",
+ "vulnerabilities": {
+  "integer_underflow": [
+   "tod-overflow-reentrancy//11230.sol:317:11: Warning: IntegerUnderflow Vulnerability.\n     * @param _from the address"
+  ],
+  "integer_overflow": [],
+  "reentrancy": [],
+  "prng_bug": [],
+  "dos_bug": [],
+  "tod_bug": []
+ },
+ "run_time": 0
+}

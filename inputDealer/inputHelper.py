@@ -1,15 +1,10 @@
+import re
 import logging
-import os
-import shutil
-
-import six
-
-import global_params
+from inputDealer.solidityCompiler import SolidityCompiler
 from disassembler.evmDisassembler import EvmDisassembler
 from disassembler.wasmModule import Module
-from inputDealer.solidityCompiler import SolidityCompiler
 from inputDealer.soliditySouceMap import SourceMap
-
+import six
 
 class InputHelper:
     EVM_BYTECODE = 0
@@ -67,27 +62,24 @@ class InputHelper:
     def get_inputs(self):
         inputs = []
         if self.input_type == InputHelper.EVM_BYTECODE:
-            disassembler = EvmDisassembler(self.source, self.source, global_params.TMP_DIR)
-            disassembler.prepare_disasm_file()
-            disasm_file = disassembler.get_temporary_files()['disasm']
+            self.disassembler = EvmDisassembler(self)
+            with open(self.source, 'r') as f:
+                bytecode = f.read()
+            self.disassembler.prepare_disasm_file(self.source, bytecode)
 
+            disasm_file = self.disassembler.get_temporary_files(self.source)['disasm']
             inputs.append({'disasm_file': disasm_file})
-
         elif self.input_type == InputHelper.SOLIDITY:
-            self.compiler = SolidityCompiler(self.source, self.root_path, self.allow_paths, self.remap,
-                                             self.compilation_err, global_params.TMP_DIR)
+            self.compiler = SolidityCompiler(self)
             contracts = self.compiler.get_compiled_contracts()
-
-            for contract in contracts:
-                disassembler = EvmDisassembler(self.source, contract, global_params.TMP_DIR)
-                disassembler.prepare_disasm_file()
-
-                cname = contract.split(os.path.sep)[-1].split(".bin")[0]
-
-                source_map = SourceMap(cname, self.source, 'solidity', self.root_path, self.remap, self.allow_paths)
-                c_source = source_map.cname.split(":")[0]
-
-                disasm_file = disassembler.get_temporary_files()['disasm']
+            self.disassembler = EvmDisassembler(self)
+            for contract, bytecode in contracts:
+                self.disassembler.prepare_disasm_file(contract, bytecode)
+            for contract, _ in contracts:
+                c_source, cname = contract.split(':')
+                c_source = re.sub(self.root_path, "", c_source)
+                source_map = SourceMap(contract, self.source, 'solidity', self.root_path, self.remap, self.allow_paths)
+                disasm_file = self.disassembler.get_temporary_files(contract)['disasm']
                 inputs.append({
                     'contract': contract,
                     'source_map': source_map,
@@ -114,4 +106,14 @@ class InputHelper:
         return inputs
 
     def rm_tmp_files(self):
-        shutil.rmtree(global_params.TMP_DIR, ignore_errors=True)
+        if self.input_type == InputHelper.EVM_BYTECODE:
+            self.disassembler.rm_tmp_files(self.source)
+        elif self.input_type == InputHelper.SOLIDITY:
+            self.compiler.rm_tmp_files_of_multiple_contracts(self.compiled_contracts)
+
+
+
+
+
+
+

@@ -1,0 +1,16 @@
+{
+ "evm_code_coverage": "",
+ "vulnerabilities": {
+  "integer_underflow": [],
+  "integer_overflow": [
+   "tod-overflow-reentrancy//WithDrawFixed2.sol:8:13: Warning: IntegerOverflow Vulnerability.\n            balances[msg.sender] += msg.value"
+  ],
+  "reentrancy": [],
+  "prng_bug": [],
+  "dos_bug": [],
+  "tod_bug": [
+   "tod-overflow-reentrancy//WithDrawFixed2.sol:20:15: Warning: Transaction-Ordering Dependency.\n              balances[msg.sender] -= amount"
+  ]
+ },
+ "run_time": 0
+}
