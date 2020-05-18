@@ -3,8 +3,8 @@ import logging
 from inputDealer.solidityCompiler import SolidityCompiler
 from disassembler.evmDisassembler import EvmDisassembler
 from disassembler.wasmModule import Module
-from inputDealer.soliditySouceMap import SourceMap
-import six
+from inputDealer.solidityCompiler import SolidityCompiler
+from inputDealer.soliditySourceMap import SourceMap
 
 class InputHelper:
     EVM_BYTECODE = 0
