@@ -8,7 +8,7 @@ import global_params
 from disassembler.evmDisassembler import EvmDisassembler
 from disassembler.wasmModule import Module
 from inputDealer.solidityCompiler import SolidityCompiler
-from inputDealer.soliditySouceMap import SourceMap
+from inputDealer.soliditySourceMap import SourceMap
 
 
 class InputHelper:
