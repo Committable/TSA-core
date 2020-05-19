@@ -247,43 +247,43 @@ def analyze_solidity_code():
         interpreter = EVMInterpreter(env)
         interpreter.sym_exec()
 
-        overflowChecker = Overflow(interpreter.graph)
-        overflow_node_list, underflow_node_list = overflowChecker.check()
-        reentrancyChecker = Reentrancy(interpreter.graph)
-        reentrancy_node_list = reentrancyChecker.check()
-        todChecker = TOD(interpreter.graph)
-        tod_node_list = todChecker.check()
-
-        # unfairpayment detection
-        unfairapyChecker = Unfairpay(interpreter.graph)
-        unfairapy_node_list = unfairapyChecker.check()
-
-        detect_result = Result()
-
-        overflow_pcs = []
-        for overflow_node in overflow_node_list:
-            overflow_pcs.append(overflow_node.global_pc)
-        overflow_info = IntegerOverflowInfo(inp["source_map"], overflow_pcs)
-        detect_result.results["vulnerabilities"]["integer_overflow"] = overflow_info.get_warnings()
-
-        underflow_pcs = []
-        for underflow_node in underflow_node_list:
-            underflow_pcs.append(underflow_node.global_pc)
-        underflow_info = IntegerUnderflowInfo(inp["source_map"], underflow_pcs)
-        detect_result.results["vulnerabilities"]["integer_underflow"] = underflow_info.get_warnings()
-
-        reentrancy_pcs = []
-        # if reentrancy_node_list == None:
-        for reentrancy_node in reentrancy_node_list:
-            reentrancy_pcs.append(reentrancy_node.global_pc)
-        reentrancy_info = ReentrancyInfo(inp["source_map"], reentrancy_pcs)
-        detect_result.results["vulnerabilities"]["reentrancy"] = reentrancy_info.get_warnings()
-
-        tod_pcs = []
-        for tod_node in tod_node_list:
-            tod_pcs.append(tod_node.global_pc)
-        tod_info = TodBugInfo(inp["source_map"], tod_pcs)
-        detect_result.results["vulnerabilities"]["tod_bug"] = tod_info.get_warnings()
+        # overflowChecker = Overflow(interpreter.graph)
+        # overflow_node_list, underflow_node_list = overflowChecker.check()
+        # reentrancyChecker = Reentrancy(interpreter.graph)
+        # reentrancy_node_list = reentrancyChecker.check()
+        # todChecker = TOD(interpreter.graph)
+        # tod_node_list = todChecker.check()
+        #
+        # # unfairpayment detection
+        # unfairapyChecker = Unfairpay(interpreter.graph)
+        # unfairapy_node_list = unfairapyChecker.check()
+        #
+        # detect_result = Result()
+        #
+        # overflow_pcs = []
+        # for overflow_node in overflow_node_list:
+        #     overflow_pcs.append(overflow_node.global_pc)
+        # overflow_info = IntegerOverflowInfo(inp["source_map"], overflow_pcs)
+        # detect_result.results["vulnerabilities"]["integer_overflow"] = overflow_info.get_warnings()
+        #
+        # underflow_pcs = []
+        # for underflow_node in underflow_node_list:
+        #     underflow_pcs.append(underflow_node.global_pc)
+        # underflow_info = IntegerUnderflowInfo(inp["source_map"], underflow_pcs)
+        # detect_result.results["vulnerabilities"]["integer_underflow"] = underflow_info.get_warnings()
+        #
+        # reentrancy_pcs = []
+        # # if reentrancy_node_list == None:
+        # for reentrancy_node in reentrancy_node_list:
+        #     reentrancy_pcs.append(reentrancy_node.global_pc)
+        # reentrancy_info = ReentrancyInfo(inp["source_map"], reentrancy_pcs)
+        # detect_result.results["vulnerabilities"]["reentrancy"] = reentrancy_info.get_warnings()
+        #
+        # tod_pcs = []
+        # for tod_node in tod_node_list:
+        #     tod_pcs.append(tod_node.global_pc)
+        # tod_info = TodBugInfo(inp["source_map"], tod_pcs)
+        # detect_result.results["vulnerabilities"]["tod_bug"] = tod_info.get_warnings()
 
         # todo: unresolved unfairpaymentInfo
         # unfairpayment detection
@@ -293,11 +293,11 @@ def analyze_solidity_code():
         # unfairpayment_info = UnfairpaymentInfo(inp["source_map"], unfairpayment_pcs)
         # detect_result.results["vulnerabilities"]["unfairpayment"] = unfairpayment_info.get_warnings()
 
-        separator = '\\' if sys.platform in ('win32', 'cygwin') else '/'
-        result_file = "./tmp" + separator + inp['disasm_file'].split(separator)[-1].split('.evm.disasm')[0] + '.json'
-        of = open(result_file, "w+")
-        of.write(json.dumps(detect_result.results, indent=1))
-        print("Wrote results to %s.", result_file)
+        # separator = '\\' if sys.platform in ('win32', 'cygwin') else '/'
+        # result_file = "./tmp" + separator + inp['disasm_file'].split(separator)[-1].split('.evm.disasm')[0] + '.json'
+        # of = open(result_file, "w+")
+        # of.write(json.dumps(detect_result.results, indent=1))
+        # print("Wrote results to %s.", result_file)
 
         node_labels = nx.get_node_attributes(interpreter.graph.graph, 'count')
         options = {
@@ -305,8 +305,10 @@ def analyze_solidity_code():
             'width': 3,
             'with_labels': node_labels
         }
-        pos = nx.nx_agraph.graphviz_layout(interpreter.graph.graph)
-        nx.draw(interpreter.graph.graph, pos=pos)
+        # todo: error
+        # pos = nx.nx_agraph.graphviz_layout(interpreter.graph.graph)
+        # nx.draw(interpreter.graph.graph, pos=pos)
+
         write_dot(interpreter.graph.graph, 'file.dot')
         # A = nx.nx_agraph.to_agraph(interpreter.graph.graph)
         # plt.savefig("path.png")
