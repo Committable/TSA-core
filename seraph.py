@@ -254,11 +254,11 @@ def analyze_solidity_code():
         # todChecker = TOD(interpreter.graph)
         # tod_node_list = todChecker.check()
         #
-        # # unfairpayment detection
-        # unfairapyChecker = Unfairpay(interpreter.graph)
-        # unfairapy_node_list = unfairapyChecker.check()
-        #
-        # detect_result = Result()
+        # unfairpayment detection
+         unfairapyChecker = Unfairpay(interpreter.graph)
+         unfairapy_node_list = unfairapyChecker.check()
+        
+         detect_result = Result()
         #
         # overflow_pcs = []
         # for overflow_node in overflow_node_list:
@@ -285,19 +285,18 @@ def analyze_solidity_code():
         # tod_info = TodBugInfo(inp["source_map"], tod_pcs)
         # detect_result.results["vulnerabilities"]["tod_bug"] = tod_info.get_warnings()
 
-        # todo: unresolved unfairpaymentInfo
         # unfairpayment detection
-        # unfairpayment_pcs = []
-        # for unfairpayment_node in unfairapy_node_list:
-        #     unfairpayment_pcs.append(unfairpayment_node.global_pc)
-        # unfairpayment_info = UnfairpaymentInfo(inp["source_map"], unfairpayment_pcs)
-        # detect_result.results["vulnerabilities"]["unfairpayment"] = unfairpayment_info.get_warnings()
+         unfairpayment_pcs = []
+         for unfairpayment_node in unfairapy_node_list:
+             unfairpayment_pcs.append(unfairpayment_node.global_pc)
+         unfairpayment_info = UnfairpaymentInfo(inp["source_map"], unfairpayment_pcs)
+         detect_result.results["vulnerabilities"]["unfairpayment"] = unfairpayment_info.get_warnings()
 
-        # separator = '\\' if sys.platform in ('win32', 'cygwin') else '/'
-        # result_file = "./tmp" + separator + inp['disasm_file'].split(separator)[-1].split('.evm.disasm')[0] + '.json'
-        # of = open(result_file, "w+")
-        # of.write(json.dumps(detect_result.results, indent=1))
-        # print("Wrote results to %s.", result_file)
+         separator = '\\' if sys.platform in ('win32', 'cygwin') else '/'
+         result_file = "./tmp" + separator + inp['disasm_file'].split(separator)[-1].split('.evm.disasm')[0] + '.json'
+         of = open(result_file, "w+")
+         of.write(json.dumps(detect_result.results, indent=1))
+         print("Wrote results to %s.", result_file)
 
         node_labels = nx.get_node_attributes(interpreter.graph.graph, 'count')
         options = {
