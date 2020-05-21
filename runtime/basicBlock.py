@@ -16,7 +16,7 @@ class BasicBlock:
         self.jump_from = []  # all blocks from which can jump to or fall to this block
 
         self.falls_to = None
-        self.jump_targets = [] #all true target for br_ indexed by array index
+        self.jump_targets = []  # all true targets for conditional jump or targets for uncondition jump
 
         self.type = None
 

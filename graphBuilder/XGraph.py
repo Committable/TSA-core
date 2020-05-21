@@ -173,46 +173,46 @@ class XGraph:
         self.graph = nx.DiGraph()
         self.count = 0
         self.overflow_related = ('ADD', 'SUB', 'MUL', 'EXP')
-        self.instruction_nodes = []
-        self.message_call_nodes = []
-        self.msg_data_nodes = []
-        self.arith_nodes = []
-        self.input_data_nodes = []
-        self.block_data_nodes = []
-        self.state_op_nodes = []
-        self.call_nodes = []
+        self.instruction_nodes = []  # TODO: add comment
+        self.message_call_nodes = []  # all nodes included in {call, staticcall, delegatecall, callcode}
+        self.msg_data_nodes = []  # TODO: add comment
+        self.arith_nodes = []  # only for {"add", "sub", "mul", "exp"}
+        self.input_data_nodes = []  # for {calldataload, calldatacopy}
+        self.block_data_nodes = []  # for {blockhash}
+        self.state_op_nodes = []  # all nodes included in {sstore, sload}
+        self.call_nodes = []  # for call instruction
         self.msg_sender_nodes = []
         self.state_nodes = []
-        self.sstore_nodes = []
-        self.sender_node = ""
+        self.sstore_nodes = [] # for sstore instruction
+        self.sender_node = ""  # for msg.sender
 
     # The function for construct the graph for the contract
-    def addNode(self, nodeId):
+    def addNode(self, node):
         self.count += 1
-        self.graph.add_node(nodeId, count=self.count)
-        if type(nodeId) == MessageCallNode:
-            self.message_call_nodes.append(nodeId)
-            if nodeId.name == "CALL":
-                self.call_nodes.append(nodeId)
-        elif type(nodeId) == StateOPNode:
-            self.state_op_nodes.append(nodeId)
-            if nodeId.name == "SSTORE":
-                self.sstore_nodes.append(nodeId)
-        elif type(nodeId) == InputDataNode:
-            self.input_data_nodes.append(nodeId)
-        elif type(nodeId) == BlockDataNode:
-            self.block_data_nodes.append(nodeId)
-        elif type(nodeId) == MsgDataNode:
-            self.msg_data_nodes.append(nodeId)
-            if nodeId.name == "CALLER":
-                self.msg_sender_nodes.append(nodeId)
-        elif type(nodeId) == StateNode:
-            if nodeId.source == "Ia":
-                self.state_nodes.append(nodeId)
-            elif nodeId.source == "Is":
-                self.sender_node = nodeId
-        elif type(nodeId) == ArithNode and nodeId.name in self.overflow_related:
-            self.arith_nodes.append(nodeId)
+        self.graph.add_node(node, count=self.count)
+        if type(node) == MessageCallNode:
+            self.message_call_nodes.append(node)
+            if node.name == "CALL":
+                self.call_nodes.append(node)
+        elif type(node) == StateOPNode:
+            self.state_op_nodes.append(node)
+            if node.name == "SSTORE":
+                self.sstore_nodes.append(node)
+        elif type(node) == InputDataNode:
+            self.input_data_nodes.append(node)
+        elif type(node) == BlockDataNode:
+            self.block_data_nodes.append(node)
+        elif type(node) == MsgDataNode:
+            self.msg_data_nodes.append(node)
+            if node.name == "CALLER":
+                self.msg_sender_nodes.append(node)
+        elif type(node) == StateNode:
+            if node.source == "Ia":
+                self.state_nodes.append(node)
+            elif node.source == "Is":
+                self.sender_node = node
+        elif type(node) == ArithNode and node.name in self.overflow_related:
+            self.arith_nodes.append(node)
 
     def addEdges(self, edgeList, edgeType, branch):
         branchList = [branch]

@@ -34,17 +34,23 @@ class EvmRuntime:
             for i, line in enumerate(file_contents):
                 line = line.replace('SELFDESTRUCT', 'SUICIDE')
                 line = line.replace('Missing opcode 0xfd', 'REVERT')
-                line = line.replace('Missing opcode 0xfe', 'ASSERTFAIL')
-                line = line.replace('Missing opcode', 'INVALID')
+                line = line.replace('Missing opcode 0xfe', 'INVALID')
+
+                # unrecognized instruction
+                if "Missing opcode" in line:
+                    raise Exception("unrecognized instruction: %s", line)
+
                 line = line.replace(':', '')
                 lineParts = line.split(' ')
-                try:  # removing initial zeroes
+
+                # transform the pc from hex to decimal
+                try:
                     if compare_versions(disassembler.params.EVM_VERSION, disassembler.params.CHANGED_EVM_VERSION) > 0:
                         lineParts[0] = str(int(lineParts[0], 16))
                     else:
                         lineParts[0] = str(int(lineParts[0]))
                 except Exception:
-                    raise Exception("unkonwn pc format for disasm file")
+                    raise Exception("unknown pc format for disasm file")
 
                 file_contents[i] = ' '.join(lineParts)
             file_contents[-1] = file_contents[-1].strip("\n")
@@ -145,6 +151,15 @@ class EvmRuntime:
                 self.edges[key].append(target)
                 self.vertices[target].set_jump_from(key)
                 self.vertices[key].set_falls_to(target)
+            # match [push 0x... jump/jumpi] pattern for jump target
+            if self.jump_type[key] == "conditional" or self.jump_type[key] == "unconditional":
+                instrs = self.vertices[key].get_instructions()
+                if len(instrs) > 1 and "PUSH" in instrs[-2]:
+                    target = int(instrs[-2].split(" ")[2], 16)
+                    self.edges[key].append(target)
+                    self.vertices[target].set_jump_from(key)
+                    self.vertices[key].set_jump_targets(target)
+
 
     def print_cfg(self):
         keys = sorted(self.vertices.keys())
@@ -188,15 +203,9 @@ class EvmRuntime:
 
         g.render(os.path.join(global_params.TMP_DIR, "cfg.gv"), view=True)
 
-
-
-
-
-
-
     def build_runtime_env(self):
+        #todo: test for building cfg process
         self.build_cfg()
         self.print_cfg()
         self.print_cfg_dot()
-        self.print("end")
 

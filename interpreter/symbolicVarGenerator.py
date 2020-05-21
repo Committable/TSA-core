@@ -9,23 +9,20 @@ class Generator:
         self.countstack += 1
         return "s" + str(self.countstack)
 
-    # def gen_data_var(self):
-    #     self.countdata += 1
-    #     return "Id_" + str(self.countdata)
-
-    def gen_data_var(self, position):
-        self.countdata += 1
-        return "Id_" + str(self.countdata) + "_" + str(position)
+    def gen_data_var(self, start, end):
+        return "Id_" + str(start) + "_" + str(end)
 
     def gen_data_size(self):
-        return "Id_size_" + str(self.branch)
+        return "Id_size"
 
     def gen_mem_var(self, address):
         return "mem_" + str(address)
 
-    def gen_arbitrary_var(self):
-        self.count += 1
-        return "some_var_" + str(self.count)
+    def gen_exp_var(self, v0, v1):
+        return "exp(" + str(v0) + ", " + str(v1) + ")"
+
+    def gen_sha3_var(self, value):
+        return "sha3("+str(value)+")"
 
     def gen_arbitrary_address_var(self):
         self.count += 1
@@ -65,9 +62,8 @@ class Generator:
     def gen_timestamp(self):
         return "IH_s"
 
-    def gen_balance_var(self):
-        self.count += 1
-        return "balance_" + str(self.count)
+    def gen_balance_var(self, address):
+        return "balance_" + str(address)
 
     def gen_code_var(self, address, position, bytecount):
         return "code_" + str(address) + "_" + str(position) + "_" + str(bytecount)

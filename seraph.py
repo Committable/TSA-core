@@ -243,9 +243,9 @@ def analyze_solidity_code():
                          source_file=inp["source"])
 
         return_code = env.build_runtime_env()
-        reentrancy_node_list = []
-        interpreter = EVMInterpreter(env)
-        interpreter.sym_exec()
+        # reentrancy_node_list = []
+        # interpreter = EVMInterpreter(env)
+        # interpreter.sym_exec()
 
         # overflowChecker = Overflow(interpreter.graph)
         # overflow_node_list, underflow_node_list = overflowChecker.check()

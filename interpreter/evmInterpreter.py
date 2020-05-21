@@ -16,7 +16,6 @@ import networkx as nx
 import global_params
 import pickle
 
-# PICKLE_PATH = 'current_test.pickle'
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
 
@@ -28,185 +27,206 @@ class EVMInterpreter:
     def __init__(self, runtime):
         self.gen = Generator()
         self.solver = Solver()
-        self.graph = XGraph()
-        self.visited_edges = {}
-        self.path_conditions = []
         self.runtime = runtime
+
+        self.graph = XGraph()
+        self.path_conditions = []
+
+        self.total_no_of_paths = {"normal": 0, "exception": 0}  # number of paths, terminated by normal or exception
+        self.total_visited_pc = {}  # visited pc and its times
+        self.total_visited_edges = {}  # visited edges and its times
+
+        # (key, value), key for the value of seeds and value for the symbolic expression of sha3
+        self.sha3_dict = {}
+        # (key, value), key(v0, v1) for the stack[0] and stack2 of exp instruction, value for the symbolic expression of
+        # exp(stack[0], stack[1])
+        self.exp_dict = {}
+        # (key, value), key formatted by (start, end) from stack
+        self.input_dict = {}
+
+        self.call_data_size = None
 
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
         global_state = {"balance": {}, "pc": 0}
-        self._init_global_state(path_conditions_and_vars, global_state, True)
+        self._init_global_state(path_conditions_and_vars, global_state)
         params = Parameter(path_conditions_and_vars=path_conditions_and_vars, global_state=global_state)
-        return self._sym_exec_block(params, 0, 0, 0, -1)
+        return self._sym_exec_block(params, 0, 0)
 
     # Symbolically executing a block from the start address
-    def _sym_exec_block(self, params, block, pre_block, depth, func_call):
+    def _sym_exec_block(self, params, block, pre_block):
         visited = params.visited
-        stack = params.stack
-        node_stack = params.node_stack
-        mem = params.mem
-        node_mem = params.node_mem
-        memory = params.memory
-        node_memory = params.node_memory
+
         global_state = params.global_state
-        sha3_list = params.sha3_list
-        path_conditions_and_vars = params.path_conditions_and_vars
-        calls = params.calls
-        control_edge_list = params.control_edge_list
-        flow_edge_list = params.flow_edge_list
 
-
-        if block < 0:
-            log.debug("UNKNOWN JUMP ADDRESS. TERMINATING THIS PATH")
+        if block < 0 or block not in self.runtime.vertices:
+            self.total_no_of_paths["exception"] += 1
+            log.debug("Unknown jump address %d. Terminating this path ...", block)
             return 1
 
         log.debug("Reach block address %d \n", block)
 
         current_edge = Edge(pre_block, block)
 
-        if current_edge in self.visited_edges:
-            updated_count_number = self.visited_edges[current_edge] + 1
-            self.visited_edges.update({current_edge: updated_count_number})
+        # update visited edges for current path
+        if current_edge in visited:
+            updated_count_number = visited[current_edge] + 1
+            visited.update({current_edge: updated_count_number})
         else:
-            self.visited_edges.update({current_edge: 1})
+            visited.update({current_edge: 1})
 
-        if self.visited_edges[current_edge] > interpreter.params.LOOP_LIMIT:
+        # update visited edges for global symbolic execution
+        if current_edge in self.total_visited_edges:
+            updated_count_number = self.total_visited_edges[current_edge] + 1
+            self.total_visited_edges.update({current_edge: updated_count_number})
+        else:
+            self.total_visited_edges.update({current_edge: 1})
+
+        # TODO: how to implement real loop dectection?
+        # now we only detect occurancly of the same edge under loop_limit
+        if visited[current_edge] > interpreter.params.LOOP_LIMIT:
+            self.total_no_of_paths["normal"] += 1
             log.debug("Overcome a number of loop limit. Terminating this path ...")
             return 0
 
-        current_gas_used = params.gas
-        if current_gas_used > interpreter.params.GAS_LIMIT:
+        # TODO: gas_used cannot be calculated accurately because of miu, now we keep the less used gas by instructions
+        #  and less memory used, and there should be someone to learn about gas calculation of evm exactly
+        if params.gas > interpreter.params.GAS_LIMIT:
+            self.total_no_of_paths["normal"] += 1
             log.debug("Run out of gas. Terminating this path ... ")
             return 0
 
+        block_ins = self.runtime.vertices[block].get_instructions()
+
         # Execute every instruction, one at a time
         try:
-            block_ins = self.runtime.vertices[block].get_instructions()
-        except KeyError:
-            log.debug("This path results in an exception, possibly an invalid jump address")
+            for instr in block_ins:
+                self._sym_exec_ins(params, block, instr)
+        except Exception as error:
+            self.total_no_of_paths["exception"] += 1
+            log.debug("This path results in an exception: %s, Terminating this path ...", str(error))
             return 1
 
-        for instr in block_ins:
-            self._sym_exec_ins(params, block, instr, func_call)
-        # Mark that this basic block in the visited blocks
-        visited.append(block)
-        depth += 1
         if self.is_testing_evm():
             self.compare_storage_and_gas_unit_test(global_state, global_params.UNIT_TEST)
 
         # Go to next Basic Block(s)
-        if self.runtime.jump_type[block] == "terminal" or depth > interpreter.params.DEPTH_LIMIT:
-            # global total_no_of_paths
-            # total_no_of_paths += 1
+        if self.runtime.jump_type[block] == "terminal":
+            self.total_no_of_paths += 1
+
             branch_id = self.gen.gen_branch_id()
             control_edge_list = params.control_edge_list
             flow_edge_list = params.flow_edge_list
             self.graph.addBranchEdge(flow_edge_list, "flowEdge", branch_id)
             self.graph.addBranchEdge(control_edge_list, "controlEdge", branch_id)
-            # self._init_global_state(path_conditions_and_vars, global_state, False)
+
             log.debug("TERMINATING A PATH ...")
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
-            successor = self.runtime.vertices[block].get_jump_target()
-            new_params = params.copy()
-            new_params.global_state["pc"] = successor
-            self._sym_exec_block(new_params, successor, block, depth, func_call)
+            # TODO: how to deal with symbolic jump targets and more than one jump targets for unconditoinal jump
+            # now we only deal with unconditional jump with only one real target
+            successor = self.runtime.vertices[block].get_jump_targets()[-1]
+            params.global_state["pc"] = successor
+            self._sym_exec_block(params, successor, block)
+
         elif self.runtime.jump_type[block] == "falls_to":  # just follow to the next basic block
             successor = self.runtime.vertices[block].get_falls_to()
-            new_params = params.copy()
-            new_params.global_state["pc"] = successor
-            self._sym_exec_block(new_params, successor, block, depth, func_call)
+            # assert successor
+            params.global_state["pc"] = successor
+            self._sym_exec_block(params, successor, block)
+
         elif self.runtime.jump_type[block] == "conditional":  # executing "JUMPI"
-
             # A choice point, we proceed with depth first search
-
             branch_expression = self.runtime.vertices[block].get_branch_expression()
             branch_expression_node = self.runtime.vertices[block].get_branch_expression_node()
             negated_branch_expression_node = self.runtime.vertices[block].get_negated_branch_expression_node()
 
-            # log.debug("Branch expression: " + str(branch_expression))
-            # log.debug("Branch Node Expression" + branch_expression_node)
+            log.debug("Branch expression: " + str(branch_expression))
 
-            self.solver.push()  # SET A BOUNDARY FOR SOLVER
+            self.solver.push()
             self.solver.add(branch_expression)
 
+            flag = True  # mark if constrains are feasible
             try:
+                if self.solver.check() == unsat:
+                    flag = False
+                    self.total_no_of_paths["normal"] += 1
+                    log.debug("This path results in an unfeasible conditional True branch, Terminating this path ...")
+            except Exception:
+                pass
+            finally:
+                if flag:
+                    # there is only one real jump target for conditional jumpi
+                    left_branch = self.runtime.vertices[block].get_jump_targets()[-1]
+                    new_params = params.copy()
+                    new_params.global_state["pc"] = left_branch
+                    new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
+                    new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
+                    self._sym_exec_block(new_params, left_branch, block)
 
-                left_branch = self.runtime.vertices[block].get_jump_target()
-                new_params = params.copy()
-                new_params.global_state["pc"] = left_branch
-                new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
-                new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
-                # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
-                self._sym_exec_block(new_params, left_branch, block, depth, func_call)
-            except TimeoutError:
-                raise
-            except Exception as e:
-                if interpreter.params.DEBUG_MODE:
-                    traceback.print_exc()
+                self.solver.pop()
 
-            self.solver.pop()  # POP SOLVER CONTEXT
-
-            self.solver.push()  # SET A BOUNDARY FOR SOLVER
+            flag = True
+            self.solver.push()
             negated_branch_expression = Not(branch_expression)
             self.solver.add(negated_branch_expression)
 
             log.debug("Negated branch expression: " + str(negated_branch_expression))
 
             try:
-                # if self.solver.check() == unsat:
-                #     # Note that this check can be optimized. I.e. if the previous check succeeds,
-                #     # no need to check for the negated condition, but we can immediately go into
-                #     # the else branch
-                #     log.debug("INFEASIBLE PATH DETECTED")
-                # else:
-                right_branch = self.runtime.vertices[block].get_falls_to()
-                new_params = params.copy()
-                new_params.global_state["pc"] = right_branch
-                new_params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
-                new_params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
-                # last_idx = len(new_params.path_conditions_and_vars["path_condition"]) - 1
-                # new_params.analysis["time_dependency_bug"][last_idx] = global_state["pc"]
-                self._sym_exec_block(new_params, right_branch, block, depth, func_call)
-            except TimeoutError:
-                raise
-            except Exception as e:
-                if interpreter.params.DEBUG_MODE:
-                    traceback.print_exc()
-            self.solver.pop()  # POP SOLVER CONTEXT
-            # updated_count_number = visited_edges[current_edge] - 1
-            # visited_edges.update({current_edge: updated_count_number})
+                if self.solver.check() == unsat:
+                    flag = False
+                    self.total_no_of_paths["normal"] += 1
+                    log.debug("This path results in an unfeasible conditional Flase branch, Terminating this path ...")
+            except Exception:
+                pass
+            finally:
+                if flag:
+                    right_branch = self.runtime.vertices[block].get_falls_to()
+                    params.global_state["pc"] = right_branch
+                    params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
+                    params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
+                    self._sym_exec_block(params, right_branch, block)
+
+                self.solver.pop()
         else:
-            updated_count_number = self.visited_edges[current_edge] - 1
-            self.visited_edges.update({current_edge: updated_count_number})
             raise Exception('Unknown Jump-Type')
 
-    def _sym_exec_ins(self, params, block, instr,func_call):
+        return 0
 
+    # TODO: 1.slot precision; 2.memory model; 3.sha3; 4.system contracts call; 5.evm instructions expansion;
+    # memory model  : model versioned memory as mem{(start, end):value} and memory[byte], and every write of memory will
+    #                 result in a new version of memory, but now we only treat memory when there address can be exactly
+    #                 the same by transformed to string when they are symbolic, and real address only locate memory[]
+    # slot precision: slot precision should be treated by checker
+    # sha3          : if sha3 a0, a1 => memory{(a0, a0+a1): (concat(a,b,c)} , we maitain a dic sha3_list{concat(a,
+    #                 b, c): sha3_sym)}, and everytime "sha3" instruction is executed, if str(key) is exactly the same,
+    #                 we get the same sha3_sym, otherwise, we will construct a new (key2, sha3_sym2); and everytime a
+    #                 constrain include both sha3_sym1, sha3_sym2, the sha3_sym2 is substituted by sha2_sym1, with const
+    #                 -rain key1 == key2, because we only cares about the equality of two sha3_sym
+    # scc           : todo
+    # instructions  : todo
+    def _sym_exec_ins(self, params, block, instr):
         stack = params.stack
         node_stack = params.node_stack
+
         mem = params.mem
         node_mem = params.node_mem
         memory = params.memory
         node_memory = params.node_memory
+
         global_state = params.global_state
-        sha3_list = params.sha3_list
+
         path_conditions_and_vars = params.path_conditions_and_vars
         calls = params.calls
         control_edge_list = params.control_edge_list
         flow_edge_list = params.flow_edge_list
 
         instr_parts = str.split(instr, ' ')
-        opcode = instr_parts[0]
-        # instr_opcode = opcodes.opcode_by_name(opcode)
-        # print(opcode)
+        opcode = instr_parts[1]
+
         if len(stack) != len(node_stack):
-            print("...")
-        if opcode == "INVALID":
-            return
-        elif opcode == "ASSERTFAIL":
-            return
+            raise Exception("stack length exception: len(stack) != len(node_stack")
 
         log.debug("==============================")
         log.debug("EXECUTING: " + instr)
@@ -215,7 +235,8 @@ class EVMInterpreter:
         #  0s: Stop and Arithmetic Operations
         #
         if opcode == "STOP":
-            global_state["pc"] = global_state["pc"] + 1
+            return
+        elif opcode == "INVALID":
             return
         elif opcode == "ADD":
             if len(stack) > 1:
@@ -223,20 +244,9 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                # Type conversion is needed when they are mismatched
-                if isReal(first) and isSymbolic(second):
-                    first = BitVecVal(first, 256)
-                    computed = first + second
-                elif isSymbolic(first) and isReal(second):
-                    second = BitVecVal(second, 256)
-                    computed = first + second
-                else:
-                    # both are real and we need to manually modulus with 2 ** 256
-                    # if both are symbolic z3 takes care of modulus automatically
-                    computed = (first + second) % (2 ** 256)
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+                computed = (first + second) & UNSIGNED_BOUND_NUMBER
 
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MUL":
@@ -244,13 +254,10 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isReal(first) and isSymbolic(second):
-                    first = BitVecVal(first, 256)
-                elif isSymbolic(first) and isReal(second):
-                    second = BitVecVal(second, 256)
+
                 computed = first * second & UNSIGNED_BOUND_NUMBER
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SUB":
@@ -258,16 +265,10 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isReal(first) and isSymbolic(second):
-                    first = BitVecVal(first, 256)
-                    computed = first - second
-                elif isSymbolic(first) and isReal(second):
-                    second = BitVecVal(second, 256)
-                    computed = first - second
-                else:
-                    computed = (first - second) % (2 ** 256)
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                computed = (first - second) & UNSIGNED_BOUND_NUMBER
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "DIV":
@@ -275,25 +276,16 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    if second == 0:
-                        computed = 0
-                    else:
-                        first = to_unsigned(first)
-                        second = to_unsigned(second)
-                        computed = first / second
+
+                second = to_symbolic(second)
+                self.solver.push()
+                self.solver.add(Not(second == 0))
+                if check_unsat(self.solver):
+                    computed = 0
                 else:
-                    first = to_symbolic(first)
-                    second = to_symbolic(second)
-                    self.solver.push()
-                    self.solver.add(Not(second == 0))
-                    if check_sat(self.solver) == unsat:
-                        computed = 0
-                    else:
-                        computed = UDiv(first, second)
-                    self.solver.pop()
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+                    computed = UDiv(first, second)
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SDIV":
@@ -301,41 +293,17 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    first = to_signed(first)
-                    second = to_signed(second)
-                    if second == 0:
-                        computed = 0
-                    elif first == -2 ** 255 and second == -1:
-                        computed = -2 ** 255
-                    else:
-                        sign = -1 if (first / second) < 0 else 1
-                        computed = sign * (abs(first) / abs(second))
+
+                second = to_symbolic(second)
+                self.solver.push()
+                self.solver.add(Not(second == 0))
+                if check_unsat(self.solver):
+                    computed = 0
                 else:
-                    first = to_symbolic(first)
-                    second = to_symbolic(second)
-                    self.solver.push()
-                    self.solver.add(Not(second == 0))
-                    if check_sat(self.solver) == unsat:
-                        computed = 0
-                    else:
-                        self.solver.push()
-                        self.solver.add(Not(And(first == -2 ** 255, second == -1)))
-                        if check_sat(self.solver) == unsat:
-                            computed = -2 ** 255
-                        else:
-                            self.solver.push()
-                            self.solver.add(first / second < 0)
-                            sign = -1 if check_sat(self.solver) == sat else 1
-                            z3_abs = lambda x: If(x >= 0, x, -x)
-                            first = z3_abs(first)
-                            second = z3_abs(second)
-                            computed = sign * (first / second)
-                            self.solver.pop()
-                        self.solver.pop()
-                    self.solver.pop()
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+                    computed = (first / second) & UNSIGNED_BOUND_NUMBER
+                self.solver.pop()
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MOD":
@@ -343,29 +311,18 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    if second == 0:
-                        computed = 0
-                    else:
-                        first = to_unsigned(first)
-                        second = to_unsigned(second)
-                        computed = first % second & UNSIGNED_BOUND_NUMBER
 
+                second = to_symbolic(second)
+                self.solver.push()
+                self.solver.add(Not(second == 0))
+                if check_unsat(self.solver):
+                    # it is provable that second is indeed equal to zero
+                    computed = 0
                 else:
-                    first = to_symbolic(first)
-                    second = to_symbolic(second)
+                    computed = URem(first, second)
+                self.solver.pop()
 
-                    self.solver.push()
-                    self.solver.add(Not(second == 0))
-                    if check_sat(self.solver) == unsat:
-                        # it is provable that second is indeed equal to zero
-                        computed = 0
-                    else:
-                        computed = URem(first, second)
-                    self.solver.pop()
-
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SMOD":
@@ -373,38 +330,23 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    if second == 0:
-                        computed = 0
-                    else:
-                        first = to_signed(first)
-                        second = to_signed(second)
-                        sign = -1 if first < 0 else 1
-                        computed = sign * (abs(first) % abs(second))
+
+                second = to_symbolic(second)
+                self.solver.push()
+                self.solver.add(Not(second == 0))
+                if check_unsat(self.solver):
+                    # it is provable that second is indeed equal to zero
+                    computed = 0
                 else:
                     first = to_symbolic(first)
-                    second = to_symbolic(second)
+                    sign = If(first < 0, -1, 1)
+                    z3_abs = lambda x: If(x >= 0, x, -x)
+                    first = z3_abs(first)
+                    second = z3_abs(second)
+                    computed = sign * (first % second)
+                self.solver.pop()
 
-                    self.solver.push()
-                    self.solver.add(Not(second == 0))
-                    if check_sat(self.solver) == unsat:
-                        # it is provable that second is indeed equal to zero
-                        computed = 0
-                    else:
-                        self.solver.push()
-                        self.solver.add(first < 0)  # check sign of first element
-                        sign = BitVecVal(-1, 256) if check_sat(self.solver) == sat \
-                            else BitVecVal(1, 256)
-                        self.solver.pop()
-                        z3_abs = lambda x: If(x >= 0, x, -x)
-                        first = z3_abs(first)
-                        second = z3_abs(second)
-
-                        computed = sign * (first % second)
-                    self.solver.pop()
-
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+                stack.insert(0, convertResult(computed))
 
             else:
                 raise ValueError('STACK underflow')
@@ -414,27 +356,19 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
                 third = stack.pop(0)
-                if isAllReal(first, second, third):
-                    if third == 0:
-                        computed = 0
-                    else:
-                        computed = (first + second) % third
+
+                first = to_symbolic(first)
+                second = to_symbolic(second)
+                third = to_symbolic(third)
+                self.solver.push()
+                self.solver.add(Not(third == 0))
+                if check_unsat(self.solver):
+                    computed = 0
                 else:
-                    first = to_symbolic(first)
-                    second = to_symbolic(second)
-                    self.solver.push()
-                    self.solver.add(Not(third == 0))
-                    if check_sat(self.solver) == unsat:
-                        computed = 0
-                    else:
-                        first = ZeroExt(256, first)
-                        second = ZeroExt(256, second)
-                        third = ZeroExt(256, third)
-                        computed = (first + second) % third
-                        computed = Extract(255, 0, computed)
-                    self.solver.pop()
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+                    computed = URem((first + second), third)
+                self.solver.pop()
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MULMOD":
@@ -443,27 +377,19 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
                 third = stack.pop(0)
-                if isAllReal(first, second, third):
-                    if third == 0:
-                        computed = 0
-                    else:
-                        computed = (first * second) % third
+
+                first = to_symbolic(first)
+                second = to_symbolic(second)
+                third = to_symbolic(third)
+                self.solver.push()
+                self.solver.add(Not(third == 0))
+                if check_unsat(self.solver):
+                    computed = 0
                 else:
-                    first = to_symbolic(first)
-                    second = to_symbolic(second)
-                    self.solver.push()
-                    self.solver.add(Not(third == 0))
-                    if check_sat(self.solver) == unsat:
-                        computed = 0
-                    else:
-                        first = ZeroExt(256, first)
-                        second = ZeroExt(256, second)
-                        third = ZeroExt(256, third)
-                        computed = URem(first * second, third)
-                        computed = Extract(255, 0, computed)
-                    self.solver.pop()
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+                    computed = URem(first * second, third)
+                self.solver.pop()
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "EXP":
@@ -477,19 +403,39 @@ class EVMInterpreter:
                 else:
                     # The computed value is unknown, this is because power is
                     # not supported in bit-vector theory
-                    new_var_name = self.gen.gen_arbitrary_var()
-                    computed = BitVec(new_var_name, 256)
-                computed = simplify(computed) if is_expr(computed) else computed
+                    base = simplify(to_symbolic(base))
+                    exponent = simplify(to_symbolic(exponent))
+                    computed = None
+
+                    # we check the same value by solver the most less constrains with less accurence
+                    s = Solver()
+                    for key in self.exp_dict:
+                        s.push()
+                        s.add(Not(key[0] == base and key[1] == exponent))
+                        if check_unsat(s):
+                            computed = self.exp_dict[key]
+                            s.pop()
+                            break
+                        s.pop()
+                    del s
+                    # computed == None means that we don't fine the used value and we need a new one
+                    if not computed:
+                        new_var_name = self.gen.gen_exp_var(base, exponent)
+                        computed = BitVec(new_var_name, 256)
+                        self.exp_dict[(base, exponent)] = computed
+
                 stack.insert(0, computed)
+
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SIGNEXTEND":
             if len(stack) > 1:
+                # todo: reveiw this process
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
                 if isAllReal(first, second):
-                    if first >= 32 or first < 0:
+                    if first >= 32:
                         computed = second
                     else:
                         signbit_index_from_right = 8 * first + 7
@@ -501,21 +447,21 @@ class EVMInterpreter:
                     first = to_symbolic(first)
                     second = to_symbolic(second)
                     self.solver.push()
-                    self.solver.add(Not(Or(first >= 32, first < 0)))
-                    if check_sat(self.solver) == unsat:
+                    self.solver.add(Not(UGE(first, 32)))
+                    if check_unsat(self.solver):
                         computed = second
                     else:
                         signbit_index_from_right = 8 * first + 7
                         self.solver.push()
                         self.solver.add(second & (1 << signbit_index_from_right) == 0)
-                        if check_sat(self.solver) == unsat:
+                        if check_unsat(self.solver):
                             computed = second | (2 ** 256 - (1 << signbit_index_from_right))
                         else:
                             computed = second & ((1 << signbit_index_from_right) - 1)
                         self.solver.pop()
                     self.solver.pop()
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         #
@@ -526,17 +472,11 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    first = to_unsigned(first)
-                    second = to_unsigned(second)
-                    if first < second:
-                        computed = 1
-                    else:
-                        computed = 0
-                else:
-                    computed = If(ULT(first, second), BitVecVal(1, 256), BitVecVal(0, 256))
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                second = to_symbolic(second)
+                computed = If(ULT(first, second), BitVec(1, 256), BitVec(0, 256))
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "GT":
@@ -544,17 +484,11 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    first = to_unsigned(first)
-                    second = to_unsigned(second)
-                    if first > second:
-                        computed = 1
-                    else:
-                        computed = 0
-                else:
-                    computed = If(UGT(first, second), BitVecVal(1, 256), BitVecVal(0, 256))
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                second = to_symbolic(second)
+                computed = If(UGT(first, second), BitVecVal(1, 256), BitVecVal(0, 256))
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SLT":  # Not fully faithful to signed comparison
@@ -562,17 +496,11 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    first = to_signed(first)
-                    second = to_signed(second)
-                    if first < second:
-                        computed = 1
-                    else:
-                        computed = 0
-                else:
-                    computed = If(first < second, BitVecVal(1, 256), BitVecVal(0, 256))
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                second = to_symbolic(second)
+                computed = If(first < second, BitVecVal(1, 256), BitVecVal(0, 256))
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SGT":  # Not fully faithful to signed comparison
@@ -580,17 +508,11 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    first = to_signed(first)
-                    second = to_signed(second)
-                    if first > second:
-                        computed = 1
-                    else:
-                        computed = 0
-                else:
-                    computed = If(first > second, BitVecVal(1, 256), BitVecVal(0, 256))
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                second = to_symbolic(second)
+                computed = If(first > second, BitVecVal(1, 256), BitVecVal(0, 256))
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "EQ":
@@ -598,33 +520,20 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    if first == second:
-                        computed = 1
-                    else:
-                        computed = 0
-                else:
-                    computed = If(first == second, BitVecVal(1, 256), BitVecVal(0, 256))
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                computed = If(first == second, BitVecVal(1, 256), BitVecVal(0, 256))
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "ISZERO":
-            # Tricky: this instruction works on both boolean and integer,
-            # when we have a symbolic expression, type error might occur
-            # Currently handled by try and catch
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
-                if isReal(first):
-                    if first == 0:
-                        computed = 1
-                    else:
-                        computed = 0
-                else:
-                    computed = If(first == 0, BitVecVal(1, 256), BitVecVal(0, 256))
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                computed = If(first == 0, BitVecVal(1, 256), BitVecVal(0, 256))
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "AND":
@@ -632,9 +541,10 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
+
                 computed = first & second
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "OR":
@@ -642,9 +552,10 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
+
                 computed = first | second
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "XOR":
@@ -652,17 +563,19 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
+
                 computed = first ^ second
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "NOT":
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
-                computed = (~first) & UNSIGNED_BOUND_NUMBER
-                computed = simplify(computed) if is_expr(computed) else computed
+
+                computed = (~first)  # todo: should there be like: (~first) & UNSIGNED_BOUND_NUMBER
+
                 stack.insert(0, computed)
             else:
                 raise ValueError('STACK underflow')
@@ -670,25 +583,18 @@ class EVMInterpreter:
             if len(stack) > 1:
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
-                byte_index = 32 - first - 1
+                byte_index = 31 - first
                 second = stack.pop(0)
-                if isAllReal(first, second):
-                    if first >= 32 or first < 0:
-                        computed = 0
-                    else:
-                        computed = second & (255 << (8 * byte_index))
-                        computed = computed >> (8 * byte_index)
+
+                first = to_symbolic(first)
+                self.solver.push()
+                self.solver.add(Not(Or(UGE(first, 32))))
+                if check_unsat(self.solver):
+                    computed = 0
                 else:
-                    first = to_symbolic(first)
-                    second = to_symbolic(second)
-                    self.solver.push()
-                    self.solver.add(Not(Or(first >= 32, first < 0)))
-                    if check_sat(self.solver) == unsat:
-                        computed = 0
-                    else:
-                        computed = second & (255 << (8 * byte_index))
-                        computed = computed >> (8 * byte_index)
-                    self.solver.pop()
+                    computed = second & (255 << (8 * byte_index))
+                    computed = LShR(computed, (8 * byte_index))
+                self.solver.pop()
                 computed = simplify(computed) if is_expr(computed) else computed
                 stack.insert(0, computed)
             else:
@@ -703,26 +609,34 @@ class EVMInterpreter:
                 s1 = stack.pop(0)
                 if isAllReal(s0, s1):
                     # simulate the hashing of sha3
-                    data = [str(x) for x in memory[s0: s0 + s1]]
-                    position = ''.join(data)
-                    position = re.sub('[\s+]', '', position)
-                    position = zlib.compress(six.b(position), 9)
-                    position = base64.b64encode(position)
-                    position = position.decode('utf-8', 'strict')
-                    if position in sha3_list:
-                        stack.insert(0, sha3_list[position])
-                        computed = sha3_list[position]
-                    else:
-                        new_var_name = self.gen.gen_arbitrary_var()
-                        new_var = BitVec(new_var_name , 256)
-                        sha3_list[position] = new_var
-                        stack.insert(0, new_var)
-                        computed = new_var
+                    data = [x for x in memory[s0: s0 + s1]]
+                    value = to_symbolic(data[0])
+                    for x in data[1:]:
+                        value = Concat(value, to_symbolic(x))
+
+                    computed = None
+                    # we check the same value by solver the most less constrains with less accurence
+                    s = Solver()
+                    for key in self.sha3_dict:
+                        s.push()
+                        s.add(Not(value == key))
+                        if check_unsat(s):
+                            computed = self.sha3_dict[key]
+                            s.pop()
+                            break
+                        s.pop()
+                    del s
+
+                    # computed == None means that we don't fine the used value and we need a new one
+                    if not computed:
+                        value = simplify(value)
+                        new_var_name = self.gen.gen_sha3_var(value)
+                        computed = BitVec(new_var_name, 256)
+                        self.exp_dict[value] = computed
                 else:
-                    # push into the execution a fresh symbolic variable
+                    # todo:push into the stack a fresh symbolic variable, how to deal with symbolic address and size
                     new_var_name = self.gen.gen_arbitrary_var()
                     new_var = BitVec(new_var_name, 256)
-                    path_conditions_and_vars[new_var_name] = new_var
                     stack.insert(0, new_var)
                     computed = new_var
             else:
@@ -736,20 +650,17 @@ class EVMInterpreter:
         elif opcode == "BALANCE":
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
-                address = stack.pop(0)
-                new_var_name = self.gen.gen_balance_var()
-                if new_var_name in path_conditions_and_vars:
-                    new_var = path_conditions_and_vars[new_var_name]
+                address = simplify(to_symbolic(stack.pop(0)))
+                new_var_name = self.gen.gen_balance_var(address)
+                # todo: global_state is initiated with global_state["balance"]["Ia"], how to deal with it? useless?
+                if new_var_name in global_state["balance"]:
+                    new_var = global_state["balance"]
                 else:
                     new_var = BitVec(new_var_name, 256)
-                    path_conditions_and_vars[new_var_name] = new_var
-                if isReal(address):
-                    hashed_address = "concrete_address_" + str(address)
-                else:
-                    hashed_address = str(address)
-                global_state["balance"][hashed_address] = new_var
-                stack.insert(0, new_var)
+                    global_state["balance"][address] = new_var
 
+                stack.insert(0, new_var)
+                # todo: graph
                 update_graph_balance(self.graph, node_stack, global_state, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
@@ -757,49 +668,54 @@ class EVMInterpreter:
             # that is directly responsible for this execution
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["sender_address"])
-            # callerNode = MsgDataNode("sender_address", global_state["sender_address"], False)
-            # node_stack.insert(0, callerNode)
         elif opcode == "ORIGIN":  # get execution origination address
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["origin"])
-            # node_stack.insert(0, global_state["origin"])
         elif opcode == "CALLVALUE":  # get value of this transaction
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["value"])
-            # callvalueNode = MsgDataNode("CALLVALUE", global_state["value"], False)
-            # node_stack.insert(0, callvalueNode)
         elif opcode == "CALLDATALOAD":  # from input data from environment
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
-                position = stack.pop(0)
-                # node_position = node_stack.pop(0)
-                new_var_name = self.gen.gen_data_var(position)
-                if new_var_name in path_conditions_and_vars:
-                    new_var = path_conditions_and_vars[new_var_name]
-                else:
-                    new_var = BitVec(new_var_name, 256)
-                    path_conditions_and_vars[new_var_name] = new_var
-                stack.insert(0, new_var)
-                update_graph_inputdata(self.graph, node_stack, new_var, new_var_name, global_state)
+                start = simplify(to_symbolic(stack.pop(0)))
+                end = simplify(start+31)
+
+                value = None
+                s = Solver()
+                for key in self.input_dict:
+                    s.push()
+                    s.add(Not(And(key[0] == start, key[1] == end)))
+                    if check_unsat(s):
+                        value = self.input_dict[key]
+                        break
+                # no used inputData found
+                if not value:
+                    new_var_name = self.gen.gen_data_var(start, end)
+                    value = BitVec(new_var_name, 256)
+                    self.input_dict[(start, end)] = value
+                stack.insert(0, value)
+
+                # todo: graph
+                update_graph_inputdata(self.graph, node_stack, value, str(value), global_state)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLDATASIZE":
             global_state["pc"] = global_state["pc"] + 1
-            new_var_name = self.gen.gen_data_size()
-            if new_var_name in path_conditions_and_vars:
-                new_var = path_conditions_and_vars[new_var_name]
-            else:
-                new_var = BitVec(new_var_name, 256)
-                path_conditions_and_vars[new_var_name] = new_var
-            stack.insert(0, new_var)
-            # node_stack.insert(0, 0)
+            stack.insert(0, self.call_data_size)
         elif opcode == "CALLDATACOPY":  # Copy input data to memory
             #  TODO: Don't know how to simulate this yet
             if len(stack) > 2:
                 global_state["pc"] = global_state["pc"] + 1
-                stack.pop(0)
-                stack.pop(0)
-                stack.pop(0)
+                memory_start = stack.pop(0)
+                input_start = stack.pop(0)
+                size = stack.pop(0)
+
+                input_end = simplify(input_start + size)
+
+
+
+
+                self.write_memory(memory_start, memory_start + size, params)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CODESIZE":
@@ -1429,83 +1345,42 @@ class EVMInterpreter:
         elif opcode in msg_opcode:
             update_graph_msg(self.graph, node_stack, opcode, global_state)
 
-        # print("stack: ")
-        # print(stack)
-        # print("node_stack: ")
-        # print(node_stack)
-        # if len(stack) != len(node_stack):
-        #     print("node_stack is wrong" + str(opcode) + str(global_state["pc"]))
+    def _init_global_state(self, path_conditions_and_vars, global_state):
+        sender_address = BitVec("Is", 256)
+        receiver_address = BitVec("Ia", 256)
+        deposited_value = BitVec("Iv", 256)  # value of transaction
+        init_is = BitVec("init_Is", 256)  # balance of sender
+        init_ia = BitVec("init_Ia", 256)  # balance of receiver
 
-    def _init_global_state(self,path_conditions_and_vars, global_state, init_flag):
+        self.call_data_size = BitVec("Id_size", 256)  # size of input data
 
-        init_is = init_ia = deposited_value = sender_address = receiver_address = gas_price = origin = currentCoinbase = currentNumber = currentDifficulty = currentGasLimit = callData = None
+        new_var_name = self.gen.gen_gas_price_var()
+        gas_price = BitVec(new_var_name, 256)
 
-        if init_flag:
-            sender_address = BitVec("Is", 256)
-            receiver_address = BitVec("Ia", 256)
-            deposited_value = BitVec("Iv", 256)
-            init_is = BitVec("init_Is", 256)
-            init_ia = BitVec("init_Ia", 256)
+        new_var_name = self.gen.gen_origin_var()
+        origin = BitVec(new_var_name, 256)
 
-            path_conditions_and_vars["Is"] = sender_address
-            path_conditions_and_vars["Ia"] = receiver_address
-            path_conditions_and_vars["Iv"] = deposited_value
+        new_var_name = self.gen.gen_coin_base()
+        currentCoinbase = BitVec(new_var_name, 256)
 
-            constraint = (deposited_value >= BitVecVal(0, 256))
-            path_conditions_and_vars["path_condition"].append(constraint)
-            constraint = (init_is >= deposited_value)
-            path_conditions_and_vars["path_condition"].append(constraint)
-            constraint = (init_ia >= BitVecVal(0, 256))
-            path_conditions_and_vars["path_condition"].append(constraint)
+        new_var_name = self.gen.gen_number()
+        currentNumber = BitVec(new_var_name, 256)
 
-        # update the balances of the "caller" and "callee"
+        new_var_name = self.gen.gen_difficult()
+        currentDifficulty = BitVec(new_var_name, 256)
 
-            global_state["balance"]["Is"] = (init_is - deposited_value)
-            global_state["balance"]["Ia"] = (init_ia + deposited_value)
-
-        if not gas_price:
-            new_var_name = self.gen.gen_gas_price_var()
-            gas_price = BitVec(new_var_name, 256)
-            path_conditions_and_vars[new_var_name] = gas_price
-
-        if not origin:
-            new_var_name = self.gen.gen_origin_var()
-            origin = BitVec(new_var_name, 256)
-            path_conditions_and_vars[new_var_name] = origin
-
-        if not currentCoinbase:
-            new_var_name = self.gen.gen_coin_base()
-            currentCoinbase = BitVec(new_var_name, 256)
-            path_conditions_and_vars[new_var_name] = currentCoinbase
-
-        if not currentNumber:
-            new_var_name = self.gen.gen_number()
-            currentNumber = BitVec(new_var_name, 256)
-            path_conditions_and_vars[new_var_name] = currentNumber
-
-        if not currentDifficulty:
-            new_var_name = self.gen.gen_difficult()
-            currentDifficulty = BitVec(new_var_name, 256)
-            path_conditions_and_vars[new_var_name] = currentDifficulty
-
-        if not currentGasLimit:
-            new_var_name = self.gen.gen_gas_limit()
-            currentGasLimit = BitVec(new_var_name, 256)
-            path_conditions_and_vars[new_var_name] = currentGasLimit
+        new_var_name = self.gen.gen_gas_limit()
+        currentGasLimit = BitVec(new_var_name, 256)
 
         new_var_name = self.gen.gen_timestamp()
         currentTimestamp = BitVec(new_var_name, 256)
-        path_conditions_and_vars[new_var_name] = currentTimestamp
 
-        # the state of the current current contract
-        if init_flag:
-            global_state["Ia"] = {}
-            global_state["nodeID"] = 0
-            global_state["pos_to_node"] = {}
-            global_state["miu_i"] = 0
-            global_state["value"] = deposited_value
-            global_state["sender_address"] = sender_address
-            global_state["receiver_address"] = receiver_address
+        # set all the world state before symbolic execution of tx
+        global_state["Ia"] = {}  # the state of the current current contract
+        global_state["miu_i"] = 0
+        global_state["value"] = deposited_value
+        global_state["sender_address"] = sender_address
+        global_state["receiver_address"] = receiver_address
         global_state["gas_price"] = gas_price
         global_state["origin"] = origin
         global_state["currentCoinbase"] = currentCoinbase
@@ -1514,8 +1389,22 @@ class EVMInterpreter:
         global_state["currentDifficulty"] = currentDifficulty
         global_state["currentGasLimit"] = currentGasLimit
 
-        if init_flag:
-            init_state(self.graph, global_state)
+        constraint = (deposited_value >= BitVecVal(0, 256))
+        path_conditions_and_vars["path_condition"].append(constraint)
+        constraint = (init_is >= deposited_value)
+        path_conditions_and_vars["path_condition"].append(constraint)
+        constraint = (init_ia >= BitVecVal(0, 256))
+        path_conditions_and_vars["path_condition"].append(constraint)
+
+        # update the balances of the "caller" and "callee", global_state["balance"] is {}, indexed by address(real or
+        # symbolic
+        global_state["balance"][global_state["sender_address"]] = (init_is - deposited_value)
+        global_state["balance"][global_state["receiver_address"]] = (init_ia + deposited_value)
+
+        global_state["nodeID"] = 0
+        global_state["pos_to_node"] = {}
+
+        init_state(self.graph, global_state)
 
     def is_testing_evm(self):
         return global_params.UNIT_TEST != 0
@@ -1525,24 +1414,40 @@ class EVMInterpreter:
         test_status = unit_test.compare_with_symExec_result(global_state, UNIT_TEST)
         exit(test_status)
 
+    def write_memory(self, start, end, value, params):
+        pass
+
+
 class Parameter:
+
     def __init__(self, **kwargs):
         attr_defaults = {
+            # for all elem in stack, they should be either real unsigned int of python or BitVec(256) of z3,i.e without BitVecRef
+            # or other types of data
             "stack": [],
             "node_stack": [],
+            # all variables located with real type of address and size is stored and loaded by memory, and with one
+            # symbolic var in address or size, the value is stored and loaded in mem
+            "memory": [],
+            "mem": {},
+            "node_memory": [],
+            "node_mem": {},
+
             "control_edge_list": [],
             "flow_edge_list": [],
             "calls": [],
-            "memory": [],
-            "node_memory": [],
-            "visited": [],
-            "mem": {},
-            "node_mem": {},
-            "analysis": {},
-            "sha3_list": {},
-            "global_state": {},
+
+
+            # mark all the visited edges of current_path, for detecting loops and control the loop_depth under limits
+            # {Edge:num}
+            "visited": {},
+            # (address, value), the balance of address
+            "balance": {},
+
             "state_to_node": {},
             "path_conditions_and_vars": {},
+            "global_state": {},
+            # gas should be always kept real type
             "gas": 0,
             "func_block": None
         }
