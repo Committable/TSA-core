@@ -116,8 +116,8 @@ class Unfairpay:
                 for callSuspected in sublist:
                     unfairpayment_node.append(callSuspected)
                 print("unsat:UnfairPayment vulnerability was found")
-                print(str(totalpay))
-                print("**********************")
+                #print(str(totalpay))
+                #print("**********************")
             elif utils.check_sat(solver) == sat:
                 # find a sstore instruction in the branch of the last callNode
                 # and nodeID is smaller than callNode's nodeID
@@ -145,8 +145,8 @@ class Unfairpay:
                             return
                         unfairpayment_node.append(last_call_node)
                         print("no owner check:UnfairPayment vulnerability was found")
-                        print(str(totalpay))
-                        print("**********************")
+                        #print(str(totalpay))
+                        #print("**********************")
                     elif len(from_storage_list) > 0:
                         for storage_node in from_storage_list:
                             if check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list,
@@ -155,7 +155,7 @@ class Unfairpay:
                                 unfairpayment_node.append(last_call_node)
                                 print("storage taintable:UnfairPayment vulnerability was found")
                                 print(str(totalpay))
-                                print("**********************")
+                                #print("**********************")
             else:
                 print("current callNode is safe")
             solver.pop()
