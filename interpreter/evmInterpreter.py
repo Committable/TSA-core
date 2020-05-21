@@ -1154,7 +1154,7 @@ class EVMInterpreter:
                 branch_expression = (BitVecVal(0, 1) == BitVecVal(1, 1))
                 if isReal(flag):
                     if flag != 0:
-                        branch_expression = True
+                        branch_expression = BoolVal(True)
                 else:
                     branch_expression = (flag != 0)
                     # compare_node = ConstNode("", 0, False)
