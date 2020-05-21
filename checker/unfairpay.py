@@ -75,8 +75,8 @@ class Unfairpay:
                 self.find_unfairpayment_callnode(sublist, msgValue, call_branch_dict, sstore_branch_dict,
                                                  taint_node_list, sender_node, unfairpayment_node)
         call_samebranch_list.clear()
-        for entry in unfairpayment_node:
-            print(entry.nodeID)
+        # for entry in unfairpayment_node:
+        #     print("nodeID: "+entry.nodeID)
         return unfairpayment_node
 
     def check_sstore_call_samebranch(self, last_call_node, call_branch_dict, sstore_branch_dict):
