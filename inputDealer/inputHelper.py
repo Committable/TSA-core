@@ -59,7 +59,7 @@ class InputHelper:
 
         for (attr, default) in six.iteritems(attr_defaults):
             val = kwargs.get(attr, default)
-            if val == None:
+            if val is None:
                 raise Exception("'%s' attribute can't be None" % attr)
             else:
                 setattr(self, attr, val)
@@ -74,9 +74,9 @@ class InputHelper:
             inputs.append({'disasm_file': disasm_file})
 
         elif self.input_type == InputHelper.SOLIDITY:
-            self.compiler = SolidityCompiler(self.source, self.root_path, self.allow_paths, self.remap,
-                                             self.compilation_err, global_params.TMP_DIR)
-            contracts = self.compiler.get_compiled_contracts()
+            compiler = SolidityCompiler(self.source, self.root_path, self.allow_paths, self.remap,
+                                        self.compilation_err, global_params.TMP_DIR)
+            contracts = compiler.get_compiled_contracts()
 
             for contract in contracts:
                 disassembler = EvmDisassembler(self.source, contract, global_params.TMP_DIR)

@@ -9,6 +9,9 @@ class Generator:
         self.countstack += 1
         return "s" + str(self.countstack)
 
+    def gen_return_data_size(self, pc):
+        return "Rd_size_" + str(pc)
+
     def gen_data_var(self, start, end):
         return "Id_" + str(start) + "_" + str(end)
 
@@ -46,6 +49,9 @@ class Generator:
 
     def gen_origin_var(self):
         return "Io"
+
+    def gen_blockhash(self, number):
+        return "IH_blockhash_"+str(number)
 
     def gen_coin_base(self):
         return "IH_c"

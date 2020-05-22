@@ -19,6 +19,12 @@ import pickle
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
 
+# Mnemonic for values in memory to inputdata, evmbytecode and returndata
+MemInput = namedtuple("MemInput", ["start", "end"])  # indexed by bytes
+MemEvm = namedtuple("MemEvm", ["start", "end"])  # indexed by bytes
+MemReturn = namedtuple("MemReturn", ["start", "end"])  # indexed by bytes
+MemExtCode = namedtuple("MemExtCode", ["start", "end", "address"])  # indexed by bytes
+
 UNSIGNED_BOUND_NUMBER = 2**256 - 1
 CONSTANT_ONES_159 = BitVecVal((1 << 160) - 1, 256)
 
@@ -41,10 +47,13 @@ class EVMInterpreter:
         # (key, value), key(v0, v1) for the stack[0] and stack2 of exp instruction, value for the symbolic expression of
         # exp(stack[0], stack[1])
         self.exp_dict = {}
-        # (key, value), key formatted by (start, end) from stack
+        # (key, value), key is the start address and the size if alway 256 bits
         self.input_dict = {}
+        # (key, value), key for block_number
+        self.blockhash_dict = {}
 
         self.call_data_size = None
+        self.evm = None
 
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
@@ -680,20 +689,7 @@ class EVMInterpreter:
                 start = simplify(to_symbolic(stack.pop(0)))
                 end = simplify(start+31)
 
-                value = None
-                s = Solver()
-                for key in self.input_dict:
-                    s.push()
-                    s.add(Not(And(key[0] == start, key[1] == end)))
-                    if check_unsat(s):
-                        value = self.input_dict[key]
-                        break
-                # no used inputData found
-                if not value:
-                    new_var_name = self.gen.gen_data_var(start, end)
-                    value = BitVec(new_var_name, 256)
-                    self.input_dict[(start, end)] = value
-                stack.insert(0, value)
+                value = self.read_inputdata(start, end)
 
                 # todo: graph
                 update_graph_inputdata(self.graph, node_stack, value, str(value), global_state)
@@ -703,87 +699,46 @@ class EVMInterpreter:
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, self.call_data_size)
         elif opcode == "CALLDATACOPY":  # Copy input data to memory
-            #  TODO: Don't know how to simulate this yet
             if len(stack) > 2:
                 global_state["pc"] = global_state["pc"] + 1
                 memory_start = stack.pop(0)
                 input_start = stack.pop(0)
                 size = stack.pop(0)
 
-                input_end = simplify(input_start + size)
+                input_end = simplify(input_start + size - 1)
 
-
-
-
-                self.write_memory(memory_start, memory_start + size, params)
+                value = MemInput(input_start, input_end)
+                self.write_memory(memory_start, memory_start + size - 1, value, params)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CODESIZE":
-            if self.disasm_file.endswith('.disasm'):
-                evm_file_name = self.disasm_file[:-7]
-            else:
-                evm_file_name = self.disasm_file
-            with open(evm_file_name, 'r') as evm_file:
-                evm = evm_file.read()[:-1]
-                code_size = len(evm) / 2
+                code_size = int((len(self.evm)+1) / 2)
                 stack.insert(0, code_size)
         elif opcode == "CODECOPY":
             if len(stack) > 2:
                 global_state["pc"] = global_state["pc"] + 1
-                mem_location = stack.pop(0)
-                code_from = stack.pop(0)
-                no_bytes = stack.pop(0)
-                current_miu_i = global_state["miu_i"]
+                mem_start = stack.pop(0)
+                code_start = stack.pop(0)
+                size = stack.pop(0)  # in bytes
 
-                if isAllReal(mem_location, current_miu_i, code_from, no_bytes):
-
-                    temp = int(math.ceil((mem_location + no_bytes) / float(32)))
-
-                    if temp > current_miu_i:
-                        current_miu_i = temp
-
-                    if self.runtime.disasm_file.endswith('.disasm'):
-                        evm_file_name = self.runtime.disasm_file[:-7]
-                    else:
-                        evm_file_name = self.disasm_file
-                    with open(evm_file_name, 'r') as evm_file:
-                        evm = evm_file.read()[:-1]
-                        start = code_from * 2
-                        end = start + no_bytes * 2
-                        code = evm[start: end]
-                    mem[mem_location] = int(code, 16)
-                else:
-                    new_var_name = self.gen.gen_code_var("Ia", code_from, no_bytes)
-                    if new_var_name in path_conditions_and_vars:
-                        new_var = path_conditions_and_vars[new_var_name]
-                    else:
-                        new_var = BitVec(new_var_name, 256)
-                        path_conditions_and_vars[new_var_name] = new_var
-
-                    temp = ((mem_location + no_bytes) / 32) + 1
-                    current_miu_i = to_symbolic(current_miu_i)
-                    expression = current_miu_i < temp
-                    self.solver.push()
-                    self.solver.add(expression)
-                    if check_sat(self.solver) != unsat:
-                        current_miu_i = If(expression, temp, current_miu_i)
-                    self.solver.pop()
-                    mem.clear()  # very conservative
-                    mem[str(mem_location)] = new_var
-                global_state["miu_i"] = current_miu_i
+                value = MemEvm(code_start, code_start + size - 1)
+                self.write_memory(mem_start, mem_start+size-1, value, params)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "RETURNDATACOPY":
             if len(stack) > 2:
                 global_state["pc"] += 1
-                stack.pop(0)
-                stack.pop(0)
-                stack.pop(0)
+                mem_start = stack.pop(0)
+                return_start = stack.pop(0)
+                size = stack.pop(0)  # in bytes
+
+                value = MemReturn(return_start, return_start+size-1)
+                self.write_memory(mem_start, mem_start+size-1, value, params)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "RETURNDATASIZE":
             global_state["pc"] += 1
-            new_var_name = self.gen.gen_arbitrary_var()
+            new_var_name = self.gen.gen_return_data_size(global_state["pc"]-1)
             new_var = BitVec(new_var_name, 256)
             stack.insert(0, new_var)
         elif opcode == "GASPRICE":
@@ -793,7 +748,6 @@ class EVMInterpreter:
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 address = stack.pop(0)
-                    # not handled yet
                 new_var_name = self.gen.gen_code_size_var(address)
                 if new_var_name in path_conditions_and_vars:
                     new_var = path_conditions_and_vars[new_var_name]
@@ -810,26 +764,9 @@ class EVMInterpreter:
                 mem_location = stack.pop(0)
                 code_from = stack.pop(0)
                 no_bytes = stack.pop(0)
-                current_miu_i = global_state["miu_i"]
-                new_var_name = self.gen.gen_code_var(address, code_from, no_bytes)
-                if new_var_name in path_conditions_and_vars:
-                    new_var = path_conditions_and_vars[new_var_name]
-                else:
-                    new_var = BitVec(new_var_name, 256)
-                    path_conditions_and_vars[new_var_name] = new_var
 
-                temp = ((mem_location + no_bytes) / 32) + 1
-                current_miu_i = to_symbolic(current_miu_i)
-                expression = current_miu_i < temp
-                self.solver.push()
-                self.solver.add(expression)
-
-                if check_sat(self.solver) != unsat:
-                    current_miu_i = If(expression, temp, current_miu_i)
-                self.solver.pop()
-                mem.clear()  # very conservative
-                mem[str(mem_location)] = new_var
-                global_state["miu_i"] = current_miu_i
+                value = MemExtCode(code_from, code_from+no_bytes-1, address)
+                self.write_memory(mem_location, mem_location+no_bytes-1, value, params)
             else:
                 raise ValueError('STACK underflow')
         #
@@ -838,35 +775,49 @@ class EVMInterpreter:
         elif opcode == "BLOCKHASH":  # information from block header
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
-                stack.pop(0)
-                new_var_name = "IH_blockhash"
-                if new_var_name in path_conditions_and_vars:
-                    new_var = path_conditions_and_vars[new_var_name]
-                else:
-                    new_var = BitVec(new_var_name, 256)
-                    path_conditions_and_vars[new_var_name] = new_var
-                stack.insert(0, new_var)
+                block_number = stack.pop(0)
+
+                value = None
+                s = Solver()
+                for key in self.blockhash_dict:
+                    s.push()
+                    s.add(Not(key == block_number))
+                    if check_unsat(s):
+                        value = self.blockhash_dict[key]
+                        break
+                # no used blockhash founded
+                if value is None:
+                    new_var_name = self.gen.gen_blockhash(block_number)
+                    value = BitVec(new_var_name, 256)
+                    self.blockhash_dict[block_number] = value
+
+                stack.insert(0, value)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "COINBASE":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentCoinbase"])
+            # todo: graph
             block_related_value = global_state["currentCoinbase"]
         elif opcode == "TIMESTAMP":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentTimestamp"])
+            # todo: graph
             block_related_value = global_state["currentTimestamp"]
         elif opcode == "NUMBER":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentNumber"])
+            # todo: graph
             block_related_value = global_state["currentNumber"]
         elif opcode == "DIFFICULTY":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentDifficulty"])
+            # todo: graph
             block_related_value = global_state["currentDifficulty"]
         elif opcode == "GASLIMIT":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentGasLimit"])
+            # todo: graph
             block_related_value = global_state["currentGasLimit"]
         #
         #  50s: Stack, Memory, Storage, and Flow Information
@@ -881,44 +832,11 @@ class EVMInterpreter:
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 address = stack.pop(0)
-                # node_address = node_stack.pop(0)
-                new_var = ""
-                current_miu_i = global_state["miu_i"]
-                if isAllReal(address, current_miu_i) and address in mem:
 
-                    temp = int(math.ceil((address + 32) / float(32)))
-                    if temp > current_miu_i:
-                        current_miu_i = temp
-                    value = mem[address]
-                    # node_value = node_mem[address]
-                    stack.insert(0, value)
-                    # node_stack.insert(0, node_value)
-                else:
-                    temp = ((address + 31) / 32) + 1
-                    current_miu_i = to_symbolic(current_miu_i)
-                    expression = current_miu_i < temp
-                    self.solver.push()
-                    self.solver.add(expression)
+                value = self.read_memory(address, address + 31, params)
 
-                    if check_sat(self.solver) != unsat:
-                        # this means that it is possibly that current_miu_i < temp
-                        current_miu_i = If(expression, temp, current_miu_i)
-                    self.solver.pop()
-                    new_var_name = self.gen.gen_mem_var(address)
-                    if new_var_name in path_conditions_and_vars:
-                        new_var = path_conditions_and_vars[new_var_name]
-                    else:
-                        new_var = BitVec(new_var_name, 256)
-                        path_conditions_and_vars[new_var_name] = new_var
-                    stack.insert(0, new_var)
-                    # node_stack.insert(0, 0)
-                    if isReal(address):
-                        mem[address] = new_var
-                        # node_mem[address] = new_var
-                    else:
-                        mem[str(address)] = new_var
-                        # node_mem[str(address)] = new_var
-                global_state["miu_i"] = current_miu_i
+                stack.insert(0, value)
+                # todo: graph
                 update_graph_mload(self.graph, address, current_miu_i, mem, node_stack, new_var, node_mem, global_state)
             else:
                 raise ValueError('STACK underflow')
@@ -1353,6 +1271,11 @@ class EVMInterpreter:
         init_ia = BitVec("init_Ia", 256)  # balance of receiver
 
         self.call_data_size = BitVec("Id_size", 256)  # size of input data
+        # the bytecode of evm bytecode
+        if self.runtime.disasm_file.endswith('.disasm'):
+            evm_file_name = self.runtime.disasm_file[:-6] + "evm"
+        with open(evm_file_name, 'r') as evm_file:
+            self.evm = evm_file.read()
 
         new_var_name = self.gen.gen_gas_price_var()
         gas_price = BitVec(new_var_name, 256)
@@ -1414,9 +1337,124 @@ class EVMInterpreter:
         test_status = unit_test.compare_with_symExec_result(global_state, UNIT_TEST)
         exit(test_status)
 
+    # real type of start and end will not locate symbolic type of start and end, start and end are both include(i.e. [
+    # start, end], element in mem/memory are of {z3 types, MemInput, MemEvm, real}
     def write_memory(self, start, end, value, params):
-        pass
+        if isAllReal(start, end):
+            memory = params.memory
+            old_size = len(memory) // 32
+            new_size = ceil32(end) // 32
+            mem_extend = (new_size - old_size) * 32
+            memory.extend([0] * mem_extend)
+            size = end - start
+            for i in range(size, -1, -1):
+                if type(value) == MemInput:  # CallDataCopy
+                    memory[start + i] = MemInput(value[start]+i, value[start]+i)
+                elif type(value) == MemEvm:  # CodeCopy
+                    memory[start + i] = MemEvm(value[start], value[start]+i)
+                else:
+                    assert(size <= 31)  # MSTORE8 or MSTORE
+                    value = to_symbolic(value)
+                    memory[start + i] = Extract(8 * (size - i) + 7, 8 * (size - i), value)
+        else:
+            # todo: the overlaps between symbolic vars should be dealed with? but it's very difficult.
+            s = Solver()
+            for key in params.mem:
+                s.push()
+                s.add(Not(And(key[0] == start, key[1] == end)))
+                if check_unsat(s):
+                    params.mem[(start, end)] = value
+                    return
 
+            params.mem[(start, end)] = value
+        return
+
+    def load_memory(self, start, params):  # MLoad, size == 31
+        if isReal(start):
+            data = []
+            for i in range(31, -1, -1):
+                value = params.memory[start+i]
+                if type(value) == MemInput:
+                    value = self.load_inputdata(value[start])
+
+
+
+    # all symbolic values of InputData is BitVec(256), and load and read of InputData is of 256 bits or 8 bits
+    # 1. all inputdata indexed with real address is separated with 256 bits, i.e. input_data_0_255, input_data_256_511...
+    # 2. and inputdata indexed with symbolic address is separated with 256 bits too, i.e. inputdata_start_end, with
+    #    end = start + 255
+    # this is used to get input_data vars from start to end,
+    # the return type alway is BitVec(256)
+    def load_inputdata(self, start):  # size = 32 bytes,  start is in bytes
+        value = None
+        exist_flag = False
+        # check if there is the same root symbolic values
+        for key in self.input_dict.keys():
+            try:
+                size = int(str(simplify(key-start)))  # explicitly include in old values
+                exist_flag = True
+                break
+            except:
+                continue
+
+        if exist_flag:
+            offset = (size % 32)
+            if offset: #  not in a slot
+                start1 = start - offset
+                value1 = None
+
+                s = Solver()
+
+                for x in self.input_dict:
+                    s.push()
+                    s.add(Not(x == start1))
+                    if check_unsat(s):
+                        value1 = self.input_dict[x]
+                        break
+                    s.pop()
+                if value1 is None:
+                    new_var_name = self.gen.gen_data_var(convertResult(start1), convertResult(start1+31))
+                    value1 = BitVec(new_var_name, 256)
+                    self.input_dict[start1] = value1
+
+                start2 = start - offset + 32
+                value2 = None
+
+
+                for x in self.input_dict:
+                    s.push()
+                    s.add(Not(x == start2))
+                    if check_unsat(s):
+                        value2 = self.input_dict[x]
+                        break
+                    s.pop()
+                if value2 is None:
+                    new_var_name = self.gen.gen_data_var(convertResult(start2), convertResult(start2 + 31))
+                    value2 = BitVec(new_var_name, 256)
+                    self.input_dict[start2] = value2
+
+                value = Concat(Extract(offset-1, 0, value2), Extract(255, offset, value1))
+
+            else:
+                s = Solver()
+
+                for x in self.input_dict:
+                    s.push()
+                    s.add(Not(x == start))
+                    if check_unsat(s):
+                        value = self.input_dict[x]
+                        break
+                    s.pop()
+                if value is None:
+                    new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
+                    value = BitVec(new_var_name, 256)
+                    self.input_dict[start] = value
+        else:
+            new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
+            value = BitVec(new_var_name, 256)
+            self.input_dict[start] = value
+
+        return value
 
 class Parameter:
 

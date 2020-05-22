@@ -71,9 +71,7 @@ class EvmRuntime:
         inst_pc = None
 
         for index, value in enumerate(file_contents):
-
             line_parts = value.strip("\n").split(" ")
-
 
             last_tok_string = tok_string
             tok_string = line_parts[1]
@@ -100,7 +98,7 @@ class EvmRuntime:
                 self.end_ins_dict[current_block] = inst_pc
                 is_new_block = True
             elif tok_string == "JUMPDEST":
-                idx += 1 # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
+                idx += 1  # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
                 if last_tok_string and (last_tok_string not in EvmRuntime.terminal_opcode) and (last_tok_string not in EvmRuntime.jump_opcode): #last instruction don't indicate a new block
                     self.end_ins_dict[current_block] = last_inst_pc
                     self.jump_type[current_block] = "falls_to"
@@ -159,7 +157,6 @@ class EvmRuntime:
                     self.edges[key].append(target)
                     self.vertices[target].set_jump_from(key)
                     self.vertices[key].set_jump_targets(target)
-
 
     def print_cfg(self):
         keys = sorted(self.vertices.keys())
