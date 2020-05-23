@@ -32,7 +32,10 @@ CONSTANT_ONES_159 = BitVecVal((1 << 160) - 1, 256)
 class EVMInterpreter:
     def __init__(self, runtime):
         self.gen = Generator()
+
         self.solver = Solver()
+        self.solver.set("timeout", global_params.TIMEOUT)
+
         self.runtime = runtime
 
         self.graph = XGraph()
@@ -47,8 +50,11 @@ class EVMInterpreter:
         # (key, value), key(v0, v1) for the stack[0] and stack2 of exp instruction, value for the symbolic expression of
         # exp(stack[0], stack[1])
         self.exp_dict = {}
-        # (key, value), key is the start address and the size if alway 256 bits
+        # (key, value), key is the start address and the size is always 256 bits
         self.input_dict = {}
+        # (key, value), key is the start address and the size is always 8 bits
+        self.evm_dict = {}
+
         # (key, value), key for block_number
         self.blockhash_dict = {}
 
@@ -418,6 +424,7 @@ class EVMInterpreter:
 
                     # we check the same value by solver the most less constrains with less accurence
                     s = Solver()
+                    s.set("timeout", global_params.TIMEOUT)
                     for key in self.exp_dict:
                         s.push()
                         s.add(Not(key[0] == base and key[1] == exponent))
@@ -626,6 +633,7 @@ class EVMInterpreter:
                     computed = None
                     # we check the same value by solver the most less constrains with less accurence
                     s = Solver()
+                    s.set("timeout", global_params.TIMEOUT)
                     for key in self.sha3_dict:
                         s.push()
                         s.add(Not(value == key))
@@ -779,6 +787,7 @@ class EVMInterpreter:
 
                 value = None
                 s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
                 for key in self.blockhash_dict:
                     s.push()
                     s.add(Not(key == block_number))
@@ -1351,7 +1360,7 @@ class EVMInterpreter:
                 if type(value) == MemInput:  # CallDataCopy
                     memory[start + i] = MemInput(value[start]+i, value[start]+i)
                 elif type(value) == MemEvm:  # CodeCopy
-                    memory[start + i] = MemEvm(value[start], value[start]+i)
+                    memory[start + i] = MemEvm(value[start]+i, value[start]+i)
                 else:
                     assert(size <= 31)  # MSTORE8 or MSTORE
                     value = to_symbolic(value)
@@ -1359,6 +1368,7 @@ class EVMInterpreter:
         else:
             # todo: the overlaps between symbolic vars should be dealed with? but it's very difficult.
             s = Solver()
+            s.set("timeout", global_params.TIMEOUT)
             for key in params.mem:
                 s.push()
                 s.add(Not(And(key[0] == start, key[1] == end)))
@@ -1369,13 +1379,28 @@ class EVMInterpreter:
             params.mem[(start, end)] = value
         return
 
-    def load_memory(self, start, params):  # MLoad, size == 31
+    # load a value of 32 bytes size from memory indexed by "start"(in byte)
+    # the sort of return value should be in { real int, BitVec(256)}
+    def load_memory(self, start, params):
         if isReal(start):
             data = []
-            for i in range(31, -1, -1):
+            for i in range(31, -1, -1):  # [31, 30, ..., 0]
                 value = params.memory[start+i]
-                if type(value) == MemInput:
-                    value = self.load_inputdata(value[start])
+                if type(value) == MemInput:   # a Mnemonic of a need of input data
+                    value = self.load_inputdata(value[start], one_byte=True)
+                elif type(value) == MemEvm:  # a Mnemonic of a need of evm bytecode
+                    if isAllReal(value.start, value.end):  # we can get the real value from bytecode file
+                        value = int(self.evm[value.start*2:(value.end+1)*2], 16), 8
+                    else:  # we have to construct a new symbolic value from evm
+                        value = self.load_evm_data(value.start)
+                else:  # the value from memory is exactly what we want, so nothing is needed to do
+                    value = to_symbolic(value, 8)  # it maybe real
+                data.append(value)
+
+            result = data[0]
+            for i in range(1, 31):
+                result = Concat(i, result)
+        # todo
 
 
 
@@ -1383,9 +1408,13 @@ class EVMInterpreter:
     # 1. all inputdata indexed with real address is separated with 256 bits, i.e. input_data_0_255, input_data_256_511...
     # 2. and inputdata indexed with symbolic address is separated with 256 bits too, i.e. inputdata_start_end, with
     #    end = start + 255
-    # this is used to get input_data vars from start to end,
-    # the return type alway is BitVec(256)
-    def load_inputdata(self, start):  # size = 32 bytes,  start is in bytes
+    #
+    # usage: this is used to get input_data vars from start to end,
+    #
+    # start: symbolic or real
+    #
+    # return type : BitVec(256) if one = False, else BitVec(8)
+    def load_inputdata(self, start, one_byte=False):  # size = 32 bytes,  start is in bytes
         value = None
         exist_flag = False
         # check if there is the same root symbolic values
@@ -1399,12 +1428,12 @@ class EVMInterpreter:
 
         if exist_flag:
             offset = (size % 32)
-            if offset: #  not in a slot
+            if offset:  # not in a slot, value should be a concat of bits extracted from both value1 and value
                 start1 = start - offset
                 value1 = None
 
                 s = Solver()
-
+                s.set("timeout", global_params.TIMEOUT)
                 for x in self.input_dict:
                     s.push()
                     s.add(Not(x == start1))
@@ -1416,6 +1445,9 @@ class EVMInterpreter:
                     new_var_name = self.gen.gen_data_var(convertResult(start1), convertResult(start1+31))
                     value1 = BitVec(new_var_name, 256)
                     self.input_dict[start1] = value1
+
+                if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
+                    return Extract(8*offset+7, 8*offset, value1)
 
                 start2 = start - offset + 32
                 value2 = None
@@ -1437,6 +1469,7 @@ class EVMInterpreter:
 
             else:
                 s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
 
                 for x in self.input_dict:
                     s.push()
@@ -1453,8 +1486,50 @@ class EVMInterpreter:
             new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
             value = BitVec(new_var_name, 256)
             self.input_dict[start] = value
+            if one_byte:
+                return Extract(7, 0, value)
 
         return value
+
+    def load_evm_data(self, start):  # start is in bytes, return a BitVec(8) as a byte of evm bytecode indexed by start
+        value = None
+        exist_flag = False
+        # check if there is the same root symbolic values
+        for key in self.evm_dict.keys():
+            try:
+                size = int(str(simplify(key-start)))  # explicitly include in old values
+                exist_flag = True
+                break
+            except:
+                continue
+
+        if exist_flag:
+            offset = (size % 32)
+            start = start - offset
+
+            s = Solver()
+            s.set("timeout", global_params.TIMEOUT)
+
+            for x in self.input_dict:
+                s.push()
+                s.add(Not(x == start))
+                if check_unsat(s):
+                    value = self.input_dict[x]
+                    break
+                s.pop()
+
+            if value is None:
+                new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
+                value = BitVec(new_var_name, 256)
+                self.input_dict[start] = value
+
+            return Extract(8*offset+7, 8*offset, value)
+        else:
+            new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
+            value = BitVec(new_var_name, 256)
+            self.input_dict[start] = value
+
+            return Extract(7, 0, value)
 
 class Parameter:
 

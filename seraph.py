@@ -77,9 +77,9 @@ def main():
     args = parser.parse_args()
 
     if args.timeout:
-        interpreter.params.TIMEOUT = args.timeout
+        global_params.TIMEOUT = args.timeout
     if args.global_timeout:
-        interpreter.params.GLOBAL_TIMEOUT = args.global_timeout
+        global_params.GLOBAL_TIMEOUT = args.global_timeout
     if args.tempdir:
         global_params.TMP_DIR = os.path.join(args.tempdir, str(time.time()))
     else:

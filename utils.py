@@ -82,9 +82,9 @@ def to_unsigned(number):
         return number + 2**256
     return number
 
-def to_symbolic(number):
+def to_symbolic(number, bits=256):
     if isReal(number):
-        return BitVecVal(number, 256)
+        return BitVecVal(number, bits)
     return number
 
 # if it's sat return True, else(i.e unsat\unknown\timeoutError) False
