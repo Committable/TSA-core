@@ -16,7 +16,10 @@ class BasicBlock:
         self.jump_from = []  # all blocks from which can jump to or fall to this block
 
         self.falls_to = None
-        self.jump_targets = []  # all true targets for conditional jump or targets for uncondition jump
+
+        # all true targets for conditional jump or targets for uncondition jump, we don't use set() because the top of
+        # jump_targets is the aimed pc currently
+        self.jump_targets = []
 
         self.type = None
 
@@ -59,10 +62,17 @@ class BasicBlock:
         return self.falls_to
 
     def set_jump_targets(self, address):
+        for x in self.jump_targets:  # top element is the most recently setted jump target
+            if x == address:
+                self.jump_targets.remove(x)
+
         self.jump_targets.append(address)
 
     def get_jump_targets(self):
         return self.jump_targets
+
+    def get_jump_target(self):  # top element is current jump target
+        return self.jump_targets[-1]
 
     def set_branch_expression(self, branch):
         self.branch_expression = branch

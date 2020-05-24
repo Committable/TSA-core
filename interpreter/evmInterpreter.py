@@ -15,15 +15,18 @@ from graphBuilder.evmGraph import *
 import networkx as nx
 import global_params
 import pickle
+from solver.symbolicVar import subexpression
 
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
 
-# Mnemonic for values in memory to inputdata, evmbytecode and returndata
+# Mnemonic for values in memory to inputdata, evm bytecode of current and ext address, returndata
 MemInput = namedtuple("MemInput", ["start", "end"])  # indexed by bytes
 MemEvm = namedtuple("MemEvm", ["start", "end"])  # indexed by bytes
-MemReturn = namedtuple("MemReturn", ["start", "end"])  # indexed by bytes
-MemExtCode = namedtuple("MemExtCode", ["start", "end", "address"])  # indexed by bytes
+# indexed by bytes, and pc is the pc of most recent call instruction
+MemReturn = namedtuple("MemReturn", ["start", "end", "pc"])
+# indexed by bytes, and address is the address of code
+MemExtCode = namedtuple("MemExtCode", ["start", "end", "address"])
 
 UNSIGNED_BOUND_NUMBER = 2**256 - 1
 CONSTANT_ONES_159 = BitVecVal((1 << 160) - 1, 256)
@@ -54,6 +57,8 @@ class EVMInterpreter:
         self.input_dict = {}
         # (key, value), key is the start address and the size is always 8 bits
         self.evm_dict = {}
+        # {address: {start: value}}
+        self.ext_code_dict = {}
 
         # (key, value), key for block_number
         self.blockhash_dict = {}
@@ -740,7 +745,7 @@ class EVMInterpreter:
                 return_start = stack.pop(0)
                 size = stack.pop(0)  # in bytes
 
-                value = MemReturn(return_start, return_start+size-1)
+                value = MemReturn(return_start, return_start+size-1, calls[-1])
                 self.write_memory(mem_start, mem_start+size-1, value, params)
             else:
                 raise ValueError('STACK underflow')
@@ -842,11 +847,11 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 address = stack.pop(0)
 
-                value = self.read_memory(address, address + 31, params)
+                value = self.load_memory(address, params)
 
                 stack.insert(0, value)
                 # todo: graph
-                update_graph_mload(self.graph, address, current_miu_i, mem, node_stack, new_var, node_mem, global_state)
+                update_graph_mload(self.graph, address, global_state["miu_i"], mem, node_stack, value, node_mem, global_state)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MSTORE":
@@ -854,39 +859,10 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 stored_address = stack.pop(0)
                 stored_value = stack.pop(0)
-                # node_stored_address = node_stack.pop(0)
-                # node_stored_value = node_stack.pop(0)
-                current_miu_i = global_state["miu_i"]
-                if isReal(stored_address):
-                    # preparing data for hashing later
-                    old_size = len(memory) // 32
-                    new_size = ceil32(stored_address + 32) // 32
-                    mem_extend = (new_size - old_size) * 32
-                    memory.extend([0] * mem_extend)
-                    value = stored_value
-                    for i in range(31, -1, -1):
-                        memory[stored_address + i] = value % 256
-                        value /= 256
-                if isAllReal(stored_address, current_miu_i):
 
-                    temp = int(math.ceil((stored_address + 32) / float(32)))
-                    if temp > current_miu_i:
-                        current_miu_i = temp
-                    mem[stored_address] = stored_value  # note that the stored_value could be symbolic
-                else:
-                    temp = ((stored_address + 31) / 32) + 1
-                    expression = current_miu_i < temp
-                    self.solver.push()
-                    self.solver.add(expression)
-
-                    if check_sat(self.solver) != unsat:
-                        # this means that it is possibly that current_miu_i < temp
-                        current_miu_i = If(expression, temp, current_miu_i)
-                    self.solver.pop()
-                    mem.clear()  # very conservative
-                    mem[str(stored_address)] = stored_value
-                global_state["miu_i"] = current_miu_i
-                update_graph_mstore(self.graph, stored_address, stored_value, current_miu_i, node_mem, node_stack)
+                self.write_memory(self, stored_address, stored_address + 31, stored_value, params)
+                # todo: graph
+                update_graph_mstore(self.graph, stored_address, stored_value, global_state["miu_i"], node_mem, node_stack)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MSTORE8":
@@ -894,63 +870,36 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 stored_address = stack.pop(0)
                 temp_value = stack.pop(0)
-                stored_value = temp_value % 256  # get the least byte
-                current_miu_i = global_state["miu_i"]
-                if isAllReal(stored_address, current_miu_i):
 
-                    temp = int(math.ceil((stored_address + 1) / float(32)))
-                    if temp > current_miu_i:
-                        current_miu_i = temp
-                    mem[stored_address] = stored_value  # note that the stored_value could be symbolic
-                else:
-                    temp = (stored_address / 32) + 1
-                    if isReal(current_miu_i):
-                        current_miu_i = BitVecVal(current_miu_i, 256)
-                    expression = current_miu_i < temp
-                    self.solver.push()
-                    self.solver.add(expression)
+                self.write_memory(stored_address, stored_address, temp_value, params)
 
-                    if check_sat(self.solver) != unsat:
-                        # this means that it is possibly that current_miu_i < temp
-                        current_miu_i = If(expression, temp, current_miu_i)
-                    self.solver.pop()
-                    mem.clear()  # very conservative
-                    mem[str(stored_address)] = stored_value
-                global_state["miu_i"] = current_miu_i
-                update_graph_mstore(self.graph, stored_address, stored_value, current_miu_i, node_mem, node_stack)
+                # todo: graph
+                update_graph_mstore(self.graph, stored_address, temp_value, global_state["miu_i"], node_mem, node_stack)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SLOAD":
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 position = stack.pop(0)
-                # node_position = node_stack.pop(0)
-                new_var_name = ""
-                new_var = ""
-                if isReal(position) and position in global_state["Ia"]:
-                    value = global_state["Ia"][position]
-                    stack.insert(0, value)
-                else:
-                    if str(position) in global_state["Ia"]:
-                        value = global_state["Ia"][str(position)]
-                        stack.insert(0, value)
-                    else:
-                        if is_expr(position):
-                            position = simplify(position)
-                        new_var_name = self.gen.gen_owner_store_var(position)
 
-                        if new_var_name in path_conditions_and_vars:
-                            new_var = path_conditions_and_vars[new_var_name]
-                        else:
-                            new_var = BitVec(new_var_name, 256)
-                            path_conditions_and_vars[new_var_name] = new_var
-                        stack.insert(0, new_var)
+                value = None
 
-                        if isReal(position):
-                            global_state["Ia"][position] = new_var
-                        else:
-                            global_state["Ia"][str(position)] = new_var
-                update_graph_sload(self.graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, new_var, control_edge_list, flow_edge_list)
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+                for key in global_state["Ia"]:
+                    s.push()
+                    s.add(Not(position == key))
+                    if check_unsat(s):
+                        value = global_state["Ia"][key]
+                if value is None:
+                    new_var_name = self.gen.gen_storage_var(position)
+                    value = BitVec(new_var_name, 256)
+                    global_state["Ia"][position] = value
+
+                return value
+
+                # todo: graph
+                update_graph_sload(self.graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, value, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
 
@@ -959,24 +908,30 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 stored_address = stack.pop(0)
                 stored_value = stack.pop(0)
-                if isReal(stored_address):
-                    # if stored_address in global_state["Ia"]:
+
+                flag = False
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+                for key in global_state["Ia"]:
+                    s.push()
+                    s.add(Not(stored_address == key))
+                    if check_unsat(s):
+                        flag = True
+                        global_state["Ia"][key] = stored_value
+                if not flag:
                     global_state["Ia"][stored_address] = stored_value
-                else:
-                    # note that the stored_value could be unknown
-                    global_state["Ia"][str(stored_address)] = stored_value
+
+                # todo: graph
                 update_graph_sstore(self.graph, node_stack, stored_address, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "JUMP":
             if len(stack) > 0:
                 target_address = stack.pop(0)
+
                 if isSymbolic(target_address):
-                    try:
-                        target_address = int(str(simplify(target_address)))
-                    except:
-                        raise TypeError("Target address must be an integer")
-                self.runtime.vertices[block].set_jump_target(target_address)
+                    raise TypeError("Target address must be an real integer but it is: %s", str(target_address))
+                self.runtime.vertices[block].set_jump_targets(target_address)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
             else:
@@ -985,27 +940,19 @@ class EVMInterpreter:
             # We need to prepare two branches
             if len(stack) > 1:
                 target_address = stack.pop(0)
-                # node_target_address = node_stack.pop(0)
                 if isSymbolic(target_address):
-                    try:
-                        target_address = int(str(simplify(target_address)))
-                    except:
-                        raise TypeError("Target address must be an integer")
+                    raise TypeError("Target address must be an integer: but it is %s", str(target_address))
                 self.runtime.vertices[block].set_jump_target(target_address)
                 flag = stack.pop(0)
-                # node_flag = node_stack.pop(0)
-                branch_expression = (BitVecVal(0, 1) == BitVecVal(1, 1))
-                if isReal(flag):
-                    if flag != 0:
-                        branch_expression = True
-                else:
-                    branch_expression = (flag != 0)
-                    # compare_node = ConstNode("", 0, False)
-                    # operand = [node_flag, compare_node]
-                    # ADD Edge
+
+                branch_expression = (flag != 0)
+
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
+                self.runtime.vertices[block].set_jump_targets(target_address)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
+
+                #todo: graph
                 update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, branch_expression,
                              global_state, control_edge_list, flow_edge_list)
             else:
@@ -1020,7 +967,7 @@ class EVMInterpreter:
         elif opcode == "GAS":
             # In general, we do not have this precisely. It depends on both
             # the initial gas and the amount has been depleted
-            # we need o think about this in the future, in case precise gas
+            # we need to think about this in the future, in case precise gas
             # can be tracked
             global_state["pc"] = global_state["pc"] + 1
             new_var_name = self.gen.gen_gas_var()
@@ -1039,6 +986,8 @@ class EVMInterpreter:
             global_state["pc"] = global_state["pc"] + 1 + position
             pushed_value = int(instr_parts[1], 16)
             stack.insert(0, pushed_value)
+
+            # todo: graph
             update_graph_const(self.graph, node_stack, pushed_value, global_state)
         #
         #  80s: Duplication Operations
@@ -1049,6 +998,8 @@ class EVMInterpreter:
             if len(stack) > position:
                 duplicate = stack[position]
                 stack.insert(0, duplicate)
+
+                # todo: graph
                 update_dup(node_stack, position)
             else:
                 raise ValueError('STACK underflow')
@@ -1063,6 +1014,8 @@ class EVMInterpreter:
                 temp = stack[position]
                 stack[position] = stack[0]
                 stack[0] = temp
+
+                # todo: graph
                 update_swap(node_stack, position)
             else:
                 raise ValueError('STACK underflow')
@@ -1094,7 +1047,6 @@ class EVMInterpreter:
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALL":
-            # TODO: Need to handle miu_i
             if len(stack) > 6:
                 calls.append(global_state["pc"])
                 global_state["pc"] = global_state["pc"] + 1
@@ -1106,118 +1058,135 @@ class EVMInterpreter:
                 start_data_output = stack.pop(0)
                 size_data_ouput = stack.pop(0)
 
-                # in the paper, it is shaky when the size of data output is
-                # min of stack[6] and the | o |
-
-                if isReal(transfer_amount):
-                    if transfer_amount == 0:
-                        stack.insert(0, 1)  # x = 0
-                        # node_stack.insert(0, 0)
-                        return
-
                 # Let us ignore the call depth
-                balance_ia = global_state["balance"]["Ia"]
+                balance_ia = global_state["balance"][global_state["receiver_address"]]
                 is_enough_fund = (transfer_amount <= balance_ia)
                 self.solver.push()
                 self.solver.add(is_enough_fund)
 
-                if check_sat(self.solver) == unsat:
+                if check_unsat(self.solver):
                     # this means not enough fund, thus the execution will result in exception
                     self.solver.pop()
                     stack.insert(0, 0)  # x = 0
                 else:
                     # the execution is possibly okay
-                    stack.insert(0, 1)  # x = 1
-                    self.solver.pop()
-                    self.solver.add(is_enough_fund)
+                    new_var_name = self.gen.gen_return_status(calls[-1])
+                    stack.insert(0, BitVec(new_var_name, 256))  # x = 1
+                    # add enough_fund condition to path_conditions
                     path_conditions_and_vars["path_condition"].append(is_enough_fund)
-                    last_idx = len(path_conditions_and_vars["path_condition"]) - 1
-                    new_balance_ia = (balance_ia - transfer_amount)
-                    global_state["balance"]["Ia"] = new_balance_ia
-                    address_is = path_conditions_and_vars["Is"]
-                    address_is = (address_is & CONSTANT_ONES_159)
-                    boolean_expression = (recipient != address_is)
-                    self.solver.push()
-                    self.solver.add(boolean_expression)
-                    if check_sat(self.solver) == unsat:
-                        self.solver.pop()
-                        new_balance_is = (global_state["balance"]["Is"] + transfer_amount)
-                        global_state["balance"]["Is"] = new_balance_is
-                    else:
-                        self.solver.pop()
-                        if isReal(recipient):
-                            new_address_name = "concrete_address_" + str(recipient)
-                        else:
-                            new_address_name = self.gen.gen_arbitrary_address_var()
-                        old_balance_name = self.gen.gen_arbitrary_var()
-                        old_balance = BitVec(old_balance_name, 256)
-                        path_conditions_and_vars[old_balance_name] = old_balance
-                        constraint = (old_balance >= 0)
-                        self.solver.add(constraint)
-                        path_conditions_and_vars["path_condition"].append(constraint)
-                        new_balance = (old_balance + transfer_amount)
-                        global_state["balance"][new_address_name] = new_balance
+                    # update the balance of call's sender that's this contract's address
+                    new_balance_ia = convertResult(balance_ia - transfer_amount)
+                    global_state["balance"][global_state["receiver_address"]] = new_balance_ia
+                    # update the balance of call's recipient
+                    old_balance = None
+                    s = Solver()
+                    s.set("timeout", global_params.TIMEOUT)
+                    for key in global_state["balance"]:
+                        s.push()
+                        s.add(Not(recipient == key))
+                        if check_unsat(s):
+                            s.pop()
+                            old_balance = global_state["balance"][key]
+                            global_state["balance"].pop(key)
+                            break
+                        s.pop()
+                    if old_balance is None:
+                        new_address_value_name = self.gen.gen_balance_of(recipient)
+                        old_balance = BitVec(new_address_value_name, 256)
+                        path_conditions_and_vars["path_condition"].append(old_balance >= 0)  # the init balance should > 0
+                    new_balance = old_balance + transfer_amount
+                    global_state["balance"][recipient] = new_balance
+                    # copy returndata to memory
+                    self.write_memory(start_data_output, start_data_output+size_data_ouput-1,
+                                      MemReturn(0, size_data_ouput, calls[-1]), params)
+
+                    self.solver.pop()
+
+                # todo: graph
                 update_call(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLCODE":
-            # TODO: Need to handle miu_i
+
             if len(stack) > 6:
                 calls.append(global_state["pc"])
                 global_state["pc"] = global_state["pc"] + 1
                 outgas = stack.pop(0)
-                recipient = stack.pop(0)  # this is not used as recipient
-
+                recipient = stack.pop(0)
                 transfer_amount = stack.pop(0)
                 start_data_input = stack.pop(0)
                 size_data_input = stack.pop(0)
                 start_data_output = stack.pop(0)
                 size_data_ouput = stack.pop(0)
-                # in the paper, it is shaky when the size of data output is
-                # min of stack[6] and the | o |
-
-                if isReal(transfer_amount):
-                    if transfer_amount == 0:
-                        stack.insert(0, 1)  # x = 0
-                        return
 
                 # Let us ignore the call depth
-                balance_ia = global_state["balance"]["Ia"]
+                balance_ia = global_state["balance"][global_state["receiver_address"]]
                 is_enough_fund = (transfer_amount <= balance_ia)
                 self.solver.push()
                 self.solver.add(is_enough_fund)
 
-                if check_sat(self.solver) == unsat:
+                if check_unsat(self.solver):
                     # this means not enough fund, thus the execution will result in exception
                     self.solver.pop()
                     stack.insert(0, 0)  # x = 0
-                    # node_stack.insert(0, 0)
                 else:
                     # the execution is possibly okay
-                    stack.insert(0, 1)  # x = 1
-                    # node_stack.insert(0, 0)
-                    self.solver.pop()
-                    self.solver.add(is_enough_fund)
+                    new_var_name = self.gen.gen_return_status(calls[-1])
+                    stack.insert(0, BitVec(new_var_name, 256))  # x = 1
+                    # add enough_fund condition to path_conditions
                     path_conditions_and_vars["path_condition"].append(is_enough_fund)
-                    last_idx = len(path_conditions_and_vars["path_condition"]) - 1
+                    # update the balance of call's sender that's this contract's address
+                    new_balance_ia = convertResult(balance_ia - transfer_amount)
+                    global_state["balance"][global_state["receiver_address"]] = new_balance_ia
+                    # update the balance of call's recipient
+                    old_balance = None
+                    s = Solver()
+                    s.set("timeout", global_params.TIMEOUT)
+                    for key in global_state["balance"]:
+                        s.push()
+                        s.add(Not(recipient == key))
+                        if check_unsat(s):
+                            s.pop()
+                            old_balance = global_state["balance"][key]
+                            global_state["balance"].pop(key)
+                            break
+                        s.pop()
+                    if old_balance is None:
+                        new_address_value_name = self.gen.gen_balance_of(recipient)
+                        old_balance = BitVec(new_address_value_name, 256)
+                        path_conditions_and_vars["path_condition"].append(
+                            old_balance >= 0)  # the init balance should > 0
+                    new_balance = old_balance + transfer_amount
+                    global_state["balance"][recipient] = new_balance
+                    # copy returndata to memory
+                    self.write_memory(start_data_output, start_data_output + size_data_ouput - 1,
+                                      MemReturn(0, size_data_ouput, calls[-1]), params)
+
+                    self.solver.pop()
+                # todo: graph
                 update_callcode(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
 
             else:
                 raise ValueError('STACK underflow')
         elif opcode in ("DELEGATECALL", "STATICCALL"):
             if len(stack) > 5:
-                global_state["pc"] += 1
-                stack.pop(0)
+                calls.append(global_state["pc"])
+                global_state["pc"] = global_state["pc"] + 1
+                outgas = stack.pop(0)
                 recipient = stack.pop(0)
-                stack.pop(0)
-                stack.pop(0)
-                stack.pop(0)
-                stack.pop(0)
-                new_var_name = self.gen.gen_arbitrary_var()
-                new_var = BitVec(new_var_name, 256)
-                stack.insert(0, new_var)
-                update_delegatecall(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
 
+                start_data_input = stack.pop(0)
+                size_data_input = stack.pop(0)
+                start_data_output = stack.pop(0)
+                size_data_ouput = stack.pop(0)
+
+                # copy returndata to memory
+                self.write_memory(start_data_output, start_data_output + size_data_ouput - 1,
+                                  MemReturn(0, size_data_ouput, calls[-1]), params)
+
+                self.solver.pop()
+                # todo: graph
+                update_delegatecall(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode in ("RETURN", "REVERT"):
@@ -1225,10 +1194,9 @@ class EVMInterpreter:
             if len(stack) > 1:
                 stack.pop(0)
                 stack.pop(0)
+                # todo: graph
                 if opcode == "REVERT":
                     update_graph_terminal(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list)
-                # TODO
-                pass
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SUICIDE":
@@ -1273,8 +1241,8 @@ class EVMInterpreter:
             update_graph_msg(self.graph, node_stack, opcode, global_state)
 
     def _init_global_state(self, path_conditions_and_vars, global_state):
-        sender_address = BitVec("Is", 256)
-        receiver_address = BitVec("Ia", 256)
+        sender_address = BitVec("Is", 256) & CONSTANT_ONES_159
+        receiver_address = BitVec("Ia", 256) & CONSTANT_ONES_159
         deposited_value = BitVec("Iv", 256)  # value of transaction
         init_is = BitVec("init_Is", 256)  # balance of sender
         init_ia = BitVec("init_Ia", 256)  # balance of receiver
@@ -1309,7 +1277,7 @@ class EVMInterpreter:
 
         # set all the world state before symbolic execution of tx
         global_state["Ia"] = {}  # the state of the current current contract
-        global_state["miu_i"] = 0
+        global_state["miu_i"] = 0  # the size of memory in use, 1 == 32 bytes == 256 bits
         global_state["value"] = deposited_value
         global_state["sender_address"] = sender_address
         global_state["receiver_address"] = receiver_address
@@ -1347,8 +1315,17 @@ class EVMInterpreter:
         exit(test_status)
 
     # real type of start and end will not locate symbolic type of start and end, start and end are both include(i.e. [
-    # start, end], element in mem/memory are of {z3 types, MemInput, MemEvm, real}
+    # start, end]
+    # value is type of {BitVec(256), , MemInput, MemEvm, real},
+    # elements in mem/memory are of {BitVec(256)/BitVec(8), MemInput, MemEvm, real}
     def write_memory(self, start, end, value, params):
+        s = Solver()
+        s.push()
+        s.add(Not(end >= start))
+        if check_unsat(s):
+            s.pop()
+            return
+
         if isAllReal(start, end):
             memory = params.memory
             old_size = len(memory) // 32
@@ -1358,9 +1335,13 @@ class EVMInterpreter:
             size = end - start
             for i in range(size, -1, -1):
                 if type(value) == MemInput:  # CallDataCopy
-                    memory[start + i] = MemInput(value[start]+i, value[start]+i)
+                    memory[start + i] = MemInput(value.start+i, value.start+i)
                 elif type(value) == MemEvm:  # CodeCopy
-                    memory[start + i] = MemEvm(value[start]+i, value[start]+i)
+                    memory[start + i] = MemEvm(value.start+i, value.start+i)
+                elif type(value) == MemReturn:
+                    memory[start + i] = MemReturn(value.start+i, value.start+i, value.pc)
+                elif type(value) == MemExtCode:
+                    memory[start + i] = MemExtCode(value.start+i, value.start+i, value.address)
                 else:
                     assert(size <= 31)  # MSTORE8 or MSTORE
                     value = to_symbolic(value)
@@ -1387,12 +1368,16 @@ class EVMInterpreter:
             for i in range(31, -1, -1):  # [31, 30, ..., 0]
                 value = params.memory[start+i]
                 if type(value) == MemInput:   # a Mnemonic of a need of input data
-                    value = self.load_inputdata(value[start], one_byte=True)
+                    value = self.load_inputdata(value.start, one_byte=True)
                 elif type(value) == MemEvm:  # a Mnemonic of a need of evm bytecode
                     if isAllReal(value.start, value.end):  # we can get the real value from bytecode file
-                        value = int(self.evm[value.start*2:(value.end+1)*2], 16), 8
+                        value = int(self.evm[value.start*2:(value.end+1)*2], 16)
                     else:  # we have to construct a new symbolic value from evm
-                        value = self.load_evm_data(value.start)
+                        value = self.load_evm_data(value.start, one_byte=True)
+                elif type(value) == MemReturn:
+                    value = self.load_returndata(value.start, value.pc, params, one_byte=True)
+                elif type(value) == MemExtCode:
+                    value = self.load_extcode(value.start, value.address, params, one_byte=True)
                 else:  # the value from memory is exactly what we want, so nothing is needed to do
                     value = to_symbolic(value, 8)  # it maybe real
                 data.append(value)
@@ -1400,9 +1385,209 @@ class EVMInterpreter:
             result = data[0]
             for i in range(1, 31):
                 result = Concat(i, result)
-        # todo
+        else:
+            result = None
+
+            for (v1, v2) in params.mem:
+                key = v1  # todo: v2 is not used for detection of out of bounds
+                subs = subexpression(key, start)
+                if subs is None:
+                    continue
+                else:
+                    value = params.mem[key]
+                    if type(value) == MemInput:
+                        result = self.load_inputdata(convertResult(subs + value.start))
+                    elif type(value) == MemEvm:
+                        if isReal(convertResult(subs)) and isAllReal(value.start, value.end):
+                            result = int(self.evm[(convertResult(subs) + value.start)*2:
+                                                  ((convertResult(subs) + value.start)+32)*2], 16)
+                        else:
+                            result = self.load_evm_data(convertResult(subs + value.start))
+                    elif type(value) == MemReturn:
+                        result = self.load_returndata(convertResult(subs + value.start), value.pc, params)
+                    elif type(value) == MemExtCode:
+                        result = self.load_extcode(convertResult(subs + value.start), value.address, params)
+                    else:  # BitVec(256) or real
+                        assert (type(value) == six.integer_types or value.sort() == BitVecSort(256))
+                        if str(subs) != "0":  # conditions we don't expect
+                            log.info("conditions we don't expect from memory load of symbolic indexs")
+                        result = value
+
+                    break
+
+            if result is None:
+                log.info("conditions we don't expect from memory load of symbolic indexs for not stored value")
+                new_var_name = self.gen.gen_mem_var(start)
+                result = BitVec(new_var_name, 256)
+                params.mem[start, convertResult(start + 31)] = result
+
+        return result
+
+    def load_returndata(self, start, pc, params, one_byte=False):  # size = 32 bytes,  start is in bytes, pc is real int
+        if pc in params.returndata:
+            returndata = params.returndata[pc]
+        else:
+            returndata = {}
+            params.returndata[pc] = returndata
+
+        value = None
+        exist_flag = False
+        # check if there is the same root symbolic values
+        for key in returndata.keys():
+            try:
+                size = int(str(simplify(key-start)))  # explicitly include in old values
+                exist_flag = True
+                break
+            except:
+                continue
+
+        if exist_flag:
+            offset = (size % 32)
+            if offset:  # not in a slot, value should be a concat of bits extracted from both value1 and value
+                start1 = start - offset
+                value1 = None
+
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+                for x in returndata:
+                    s.push()
+                    s.add(Not(x == start1))
+                    if check_unsat(s):
+                        value1 = returndata[x]
+                        break
+                    s.pop()
+                if value1 is None:
+                    new_var_name = self.gen.gen_return_data(pc, convertResult(start1), convertResult(start1+31))
+                    value1 = BitVec(new_var_name, 256)
+                    returndata[start1] = value1
+
+                if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
+                    return Extract(8*offset+7, 8*offset, value1)
+
+                start2 = start - offset + 32
+                value2 = None
 
 
+                for x in returndata:
+                    s.push()
+                    s.add(Not(x == start2))
+                    if check_unsat(s):
+                        value2 = returndata[x]
+                        break
+                    s.pop()
+                if value2 is None:
+                    new_var_name = self.gen.gen_return_data(pc, convertResult(start2), convertResult(start2 + 31))
+                    value2 = BitVec(new_var_name, 256)
+                    returndata[start2] = value2
+
+                value = Concat(Extract(offset-1, 0, value2), Extract(255, offset, value1))
+
+            else:
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+
+                for x in returndata:
+                    s.push()
+                    s.add(Not(x == start))
+                    if check_unsat(s):
+                        value = returndata[x]
+                        break
+                    s.pop()
+                if value is None:
+                    new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31))
+                    value = BitVec(new_var_name, 256)
+                    returndata[start] = value
+        else:
+            new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31))
+            value = BitVec(new_var_name, 256)
+            returndata[start] = value
+            if one_byte:
+                return Extract(7, 0, value)
+
+        return value
+
+    def load_extcode(self, start, address, one_byte=False):  # size = 32 bytes,  start is in bytes
+        if address in self.ext:
+            extcode = self.ext_code_dict[address]
+        else:
+            extcode = {}
+            self.ext_code_dict[address] = extcode
+
+        value = None
+        exist_flag = False
+        # check if there is the same root symbolic values
+        for key in extcode.keys():
+            try:
+                size = int(str(simplify(key-start)))  # explicitly include in old values
+                exist_flag = True
+                break
+            except:
+                continue
+
+        if exist_flag:
+            offset = (size % 32)
+            if offset:  # not in a slot, value should be a concat of bits extracted from both value1 and value
+                start1 = start - offset
+                value1 = None
+
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+                for x in extcode:
+                    s.push()
+                    s.add(Not(x == start1))
+                    if check_unsat(s):
+                        value1 = extcode[x]
+                        break
+                    s.pop()
+                if value1 is None:
+                    new_var_name = self.gen.gen_ext_code_data(address, convertResult(start1), convertResult(start1+31))
+                    value1 = BitVec(new_var_name, 256)
+                    extcode[start1] = value1
+
+                if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
+                    return Extract(8*offset+7, 8*offset, value1)
+
+                start2 = start - offset + 32
+                value2 = None
+
+
+                for x in extcode:
+                    s.push()
+                    s.add(Not(x == start2))
+                    if check_unsat(s):
+                        value2 = extcode[x]
+                        break
+                    s.pop()
+                if value2 is None:
+                    new_var_name = self.gen.gen_ext_code_data(address, convertResult(start2), convertResult(start2 + 31))
+                    value2 = BitVec(new_var_name, 256)
+                    extcode[start2] = value2
+
+                value = Concat(Extract(offset-1, 0, value2), Extract(255, offset, value1))
+
+            else:
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+
+                for x in extcode:
+                    s.push()
+                    s.add(Not(x == start))
+                    if check_unsat(s):
+                        value = extcode[x]
+                        break
+                    s.pop()
+                if value is None:
+                    new_var_name = self.gen.gen_ext_code_data(address, convertResult(start), convertResult(start + 31))
+                    value = BitVec(new_var_name, 256)
+                    extcode[start] = value
+        else:
+            new_var_name = self.gen.gen_ext_code_data(address, convertResult(start), convertResult(start + 31))
+            value = BitVec(new_var_name, 256)
+            extcode[start] = value
+            if one_byte:
+                return Extract(7, 0, value)
+
+        return value
 
     # all symbolic values of InputData is BitVec(256), and load and read of InputData is of 256 bits or 8 bits
     # 1. all inputdata indexed with real address is separated with 256 bits, i.e. input_data_0_255, input_data_256_511...
@@ -1491,13 +1676,15 @@ class EVMInterpreter:
 
         return value
 
-    def load_evm_data(self, start):  # start is in bytes, return a BitVec(8) as a byte of evm bytecode indexed by start
+    # start is in bytes, return a BitVec(8) as a byte of evm bytecode indexed by start if one_byte == True, otherwish
+    # return a BitVec(256)
+    def load_evm_data(self, start, one_byte=False):
         value = None
         exist_flag = False
         # check if there is the same root symbolic values
         for key in self.evm_dict.keys():
             try:
-                size = int(str(simplify(key-start)))  # explicitly include in old values
+                size = int(str(simplify(key - start)))  # explicitly include in old values
                 exist_flag = True
                 break
             except:
@@ -1505,31 +1692,68 @@ class EVMInterpreter:
 
         if exist_flag:
             offset = (size % 32)
-            start = start - offset
+            if offset:  # not in a slot, value should be a concat of bits extracted from both value1 and value
+                start1 = start - offset
+                value1 = None
 
-            s = Solver()
-            s.set("timeout", global_params.TIMEOUT)
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+                for x in self.evm_dict:
+                    s.push()
+                    s.add(Not(x == start1))
+                    if check_unsat(s):
+                        value1 = self.evm_dict[x]
+                        break
+                    s.pop()
+                if value1 is None:
+                    new_var_name = self.gen.gen_evm_data(convertResult(start1), convertResult(start1 + 31))
+                    value1 = BitVec(new_var_name, 256)
+                    self.evm_dict[start1] = value1
 
-            for x in self.input_dict:
-                s.push()
-                s.add(Not(x == start))
-                if check_unsat(s):
-                    value = self.input_dict[x]
-                    break
-                s.pop()
+                if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
+                    return Extract(8 * offset + 7, 8 * offset, value1)
 
-            if value is None:
-                new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
-                value = BitVec(new_var_name, 256)
-                self.input_dict[start] = value
+                start2 = start - offset + 32
+                value2 = None
 
-            return Extract(8*offset+7, 8*offset, value)
+                for x in self.evm_dict:
+                    s.push()
+                    s.add(Not(x == start2))
+                    if check_unsat(s):
+                        value2 = self.evm_dict[x]
+                        break
+                    s.pop()
+                if value2 is None:
+                    new_var_name = self.gen.gen_evm_data(convertResult(start2), convertResult(start2 + 31))
+                    value2 = BitVec(new_var_name, 256)
+                    self.evm_dict[start2] = value2
+
+                value = Concat(Extract(offset - 1, 0, value2), Extract(255, offset, value1))
+
+            else:
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+
+                for x in self.evm_dict:
+                    s.push()
+                    s.add(Not(x == start))
+                    if check_unsat(s):
+                        value = self.evm_dict[x]
+                        break
+                    s.pop()
+                if value is None:
+                    new_var_name = self.gen.gen_evm_data(convertResult(start), convertResult(start + 31))
+                    value = BitVec(new_var_name, 256)
+                    self.evm_dict[start] = value
         else:
-            new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
+            new_var_name = self.gen.gen_evm_data(convertResult(start), convertResult(start + 31))
             value = BitVec(new_var_name, 256)
-            self.input_dict[start] = value
+            self.evm_dict[start] = value
+            if one_byte:
+                return Extract(7, 0, value)
 
-            return Extract(7, 0, value)
+        return value
+
 
 class Parameter:
 
@@ -1549,6 +1773,9 @@ class Parameter:
             "control_edge_list": [],
             "flow_edge_list": [],
             "calls": [],
+
+            # the returndata of every call instruction, {pc: {start: value}}
+            "returndata": {},
 
 
             # mark all the visited edges of current_path, for detecting loops and control the loop_depth under limits

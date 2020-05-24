@@ -5,12 +5,27 @@ class Generator:
         self.count = 0
         self.branch = 0
 
+    def gen_balance_of(self, address):
+        return "init_" + str(address)
+
+    def gen_return_status(self, pc):
+        return "return_status_" + str(pc)
+
     def gen_stack_var(self):
         self.countstack += 1
         return "s" + str(self.countstack)
 
     def gen_return_data_size(self, pc):
         return "Rd_size_" + str(pc)
+
+    def gen_evm_data(self, start, end):
+        return "evm_" + str(start) + "_" + str(end)
+
+    def gen_ext_code_data(self, address, start, end):
+        return "bytecode_" + str(address) + "_" + str(start) + "_" + str(end)
+
+    def gen_return_data(self, pc, start, end):
+        return "Rd_" + str(pc) + "_" + str(start) + "_" + str(end)
 
     def gen_data_var(self, start, end):
         return "Id_" + str(start) + "_" + str(end)
@@ -20,6 +35,9 @@ class Generator:
 
     def gen_mem_var(self, address):
         return "mem_" + str(address)
+
+    def gen_storage_var(self, position):
+        return "storage_" + str(position)
 
     def gen_exp_var(self, v0, v1):
         return "exp(" + str(v0) + ", " + str(v1) + ")"
@@ -41,8 +59,8 @@ class Generator:
     def gen_gas_price_var(self):
         return "Ip"
 
-    def gen_address_var(self):
-        return "Ia"
+    def gen_address_var(self, address):
+        return "Ia_" + str(address)
 
     def gen_caller_var(self):
         return "Is"
