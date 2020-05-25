@@ -47,6 +47,7 @@ def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_a
         # global_state["nodeID"] += 1
         computedNode = ArithNode(opcode, operand, global_state["pc"],
                                  path_conditions_and_vars["path_condition"], computed, param, global_state["pc"])
+
         # edges = [(node_first, computedNode)]
         # edgeType = FlowEdge(computedNode)
         graph.addNode(computedNode)
@@ -79,8 +80,8 @@ def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_a
         # global_state["nodeID"] += 1
         computedNode = ArithNode(opcode, operand, global_state["pc"], path_conditions_and_vars["path_condition"],
                                  computed, param, global_state["pc"])
-        edges = [(node_first, computedNode), (node_second, computedNode), (node_third, computedNode)]
-        edgeType = FlowEdge(computedNode)
+        # edges = [(node_first, computedNode), (node_second, computedNode), (node_third, computedNode)]
+        # edgeType = FlowEdge(computedNode)
         graph.addNode(computedNode)
         # graph.addEdges(edges, edgeType)
         node_stack.insert(0, computedNode)

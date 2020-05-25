@@ -66,6 +66,10 @@ class EVMInterpreter:
         self.call_data_size = None
         self.evm = None
 
+        # (symbolicVar, variableNodes), mapping symbolic var to variableNodes
+        self.mapping_sym_node = {}
+
+
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
         global_state = {"balance": {}, "pc": 0}
@@ -659,8 +663,9 @@ class EVMInterpreter:
                     # todo:push into the stack a fresh symbolic variable, how to deal with symbolic address and size
                     new_var_name = self.gen.gen_arbitrary_var()
                     new_var = BitVec(new_var_name, 256)
-                    stack.insert(0, new_var)
                     computed = new_var
+
+                stack.insert(0, computed)
             else:
                 raise ValueError('STACK underflow')
         #
@@ -668,16 +673,25 @@ class EVMInterpreter:
         #
         elif opcode == "ADDRESS":  # get address of currently executing account
             global_state["pc"] = global_state["pc"] + 1
-            stack.insert(0, path_conditions_and_vars["Ia"])
+            stack.insert(0, global_state["receiver_address"])
         elif opcode == "BALANCE":
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
-                address = simplify(to_symbolic(stack.pop(0)))
-                new_var_name = self.gen.gen_balance_var(address)
-                # todo: global_state is initiated with global_state["balance"]["Ia"], how to deal with it? useless?
-                if new_var_name in global_state["balance"]:
-                    new_var = global_state["balance"]
-                else:
+                address = stack.pop(0)
+                # get balance of address
+                new_var = None
+                s = Solver()
+                s.set("timeout", global_params.TIMEOUT)
+                for key in global_state["balance"]:
+                    s.push()
+                    s.add(Not(key == address))
+                    if check_unsat():
+                        new_var = global_state["balance"][key]
+                        s.pop()
+                        break
+                    s.pop()
+                if new_var is None:
+                    new_var_name = self.gen.gen_balance_of(address)
                     new_var = BitVec(new_var_name, 256)
                     global_state["balance"][address] = new_var
 
@@ -798,7 +812,9 @@ class EVMInterpreter:
                     s.add(Not(key == block_number))
                     if check_unsat(s):
                         value = self.blockhash_dict[key]
+                        s.pop()
                         break
+                    s.pop()
                 # no used blockhash founded
                 if value is None:
                     new_var_name = self.gen.gen_blockhash(block_number)
@@ -806,6 +822,9 @@ class EVMInterpreter:
                     self.blockhash_dict[block_number] = value
 
                 stack.insert(0, value)
+
+                # todo: graph
+                block_related_value = value
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "COINBASE":  # information from block header
@@ -1244,15 +1263,17 @@ class EVMInterpreter:
             update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state,
                                   control_edge_list, flow_edge_list, param)
         elif (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
-            # print(opcode)
-            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state, control_edge_list, flow_edge_list, "")
+            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state,
+                                  control_edge_list, flow_edge_list, "")
         elif opcode in pass_opcode:
             update_pass(node_stack, opcode, global_state)
         elif opcode in block_opcode:
-            update_graph_block(self.graph, node_stack, opcode, block_related_value, global_state["currentNumber"], global_state)
+            update_graph_block(self.graph, node_stack, opcode, block_related_value,
+                               global_state["currentNumber"], global_state)
         elif opcode in msg_opcode:
             update_graph_msg(self.graph, node_stack, opcode, global_state)
-
+        else:
+            print(str(opcode))
     def _init_global_state(self, path_conditions_and_vars, global_state):
         sender_address = BitVec("Is", 256) & CONSTANT_ONES_159
         receiver_address = BitVec("Ia", 256) & CONSTANT_ONES_159
@@ -1785,6 +1806,8 @@ class Parameter:
 
             "control_edge_list": [],
             "flow_edge_list": [],
+
+            # used to show all calls of current path, every element is the real int representing pc of call instruction
             "calls": [],
 
             # the returndata of every call instruction, {pc: {start: value}}
