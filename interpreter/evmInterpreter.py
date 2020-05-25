@@ -66,8 +66,7 @@ class EVMInterpreter:
         self.call_data_size = None
         self.evm = None
 
-        # (symbolicVar, variableNodes), mapping symbolic var to variableNodes
-        self.mapping_sym_node = {}
+
 
 
     def sym_exec(self):
@@ -232,12 +231,9 @@ class EVMInterpreter:
     # instructions  : todo
     def _sym_exec_ins(self, params, block, instr):
         stack = params.stack
-        node_stack = params.node_stack
 
         mem = params.mem
-        node_mem = params.node_mem
         memory = params.memory
-        node_memory = params.node_memory
 
         global_state = params.global_state
 
@@ -246,11 +242,10 @@ class EVMInterpreter:
         control_edge_list = params.control_edge_list
         flow_edge_list = params.flow_edge_list
 
+        mapping_overflow_var_expr = params.mapping_overflow_var_expr
+
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[1]
-
-        if len(stack) != len(node_stack):
-            raise Exception("stack length exception: len(stack) != len(node_stack")
 
         log.debug("==============================")
         log.debug("EXECUTING: " + instr)
@@ -1254,26 +1249,16 @@ class EVMInterpreter:
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
+
         # todo: graph
         if opcode in overflow_related:
             if opcode == "EXP":
                 param = [base, exponent]
             else:
                 param = [first, second]
-            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state,
-                                  control_edge_list, flow_edge_list, param)
-        elif (opcode in two_operand_opcode) or (opcode in three_operand_opcode) or (opcode in one_operand_opcode):
-            update_graph_computed(self.graph, node_stack, opcode, computed, path_conditions_and_vars, global_state,
-                                  control_edge_list, flow_edge_list, "")
-        elif opcode in pass_opcode:
-            update_pass(node_stack, opcode, global_state)
-        elif opcode in block_opcode:
-            update_graph_block(self.graph, node_stack, opcode, block_related_value,
-                               global_state["currentNumber"], global_state)
-        elif opcode in msg_opcode:
-            update_graph_msg(self.graph, node_stack, opcode, global_state)
-        else:
-            print(str(opcode))
+            update_graph_computed(self.graph, opcode, computed, path_conditions_and_vars, global_state["pc"] - 1, param)
+
+
     def _init_global_state(self, path_conditions_and_vars, global_state):
         sender_address = BitVec("Is", 256) & CONSTANT_ONES_159
         receiver_address = BitVec("Ia", 256) & CONSTANT_ONES_159
@@ -1796,13 +1781,10 @@ class Parameter:
             # for all elem in stack, they should be either real unsigned int of python or BitVec(256) of z3,i.e without BitVecRef
             # or other types of data
             "stack": [],
-            "node_stack": [],
             # all variables located with real type of address and size is stored and loaded by memory, and with one
             # symbolic var in address or size, the value is stored and loaded in mem
             "memory": [],
             "mem": {},
-            "node_memory": [],
-            "node_mem": {},
 
             "control_edge_list": [],
             "flow_edge_list": [],
@@ -1813,6 +1795,12 @@ class Parameter:
             # the returndata of every call instruction, {pc: {start: value}}
             "returndata": {},
 
+            # (sym_overflow_var, expression): mapping a symbolic_var representing maybe overflow or underflow value
+            # to the expression and there's not any symbolic_var in the expression
+            "mapping_overflow_var_expr": {},
+            # (sym_overflow_var, symVarTree): mapping a symbolic_var representing maybe overflow or underflow value
+            # to the tree representing the symbolic_var in graph
+            "mapping_overflow_var_tree": {},
 
             # mark all the visited edges of current_path, for detecting loops and control the loop_depth under limits
             # {Edge:num}

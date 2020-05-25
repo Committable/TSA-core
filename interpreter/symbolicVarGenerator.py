@@ -5,6 +5,9 @@ class Generator:
         self.count = 0
         self.branch = 0
 
+    def gen_overflow_var(self, opcode, pc):
+        return "overflow_" + str(opcode) + "_" + str(pc)
+
     def gen_balance_of(self, address):
         return "init_" + str(address)
 

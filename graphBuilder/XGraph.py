@@ -3,20 +3,34 @@ import networkx as nx
 
 class Node:
 
-    def __init__(self, nodeID):
-        self.nodeID = nodeID
+    def __init__(self, fromNodes = None, toNodes = None):
+        self.fromeNodes = fromNodes
+        self.toNodes = toNodes
 
     def getFromNodes(self, graph):
-        return list(graph.perdecessors(self))
+        if self.fromeNodes is None:
+            self.fromeNodes = list(graph.perdecessors(self))
+        return self.fromeNodes
 
     def getToNodes(self, graph):
-        return list(graph.successors(self))
+        if self.toNodes is None:
+            self.toNodes = list(graph.successors(self))
+        return self.toNodes
 
+class ExpressionNode:
+    def __init__(self, expression):
+        self.expression = expression
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
 
 class InstructionNode(Node):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
-        super().__init__(nodeID)
+    def __init__(self, instruction_name, arguments, global_pc, constraint):
+        super().__init__()
         self.name = instruction_name
         self.arguments = arguments
         self.global_pc = global_pc
@@ -49,8 +63,8 @@ class StateOPNode(InstructionNode):
 
 class VariableNode(Node):
 
-    def __init__(self, name, value, nodeID):
-        super().__init__(nodeID)
+    def __init__(self, name, value):
+        super().__init__()
         self.name = name
         self.value = value
 
@@ -71,8 +85,8 @@ class StateNode(VariableNode):
 
 class ConstNode(VariableNode):
 
-    def __init__(self, name, value, nodeID):
-        super().__init__(name, value, nodeID)
+    def __init__(self, name, value):
+        super().__init__(name, value)
 
     def __str__(self):
         return "ConstNode " + str(self.value) + " " + str(self.nodeID)
@@ -137,8 +151,8 @@ class TerminalNode(InstructionNode):
 
 class ArithNode(InstructionNode):
 
-    def __init__(self, operation, operand, global_pc, constraint, expression, param, nodeID):
-        super().__init__(operation, operand, global_pc, constraint, nodeID)
+    def __init__(self, operation, operand, global_pc, constraint, expression, param):
+        super().__init__(operation, operand, global_pc, constraint)
         self.expression = expression
         self.params = param
 
@@ -146,7 +160,13 @@ class ArithNode(InstructionNode):
         return "ArithNode " + self.name + " " + str(self.nodeID)
 
 
-
+# a up-down tree structure, with the sym_var represent the ultimate symbolic_var node
+class SymVarTree:
+    def __init__(self, nodes, flow_edges, control_edges, sym_var_node):
+        self.nodes = nodes
+        self.flow_edges = flow_edges
+        self.control_edges = control_edges
+        self.sym_var_node = sym_var_node
 
 
 class FlowEdge:
@@ -183,8 +203,31 @@ class XGraph:
         self.call_nodes = []  # for call instruction
         self.msg_sender_nodes = []
         self.state_nodes = []
-        self.sstore_nodes = [] # for sstore instruction
+        self.sstore_nodes = []  # for sstore instruction
         self.sender_node = ""  # for msg.sender
+
+        # (symbolicVar, variableNode), mapping symbolic var to variableNodes
+        self.mapping_sym_node = {}
+
+        # (const, constNode), mapping real int to constNodes
+        self.mapping_const_node = {}
+
+    def getSymVariableNode(self, var):
+        if var in self.mapping_sym_node:
+            return self.mapping_sym_node[var]
+        else:
+            raise Exception("no match node for a symbolic var")
+
+    def addSymVariableNode(self, var, node):
+        self.mapping_sym_node[var] = node
+
+    def getConstNode(self, const):
+        if const in self.mapping_const_node:
+            return self.mapping_const_node[const]
+        else:
+            node = ConstNode(const, const)
+            self.mapping_const_node[const] = node
+            return node
 
     # The function for construct the graph for the contract
     def addNode(self, node):

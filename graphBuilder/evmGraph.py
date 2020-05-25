@@ -4,6 +4,7 @@ from collections import namedtuple
 from numpy import long
 import six
 from z3 import *
+from z3.z3util import *
 import zlib, base64
 from interpreter.symbolicVarGenerator import *
 from utils import *
@@ -38,66 +39,44 @@ overflow_opcode = ('ADD', 'MUL', 'EXP')
 underflow_opcode = ('SUB')
 
 
-def update_graph_computed(graph, node_stack, opcode, computed, path_conditions_and_vars, global_state, control_edge_list, flow_edge_list, param):
-    if opcode in one_operand_opcode:
-        node_first = node_stack.pop(0)
-
-        operand = [node_first]
-        param = param
-        # global_state["nodeID"] += 1
-        computedNode = ArithNode(opcode, operand, global_state["pc"],
-                                 path_conditions_and_vars["path_condition"], computed, param, global_state["pc"])
-
-        # edges = [(node_first, computedNode)]
-        # edgeType = FlowEdge(computedNode)
-        graph.addNode(computedNode)
-        # graph.addEdges(edges, edgeType)
-        # pushEdge(node_first, computedNode, flow_edge_list)
-        node_stack.insert(0, computedNode)
-    elif opcode in two_operand_opcode:
-        node_first = node_stack.pop(0)
-        node_second = node_stack.pop(0)
-
-        operand = [node_first, node_second]
-        # global_state["nodeID"] += 1
-        computedNode = ArithNode(opcode, operand, global_state["pc"], path_conditions_and_vars["path_condition"],
-                                 computed, param, global_state["pc"])
-
-        # edges = [(node_first, computedNode), (node_second, computedNode)]
-        # flowEdge = FlowEdge(computedNode)
-        graph.addNode(computedNode)
-        # graph.addEdges(edges, flowEdge)
-
-        # controlEdge = ControlEdge(path_conditions_and_vars["path_condition"])
-        # graph.addEdgeList(path_conditions_and_vars["path_condition_node"], computedNode, controlEdge)
-        node_stack.insert(0, computedNode)
+def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc, param):
+    var_nodes = []
+    flow_edges = []
+    control_edges = []
+    # get node_first
+    if is_expr(param[0]):
+        node_first = ExpressionNode(param[0])
+        for var in get_vars(param[0]):
+            node = graph.getVariableNode(var)
+            var_nodes.append(node)
+            flow_edges.append((node, node_first))
+    elif isReal(param[0]):
+        node_first = graph.getConstNode(param[0])
     else:
-        node_first = node_stack.pop(0)
-        node_second = node_stack.pop(0)
-        node_third = node_stack.pop(0)
+        node_first = graph.getVariableNode(param[0])
+    var_nodes.append(node_first)
+    # get node_second
+    if is_expr(param[1]):
+        node_second = ExpressionNode(param[1])
+        for var in get_vars(param[1]):
+            node = graph.getVariableNode(var)
+            var_nodes.append(node)
+            flow_edges.append((node, node_second))
+    elif isReal(param[1]):
+        node_second = graph.getConstNode(param[1])
+    else:
+        node_second = graph.getVariableNode(param[1])
+    var_nodes.append(node_second)
+    # get computedNode
+    operand = [node_first, node_second]
 
-        operand = [node_first, node_second, node_third]
-        # global_state["nodeID"] += 1
-        computedNode = ArithNode(opcode, operand, global_state["pc"], path_conditions_and_vars["path_condition"],
-                                 computed, param, global_state["pc"])
-        # edges = [(node_first, computedNode), (node_second, computedNode), (node_third, computedNode)]
-        # edgeType = FlowEdge(computedNode)
-        graph.addNode(computedNode)
-        # graph.addEdges(edges, edgeType)
-        node_stack.insert(0, computedNode)
+    computedNode = ArithNode(opcode, operand, pc, path_conditions_and_vars["path_condition"],
+                             computed, param)
+    # complete flow_edges and control_edges
+    pushEdgesToNode(operand, computedNode, flow_edges)
+    pushEdgesToNode(path_conditions_and_vars["path_condition_node"], computedNode, control_edges)
 
-    pushEdgesToNode(operand, computedNode, flow_edge_list)
-    if opcode in overflow_related:
-        pushEdgesToNode(path_conditions_and_vars["path_condition_node"], computedNode, control_edge_list)
-
-
-def update_pass(node_stack, opcode, global_state):
-    OPCODE = opcodes.opcode_by_name(opcode)
-    [node_stack.pop(0) for _ in range(OPCODE.pop)]
-    if OPCODE.push == 1:
-        # global_state["nodeID"] += 1
-        new_selfDefinedNode = SelfDefinedNode(opcode, 0, global_state["pc"])
-        node_stack.insert(0, new_selfDefinedNode)
+    return SymVarTree(var_nodes, flow_edges, control_edges, computedNode)
 
 
 def update_gas(node_stack, opcode, value, global_state):
@@ -178,6 +157,8 @@ def update_graph_sload(graph, path_conditions_and_vars, node_stack, global_state
     # controlEdge = ControlEdge(path_conditions_and_vars["path_condition_node"])
     # graph.addEdgeList(path_conditions_and_vars["path_condition_node"], sload_node, controlEdge)
     pushEdgesToNode(path_conditions_and_vars["path_condition_node"], sload_node, control_edge_list)
+
+
 
 
 def update_graph_sstore(graph, node_stack, stored_address, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list):
