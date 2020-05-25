@@ -1086,8 +1086,7 @@ class EVMInterpreter:
                         s.add(Not(recipient == key))
                         if check_unsat(s):
                             s.pop()
-                            old_balance = global_state["balance"][key]
-                            global_state["balance"].pop(key)
+                            old_balance = global_state["balance"].pop(key)
                             break
                         s.pop()
                     if old_balance is None:
@@ -1147,8 +1146,7 @@ class EVMInterpreter:
                         s.add(Not(recipient == key))
                         if check_unsat(s):
                             s.pop()
-                            old_balance = global_state["balance"][key]
-                            global_state["balance"].pop(key)
+                            old_balance = global_state["balance"].pop(key)
                             break
                         s.pop()
                     if old_balance is None:
@@ -1184,7 +1182,7 @@ class EVMInterpreter:
                 self.write_memory(start_data_output, start_data_output + size_data_ouput - 1,
                                   MemReturn(0, size_data_ouput, calls[-1]), params)
 
-                self.solver.pop()
+
                 # todo: graph
                 update_delegatecall(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
@@ -1202,27 +1200,42 @@ class EVMInterpreter:
         elif opcode == "SUICIDE":
             global_state["pc"] = global_state["pc"] + 1
             recipient = stack.pop(0)
-            transfer_amount = global_state["balance"]["Ia"]
-            global_state["balance"]["Ia"] = 0
-            if isReal(recipient):
-                new_address_name = "concrete_address_" + str(recipient)
-            else:
-                new_address_name = self.gen.gen_arbitrary_address_var()
-            old_balance_name = self.gen.gen_arbitrary_var()
-            old_balance = BitVec(old_balance_name, 256)
-            path_conditions_and_vars[old_balance_name] = old_balance
-            constraint = (old_balance >= 0)
-            self.solver.add(constraint)
-            path_conditions_and_vars["path_condition"].append(constraint)
-            new_balance = (old_balance + transfer_amount)
-            global_state["balance"][new_address_name] = new_balance
-            # TODO
+            # get transfer_amount and update the new balance
+            s = Solver()
+            s.set("timeout", global_params.TIMEOUT)
+            for key in global_state["balance"]:
+                s.push()
+                s.add(Not(key == global_state["receiver_address"]))
+                if check_unsat(s):
+                    transfer_amount = global_state["balance"][key]
+                    global_state["balance"][key] = 0
+                    break
+                s.pop()
+            # get the balance of recipient and update recipient's balance
+            balance_recipent = None
+            for key in global_state["balance"]:
+                s.push()
+                s.add(Not(key == recipient))
+                if check_unsat(s):
+                    balance_recipent = global_state["balance"].pop(key)
+                    s.pop()
+                    break
+                s.pop()
+            if balance_recipent is None:
+                new_address_value_name = self.gen.gen_balance_of(recipient)
+                old_balance = BitVec(new_address_value_name, 256)
+                path_conditions_and_vars["path_condition"].append(
+                    old_balance >= 0)  # the init balance should > 0
+            new_balance = old_balance + transfer_amount
+            global_state["balance"][recipient] = new_balance
+            # todo: graph
 
             update_suicide(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             return
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
+        # todo: graph
         if opcode in overflow_related:
             if opcode == "EXP":
                 param = [base, exponent]
