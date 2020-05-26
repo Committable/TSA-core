@@ -274,7 +274,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = first * second & UNSIGNED_BOUND_NUMBER
+                computed = (first * second) & UNSIGNED_BOUND_NUMBER
 
                 stack.insert(0, convertResult(computed))
             else:
@@ -296,9 +296,13 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
                 self.solver.push()
-                self.solver.add(Not(second == 0))
+                tmp_second = to_symbolic(second)
+                vars = get_vars(tmp_second)
+                for var in vars:
+                    if var in mapping_overflow_var_expr:
+                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
+                self.solver.add(Not(tmp_second == 0))
                 if check_unsat(self.solver):
                     computed = 0
                 else:
@@ -315,7 +319,12 @@ class EVMInterpreter:
 
                 second = to_symbolic(second)
                 self.solver.push()
-                self.solver.add(Not(second == 0))
+                tmp_second = to_symbolic(second)
+                vars = get_vars(tmp_second)
+                for var in vars:
+                    if var in mapping_overflow_var_expr:
+                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
+                self.solver.add(Not(tmp_second == 0))
                 if check_unsat(self.solver):
                     computed = 0
                 else:
@@ -333,7 +342,12 @@ class EVMInterpreter:
 
                 second = to_symbolic(second)
                 self.solver.push()
-                self.solver.add(Not(second == 0))
+                tmp_second = to_symbolic(second)
+                vars = get_vars(tmp_second)
+                for var in vars:
+                    if var in mapping_overflow_var_expr:
+                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
+                self.solver.add(Not(tmp_second == 0))
                 if check_unsat(self.solver):
                     # it is provable that second is indeed equal to zero
                     computed = 0
@@ -352,7 +366,12 @@ class EVMInterpreter:
 
                 second = to_symbolic(second)
                 self.solver.push()
-                self.solver.add(Not(second == 0))
+                tmp_second = to_symbolic(second)
+                vars = get_vars(tmp_second)
+                for var in vars:
+                    if var in mapping_overflow_var_expr:
+                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
+                self.solver.add(Not(tmp_second == 0))
                 if check_unsat(self.solver):
                     # it is provable that second is indeed equal to zero
                     computed = 0
