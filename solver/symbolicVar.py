@@ -1,5 +1,34 @@
 from z3 import *
 from z3.z3util import *
+from utils import *
+
+class SSolver(Solver):
+    def __init__(self, solver=None, ctx=None, logFile=None, hasTimeOut=False, mapping_var_expr={}):
+        super().__init__(solver, ctx, logFile)
+        self.hasTimeOut = hasTimeOut
+        self.mapping_var_expr = mapping_var_expr
+
+    def setMappingVarExpr(self, mapping_var_expr):
+        self.mapping_var_expr = mapping_var_expr
+
+    def add(self, *args):
+        for constrain in args:
+            if isSymbolic(constrain):
+                vars = get_vars(constrain)
+                for var in vars:
+                    print(str(var))
+                    if var in self.mapping_var_expr:
+                        constrain = z3.substitute(constrain, (var, self.mapping_var_expr[var]))
+                super().add(constrain)
+            else:
+                super().add(constrain)
+
+
+    def setHasTimeOut(self, hasTimeOut):
+        self.hasTimeOut = hasTimeOut
+
+    def getHasTimeOut(self):
+        return self.hasTimeOut
 
 def produce_symbolic_var(name, valtype):
     if "i32" == valtype:

@@ -3,23 +3,22 @@ class Generator:
         self.countstack = 0
         self.countdata = 0
         self.count = 0
-        self.branch = 0
+        self.path = 0
 
-    def gen_overflow_var(self, opcode, pc):
-        return "overflow_" + str(opcode) + "_" + str(pc)
+    def gen_address(self, pc):
+        return "address_" + str(pc)
+
+    def gen_overflow_var(self, opcode, pc, path_id):
+        return "overflow_" + str(opcode) + "_" + str(pc) + "_" + str(path_id)
 
     def gen_balance_of(self, address):
         return "init_" + str(address)
 
-    def gen_return_status(self, pc):
-        return "return_status_" + str(pc)
+    def gen_return_status(self, pc, path_id):
+        return "return_status_" + str(pc) + "_" + str(path_id)
 
-    def gen_stack_var(self):
-        self.countstack += 1
-        return "s" + str(self.countstack)
-
-    def gen_return_data_size(self, pc):
-        return "Rd_size_" + str(pc)
+    def gen_return_data_size(self, pc, path_id):
+        return "Rd_size_" + str(pc) + "_" + str(path_id)
 
     def gen_evm_data(self, start, end):
         return "evm_" + str(start) + "_" + str(end)
@@ -27,8 +26,11 @@ class Generator:
     def gen_ext_code_data(self, address, start, end):
         return "bytecode_" + str(address) + "_" + str(start) + "_" + str(end)
 
-    def gen_return_data(self, pc, start, end):
-        return "Rd_" + str(pc) + "_" + str(start) + "_" + str(end)
+    def gen_code_size_var(self, address):
+        return "code_size_" + str(address)
+
+    def gen_return_data(self, pc, start, end, path_id):
+        return "Rd_" + str(pc) + "_" + str(start) + "_" + str(end) + "_" + str(path_id)
 
     def gen_data_var(self, start, end):
         return "Id_" + str(start) + "_" + str(end)
@@ -36,8 +38,8 @@ class Generator:
     def gen_data_size(self):
         return "Id_size"
 
-    def gen_mem_var(self, address):
-        return "mem_" + str(address)
+    def gen_mem_var(self, address, pc, path_id):
+        return "mem_" + str(address) + "_" + str(pc) + "_" + str(path_id)
 
     def gen_storage_var(self, position):
         return "storage_" + str(position)
@@ -48,25 +50,12 @@ class Generator:
     def gen_sha3_var(self, value):
         return "sha3("+str(value)+")"
 
-    def gen_arbitrary_address_var(self):
+    def gen_gas_var(self, pc):
         self.count += 1
-        return "some_address_" + str(self.count)
-
-    def gen_owner_store_var(self, position, var_name=""):
-        return "Ia_store-%s-%s" % (str(position), var_name)
-
-    def gen_gas_var(self):
-        self.count += 1
-        return "gas_" + str(self.count)
+        return "gas_" + str(self.count) + "_" + str(pc)
 
     def gen_gas_price_var(self):
         return "Ip"
-
-    def gen_address_var(self, address):
-        return "Ia_" + str(address)
-
-    def gen_caller_var(self):
-        return "Is"
 
     def gen_origin_var(self):
         return "Io"
@@ -89,15 +78,14 @@ class Generator:
     def gen_timestamp(self):
         return "IH_s"
 
-    def gen_balance_var(self, address):
-        return "balance_" + str(address)
+    def gen_path_id(self):
+        self.path += 1
+        return "path_"+str(self.path)
 
-    def gen_code_var(self, address, position, bytecount):
-        return "code_" + str(address) + "_" + str(position) + "_" + str(bytecount)
+    def get_path_id(self):
+        return "path_"+str(self.path+1)
 
-    def gen_code_size_var(self, address):
-        return "code_size_" + str(address)
-
+    # for wasm
     def gen_import_global_var(self, module, name):
         return "global_"+str(module)+str(name)
 
@@ -115,9 +103,4 @@ class Generator:
         self.count += 1
         return "call_"+str(addr)+"_"+str(self.count)
 
-    def gen_branch_id(self):
-        self.branch += 1
-        return "branch_"+str(self.branch)
 
-    def get_branch_id(self):
-        return "branch_"+str(self.branch)

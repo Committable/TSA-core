@@ -12,6 +12,7 @@ import six
 import logging
 
 from z3 import *
+from solver.symbolicVar import *
 
 
 def run_command(cmd):
@@ -87,28 +88,29 @@ def to_symbolic(number, bits=256):
         return BitVecVal(number, bits)
     return number
 
+
 # if it's sat return True, else(i.e unsat\unknown\timeoutError) False
 # todo: check the difference of unsat\unknow\timeoutError
-def check_sat(solver, pop_if_exception=False):
+def check_sat(solver):
+    if solver.gethashTimeOut():
+        return False
     try:
         if solver.check() == sat:
             return True
     except Exception:
         return False
-    finally:
-        if pop_if_exception:
-            solver.pop()
+
+
 
 # if it's unsat return True, else(i.e sat\unknown\timeoutError) False
-def check_unsat(solver, pop_if_exception=False):
+def check_unsat(solver):
+    if solver.gethashTimeOut():
+        return False
     try:
         if solver.check == unsat:
             return True
     except Exception:
         return False
-    finally:
-        if pop_if_exception:
-            solver.pop()
 
 
 def to_signed(number):

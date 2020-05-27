@@ -15,7 +15,7 @@ from graphBuilder.evmGraph import *
 import networkx as nx
 import global_params
 import pickle
-from solver.symbolicVar import subexpression
+from solver.symbolicVar import subexpression, SSolver
 
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
@@ -36,8 +36,9 @@ class EVMInterpreter:
     def __init__(self, runtime):
         self.gen = Generator()
 
-        self.solver = Solver()
+        self.solver = SSolver()
         self.solver.set("timeout", global_params.TIMEOUT)
+
 
         self.runtime = runtime
 
@@ -57,17 +58,16 @@ class EVMInterpreter:
         self.input_dict = {}
         # (key, value), key is the start address and the size is always 8 bits
         self.evm_dict = {}
-        # {address: {start: value}}
+        # (address: {(start: value)})
         self.ext_code_dict = {}
+        # (address: value)
+        self.ext_code_size = {}
 
         # (key, value), key for block_number
         self.blockhash_dict = {}
 
         self.call_data_size = None
         self.evm = None
-
-
-
 
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
@@ -127,6 +127,11 @@ class EVMInterpreter:
                 self._sym_exec_ins(params, block, instr)
         except Exception as error:
             self.total_no_of_paths["exception"] += 1
+            path_id = self.gen.gen_path_id()
+            control_edge_list = params.control_edge_list
+            flow_edge_list = params.flow_edge_list
+            self.graph.addBranchEdge(flow_edge_list, "flowEdge", path_id)
+            self.graph.addBranchEdge(control_edge_list, "controlEdge", path_id)
             log.debug("This path results in an exception: %s, Terminating this path ...", str(error))
             return 1
 
@@ -137,11 +142,11 @@ class EVMInterpreter:
         if self.runtime.jump_type[block] == "terminal":
             self.total_no_of_paths += 1
 
-            branch_id = self.gen.gen_branch_id()
+            path_id = self.gen.gen_path_id()
             control_edge_list = params.control_edge_list
             flow_edge_list = params.flow_edge_list
-            self.graph.addBranchEdge(flow_edge_list, "flowEdge", branch_id)
-            self.graph.addBranchEdge(control_edge_list, "controlEdge", branch_id)
+            self.graph.addBranchEdge(flow_edge_list, "flowEdge", path_id)
+            self.graph.addBranchEdge(control_edge_list, "controlEdge", path_id)
 
             log.debug("TERMINATING A PATH ...")
 
@@ -176,7 +181,7 @@ class EVMInterpreter:
                     self.total_no_of_paths["normal"] += 1
                     log.debug("This path results in an unfeasible conditional True branch, Terminating this path ...")
             except Exception:
-                pass
+                self.solver.hashTimeOut(True)
             finally:
                 if flag:
                     # there is only one real jump target for conditional jumpi
@@ -189,6 +194,7 @@ class EVMInterpreter:
 
                 self.solver.pop()
 
+            self.solver.hashTimeOut(False)
             flag = True
             self.solver.push()
             negated_branch_expression = Not(branch_expression)
@@ -202,7 +208,7 @@ class EVMInterpreter:
                     self.total_no_of_paths["normal"] += 1
                     log.debug("This path results in an unfeasible conditional Flase branch, Terminating this path ...")
             except Exception:
-                pass
+                self.solver.hashTimeOut(True)
             finally:
                 if flag:
                     right_branch = self.runtime.vertices[block].get_falls_to()
@@ -212,6 +218,7 @@ class EVMInterpreter:
                     self._sym_exec_block(params, right_branch, block)
 
                 self.solver.pop()
+            self.solver.hashTimeOut(False)
         else:
             raise Exception('Unknown Jump-Type')
 
@@ -243,6 +250,7 @@ class EVMInterpreter:
         flow_edge_list = params.flow_edge_list
 
         mapping_overflow_var_expr = params.mapping_overflow_var_expr
+        self.solver.setMappingVarExpr(mapping_overflow_var_expr)
 
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[1]
@@ -297,16 +305,11 @@ class EVMInterpreter:
                 second = stack.pop(0)
 
                 self.solver.push()
-                tmp_second = to_symbolic(second)
-                vars = get_vars(tmp_second)
-                for var in vars:
-                    if var in mapping_overflow_var_expr:
-                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
-                self.solver.add(Not(tmp_second == 0))
+                self.solver.add(Not(second == 0))
                 if check_unsat(self.solver):
                     computed = 0
                 else:
-                    computed = UDiv(first, second)
+                    computed = UDiv(to_symbolic(first), second)
 
                 stack.insert(0, convertResult(computed))
             else:
@@ -317,14 +320,8 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
                 self.solver.push()
-                tmp_second = to_symbolic(second)
-                vars = get_vars(tmp_second)
-                for var in vars:
-                    if var in mapping_overflow_var_expr:
-                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
-                self.solver.add(Not(tmp_second == 0))
+                self.solver.add(Not(second == 0))
                 if check_unsat(self.solver):
                     computed = 0
                 else:
@@ -340,19 +337,13 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
                 self.solver.push()
-                tmp_second = to_symbolic(second)
-                vars = get_vars(tmp_second)
-                for var in vars:
-                    if var in mapping_overflow_var_expr:
-                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
-                self.solver.add(Not(tmp_second == 0))
+                self.solver.add(Not(second == 0))
                 if check_unsat(self.solver):
                     # it is provable that second is indeed equal to zero
                     computed = 0
                 else:
-                    computed = URem(first, second)
+                    computed = URem(first, to_symbolic(second))
                 self.solver.pop()
 
                 stack.insert(0, convertResult(computed))
@@ -364,19 +355,12 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
                 self.solver.push()
-                tmp_second = to_symbolic(second)
-                vars = get_vars(tmp_second)
-                for var in vars:
-                    if var in mapping_overflow_var_expr:
-                        tmp_second = z3.substitute(tmp_second, (var, mapping_overflow_var_expr[var]))
-                self.solver.add(Not(tmp_second == 0))
+                self.solver.add(Not(second == 0))
                 if check_unsat(self.solver):
                     # it is provable that second is indeed equal to zero
                     computed = 0
                 else:
-                    first = to_symbolic(first)
                     sign = If(first < 0, -1, 1)
                     z3_abs = lambda x: If(x >= 0, x, -x)
                     first = z3_abs(first)
@@ -395,15 +379,12 @@ class EVMInterpreter:
                 second = stack.pop(0)
                 third = stack.pop(0)
 
-                first = to_symbolic(first)
-                second = to_symbolic(second)
-                third = to_symbolic(third)
                 self.solver.push()
                 self.solver.add(Not(third == 0))
                 if check_unsat(self.solver):
                     computed = 0
                 else:
-                    computed = URem((first + second), third)
+                    computed = URem(first + second, to_symbolic(third))
                 self.solver.pop()
 
                 stack.insert(0, convertResult(computed))
@@ -416,15 +397,12 @@ class EVMInterpreter:
                 second = stack.pop(0)
                 third = stack.pop(0)
 
-                first = to_symbolic(first)
-                second = to_symbolic(second)
-                third = to_symbolic(third)
                 self.solver.push()
                 self.solver.add(Not(third == 0))
                 if check_unsat(self.solver):
                     computed = 0
                 else:
-                    computed = URem(first * second, third)
+                    computed = URem(first * second, to_symbolic(third))
                 self.solver.pop()
 
                 stack.insert(0, convertResult(computed))
@@ -441,16 +419,14 @@ class EVMInterpreter:
                 else:
                     # The computed value is unknown, this is because power is
                     # not supported in bit-vector theory
-                    base = simplify(to_symbolic(base))
-                    exponent = simplify(to_symbolic(exponent))
                     computed = None
 
                     # we check the same value by solver the most less constrains with less accurence
-                    s = Solver()
+                    s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                     s.set("timeout", global_params.TIMEOUT)
                     for key in self.exp_dict:
                         s.push()
-                        s.add(Not(key[0] == base and key[1] == exponent))
+                        s.add(Not(And(key[0] == base, key[1] == exponent)))
                         if check_unsat(s):
                             computed = self.exp_dict[key]
                             s.pop()
@@ -461,6 +437,10 @@ class EVMInterpreter:
                     if not computed:
                         new_var_name = self.gen.gen_exp_var(base, exponent)
                         computed = BitVec(new_var_name, 256)
+                        # add to graph
+                        node = ExpNode(new_var_name, computed)
+                        self.graph.addVarNode(computed, node)
+
                         self.exp_dict[(base, exponent)] = computed
 
                 stack.insert(0, computed)
@@ -483,16 +463,14 @@ class EVMInterpreter:
                         else:
                             computed = second & ((1 << signbit_index_from_right) - 1)
                 else:
-                    first = to_symbolic(first)
-                    second = to_symbolic(second)
                     self.solver.push()
-                    self.solver.add(Not(UGE(first, 32)))
+                    self.solver.add(Not(UGE(to_symbolic(first, 32))))
                     if check_unsat(self.solver):
                         computed = second
                     else:
                         signbit_index_from_right = 8 * first + 7
                         self.solver.push()
-                        self.solver.add(second & (1 << signbit_index_from_right) == 0)
+                        self.solver.add((second & (1 << signbit_index_from_right)) == 0)
                         if check_unsat(self.solver):
                             computed = second | (2 ** 256 - (1 << signbit_index_from_right))
                         else:
@@ -512,8 +490,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
-                computed = If(ULT(first, second), BitVec(1, 256), BitVec(0, 256))
+                computed = If(ULT(first, to_symbolic(second)), BitVec(1, 256), BitVec(0, 256))
 
                 stack.insert(0, convertResult(computed))
             else:
@@ -524,8 +501,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
-                computed = If(UGT(first, second), BitVecVal(1, 256), BitVecVal(0, 256))
+                computed = If(UGT(first, to_symbolic(second)), BitVecVal(1, 256), BitVecVal(0, 256))
 
                 stack.insert(0, convertResult(computed))
             else:
@@ -536,7 +512,6 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
                 computed = If(first < second, BitVecVal(1, 256), BitVecVal(0, 256))
 
                 stack.insert(0, convertResult(computed))
@@ -548,7 +523,6 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                second = to_symbolic(second)
                 computed = If(first > second, BitVecVal(1, 256), BitVecVal(0, 256))
 
                 stack.insert(0, convertResult(computed))
@@ -625,17 +599,15 @@ class EVMInterpreter:
                 byte_index = 31 - first
                 second = stack.pop(0)
 
-                first = to_symbolic(first)
                 self.solver.push()
                 self.solver.add(Not(Or(UGE(first, 32))))
                 if check_unsat(self.solver):
                     computed = 0
                 else:
-                    computed = second & (255 << (8 * byte_index))
-                    computed = LShR(computed, (8 * byte_index))
+                    computed = LShR(to_symbolic(second), (8 * byte_index))
                 self.solver.pop()
-                computed = simplify(computed) if is_expr(computed) else computed
-                stack.insert(0, computed)
+
+                stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
         #
@@ -655,7 +627,7 @@ class EVMInterpreter:
 
                     computed = None
                     # we check the same value by solver the most less constrains with less accurence
-                    s = Solver()
+                    s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                     s.set("timeout", global_params.TIMEOUT)
                     for key in self.sha3_dict:
                         s.push()
@@ -672,12 +644,21 @@ class EVMInterpreter:
                         value = simplify(value)
                         new_var_name = self.gen.gen_sha3_var(value)
                         computed = BitVec(new_var_name, 256)
+                        # add to node
+                        e_node = addExpressionNode(value)
+                        node = ShaNode(new_var_name, computed, value)
+                        self.graph.addBranchEdge([(e_node, node)], "flowEdge", self.gen.get_path_id())
+                        self.graph.addVarNode(computed, node)
+
                         self.exp_dict[value] = computed
                 else:
                     # todo:push into the stack a fresh symbolic variable, how to deal with symbolic address and size
-                    new_var_name = self.gen.gen_arbitrary_var()
+                    new_var_name = self.gen.gen_sha3_var("unkonwn_" + str(global_state["pc"]-1))
                     new_var = BitVec(new_var_name, 256)
                     computed = new_var
+                    # add to node
+                    node = ShaNode(new_var_name, computed, None)
+                    self.graph.addVarNode(computed, node)
 
                 stack.insert(0, computed)
             else:
@@ -694,7 +675,7 @@ class EVMInterpreter:
                 address = stack.pop(0)
                 # get balance of address
                 new_var = None
-                s = Solver()
+                s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for key in global_state["balance"]:
                     s.push()
@@ -709,9 +690,13 @@ class EVMInterpreter:
                     new_var = BitVec(new_var_name, 256)
                     global_state["balance"][address] = new_var
 
+                    # add to graph
+                    a_node = addAddressNode(self.graph, address, self.gen.get_path_id())
+                    b_node = BalanceNode(new_var_name, new_var, address)
+                    self.graph.addVarNode(new_var, b_node)
+                    self.graph.addBranchEdge([(a_node, b_node)], "flowEdge", self.gen.get_path_id())
+
                 stack.insert(0, new_var)
-                # todo: graph
-                update_graph_balance(self.graph, node_stack, global_state, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLER":  # get caller address
@@ -731,9 +716,6 @@ class EVMInterpreter:
                 end = simplify(start+31)
 
                 value = self.read_inputdata(start, end)
-
-                # todo: graph
-                update_graph_inputdata(self.graph, node_stack, value, str(value), global_state)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLDATASIZE":
@@ -779,8 +761,12 @@ class EVMInterpreter:
                 raise ValueError('STACK underflow')
         elif opcode == "RETURNDATASIZE":
             global_state["pc"] += 1
-            new_var_name = self.gen.gen_return_data_size(global_state["pc"]-1)
+            new_var_name = self.gen.gen_return_data_size(global_state["pc"]-1, self.gen.get_path_id())
             new_var = BitVec(new_var_name, 256)
+            # add to graph
+            node = ReturnDataSizeNode(new_var_name, new_var)
+            self.graph.addVarNode(new_var, node)
+
             stack.insert(0, new_var)
         elif opcode == "GASPRICE":
             global_state["pc"] = global_state["pc"] + 1
@@ -789,12 +775,27 @@ class EVMInterpreter:
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 address = stack.pop(0)
-                new_var_name = self.gen.gen_code_size_var(address)
-                if new_var_name in path_conditions_and_vars:
-                    new_var = path_conditions_and_vars[new_var_name]
-                else:
+                # todo:
+                new_var = None
+                s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
+                for key in self.ext_code_size:
+                    s.push()
+                    s.add(Not(key == address))
+                    if check_unsat():
+                        new_var = self.ext_code_size[key]
+                        s.pop()
+                        break
+                    s.pop()
+                if new_var is None:
+                    new_var_name = self.gen.gen_code_size_var(address)
                     new_var = BitVec(new_var_name, 256)
-                    path_conditions_and_vars[new_var_name] = new_var
+                    # add to graph
+                    a_node = addAddressNode(self.graph, address, self.gen.get_path_id())
+                    node = ExtcodeSizeNode(new_var_name, new_var, address)
+                    self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
+                    self.graph.addVarNode(new_var, node)
+
+                    self.ext_code_size[address] = new_var
                 stack.insert(0, new_var)
             else:
                 raise ValueError('STACK underflow')
@@ -819,7 +820,7 @@ class EVMInterpreter:
                 block_number = stack.pop(0)
 
                 value = None
-                s = Solver()
+                s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for key in self.blockhash_dict:
                     s.push()
@@ -833,6 +834,12 @@ class EVMInterpreter:
                 if value is None:
                     new_var_name = self.gen.gen_blockhash(block_number)
                     value = BitVec(new_var_name, 256)
+                    # add to graph
+                    e_node = addExpressionNode(self.graph, block_number, self.gen.get_path_id())
+                    node = BlockhashNode(new_var_name, value, block_number)
+                    self.graph.addBranchEdge([(e_node, node)], "flowEdge", self.gen.get_path_id())
+                    self.graph.addVarNode(value, node)
+
                     self.blockhash_dict[block_number] = value
 
                 stack.insert(0, value)
@@ -883,8 +890,6 @@ class EVMInterpreter:
                 value = self.load_memory(address, params)
 
                 stack.insert(0, value)
-                # todo: graph
-                update_graph_mload(self.graph, address, global_state["miu_i"], mem, node_stack, value, node_mem, global_state)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MSTORE":
@@ -894,8 +899,6 @@ class EVMInterpreter:
                 stored_value = stack.pop(0)
 
                 self.write_memory(self, stored_address, stored_address + 31, stored_value, params)
-                # todo: graph
-                update_graph_mstore(self.graph, stored_address, stored_value, global_state["miu_i"], node_mem, node_stack)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MSTORE8":
@@ -905,9 +908,6 @@ class EVMInterpreter:
                 temp_value = stack.pop(0)
 
                 self.write_memory(stored_address, stored_address, temp_value, params)
-
-                # todo: graph
-                update_graph_mstore(self.graph, stored_address, temp_value, global_state["miu_i"], node_mem, node_stack)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SLOAD":
@@ -917,7 +917,7 @@ class EVMInterpreter:
 
                 value = None
 
-                s = Solver()
+                s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for key in global_state["Ia"]:
                     s.push()
@@ -927,12 +927,18 @@ class EVMInterpreter:
                 if value is None:
                     new_var_name = self.gen.gen_storage_var(position)
                     value = BitVec(new_var_name, 256)
+                    # add to graph
+                    p_node = addExpressionNode(self.graph, position, self.gen.get_path_id())
+                    node = self.graph.getStateNode(position)
+                    if node is None:
+                        node = StateNode(new_var_name, value, position)
+                        self.graph.addStateNode(position, node)
+                    self.graph.addBranchEdge([(p_node, node)], "flowEdge", self.gen.get_path_id())
+                    self.graph.addVarNode(value, node)
+
                     global_state["Ia"][position] = value
 
                 return value
-
-                # todo: graph
-                update_graph_sload(self.graph, path_conditions_and_vars, node_stack, global_state, position, new_var_name, value, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
 
@@ -943,7 +949,7 @@ class EVMInterpreter:
                 stored_value = stack.pop(0)
 
                 flag = False
-                s = Solver()
+                s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for key in global_state["Ia"]:
                     s.push()
@@ -953,9 +959,6 @@ class EVMInterpreter:
                         global_state["Ia"][key] = stored_value
                 if not flag:
                     global_state["Ia"][stored_address] = stored_value
-
-                # todo: graph
-                update_graph_sstore(self.graph, node_stack, stored_address, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "JUMP":
@@ -978,16 +981,16 @@ class EVMInterpreter:
                 self.runtime.vertices[block].set_jump_target(target_address)
                 flag = stack.pop(0)
 
-                branch_expression = (flag != 0)
+                branch_expression = self.getSubstitudeExpr(flag != 0, params.mapping_overflow_var_expr)
+                branch_e_node = addExpressionNode(self.graph, flag != 0, self.gen.get_path_id())
+                branch_n_e_node = addExpressionNode(self.graph, flag == 0, self.gen.get_path_id())
 
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
+                self.runtime.vertices[block].set_branch_expression_node(branch_e_node)
+                self.runtime.vertices[block].set_branch_expression_node(branch_n_e_node)
                 self.runtime.vertices[block].set_jump_targets(target_address)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
-
-                #todo: graph
-                update_jumpi(self.graph, node_stack, self.runtime.vertices[block], flag, branch_expression,
-                             global_state, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "PC":
@@ -1003,11 +1006,13 @@ class EVMInterpreter:
             # we need to think about this in the future, in case precise gas
             # can be tracked
             global_state["pc"] = global_state["pc"] + 1
-            new_var_name = self.gen.gen_gas_var()
+            new_var_name = self.gen.gen_gas_var(global_state["pc"]-1)
             new_var = BitVec(new_var_name, 256)
-            path_conditions_and_vars[new_var_name] = new_var
+            # add to graph
+            node = GasNode(new_var_name, new_var)
+            self.graph.addVarNode(new_var, node)
+
             stack.insert(0, new_var)
-            update_gas(node_stack, opcode, new_var, global_state)
         elif opcode == "JUMPDEST":
             # Literally do nothing
             global_state["pc"] = global_state["pc"] + 1
@@ -1019,9 +1024,9 @@ class EVMInterpreter:
             global_state["pc"] = global_state["pc"] + 1 + position
             pushed_value = int(instr_parts[1], 16)
             stack.insert(0, pushed_value)
-
-            # todo: graph
-            update_graph_const(self.graph, node_stack, pushed_value, global_state)
+            # add to graph
+            node = ConstNode(str(pushed_value), pushed_value)
+            self.graph.addVarNode(pushed_value, node)
         #
         #  80s: Duplication Operations
         #
@@ -1031,9 +1036,6 @@ class EVMInterpreter:
             if len(stack) > position:
                 duplicate = stack[position]
                 stack.insert(0, duplicate)
-
-                # todo: graph
-                update_dup(node_stack, position)
             else:
                 raise ValueError('STACK underflow')
 
@@ -1047,9 +1049,6 @@ class EVMInterpreter:
                 temp = stack[position]
                 stack[position] = stack[0]
                 stack[0] = temp
-
-                # todo: graph
-                update_swap(node_stack, position)
             else:
                 raise ValueError('STACK underflow')
 
@@ -1074,8 +1073,11 @@ class EVMInterpreter:
                 stack.pop(0)
                 stack.pop(0)
 
-                new_var_name = self.gen.gen_arbitrary_var()
+                new_var_name = self.gen.gen_address(global_state["pc"]-1)
                 new_var = BitVec(new_var_name, 256)
+                node = AddressNode(new_var_name, new_var)
+                self.graph.addVarNode(new_var, node)
+
                 stack.insert(0, new_var)
             else:
                 raise ValueError('STACK underflow')
@@ -1103,8 +1105,13 @@ class EVMInterpreter:
                     stack.insert(0, 0)  # x = 0
                 else:
                     # the execution is possibly okay
-                    new_var_name = self.gen.gen_return_status(calls[-1])
-                    stack.insert(0, BitVec(new_var_name, 256))  # x = 1
+                    new_var_name = self.gen.gen_return_status(calls[-1], self.gen.get_path_id())
+                    new_var = BitVec(new_var_name, 256)
+                    stack.insert(0, new_var)  # x = 1
+                    # add to graph
+                    node = ReturnStatusNode(new_var_name, new_var)
+                    self.graph.addVarNode(new_var, node)
+
                     # add enough_fund condition to path_conditions
                     path_conditions_and_vars["path_condition"].append(is_enough_fund)
                     # update the balance of call's sender that's this contract's address
@@ -1112,7 +1119,7 @@ class EVMInterpreter:
                     global_state["balance"][global_state["receiver_address"]] = new_balance_ia
                     # update the balance of call's recipient
                     old_balance = None
-                    s = Solver()
+                    s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                     s.set("timeout", global_params.TIMEOUT)
                     for key in global_state["balance"]:
                         s.push()
@@ -1125,6 +1132,12 @@ class EVMInterpreter:
                     if old_balance is None:
                         new_address_value_name = self.gen.gen_balance_of(recipient)
                         old_balance = BitVec(new_address_value_name, 256)
+                        # add to graph
+                        a_node = addAddressNode(self.graph, recipient, self.gen.get_path_id())
+                        b_node = BalanceNode(new_var_name, old_balance, recipient)
+                        self.graph.addVarNode(old_balance, b_node)
+                        self.graph.addBranchEdge([(a_node, b_node)], "flowEdge", self.gen.get_path_id())
+
                         path_conditions_and_vars["path_condition"].append(old_balance >= 0)  # the init balance should > 0
                     new_balance = old_balance + transfer_amount
                     global_state["balance"][recipient] = new_balance
@@ -1134,8 +1147,37 @@ class EVMInterpreter:
 
                     self.solver.pop()
 
-                # todo: graph
-                update_call(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
+                # add to graph
+                node_stack = []
+                node_gas = addExpressionNode(self.graph, outgas, self.gen.get_path_id())
+                node_stack.insert(0, node_gas)
+                node_recipient = addAddressNode(self.graph, recipient, self.gen.get_path_id())
+                node_stack.insert(0, node_recipient)
+                node_transfer_amount = addExpressionNode(self.graph, transfer_amount, self.gen.get_path_id())
+                node_stack.insert(0, node_transfer_amount)
+                node_start_data_input = addExpressionNode(self.graph, start_data_input, self.gen.get_path_id())
+                node_stack.insert(0, node_start_data_input)
+                node_size_data_input = addExpressionNode(self.graph, size_data_input, self.gen.get_path_id())
+                node_stack.insert(0, node_size_data_input)
+                node_start_data_output = addExpressionNode(self.graph, start_data_output, self.gen.get_path_id())
+                node_stack.insert(0, node_start_data_output)
+                node_size_data_output = addExpressionNode(self.graph, size_data_ouput, self.gen.get_path_id())
+                node_stack.insert(0, node_size_data_output)
+
+                if stack[0] == 0:
+                    node_return_status = zeorReturnStatusNode
+                else:
+                    node_return_status = self.graph.getVarNode(stack[0])
+                node_stack.insert(0, node_return_status)
+
+                node_call_return_data = CallReturnDataNode(self.opcode + ":" + str(global_state["pc"]) + "_" +
+                                                           str(self.gen.get_path_id()), global_state["pc"],
+                                                           self.gen.get_path_id())
+                self.graph.addCallReturnNode(global_state["pc"], node_call_return_data)
+
+                node_stack.insert(0, node_call_return_data)
+
+                update_call(self.graph, opcode, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLCODE":
@@ -1163,8 +1205,12 @@ class EVMInterpreter:
                     stack.insert(0, 0)  # x = 0
                 else:
                     # the execution is possibly okay
-                    new_var_name = self.gen.gen_return_status(calls[-1])
-                    stack.insert(0, BitVec(new_var_name, 256))  # x = 1
+                    new_var_name = self.gen.gen_return_status(calls[-1], self.gen.get_path_id())
+                    new_var = BitVec(new_var_name, 256)
+                    stack.insert(0, new_var)
+                    # add to graph
+                    node = ReturnStatusNode(new_var_name, new_var)
+                    self.graph.addVarNode(new_var, node)
                     # add enough_fund condition to path_conditions
                     path_conditions_and_vars["path_condition"].append(is_enough_fund)
                     # update the balance of call's sender that's this contract's address
@@ -1172,7 +1218,7 @@ class EVMInterpreter:
                     global_state["balance"][global_state["receiver_address"]] = new_balance_ia
                     # update the balance of call's recipient
                     old_balance = None
-                    s = Solver()
+                    s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                     s.set("timeout", global_params.TIMEOUT)
                     for key in global_state["balance"]:
                         s.push()
@@ -1185,6 +1231,12 @@ class EVMInterpreter:
                     if old_balance is None:
                         new_address_value_name = self.gen.gen_balance_of(recipient)
                         old_balance = BitVec(new_address_value_name, 256)
+                        # add to graph
+                        a_node = addAddressNode(self.graph, recipient, self.gen.get_path_id())
+                        b_node = BalanceNode(new_address_value_name, old_balance, recipient)
+                        self.graph.addVarNode(b_node)
+                        self.graph.addBranchEdge([(a_node, b_node)], "flowEdge", self.gen.get_path_id())
+
                         path_conditions_and_vars["path_condition"].append(
                             old_balance >= 0)  # the init balance should > 0
                     new_balance = old_balance + transfer_amount
@@ -1194,8 +1246,39 @@ class EVMInterpreter:
                                       MemReturn(0, size_data_ouput, calls[-1]), params)
 
                     self.solver.pop()
-                # todo: graph
-                update_callcode(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
+
+                # add to graph
+                node_stack = []
+                node_gas = addExpressionNode(self.graph, outgas, self.gen.get_path_id())
+                node_stack.insert(0, node_gas)
+                node_recipient = addAddressNode(self.graph, recipient, self.gen.get_path_id())
+                node_stack.insert(0, node_recipient)
+                node_transfer_amount = addExpressionNode(self.graph, transfer_amount, self.gen.get_path_id())
+                node_stack.insert(0, node_transfer_amount)
+                node_start_data_input = addExpressionNode(self.graph, start_data_input, self.gen.get_path_id())
+                node_stack.insert(0, node_start_data_input)
+                node_size_data_input = addExpressionNode(self.graph, size_data_input, self.gen.get_path_id())
+                node_stack.insert(0, node_size_data_input)
+                node_start_data_output = addExpressionNode(self.graph, start_data_output, self.gen.get_path_id())
+                node_stack.insert(0, node_start_data_output)
+                node_size_data_output = addExpressionNode(self.graph, size_data_ouput, self.gen.get_path_id())
+                node_stack.insert(0, node_size_data_output)
+
+                if stack[0] == 0:
+                    node_return_status = zeorReturnStatusNode
+                else:
+                    node_return_status = self.graph.getVarNode(stack[0])
+                node_stack.insert(0, node_return_status)
+
+                node_call_return_data = CallReturnDataNode(self.opcode + ":" + str(global_state["pc"]) + "_" +
+                                                           str(self.gen.get_path_id()), global_state["pc"],
+                                                           self.gen.get_path_id())
+                self.graph.addCallReturnNode(global_state["pc"], node_call_return_data)
+
+                node_stack.insert(0, node_call_return_data)
+
+                update_call(self.graph, opcode, node_stack, global_state, path_conditions_and_vars, control_edge_list,
+                            flow_edge_list)
 
             else:
                 raise ValueError('STACK underflow')
@@ -1215,9 +1298,44 @@ class EVMInterpreter:
                 self.write_memory(start_data_output, start_data_output + size_data_ouput - 1,
                                   MemReturn(0, size_data_ouput, calls[-1]), params)
 
+                # the execution is possibly okay
+                new_var_name = self.gen.gen_return_status(calls[-1], self.gen.get_path_id())
+                new_var = BitVec(new_var_name, 256)
+                stack.insert(0, new_var)
+                # add to graph
+                node = ReturnStatusNode(new_var_name, new_var)
+                self.graph.addVarNode(new_var, node)
 
-                # todo: graph
-                update_delegatecall(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
+                # add to graph
+                node_stack = []
+                node_gas = addExpressionNode(self.graph, outgas, self.gen.get_path_id())
+                node_stack.insert(0, node_gas)
+                node_recipient = addAddressNode(self.graph, recipient, self.gen.get_path_id())
+                node_stack.insert(0, node_recipient)
+                node_start_data_input = addExpressionNode(self.graph, start_data_input, self.gen.get_path_id())
+                node_stack.insert(0, node_start_data_input)
+                node_size_data_input = addExpressionNode(self.graph, size_data_input, self.gen.get_path_id())
+                node_stack.insert(0, node_size_data_input)
+                node_start_data_output = addExpressionNode(self.graph, start_data_output, self.gen.get_path_id())
+                node_stack.insert(0, node_start_data_output)
+                node_size_data_output = addExpressionNode(self.graph, size_data_ouput, self.gen.get_path_id())
+                node_stack.insert(0, node_size_data_output)
+
+                if stack[0] == 0:
+                    node_return_status = zeorReturnStatusNode
+                else:
+                    node_return_status = self.graph.getVarNode(stack[0])
+                node_stack.insert(0, node_return_status)
+
+                node_call_return_data = CallReturnDataNode(self.opcode + ":" + str(global_state["pc"]) + "_" +
+                                                           str(self.gen.get_path_id()), global_state["pc"],
+                                                           self.gen.get_path_id())
+                self.graph.addCallReturnNode(global_state["pc"], node_call_return_data)
+
+                node_stack.insert(0, node_call_return_data)
+
+                update_delegatecall(self.graph, opcode, node_stack, global_state, path_conditions_and_vars, control_edge_list,
+                            flow_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode in ("RETURN", "REVERT"):
@@ -1225,17 +1343,17 @@ class EVMInterpreter:
             if len(stack) > 1:
                 stack.pop(0)
                 stack.pop(0)
-                # todo: graph
                 if opcode == "REVERT":
-                    update_graph_terminal(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list)
+                    update_graph_terminal(self.graph, opcode, global_state, path_conditions_and_vars, control_edge_list)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SUICIDE":
             global_state["pc"] = global_state["pc"] + 1
             recipient = stack.pop(0)
             # get transfer_amount and update the new balance
-            s = Solver()
+            s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
             s.set("timeout", global_params.TIMEOUT)
+            transfer_amount = None
             for key in global_state["balance"]:
                 s.push()
                 s.add(Not(key == global_state["receiver_address"]))
@@ -1244,6 +1362,8 @@ class EVMInterpreter:
                     global_state["balance"][key] = 0
                     break
                 s.pop()
+            if transfer_amount is None:
+                raise Exception("transfer amount of currentAddress must not be None")
             # get the balance of recipient and update recipient's balance
             balance_recipent = None
             for key in global_state["balance"]:
@@ -1257,35 +1377,87 @@ class EVMInterpreter:
             if balance_recipent is None:
                 new_address_value_name = self.gen.gen_balance_of(recipient)
                 old_balance = BitVec(new_address_value_name, 256)
+                # add to graph
+                a_node = addAddressNode(self.graph, recipient, self.gen.get_path_id())
+                b_node = BalanceNode(new_address_value_name, old_balance, recipient)
+                self.graph.addVarNode(b_node)
+                self.graph.addBranchEdge([(a_node, b_node)], "flowEdge", self.gen.get_path_id())
+
+
                 path_conditions_and_vars["path_condition"].append(
                     old_balance >= 0)  # the init balance should > 0
             new_balance = old_balance + transfer_amount
             global_state["balance"][recipient] = new_balance
             # todo: graph
-
+            node_stack = []
+            node_recipient = addAddressNode(self.graph, recipient, self.gen.get_path_id())
+            node_amount = addExpressionNode(self.graph, recipient, self.gen.get_path_id())
+            node_stack.insert(0, node_recipient)
+            node_stack.insert(0, node_amount)
             update_suicide(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
             return
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
 
-        # todo: graph
+        # add to graph for overflow
         if opcode in overflow_related:
             if opcode == "EXP":
                 param = [base, exponent]
             else:
                 param = [first, second]
-            update_graph_computed(self.graph, opcode, computed, path_conditions_and_vars, global_state["pc"] - 1, param)
+            new_var_name = self.gen.gen_overflow_var(opcode, global_state["pc"] - 1, self.gen.get_path_id())
+            computed = BitVec(new_var_name, 256)
+            params.mapping_overflow_var_exp[computed] = stack[0]
+            stack[0] = computed
+            nodes, flow_edges, control_edges, computed_node = \
+                    update_graph_computed(self.graph, opcode,
+                                          computed, path_conditions_and_vars, global_state["pc"] - 1, param)
+            self.graph.addBranchEdge(flow_edges, "flowEdge", self.gen.get_path_id())
+            self.graph.addBranchEdge(control_edges, "controlEdge", self.gen.get_path_id())
+            self.graph.addVarNode(stack[0], computed_node)
+
 
 
     def _init_global_state(self, path_conditions_and_vars, global_state):
-        sender_address = BitVec("Is", 256) & CONSTANT_ONES_159
-        receiver_address = BitVec("Ia", 256) & CONSTANT_ONES_159
-        deposited_value = BitVec("Iv", 256)  # value of transaction
-        init_is = BitVec("init_Is", 256)  # balance of sender
-        init_ia = BitVec("init_Ia", 256)  # balance of receiver
 
-        self.call_data_size = BitVec("Id_size", 256)  # size of input data
+        new_var = BitVec("Is", 256)
+        sender_address = new_var & CONSTANT_ONES_159
+        # add to graph
+        node = VariableNode("Is", new_var)
+        self.graph.addVarNode(new_var, node)
+        s_node = addAddressNode(self.graph, sender_address, self.gen.get_path_id())
+
+        new_var = BitVec("Ia", 256)
+        receiver_address = new_var & CONSTANT_ONES_159
+        # add to graph
+        node = VariableNode("Ia", new_var)
+        self.graph.addVarNode(new_var, node)
+        r_node = addAddressNode(self.graph, receiver_address, self.gen.get_path_id())
+
+        deposited_value = BitVec("Iv", 256)  # value of transaction
+        # add to graph
+        node = DepositValueNode("Iv", deposited_value)
+        self.graph.addVarNode(deposited_value, node)
+
+        init_is = BitVec("init_Is", 256)  # balance of sender
+        # add to graph
+        node = BalanceNode("init_Is", init_is, sender_address)
+        self.graph.addBranchEdge([(s_node, node)], "flowEdge", self.gen.get_path_id())
+        self.graph.addVarNode(init_is, node)
+
+        init_ia = BitVec("init_Ia", 256)  # balance of receiver
+        # add to graph
+        node = BalanceNode("init_Ia", init_is, receiver_address)
+        self.graph.addBranchEdge([(r_node, node)], "flowEdge", self.gen.get_path_id())
+        self.graph.addVarNode(init_ia, node)
+
+        new_var_name = self.gen.gen_data_size()
+        new_var = BitVec(new_var_name, 256)
+        # add to graph
+        node = InputDataSizeNode(new_var_name, new_var)
+        self.graph.addVarNode(new_var, node)
+        self.call_data_size = new_var  # size of input data
         # the bytecode of evm bytecode
         if self.runtime.disasm_file.endswith('.disasm'):
             evm_file_name = self.runtime.disasm_file[:-6] + "evm"
@@ -1294,24 +1466,49 @@ class EVMInterpreter:
 
         new_var_name = self.gen.gen_gas_price_var()
         gas_price = BitVec(new_var_name, 256)
+        # add to graph
+        node = GasPriceNode(new_var_name, gas_price)
+        self.graph.addVarNode(gas_price, node)
 
         new_var_name = self.gen.gen_origin_var()
         origin = BitVec(new_var_name, 256)
+        # add to graph
+        a_node = addAddressNode(self.graph, origin, self.gen.get_path_id())
+        node = OriginNode(new_var_name, origin)
+        self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
+        self.graph.addVarNode(gas_price, node)
 
         new_var_name = self.gen.gen_coin_base()
         currentCoinbase = BitVec(new_var_name, 256)
+        # add to graph
+        a_node = addAddressNode(self.graph, currentCoinbase, self.gen.get_path_id())
+        node = CoinbaseNode(new_var_name, currentCoinbase)
+        self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
+        self.graph.addVarNode(currentCoinbase, node)
 
         new_var_name = self.gen.gen_number()
         currentNumber = BitVec(new_var_name, 256)
+        # add to graph
+        node = CurrentNumberNode(new_var_name, currentNumber)
+        self.graph.addVarNode(currentNumber, node)
 
         new_var_name = self.gen.gen_difficult()
         currentDifficulty = BitVec(new_var_name, 256)
+        # add to graph
+        node = DifficultyNode(new_var_name, currentDifficulty)
+        self.graph.addVarNode(currentDifficulty, node)
 
         new_var_name = self.gen.gen_gas_limit()
         currentGasLimit = BitVec(new_var_name, 256)
+        # add to graph
+        node = GasLimitNode(new_var_name, currentGasLimit)
+        self.graph.addVarNode(currentGasLimit, node)
 
         new_var_name = self.gen.gen_timestamp()
         currentTimestamp = BitVec(new_var_name, 256)
+        # add to graph
+        node = TimeStampNode(new_var_name, currentTimestamp)
+        self.graph.addVarNode(currentTimestamp, node)
 
         # set all the world state before symbolic execution of tx
         global_state["Ia"] = {}  # the state of the current current contract
@@ -1339,11 +1536,6 @@ class EVMInterpreter:
         global_state["balance"][global_state["sender_address"]] = (init_is - deposited_value)
         global_state["balance"][global_state["receiver_address"]] = (init_ia + deposited_value)
 
-        global_state["nodeID"] = 0
-        global_state["pos_to_node"] = {}
-
-        init_state(self.graph, global_state)
-
     def is_testing_evm(self):
         return global_params.UNIT_TEST != 0
 
@@ -1357,12 +1549,13 @@ class EVMInterpreter:
     # value is type of {BitVec(256), , MemInput, MemEvm, real},
     # elements in mem/memory are of {BitVec(256)/BitVec(8), MemInput, MemEvm, real}
     def write_memory(self, start, end, value, params):
-        s = Solver()
+        s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
         s.push()
         s.add(Not(end >= start))
         if check_unsat(s):
             s.pop()
             return
+        s.pop()
 
         if isAllReal(start, end):
             memory = params.memory
@@ -1386,7 +1579,7 @@ class EVMInterpreter:
                     memory[start + i] = Extract(8 * (size - i) + 7, 8 * (size - i), value)
         else:
             # todo: the overlaps between symbolic vars should be dealed with? but it's very difficult.
-            s = Solver()
+            s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
             s.set("timeout", global_params.TIMEOUT)
             for key in params.mem:
                 s.push()
@@ -1394,9 +1587,19 @@ class EVMInterpreter:
                 if check_unsat(s):
                     params.mem[(start, end)] = value
                     return
+                s.pop()
 
             params.mem[(start, end)] = value
         return
+
+    def getSubstitudeExpr(self, expr, mapping_overflow_var_expr):
+        result = to_symbolic(expr)
+        l_vars = get_vars(result)
+        for var in l_vars:
+            if var in mapping_overflow_var_expr:
+                result = z3.substitute(result, (var, mapping_overflow_var_expr[var]))
+
+        return convertResult(result)
 
     # load a value of 32 bytes size from memory indexed by "start"(in byte)
     # the sort of return value should be in { real int, BitVec(256)}
@@ -1406,12 +1609,12 @@ class EVMInterpreter:
             for i in range(31, -1, -1):  # [31, 30, ..., 0]
                 value = params.memory[start+i]
                 if type(value) == MemInput:   # a Mnemonic of a need of input data
-                    value = self.load_inputdata(value.start, one_byte=True)
+                    value = self.load_inputdata(value.start, params, one_byte=True)
                 elif type(value) == MemEvm:  # a Mnemonic of a need of evm bytecode
                     if isAllReal(value.start, value.end):  # we can get the real value from bytecode file
                         value = int(self.evm[value.start*2:(value.end+1)*2], 16)
                     else:  # we have to construct a new symbolic value from evm
-                        value = self.load_evm_data(value.start, one_byte=True)
+                        value = self.load_evm_data(value.start, params, one_byte=True)
                 elif type(value) == MemReturn:
                     value = self.load_returndata(value.start, value.pc, params, one_byte=True)
                 elif type(value) == MemExtCode:
@@ -1434,13 +1637,13 @@ class EVMInterpreter:
                 else:
                     value = params.mem[key]
                     if type(value) == MemInput:
-                        result = self.load_inputdata(convertResult(subs + value.start))
+                        result = self.load_inputdata(convertResult(subs + value.start), params)
                     elif type(value) == MemEvm:
                         if isReal(convertResult(subs)) and isAllReal(value.start, value.end):
                             result = int(self.evm[(convertResult(subs) + value.start)*2:
                                                   ((convertResult(subs) + value.start)+32)*2], 16)
                         else:
-                            result = self.load_evm_data(convertResult(subs + value.start))
+                            result = self.load_evm_data(convertResult(subs + value.start), params)
                     elif type(value) == MemReturn:
                         result = self.load_returndata(convertResult(subs + value.start), value.pc, params)
                     elif type(value) == MemExtCode:
@@ -1455,8 +1658,14 @@ class EVMInterpreter:
 
             if result is None:
                 log.info("conditions we don't expect from memory load of symbolic indexs for not stored value")
-                new_var_name = self.gen.gen_mem_var(start)
+                new_var_name = self.gen.gen_mem_var(start, params.global_state["pc"]-1, self.gen.get_path_id())
                 result = BitVec(new_var_name, 256)
+                # add to graph
+                s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
+                node = MemoryNode(new_var_name, result, start)
+                self.graph.addBranchEdge([(s_node, node)], "flowEdge", self.gen.get_path_id())
+                self.graph.addVarNode(result, node)
+
                 params.mem[start, convertResult(start + 31)] = result
 
         return result
@@ -1485,7 +1694,7 @@ class EVMInterpreter:
                 start1 = start - offset
                 value1 = None
 
-                s = Solver()
+                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for x in returndata:
                     s.push()
@@ -1495,8 +1704,15 @@ class EVMInterpreter:
                         break
                     s.pop()
                 if value1 is None:
-                    new_var_name = self.gen.gen_return_data(pc, convertResult(start1), convertResult(start1+31))
+                    new_var_name = self.gen.gen_return_data(pc, convertResult(start1), convertResult(start1+31), self.gen.get_path_id())
                     value1 = BitVec(new_var_name, 256)
+                    # add to graph
+                    s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
+                    node = ReturnDataNode(new_var_name, value1)
+                    r_node = self.graph.getCallReturnNode(pc)
+                    self.graph.addBranchEdge([(s_node, node), [(r_node, node)]], "flow_edge", self.gen.get_path_id())
+                    self.graph.addVarNode(value1, node)
+
                     returndata[start1] = value1
 
                 if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
@@ -1514,37 +1730,58 @@ class EVMInterpreter:
                         break
                     s.pop()
                 if value2 is None:
-                    new_var_name = self.gen.gen_return_data(pc, convertResult(start2), convertResult(start2 + 31))
+                    new_var_name = self.gen.gen_return_data(pc, convertResult(start2), convertResult(start2 + 31), self.gen.get_path_id())
                     value2 = BitVec(new_var_name, 256)
+                    # add to graph
+                    s_node = addExpressionNode(self.graph, start2, self.gen.get_path_id())
+                    node = ReturnDataNode(new_var_name, value2)
+                    r_node = self.graph.getCallReturnNode(pc)
+                    self.graph.addBranchEdge([(s_node, node), (r_node, node)], "flow_edge", self.gen.get_path_id())
+                    self.graph.addVarNode(value2, node)
+
                     returndata[start2] = value2
 
                 value = Concat(Extract(offset-1, 0, value2), Extract(255, offset, value1))
 
             else:
-                s = Solver()
+                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
-
                 for x in returndata:
                     s.push()
                     s.add(Not(x == start))
                     if check_unsat(s):
                         value = returndata[x]
+                        s.pop()
                         break
                     s.pop()
                 if value is None:
-                    new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31))
+                    new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31), self.gen.get_path_id())
                     value = BitVec(new_var_name, 256)
+                    # add to graph
+                    s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
+                    node = ReturnDataNode(new_var_name, value)
+                    r_node = self.graph.getCallReturnNode(pc)
+                    self.graph.addBranchEdge([(s_node, node), (r_node, node)], "flow_edge", self.gen.get_path_id())
+                    self.graph.addVarNode(value, node)
+
                     returndata[start] = value
         else:
-            new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31))
+            new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31), self.gen.get_path_id())
             value = BitVec(new_var_name, 256)
+            # add to graph
+            s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
+            node = ReturnDataNode(new_var_name, value)
+            r_node = self.graph.getCallReturnNode(pc)
+            self.graph.addBranchEdge([(s_node, node), (r_node, node)], "flow_edge", self.gen.get_path_id())
+            self.graph.addVarNode(value, node)
+
             returndata[start] = value
             if one_byte:
                 return Extract(7, 0, value)
 
         return value
 
-    def load_extcode(self, start, address, one_byte=False):  # size = 32 bytes,  start is in bytes
+    def load_extcode(self, start, address, params, one_byte=False):  # size = 32 bytes,  start is in bytes
         if address in self.ext:
             extcode = self.ext_code_dict[address]
         else:
@@ -1568,7 +1805,7 @@ class EVMInterpreter:
                 start1 = start - offset
                 value1 = None
 
-                s = Solver()
+                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for x in extcode:
                     s.push()
@@ -1580,6 +1817,12 @@ class EVMInterpreter:
                 if value1 is None:
                     new_var_name = self.gen.gen_ext_code_data(address, convertResult(start1), convertResult(start1+31))
                     value1 = BitVec(new_var_name, 256)
+                    # add to graph
+                    a_node = addAddressNode(self.graph, address, self.gen.get_path_id())
+                    node = CodeNode(new_var_name, value1, address)
+                    self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
+                    self.graph.addVarNode(value1, node)
+
                     extcode[start1] = value1
 
                 if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
@@ -1599,12 +1842,18 @@ class EVMInterpreter:
                 if value2 is None:
                     new_var_name = self.gen.gen_ext_code_data(address, convertResult(start2), convertResult(start2 + 31))
                     value2 = BitVec(new_var_name, 256)
+                    # add to graph
+                    a_node = addAddressNode(self.graph, address, self.gen.get_path_id())
+                    node = CodeNode(new_var_name, value2, address)
+                    self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
+                    self.graph.addVarNode(value2, node)
+
                     extcode[start2] = value2
 
                 value = Concat(Extract(offset-1, 0, value2), Extract(255, offset, value1))
 
             else:
-                s = Solver()
+                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
 
                 for x in extcode:
@@ -1617,10 +1866,22 @@ class EVMInterpreter:
                 if value is None:
                     new_var_name = self.gen.gen_ext_code_data(address, convertResult(start), convertResult(start + 31))
                     value = BitVec(new_var_name, 256)
+                    # add to graph
+                    a_node = addAddressNode(self.graph, address, self.gen.get_path_id())
+                    node = CodeNode(new_var_name, value, address)
+                    self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
+                    self.graph.addVarNode(value, node)
+
                     extcode[start] = value
         else:
             new_var_name = self.gen.gen_ext_code_data(address, convertResult(start), convertResult(start + 31))
             value = BitVec(new_var_name, 256)
+            # add to graph
+            a_node = addAddressNode(self.graph, address, self.gen.get_path_id())
+            node = CodeNode(new_var_name, value, address)
+            self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
+            self.graph.addVarNode(value, node)
+
             extcode[start] = value
             if one_byte:
                 return Extract(7, 0, value)
@@ -1637,7 +1898,7 @@ class EVMInterpreter:
     # start: symbolic or real
     #
     # return type : BitVec(256) if one = False, else BitVec(8)
-    def load_inputdata(self, start, one_byte=False):  # size = 32 bytes,  start is in bytes
+    def load_inputdata(self, start, params, one_byte=False):  # size = 32 bytes,  start is in bytes
         value = None
         exist_flag = False
         # check if there is the same root symbolic values
@@ -1655,7 +1916,7 @@ class EVMInterpreter:
                 start1 = start - offset
                 value1 = None
 
-                s = Solver()
+                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for x in self.input_dict:
                     s.push()
@@ -1667,6 +1928,12 @@ class EVMInterpreter:
                 if value1 is None:
                     new_var_name = self.gen.gen_data_var(convertResult(start1), convertResult(start1+31))
                     value1 = BitVec(new_var_name, 256)
+                    # add to graph
+                    s_node = addExpressionNode(self.graph, start1, self.gen.get_path_id())
+                    node = InputDataNode(new_var_name, value1, start1)
+                    self.graph.addBranchEdge([(s_node, node)], "flow_edge", self.gen.get_path_id())
+                    self.graph.addVarNode(value1, node)
+
                     self.input_dict[start1] = value1
 
                 if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
@@ -1686,12 +1953,18 @@ class EVMInterpreter:
                 if value2 is None:
                     new_var_name = self.gen.gen_data_var(convertResult(start2), convertResult(start2 + 31))
                     value2 = BitVec(new_var_name, 256)
+                    # add to graph
+                    s_node = addExpressionNode(self.graph, start2, self.gen.get_path_id())
+                    node = InputDataNode(new_var_name, value2, start2)
+                    self.graph.addBranchEdge([(s_node, node)], "flow_edge", self.gen.get_path_id())
+                    self.graph.addVarNode(value2, node)
+
                     self.input_dict[start2] = value2
 
                 value = Concat(Extract(offset-1, 0, value2), Extract(255, offset, value1))
 
             else:
-                s = Solver()
+                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
 
                 for x in self.input_dict:
@@ -1704,10 +1977,22 @@ class EVMInterpreter:
                 if value is None:
                     new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
                     value = BitVec(new_var_name, 256)
+                    # add to graph
+                    s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
+                    node = InputDataNode(new_var_name, value, start)
+                    self.graph.addBranchEdge([(s_node, node)], "flow_edge", self.gen.get_path_id())
+                    self.graph.addVarNode(value, node)
+
                     self.input_dict[start] = value
         else:
             new_var_name = self.gen.gen_data_var(convertResult(start), convertResult(start + 31))
             value = BitVec(new_var_name, 256)
+            # add to graph
+            s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
+            node = InputDataNode(new_var_name, value, start)
+            self.graph.addBranchEdge([(s_node, node)], "flow_edge", self.gen.get_path_id())
+            self.graph.addVarNode(value, node)
+
             self.input_dict[start] = value
             if one_byte:
                 return Extract(7, 0, value)
@@ -1716,7 +2001,7 @@ class EVMInterpreter:
 
     # start is in bytes, return a BitVec(8) as a byte of evm bytecode indexed by start if one_byte == True, otherwish
     # return a BitVec(256)
-    def load_evm_data(self, start, one_byte=False):
+    def load_evm_data(self, start, params, one_byte=False):
         value = None
         exist_flag = False
         # check if there is the same root symbolic values
@@ -1734,7 +2019,7 @@ class EVMInterpreter:
                 start1 = start - offset
                 value1 = None
 
-                s = Solver()
+                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
                 s.set("timeout", global_params.TIMEOUT)
                 for x in self.evm_dict:
                     s.push()
@@ -1746,6 +2031,10 @@ class EVMInterpreter:
                 if value1 is None:
                     new_var_name = self.gen.gen_evm_data(convertResult(start1), convertResult(start1 + 31))
                     value1 = BitVec(new_var_name, 256)
+                    # add to graph
+                    node = CodeNode(new_var_name, value1)
+                    self.graph.addVarNode(value1, node)
+
                     self.evm_dict[start1] = value1
 
                 if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
@@ -1764,12 +2053,15 @@ class EVMInterpreter:
                 if value2 is None:
                     new_var_name = self.gen.gen_evm_data(convertResult(start2), convertResult(start2 + 31))
                     value2 = BitVec(new_var_name, 256)
+                    # add to graph
+                    node = CodeNode(new_var_name, value2)
+                    self.graph.addVarNode(value2, node)
                     self.evm_dict[start2] = value2
 
                 value = Concat(Extract(offset - 1, 0, value2), Extract(255, offset, value1))
 
             else:
-                s = Solver()
+                s = mapping_var_expr=params.mapping_overflow_var_expr
                 s.set("timeout", global_params.TIMEOUT)
 
                 for x in self.evm_dict:
@@ -1782,10 +2074,18 @@ class EVMInterpreter:
                 if value is None:
                     new_var_name = self.gen.gen_evm_data(convertResult(start), convertResult(start + 31))
                     value = BitVec(new_var_name, 256)
+                    # add to graph
+                    node = CodeNode(new_var_name, value)
+                    self.graph.addVarNode(value, node)
+
                     self.evm_dict[start] = value
         else:
             new_var_name = self.gen.gen_evm_data(convertResult(start), convertResult(start + 31))
             value = BitVec(new_var_name, 256)
+            # add to graph
+            node = CodeNode(new_var_name, value)
+            self.graph.addVarNode(value, node)
+
             self.evm_dict[start] = value
             if one_byte:
                 return Extract(7, 0, value)
@@ -1817,9 +2117,6 @@ class Parameter:
             # (sym_overflow_var, expression): mapping a symbolic_var representing maybe overflow or underflow value
             # to the expression and there's not any symbolic_var in the expression
             "mapping_overflow_var_expr": {},
-            # (sym_overflow_var, symVarTree): mapping a symbolic_var representing maybe overflow or underflow value
-            # to the tree representing the symbolic_var in graph
-            "mapping_overflow_var_tree": {},
 
             # mark all the visited edges of current_path, for detecting loops and control the loop_depth under limits
             # {Edge:num}
