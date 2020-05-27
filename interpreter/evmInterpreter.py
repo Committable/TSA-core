@@ -843,36 +843,23 @@ class EVMInterpreter:
                     self.blockhash_dict[block_number] = value
 
                 stack.insert(0, value)
-
-                # todo: graph
-                block_related_value = value
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "COINBASE":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentCoinbase"])
-            # todo: graph
-            block_related_value = global_state["currentCoinbase"]
         elif opcode == "TIMESTAMP":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentTimestamp"])
-            # todo: graph
-            block_related_value = global_state["currentTimestamp"]
         elif opcode == "NUMBER":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentNumber"])
-            # todo: graph
-            block_related_value = global_state["currentNumber"]
         elif opcode == "DIFFICULTY":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentDifficulty"])
-            # todo: graph
-            block_related_value = global_state["currentDifficulty"]
         elif opcode == "GASLIMIT":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentGasLimit"])
-            # todo: graph
-            block_related_value = global_state["currentGasLimit"]
         #
         #  50s: Stack, Memory, Storage, and Flow Information
         #
@@ -957,8 +944,28 @@ class EVMInterpreter:
                     if check_unsat(s):
                         flag = True
                         global_state["Ia"][key] = stored_value
+                node = self.graph.getStateNode(stored_address)
                 if not flag:
                     global_state["Ia"][stored_address] = stored_value
+                    # add to graph
+                    if node is None:
+                        p_node = addExpressionNode(self.graph, stored_address, self.gen.get_path_id())
+                        new_var_name = self.gen.gen_storage_var(stored_address)
+                        value = BitVec(new_var_name, 256)
+                        node = StateNode(new_var_name, value, stored_address)
+                        self.graph.addStateNode(stored_address, node)
+                        self.graph.addBranchEdge([(p_node, node)], "flowEdge", self.gen.get_path_id())
+                        self.graph.addVarNode(value, node)
+                e_node = addExpressionNode(self.graph, stored_value, self.gen.get_path_id())
+                SStore_node = StateOPNode(opcode, [stored_value, stored_address], global_state["pc"]-1,
+                                          path_conditions_and_vars["path_condition"], self.gen.get_path_id())
+                control_edges = []
+                pushEdgesToNode(path_conditions_and_vars["path_condition_node"], SStore_node, control_edges)
+                self.graph.addBranchEdge(control_edges, "controlEdge", self.gen.get_path_id())
+                self.graph.addNode(SStore_node)
+                self.graph.addBranchEdge([(e_node, SStore_node), (SStore_node, node)], "flowEdge", self.gen.get_path_id())
+                self.graph.addBranchEdge([(p_node, node)], "flowEdge", self.gen.get_path_id())
+
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "JUMP":
@@ -1177,7 +1184,7 @@ class EVMInterpreter:
 
                 node_stack.insert(0, node_call_return_data)
 
-                update_call(self.graph, opcode, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
+                update_call(self.graph, opcode, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list, self.gen.get_path_id())
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "CALLCODE":
@@ -1278,7 +1285,7 @@ class EVMInterpreter:
                 node_stack.insert(0, node_call_return_data)
 
                 update_call(self.graph, opcode, node_stack, global_state, path_conditions_and_vars, control_edge_list,
-                            flow_edge_list)
+                            flow_edge_list, self.gen.get_path_id())
 
             else:
                 raise ValueError('STACK underflow')
@@ -1335,7 +1342,7 @@ class EVMInterpreter:
                 node_stack.insert(0, node_call_return_data)
 
                 update_delegatecall(self.graph, opcode, node_stack, global_state, path_conditions_and_vars, control_edge_list,
-                            flow_edge_list)
+                            flow_edge_list, self.gen.get_path_id())
             else:
                 raise ValueError('STACK underflow')
         elif opcode in ("RETURN", "REVERT"):
@@ -1344,7 +1351,7 @@ class EVMInterpreter:
                 stack.pop(0)
                 stack.pop(0)
                 if opcode == "REVERT":
-                    update_graph_terminal(self.graph, opcode, global_state, path_conditions_and_vars, control_edge_list)
+                    update_graph_terminal(self.graph, opcode, global_state, path_conditions_and_vars, self.gen.get_path_id())
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SUICIDE":
@@ -1388,13 +1395,13 @@ class EVMInterpreter:
                     old_balance >= 0)  # the init balance should > 0
             new_balance = old_balance + transfer_amount
             global_state["balance"][recipient] = new_balance
-            # todo: graph
+            # add to graph
             node_stack = []
             node_recipient = addAddressNode(self.graph, recipient, self.gen.get_path_id())
             node_amount = addExpressionNode(self.graph, recipient, self.gen.get_path_id())
             node_stack.insert(0, node_recipient)
             node_stack.insert(0, node_amount)
-            update_suicide(self.graph, node_stack, global_state, path_conditions_and_vars, control_edge_list, flow_edge_list)
+            update_suicide(self.graph, node_stack, global_state, path_conditions_and_vars, self.gen.get_path_id())
             return
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)

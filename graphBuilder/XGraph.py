@@ -66,20 +66,22 @@ class InstructionNode(Node):
 
 class MessageCallNode(InstructionNode):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint):
+    def __init__(self, instruction_name, arguments, global_pc, constraint, path_id):
         super().__init__(instruction_name, arguments, global_pc, constraint)
+        self.path_id = path_id
 
     def __str__(self):
-        return self.name + "_" + str(self.global_pc)
+        return self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
 
 
 class StateOPNode(InstructionNode):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
-        super().__init__(instruction_name, arguments, global_pc, constraint, nodeID)
+    def __init__(self, instruction_name, arguments, global_pc, constraint, path_id):
+        super().__init__(instruction_name, arguments, global_pc, constraint)
+        self.path_id = path_id
 
     def __str__(self):
-        return "StateOPNode " + self.name + " " + str(self.nodeID)
+        return self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
 
 
 class VariableNode(Node):
@@ -282,11 +284,12 @@ class CodeNode(VariableNode):
 
 class TerminalNode(InstructionNode):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint):
+    def __init__(self, instruction_name, arguments, global_pc, constraint, path_id):
         super().__init__(instruction_name, arguments, global_pc, constraint)
+        self.path_id = path_id
 
     def __str__(self):
-        return "TerminalNode " + self.name
+        return "TerminalNode_" + self.name + "_" + str(self.path_id)
 
 class ArithNode(InstructionNode):
 
