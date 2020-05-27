@@ -92,7 +92,7 @@ def to_symbolic(number, bits=256):
 # if it's sat return True, else(i.e unsat\unknown\timeoutError) False
 # todo: check the difference of unsat\unknow\timeoutError
 def check_sat(solver):
-    if solver.gethashTimeOut():
+    if solver.getHasTimeOut():
         return False
     try:
         if solver.check() == sat:
@@ -104,7 +104,7 @@ def check_sat(solver):
 
 # if it's unsat return True, else(i.e sat\unknown\timeoutError) False
 def check_unsat(solver):
-    if solver.gethashTimeOut():
+    if solver.getHasTimeOut():
         return False
     try:
         if solver.check == unsat:

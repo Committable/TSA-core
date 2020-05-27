@@ -62,12 +62,13 @@ def addAddressNode(graph, expr, path_id):
         for var in get_vars(to_symbolic(expr)):
             node = graph.getVarNode(var)
             flow_edges.append((node, a_node))
+        graph.addNode(a_node)
         graph.addBranchEdge(flow_edges, "flowEdge", path_id)
         return a_node
     else:
         return a_node
 
-def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc, param):
+def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc, param, path_id):
     var_nodes = []
     flow_edges = []
     control_edges = []
@@ -100,7 +101,7 @@ def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc,
     operand = [node_first, node_second]
 
     computedNode = ArithNode(opcode, operand, pc, path_conditions_and_vars["path_condition"],
-                             computed, param)
+                             computed, param, path_id)
     # complete flow_edges and control_edges
     pushEdgesToNode(operand, computedNode, flow_edges)
     pushEdgesToNode(path_conditions_and_vars["path_condition_node"], computedNode, control_edges)

@@ -203,6 +203,7 @@ class EvmRuntime:
     def build_runtime_env(self):
         #todo: test for building cfg process
         self.build_cfg()
-        self.print_cfg()
+        # self.print_cfg()
         self.print_cfg_dot()
+        return 0
 

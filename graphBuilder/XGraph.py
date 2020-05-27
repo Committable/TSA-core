@@ -24,6 +24,10 @@ class Node:
             self.toNodes = list(graph.successors(self))
         return self.toNodes
 
+    def __str__(self):
+        return "Node_" + self.name
+
+
 # CallReturnDataNode is different with ReturnDataNode, but it points to a ReturnDataNode
 class CallReturnDataNode(Node):
     def __init__(self, name, pc, path_id):
@@ -37,6 +41,9 @@ class CallReturnDataNode(Node):
     def getPathId(self):
         return self.path_id
 
+    def __str__(self):
+        return "CallReturnDataNode_" + self.name + "_" + str(self.pc) + "_" + str(self.path_id)
+
 class ExpressionNode(Node):
     def __init__(self, name, expression):
         super().__init__(name)
@@ -47,6 +54,10 @@ class ExpressionNode(Node):
 
     def set_expression(self, expression):
         self.expression = expression
+
+    def __str__(self):
+        return "ExpressionNode_" + self.name
+
 
 class InstructionNode(Node):
 
@@ -63,6 +74,9 @@ class InstructionNode(Node):
     def getArguments(self):
         return self.arguments
 
+    def __str__(self):
+        return "InstructionNode_" + self.name + "_" + str(self.global_pc)
+
 
 class MessageCallNode(InstructionNode):
 
@@ -71,7 +85,7 @@ class MessageCallNode(InstructionNode):
         self.path_id = path_id
 
     def __str__(self):
-        return self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
+        return "MessageCallNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
 
 
 class StateOPNode(InstructionNode):
@@ -81,205 +95,7 @@ class StateOPNode(InstructionNode):
         self.path_id = path_id
 
     def __str__(self):
-        return self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
-
-
-class VariableNode(Node):
-
-    def __init__(self, name, value):
-        super().__init__(name)
-        self.value = value
-
-
-class StateNode(VariableNode):
-
-    def __init__(self, name, value, position):
-        super().__init__(name, value)
-        self.position = position
-
-    def __str__(self):
-        return "StateNode " + str(self.name) + " " + str(self.nodeID)
-
-
-class ConstNode(VariableNode):
-
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-
-class InputDataNode(VariableNode):
-
-    def __init__(self, name, value, position):
-        super().__init__(name, value)
-        self.position = position
-
-    def __str__(self):
-        return self.name
-
-
-class InputDataSizeNode(VariableNode):
-
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class ExpNode(VariableNode):
-
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class GasPriceNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class OriginNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class CoinbaseNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class DifficultyNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class GasLimitNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class CurrentNumberNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class TimeStampNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class AddressNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class BlockhashNode(VariableNode):
-    def __init__(self, name, value, blockNumber):
-        super().__init__(name, value)
-        self.blockNumber = blockNumber
-
-    def __str__(self):
-        return self.name
-
-class GasNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class ShaNode(VariableNode):
-
-    def __init__(self, name, value, args):
-        super().__init__(name, value)
-        self.args = args
-
-    def __str__(self):
-        return self.name
-
-class MemoryNode(VariableNode):
-
-    def __init__(self, name, value, position):
-        super().__init__(name, value)
-        self.position = position
-
-    def __str__(self):
-        return self.name
-
-class ExtcodeSizeNode(VariableNode):
-    def __init__(self, name, value, address):
-        super().__init__(name, value)
-        self.address = address
-
-    def __str__(self):
-        return self.name
-
-class DepositValueNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class BalanceNode(VariableNode):
-    def __init__(self, name, value, address):
-        super().__init__(name, value)
-        self.address = address
-
-    def __str__(self):
-        return self.name
-
-class ReturnDataNode(VariableNode):
-
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class ReturnStatusNode(VariableNode):
-
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class ReturnDataSizeNode(VariableNode):
-
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def __str__(self):
-        return self.name
-
-class CodeNode(VariableNode):
-
-    def __init__(self, name, value, address):
-        super().__init__(name, value)
-        self.address = address
-
-    def __str__(self):
-        return self.name
+        return "StateOPNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
 
 
 class TerminalNode(InstructionNode):
@@ -293,30 +109,213 @@ class TerminalNode(InstructionNode):
 
 class ArithNode(InstructionNode):
 
-    def __init__(self, operation, operand, global_pc, constraint, expression, param):
+    def __init__(self, operation, operand, global_pc, constraint, expression, param, path_id):
         super().__init__(operation, operand, global_pc, constraint)
         self.expression = expression
         self.params = param
+        self.path_id = path_id
 
     def __str__(self):
-        return "ArithNode " + self.name
+        return "ArithNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
 
-class FlowEdge:
+class VariableNode(Node):
 
-    def __init__(self, expression):
-        self.expression = expression
+    def __init__(self, name, value):
+        super().__init__(name)
+        self.value = value
 
-    def getExpression(self):
-        return self.expression
+    def __str__(self):
+        return "VariableNode_" + self.name + "_" + str(self.value)
 
 
-class ControlEdge:
+class StateNode(VariableNode):
 
-    def __init__(self, constraints):
-        self.constraints = constraints
+    def __init__(self, name, value, position):
+        super().__init__(name, value)
+        self.position = position
 
-    def getConstraint(self):
-        return self.constraints
+    def __str__(self):
+        return "StateNode_" + str(self.name) + "_" + str(self.position)
+
+
+class ConstNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ConstNode_" + self.name
+
+
+class InputDataNode(VariableNode):
+
+    def __init__(self, name, value, position):
+        super().__init__(name, value)
+        self.position = position
+
+    def __str__(self):
+        return "InputDataNode_" + self.name
+
+
+class InputDataSizeNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "InputDataSizeNode_" + self.name
+
+class ExpNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ExpNode_" + self.name
+
+class GasPriceNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "GasPriceNode_" + self.name
+
+class OriginNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "OriginNode_" + self.name
+
+class CoinbaseNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "CoinbaseNode_" + self.name
+
+class DifficultyNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "DifficultyNode_" + self.name
+
+class GasLimitNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "GasLimitNode_"  + self.name
+
+class CurrentNumberNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "CurrentNumberNode_" + self.name
+
+class TimeStampNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "TimeStampNode_" + self.name
+
+class AddressNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "AddressNode_" + self.name
+
+class BlockhashNode(VariableNode):
+    def __init__(self, name, value, blockNumber):
+        super().__init__(name, value)
+        self.blockNumber = blockNumber
+
+    def __str__(self):
+        return "BlockhashNode_" + self.name + "_" + str(self.blockNumber)
+
+class GasNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "GasNode_" + self.name
+
+class ShaNode(VariableNode):
+    def __init__(self, name, value, args):
+        super().__init__(name, value)
+        self.args = args
+
+    def __str__(self):
+        return "ShaNode_" + self.name + str(self.args)
+
+class MemoryNode(VariableNode):
+
+    def __init__(self, name, value, position):
+        super().__init__(name, value)
+        self.position = position
+
+    def __str__(self):
+        return "MemoryNode_" + self.name
+
+class ExtcodeSizeNode(VariableNode):
+    def __init__(self, name, value, address):
+        super().__init__(name, value)
+        self.address = address
+
+    def __str__(self):
+        return "ExtcodeSizeNode_" + self.name
+
+class DepositValueNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "DepositValueNode_" + self.name
+
+class BalanceNode(VariableNode):
+    def __init__(self, name, value, address):
+        super().__init__(name, value)
+        self.address = address
+
+    def __str__(self):
+        return "BalanceNode_" + self.name
+
+class ReturnDataNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ReturnDataNode_" + self.name
+
+class ReturnStatusNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ReturnStatusNode_" + self.name
+
+class ReturnDataSizeNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ReturnDataSizeNode_" + self.name
+
+class CodeNode(VariableNode):
+
+    def __init__(self, name, value, address):
+        super().__init__(name, value)
+        self.address = address
+
+    def __str__(self):
+        return "CodeNode_" + self.name
 
 
 class XGraph:
@@ -325,18 +324,19 @@ class XGraph:
         self.graph = nx.DiGraph()
         self.count = 0
         self.overflow_related = ('ADD', 'SUB', 'MUL', 'EXP')
-        self.instruction_nodes = []  # TODO: add comment
+
         self.message_call_nodes = []  # all nodes included in {call, staticcall, delegatecall, callcode}
-        self.msg_data_nodes = []  # TODO: add comment
-        self.arith_nodes = set()  # only for {"add", "sub", "mul", "exp"}
-        self.input_data_nodes = []  # for {calldataload, calldatacopy}
-        self.block_data_nodes = []  # for {blockhash}
-        self.state_op_nodes = []  # all nodes included in {sstore, sload}
         self.call_nodes = []  # for call instruction
-        self.msg_sender_nodes = []
-        self.state_nodes = []
+        self.arith_nodes = []  # only for {"add", "sub", "mul", "exp"}
+        self.state_op_nodes = []  # all nodes included in {sstore, sload}
         self.sstore_nodes = []  # for sstore instruction
-        self.sender_node = ""  # for msg.sender
+        self.input_data_nodes = []  # for {calldataload, calldatacopy}
+        self.state_nodes = []
+        self.terminal_nodes = []  # for "revert"
+        self.sender_node = None  # for msg.sender
+        self.address_nodes = []  # for all address nodes
+        self.return_status_nodes = []  # for all return status nodes
+
 
         # (Var, VariableNode), mapping symbolic or real int to variableNodes
         self.mapping_var_node = {}
@@ -452,19 +452,18 @@ class XGraph:
                 self.sstore_nodes.append(node)
         elif type(node) == InputDataNode:
             self.input_data_nodes.append(node)
-        elif type(node) == BlockDataNode:
-            self.block_data_nodes.append(node)
-        elif type(node) == MsgDataNode:
-            self.msg_data_nodes.append(node)
-            if node.name == "CALLER":
-                self.msg_sender_nodes.append(node)
         elif type(node) == StateNode:
-            if node.source == "Ia":
-                self.state_nodes.append(node)
-            elif node.source == "Is":
-                self.sender_node = node
+            self.state_nodes.append(node)
         elif type(node) == ArithNode:
             self.arith_nodes.append(node)
+        elif type(node) == TerminalNode:
+            self.terminal_nodes.append(node)
+        elif type(node) == AddressNode:
+            if "Is" in node.name:
+                self.sender_node = node
+            self.address_nodes.append(node)
+        elif type(node) == ReturnStatusNode:
+            self.return_status_nodes.append(node)
 
     def addEdges(self, edgeList, edgeType, branch):
         branchList = [branch]

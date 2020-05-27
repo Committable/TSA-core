@@ -133,6 +133,7 @@ class EVMInterpreter:
             self.graph.addBranchEdge(flow_edge_list, "flowEdge", path_id)
             self.graph.addBranchEdge(control_edge_list, "controlEdge", path_id)
             log.debug("This path results in an exception: %s, Terminating this path ...", str(error))
+            traceback.print_exc()
             return 1
 
         if self.is_testing_evm():
@@ -257,6 +258,7 @@ class EVMInterpreter:
 
         log.debug("==============================")
         log.debug("EXECUTING: " + instr)
+        log.debug("STACK: " + str(stack))
 
         #
         #  0s: Stop and Arithmetic Operations
@@ -490,7 +492,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = If(ULT(first, to_symbolic(second)), BitVec(1, 256), BitVec(0, 256))
+                computed = If(ULT(first, to_symbolic(second)), BitVecVal(1, 256), BitVecVal(0, 256))
 
                 stack.insert(0, convertResult(computed))
             else:
@@ -640,7 +642,7 @@ class EVMInterpreter:
                     del s
 
                     # computed == None means that we don't fine the used value and we need a new one
-                    if not computed:
+                    if computed is None:
                         value = simplify(value)
                         new_var_name = self.gen.gen_sha3_var(value)
                         computed = BitVec(new_var_name, 256)
@@ -885,7 +887,7 @@ class EVMInterpreter:
                 stored_address = stack.pop(0)
                 stored_value = stack.pop(0)
 
-                self.write_memory(self, stored_address, stored_address + 31, stored_value, params)
+                self.write_memory(stored_address, stored_address + 31, stored_value, params)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MSTORE8":
@@ -985,7 +987,10 @@ class EVMInterpreter:
                 target_address = stack.pop(0)
                 if isSymbolic(target_address):
                     raise TypeError("Target address must be an integer: but it is %s", str(target_address))
-                self.runtime.vertices[block].set_jump_target(target_address)
+                self.runtime.vertices[block].set_jump_targets(target_address)
+                if target_address not in self.runtime.edges[block]:
+                    self.runtime.edges[block].append(target_address)
+
                 flag = stack.pop(0)
 
                 branch_expression = self.getSubstitudeExpr(flag != 0, params.mapping_overflow_var_expr)
@@ -993,11 +998,10 @@ class EVMInterpreter:
                 branch_n_e_node = addExpressionNode(self.graph, flag == 0, self.gen.get_path_id())
 
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
-                self.runtime.vertices[block].set_branch_expression_node(branch_e_node)
-                self.runtime.vertices[block].set_branch_expression_node(branch_n_e_node)
-                self.runtime.vertices[block].set_jump_targets(target_address)
-                if target_address not in self.runtime.edges[block]:
-                    self.runtime.edges[block].append(target_address)
+                self.runtime.vertices[block].set_branch_node_expression(branch_e_node)
+                self.runtime.vertices[block].set_negated_branch_node_expression(branch_n_e_node)
+
+
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "PC":
@@ -1029,7 +1033,7 @@ class EVMInterpreter:
         elif opcode.startswith('PUSH', 0):  # this is a push instruction
             position = int(opcode[4:], 10)
             global_state["pc"] = global_state["pc"] + 1 + position
-            pushed_value = int(instr_parts[1], 16)
+            pushed_value = int(instr_parts[2], 16)
             stack.insert(0, pushed_value)
             # add to graph
             node = ConstNode(str(pushed_value), pushed_value)
@@ -1419,7 +1423,8 @@ class EVMInterpreter:
             stack[0] = computed
             nodes, flow_edges, control_edges, computed_node = \
                     update_graph_computed(self.graph, opcode,
-                                          computed, path_conditions_and_vars, global_state["pc"] - 1, param)
+                                          computed, path_conditions_and_vars,
+                                          global_state["pc"] - 1, param, self.gen.get_path_id())
             self.graph.addBranchEdge(flow_edges, "flowEdge", self.gen.get_path_id())
             self.graph.addBranchEdge(control_edges, "controlEdge", self.gen.get_path_id())
             self.graph.addVarNode(stack[0], computed_node)
@@ -1480,18 +1485,18 @@ class EVMInterpreter:
         new_var_name = self.gen.gen_origin_var()
         origin = BitVec(new_var_name, 256)
         # add to graph
-        a_node = addAddressNode(self.graph, origin, self.gen.get_path_id())
         node = OriginNode(new_var_name, origin)
-        self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
-        self.graph.addVarNode(gas_price, node)
+        self.graph.addVarNode(origin, node)
+        a_node = addAddressNode(self.graph, origin, self.gen.get_path_id())
+        self.graph.addBranchEdge([(node, a_node)], "flowEdge", self.gen.get_path_id())
 
         new_var_name = self.gen.gen_coin_base()
         currentCoinbase = BitVec(new_var_name, 256)
         # add to graph
-        a_node = addAddressNode(self.graph, currentCoinbase, self.gen.get_path_id())
         node = CoinbaseNode(new_var_name, currentCoinbase)
-        self.graph.addBranchEdge([(a_node, node)], "flowEdge", self.gen.get_path_id())
         self.graph.addVarNode(currentCoinbase, node)
+        a_node = addAddressNode(self.graph, currentCoinbase, self.gen.get_path_id())
+        self.graph.addBranchEdge([(node, a_node)], "flowEdge", self.gen.get_path_id())
 
         new_var_name = self.gen.gen_number()
         currentNumber = BitVec(new_var_name, 256)
