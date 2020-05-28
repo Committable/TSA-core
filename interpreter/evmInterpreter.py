@@ -182,7 +182,7 @@ class EVMInterpreter:
                     self.total_no_of_paths["normal"] += 1
                     log.debug("This path results in an unfeasible conditional True branch, Terminating this path ...")
             except Exception:
-                self.solver.hashTimeOut(True)
+                self.solver.setHasTimeOut(True)
             finally:
                 if flag:
                     # there is only one real jump target for conditional jumpi
@@ -195,7 +195,7 @@ class EVMInterpreter:
 
                 self.solver.pop()
 
-            self.solver.hashTimeOut(False)
+            self.solver.setHasTimeOut(False)
             flag = True
             self.solver.push()
             negated_branch_expression = Not(branch_expression)
@@ -209,7 +209,7 @@ class EVMInterpreter:
                     self.total_no_of_paths["normal"] += 1
                     log.debug("This path results in an unfeasible conditional Flase branch, Terminating this path ...")
             except Exception:
-                self.solver.hashTimeOut(True)
+                self.solver.setHasTimeOut(True)
             finally:
                 if flag:
                     right_branch = self.runtime.vertices[block].get_falls_to()
@@ -219,7 +219,7 @@ class EVMInterpreter:
                     self._sym_exec_block(params, right_branch, block)
 
                 self.solver.pop()
-            self.solver.hashTimeOut(False)
+            self.solver.setHasTimeOut(False)
         else:
             raise Exception('Unknown Jump-Type')
 
