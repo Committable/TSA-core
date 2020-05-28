@@ -424,7 +424,7 @@ class EVMInterpreter:
                     computed = None
 
                     # we check the same value by solver the most less constrains with less accurence
-                    s = Solver(mapping_var_expr=mapping_overflow_var_expr)
+                    s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                     s.set("timeout", global_params.TIMEOUT)
                     for key in self.exp_dict:
                         s.push()
