@@ -4,7 +4,7 @@ from graphBuilder.XGraph import *
 from z3 import *
 
 
-class Unfairpay:
+class UnfairpaySimple:
     def __init__(self, XGraph):
         self.XGraph = XGraph
 
@@ -58,22 +58,14 @@ class Unfairpay:
             call_branch_dict[key_out] = call_branch_dict_copy[key_out]
             templist.clear()
 
-        # if there is only one callNode in the branch or any two callNodes are not in the same branch
-        # put the callNodes into the call_samebranch_list
-        if not call_samebranch_list and len(call_nodes) > 0:
-            for call_entry in call_nodes:
-                call_samebranch_list.append(call_entry)
-                # filter some messagecall nodes,like sha256,keccak256
-                if isinstance(key_out.arguments[2], ConstNode) and key_out.arguments[2].value == 0:
-                    continue
-                # traverse the call_samebranch_list and detect unfair payment vulnerability
-                self.find_unfairpayment_callnode(call_samebranch_list, msgValue, call_branch_dict, sstore_branch_dict,
-                                                 taint_node_list, sender_node, unfairpayment_node)
         # traverse the call_samebranch_list and detect unfair payment vulnerability
         else:
             for sublist in call_samebranch_list:
-                self.find_unfairpayment_callnode(sublist, msgValue, call_branch_dict, sstore_branch_dict,
-                                                 taint_node_list, sender_node, unfairpayment_node)
+                # filter branches containing two call instructions:
+                # first call has gaslimit and second call has no gaslimit
+                if len(sublist) == 2:
+                    self.find_unfairpayment_callnode(sublist, msgValue, call_branch_dict, sstore_branch_dict,
+                                                     taint_node_list, sender_node, unfairpayment_node)
         call_samebranch_list.clear()
         # for entry in unfairpayment_node:
         #     print("nodeID: "+entry.nodeID)
@@ -95,13 +87,31 @@ class Unfairpay:
             solver = Solver()
             solver.set("timeout", 500)
             solver.push()
+            callNode1 = sublist[0]
+            callNode2 = sublist[1]
+            # check gaslimit
+            gaslimit1 = callNode1.arguments[0]
+            if type(gaslimit1) == ArithNode:
+                solver.add(gaslimit1.expression > 2300)
+            else:
+                solver.add(gaslimit1.value > 2300)
+            if utils.check_sat(solver) == sat:
+                solver.pop()
+                print("first callNode has no gaslimit")
+                return
+            solver.pop()
+            solver.push()
+            gaslimit2 = callNode2.arguments[0]
+            if type(gaslimit2) == ArithNode:
+                solver.add(gaslimit2.expression > 2300)
+            else:
+                solver.add(gaslimit2.value > 2300)
+            if utils.check_sat(solver) == unsat:
+                solver.pop()
+                print("second callNode has gaslimit")
+                return
+            solver.pop()
             for callNode in sublist:
-                outgas = callNode.arguments[0]
-                # solver.add(callNode.constraint)
-                if type(outgas) == ArithNode:
-                    solver.add(outgas.expression > 2300)
-                else:
-                    solver.add(outgas.value > 2300)
                 if isinstance(callNode.arguments[2], ArithNode):
                     totalpay += callNode.arguments[2].expression
                 elif isinstance(callNode.arguments[2], InputDataNode):
@@ -111,13 +121,14 @@ class Unfairpay:
                 else:
                     raise ValueError("wrong node type", isinstance(callNode.arguments[2]))
             totalpay = simplify(totalpay)
+            solver.push()
             solver.add(msgvalue > totalpay)
             if utils.check_sat(solver) == unsat:
                 for callSuspected in sublist:
                     unfairpayment_node.append(callSuspected)
                 print("unsat:UnfairPayment vulnerability was found")
-                #print(str(totalpay))
-                #print("**********************")
+                solver.pop()
+                return
             elif utils.check_sat(solver) == sat:
                 # find a sstore instruction in the branch of the last callNode
                 # and nodeID is smaller than callNode's nodeID
@@ -145,8 +156,6 @@ class Unfairpay:
                             return
                         unfairpayment_node.append(last_call_node)
                         print("no owner check:UnfairPayment vulnerability was found")
-                        #print(str(totalpay))
-                        #print("**********************")
                     elif len(from_storage_list) > 0:
                         for storage_node in from_storage_list:
                             if check_storage_taintable(self.XGraph.graph, storage_node, taint_node_list,
@@ -154,52 +163,7 @@ class Unfairpay:
                                                        sender_node):
                                 unfairpayment_node.append(last_call_node)
                                 print("storage taintable:UnfairPayment vulnerability was found")
-                                print(str(totalpay))
-                                #print("**********************")
             else:
                 print("current callNode is safe")
             solver.pop()
         return
-
-
-def main():
-    call_branch_dict = {}
-    call_node_1 = 'call_node_1'
-    call_node_2 = 'call_node_2'
-    call_node_3 = 'call_node_3'
-    call_node_4 = 'call_node_4'
-    branch_list_1 = [1, 9, 10]
-    branch_list_2 = [2, 9]
-    branch_list_3 = [3, ]
-    branch_list_4 = [5, ]
-    call_branch_dict[call_node_1] = branch_list_1
-    call_branch_dict[call_node_2] = branch_list_2
-    call_branch_dict[call_node_3] = branch_list_3
-    call_branch_dict[call_node_4] = branch_list_4
-    call_node_list = []
-    templist = []
-    call_branch_dict_copy = call_branch_dict.copy()
-    for key_out in call_branch_dict:
-        for key_in in call_branch_dict:
-            if (key_out == key_in):
-                continue
-            a = [x for x in call_branch_dict[key_out] if x in call_branch_dict[key_in]]
-
-            if (a):
-                call_branch_dict[key_out] = a
-                templist.append(key_in)
-                templist.append(key_out)
-            else:
-                templist.append(key_out)
-        templist = sorted(list(set(templist)), key=lambda call_node: call_node)
-        call_node_list.append(sorted(list(set(templist)), key=lambda call_node: call_node))
-        print(call_node_list)
-        call_branch_dict[key_out] = call_branch_dict_copy[key_out]
-        templist.clear()
-    print(len(call_node_list))
-    call_node_list.append([])
-    print(len(call_node_list))
-
-
-if __name__ == '__main__':
-    main()
