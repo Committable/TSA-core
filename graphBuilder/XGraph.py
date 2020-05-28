@@ -253,7 +253,7 @@ class ShaNode(VariableNode):
         self.args = args
 
     def __str__(self):
-        return "ShaNode_" + self.name + str(self.args)
+        return "ShaNode_" + str(self.args)
 
 class MemoryNode(VariableNode):
 

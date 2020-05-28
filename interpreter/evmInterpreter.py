@@ -83,13 +83,23 @@ class EVMInterpreter:
 
     # Symbolically executing a block from the start address
     def _sym_exec_block(self, params, block, pre_block):
+        memory_inf = psutil.virtual_memory()
+        log.debug("total memory: %d M" % int(memory_inf.total / (1024 * 1024)))
+        log.debug("used memory: %d M" % int(memory_inf.used / (1024 * 1024)))
+        log.info("free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
+        log.debug("percent: %d " % int(memory_inf.percent) + "%")
+        if int(memory_inf.percent) > 80:
+            self.total_no_of_paths["exception"] += 1
+            log.info("Block %d, Limited Memory %d M. Terminating this path ...", pre_block, int(memory_inf.free / (1024 * 1024)))
+            return 1
+
         visited = params.visited
         starttime = time.time()
         global_state = params.global_state
 
         if block < 0 or block not in self.runtime.vertices:
             self.total_no_of_paths["exception"] += 1
-            log.debug("Unknown jump address %d. Terminating this path ...", block)
+            log.info("Unknown jump address %d. Terminating this path ...", block)
             return 1
 
         log.debug("Reach block address %d \n", block)
@@ -128,16 +138,34 @@ class EVMInterpreter:
 
         block_ins = self.runtime.vertices[block].get_instructions()
 
+        memory_inf = psutil.virtual_memory()
+        log.info("before instructions free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
         # Execute every instruction, one at a time
         try:
             for instr in block_ins:
+                memory_inf = psutil.virtual_memory()
+                last = int(memory_inf.free / (1024 * 1024))
+                last_time = time.time()
+
                 self._sym_exec_ins(params, block, instr)
+
+                memory_inf = psutil.virtual_memory()
+                if last - int(memory_inf.free / (1024 * 1024)) > 10:
+                    print("Instruction: " + str(instr) + ";Memory: "+ str(last - int(memory_inf.free / (1024 * 1024))))
+                if int(time.time() - last_time) > 10:
+                    print("Instruction: " + str(instr) + ";Time: " + str(int(time.time() - last_time)))
+
         except Exception as error:
             self.total_no_of_paths["exception"] += 1
             self.gen.gen_path_id()
-            log.debug("This path results in an exception: %s, Terminating this path ...", str(error))
+            # log.debug("This path results in an exception: %s, Terminating this path ...", str(error))
+            log.info("This path results in an exception: %s, Terminating this path ...", str(error))
+
             traceback.print_exc()
             return 1
+
+        memory_inf = psutil.virtual_memory()
+        log.info("after instructions free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
 
         if self.is_testing_evm():
             self.compare_storage_and_gas_unit_test(global_state, global_params.UNIT_TEST)
@@ -164,9 +192,15 @@ class EVMInterpreter:
 
         elif self.runtime.jump_type[block] == "conditional":  # executing "JUMPI"
             # A choice point, we proceed with depth first search
+            memory_inf = psutil.virtual_memory()
+            log.info("0 free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
+
             branch_expression = self.runtime.vertices[block].get_branch_expression()
             branch_expression_node = self.runtime.vertices[block].get_branch_expression_node()
             negated_branch_expression_node = self.runtime.vertices[block].get_negated_branch_expression_node()
+
+            memory_inf = psutil.virtual_memory()
+            log.info("1 free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
 
             log.debug("Branch expression: " + str(branch_expression))
 
@@ -175,17 +209,27 @@ class EVMInterpreter:
 
             flag = True  # mark if constrains are feasible
             try:
-                if self.solver.check() == unsat:
+                if check_unsat(self.solver):
                     flag = False
                     self.total_no_of_paths["normal"] += 1
                     log.debug("This path results in an unfeasible conditional True branch, Terminating this path ...")
             except Exception:
                 self.solver.setHasTimeOut(True)
             finally:
+
+                memory_inf = psutil.virtual_memory()
+                if int(memory_inf.free / (1024 * 1024)) < 800:
+                    print("branchExpression: " + str(branch_expression))
+                    print("solver: " + str(self.solver))
+                log.info("2 free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
                 if flag:
                     # there is only one real jump target for conditional jumpi
                     left_branch = self.runtime.vertices[block].get_jump_targets()[-1]
+                    memory_inf = psutil.virtual_memory()
+                    log.info("before copy free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
                     new_params = params.copy()
+                    memory_inf = psutil.virtual_memory()
+                    log.info("after copy free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
                     new_params.global_state["pc"] = left_branch
                     new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
                     new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
@@ -202,7 +246,7 @@ class EVMInterpreter:
             log.debug("Negated branch expression: " + str(negated_branch_expression))
 
             try:
-                if self.solver.check() == unsat:
+                if check_unsat(self.solver):
                     flag = False
                     self.total_no_of_paths["normal"] += 1
                     log.debug("This path results in an unfeasible conditional Flase branch, Terminating this path ...")
@@ -222,12 +266,8 @@ class EVMInterpreter:
             raise Exception('Unknown Jump-Type')
         endtime = time.time()
         executiontime = endtime - starttime
-        log.debug("block" + str(block) + " symbolic execution time: %.8s s"  %executiontime)
-        memory_inf = psutil.virtual_memory()
-        log.debug("total memory: %d M" % int(memory_inf.total/(1024 * 1024)))
-        log.debug("used memory: %d M" % int(memory_inf.used / (1024 * 1024)))
-        log.debug("free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
-        log.debug("percent: %d " % int(memory_inf.percent) + "%")
+        log.debug("block: " + str(block) + " symbolic execution time: %.8s s"  %executiontime)
+
         return 0
 
     # TODO: 1.slot precision; 2.memory model; 3.sha3; 4.system contracts call; 5.evm instructions expansion;
@@ -263,8 +303,8 @@ class EVMInterpreter:
         opcode = instr_parts[1]
 
         log.debug("==============================")
-        log.debug("EXECUTING: " + instr)
-        log.debug("STACK: " + str(stack))
+        log.debug("EXECUTING: " + instr + "LENG_MEM:" + str(len(memory)))
+        # log.debug("STACK: " + str(stack))
 
         #
         #  0s: Stop and Arithmetic Operations
@@ -630,15 +670,18 @@ class EVMInterpreter:
                 if isAllReal(s0, s1):
                     # simulate the hashing of sha3
                     data = [x for x in memory[s0: s0 + s1]]
-                    value = to_symbolic(data[0])
+                    value = to_symbolic(data[0], 8)
                     for x in data[1:]:
-                        value = Concat(value, to_symbolic(x))
+                        value = Concat(value, to_symbolic(x, 8))
 
                     computed = None
                     # we check the same value by solver the most less constrains with less accurence
                     s = SSolver(mapping_var_expr=mapping_overflow_var_expr)
                     s.set("timeout", global_params.TIMEOUT)
                     for key in self.sha3_dict:
+                        if isSymbolic(key) and isSymbolic(value):
+                            if key.sort() != value.sort():
+                                continue
                         s.push()
                         s.add(Not(value == key))
                         if check_unsat(s):
@@ -654,12 +697,14 @@ class EVMInterpreter:
                         new_var_name = self.gen.gen_sha3_var(value)
                         computed = BitVec(new_var_name, 256)
                         # add to node
-                        e_node = addExpressionNode(self.graph, value, self.gen.get_path_id())
                         node = ShaNode(new_var_name, computed, value)
-                        self.graph.addBranchEdge([(e_node, node)], "flowEdge", self.gen.get_path_id())
                         self.graph.addVarNode(computed, node)
+                        for var in get_vars(value):
+                            seed_node = self.graph.getVarNode(var)
+                            self.graph.addBranchEdge([(seed_node, node)], "flowEdge", self.gen.get_path_id())
 
-                        self.exp_dict[value] = computed
+
+                        self.sha3_dict[value] = computed
                 else:
                     # todo:push into the stack a fresh symbolic variable, how to deal with symbolic address and size
                     new_var_name = self.gen.gen_sha3_var("unkonwn_" + str(global_state["pc"]-1))
@@ -689,7 +734,7 @@ class EVMInterpreter:
                 for key in global_state["balance"]:
                     s.push()
                     s.add(Not(key == address))
-                    if check_unsat():
+                    if check_unsat(s):
                         new_var = global_state["balance"][key]
                         s.pop()
                         break
@@ -791,7 +836,7 @@ class EVMInterpreter:
                 for key in self.ext_code_size:
                     s.push()
                     s.add(Not(key == address))
-                    if check_unsat():
+                    if check_unsat(s):
                         new_var = self.ext_code_size[key]
                         s.pop()
                         break
@@ -1004,8 +1049,8 @@ class EVMInterpreter:
                     self.runtime.edges[block].append(target_address)
 
                 flag = stack.pop(0)
-
-                branch_expression = self.getSubstitudeExpr(flag != 0, params.mapping_overflow_var_expr)
+                flag = self.getSubstitudeExpr(flag, params.mapping_overflow_var_expr)
+                branch_expression = (flag != 0)
                 branch_e_node = addConstrainNode(self.graph, flag != 0, self.gen.get_path_id())
                 branch_n_e_node = addConstrainNode(self.graph, flag == 0, self.gen.get_path_id())
 
@@ -1437,7 +1482,10 @@ class EVMInterpreter:
 
                 new_var_name = self.gen.gen_overflow_var(opcode, global_state["pc"] - 1, self.gen.get_path_id())
                 computed = BitVec(new_var_name, 256)
+
                 params.mapping_overflow_var_expr[computed] = stack[0]
+                # for key in params.mapping_overflow_var_expr:
+                #     print(str(key)+" : "+str(params.mapping_overflow_var_expr[key]))
                 stack[0] = computed
                 self.graph.addVarNode(stack[0], computed_node)
 

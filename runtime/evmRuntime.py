@@ -12,12 +12,15 @@ class EvmRuntime:
     terminal_opcode = {"STOP", "RETURN", "SUICIDE", "REVERT", "ASSERTFAIL"}
     jump_opcode = {"JUMP", "JUMPI"}
     block_jump_types = {"terminal", "conditional", "unconditional", "falls_to"}
+    cfg_count = 0
 
     def __init__(self, platform=None, disasm_file=None,source_map=None, source_file=None):
         self.disasm_file = disasm_file
         self.source_map = source_map
         self.platFrom = platform
         self.source_file = source_file
+
+
 
     def build_cfg(self):
         self.change_format()
@@ -217,13 +220,13 @@ class EvmRuntime:
                            label=e_label)  # blue for unconditional jump
             elif block_type == "terminal":
                 g.node(name=start, label=label, color="red")
-
-        g.render(os.path.join(global_params.TMP_DIR, "cfg.gv"), view=True)
+        EvmRuntime.cfg_count += 1
+        g.render(os.path.join(global_params.TMP_DIR, "cfg"+str(EvmRuntime.cfg_count)+".gv"), view=True)
 
     def build_runtime_env(self):
         #todo: test for building cfg process
         self.build_cfg()
         # self.print_cfg()
-        # self.print_cfg_dot()
+        # self.print_cfg_dot({})
         return 0
 

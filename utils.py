@@ -110,6 +110,7 @@ def check_unsat(solver):
         if solver.check() == unsat:
             return True
     except Exception:
+        solver.setHasTimeOut(True)
         return False
 
 

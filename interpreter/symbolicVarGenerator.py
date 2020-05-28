@@ -5,11 +5,16 @@ class Generator:
         self.count = 0
         self.path = 0
 
+        self.overflow_name_count = {}
+
     def gen_address(self, pc):
         return "address_" + str(pc)
 
     def gen_overflow_var(self, opcode, pc, path_id):
-        return "overflow_" + str(opcode) + "_" + str(pc) + "_" + str(path_id)
+        if (opcode, pc, path_id) not in self.overflow_name_count:
+            self.overflow_name_count[(opcode, pc, path_id)] = 0
+        self.overflow_name_count[(opcode, pc, path_id)] += 1
+        return "overflow_" + str(opcode) + "_" + str(pc) + "_" + str(path_id) +"_" + str(self.overflow_name_count[(opcode, pc, path_id)])
 
     def gen_balance_of(self, address):
         return "init_" + str(address)

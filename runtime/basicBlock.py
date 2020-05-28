@@ -98,24 +98,24 @@ class BasicBlock:
     def get_negated_branch_expression_node(self):
         return self.negated_branch_expression_node
 
-    def instructions_details(self, format='hex'):
-        out = ''
-        line = ''
-        for i in self.instructions:
-            line = '%x: ' % i.offset
-            if i.immediate_arguments is not None and not i.xref:
-                line += '%s' % str(i)
-            elif isinstance(i.xref, list) and i.xref:
-                line += '%s %s' % (opcodes[i.code][0], i.xref)
-            elif isinstance(i.xref, int) and i.xref:
-                line += '%s %x' % (opcodes[i.code][0], i.xref)
-            # elif i.operand_interpretation:
-            #     line += i.operand_interpretation
-            else:
-                line += opcodes[i.code][0] + ' '
-
-            out = out + line + "\n"
-        return out
+    # def instructions_details(self, format='hex'):
+    #     out = ''
+    #     line = ''
+    #     for i in self.instructions:
+    #         line = '%x: ' % i.offset
+    #         if i.immediate_arguments is not None and not i.xref:
+    #             line += '%s' % str(i)
+    #         elif isinstance(i.xref, list) and i.xref:
+    #             line += '%s %s' % (opcodes[i.code][0], i.xref)
+    #         elif isinstance(i.xref, int) and i.xref:
+    #             line += '%s %x' % (opcodes[i.code][0], i.xref)
+    #         # elif i.operand_interpretation:
+    #         #     line += i.operand_interpretation
+    #         else:
+    #             line += opcodes[i.code][0] + ' '
+    #
+    #         out = out + line + "\n"
+    #     return out
 
     def display(self):
         six.print_("================")
