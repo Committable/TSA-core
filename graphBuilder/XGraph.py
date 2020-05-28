@@ -44,19 +44,7 @@ class CallReturnDataNode(Node):
     def __str__(self):
         return "CallReturnDataNode_" + self.name + "_" + str(self.pc) + "_" + str(self.path_id)
 
-class ExpressionNode(Node):
-    def __init__(self, name, expression):
-        super().__init__(name)
-        self.expression = expression
 
-    def get_expression(self):
-        return self.expression
-
-    def set_expression(self, expression):
-        self.expression = expression
-
-    def __str__(self):
-        return "ExpressionNode_" + self.name
 
 
 class InstructionNode(Node):
@@ -125,6 +113,22 @@ class VariableNode(Node):
 
     def __str__(self):
         return "VariableNode_" + self.name + "_" + str(self.value)
+
+
+class ExpressionNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ExpressionNode_" + self.name
+
+
+class ConstrainNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ConstrainNode_" + self.name
 
 
 class StateNode(VariableNode):
@@ -341,12 +345,23 @@ class XGraph:
         self.mapping_var_node = {}
         # (expr, ExpressionNode)
         self.mapping_expr_node = {}
+        # (constrain, ConstrainNode)
+        self.mapping_constrain_node = {}
         # (expr/var, AddressNode)
         self.mapping_address_node = {}
         # (pc, [CallReturnNode])
         self.mapping_pc_callReturnNode = {}
         # (position, StateNode)
         self.mapping_position_stateNode = {}
+
+    def addConstrainNode(self, constrain, node):
+        self.mapping_constrain_node[constrain] = node
+
+    def getConstrainNode(self, constrain):
+        if constrain in self.mapping_constrain_node:
+            return self.mapping_constrain_node[constrain]
+        else:
+            return None
 
     def addStateNode(self, position, node):
         self.mapping_position_stateNode[position] = node

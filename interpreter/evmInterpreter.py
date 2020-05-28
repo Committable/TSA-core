@@ -17,6 +17,7 @@ import global_params
 import pickle
 from solver.symbolicVar import subexpression, SSolver
 from interpreter.opcodes import  opcode_by_name
+from graphBuilder import evmGraph
 
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
@@ -244,7 +245,9 @@ class EVMInterpreter:
         calls = params.calls
 
         mapping_overflow_var_expr = params.mapping_overflow_var_expr
+
         self.solver.setMappingVarExpr(mapping_overflow_var_expr)
+        evmGraph.e_mapping_overflow_var_expr = mapping_overflow_var_expr
 
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[1]
@@ -993,8 +996,8 @@ class EVMInterpreter:
                 flag = stack.pop(0)
 
                 branch_expression = self.getSubstitudeExpr(flag != 0, params.mapping_overflow_var_expr)
-                branch_e_node = addExpressionNode(self.graph, flag != 0, self.gen.get_path_id())
-                branch_n_e_node = addExpressionNode(self.graph, flag == 0, self.gen.get_path_id())
+                branch_e_node = addConstrainNode(self.graph, flag != 0, self.gen.get_path_id())
+                branch_n_e_node = addConstrainNode(self.graph, flag == 0, self.gen.get_path_id())
 
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
                 self.runtime.vertices[block].set_branch_node_expression(branch_e_node)
@@ -1417,15 +1420,18 @@ class EVMInterpreter:
                 param = [first, second]
             if is_expr(stack[0]) and not is_const(stack[0]):  # simply check for maybe overflow
                 # substitude stack[0] with a new symbolic var
+                computed_node = update_graph_computed(self.graph, opcode,
+                                                      computed, path_conditions_and_vars,
+                                                      global_state["pc"] - 1, param, self.gen.get_path_id())
+
+
                 new_var_name = self.gen.gen_overflow_var(opcode, global_state["pc"] - 1, self.gen.get_path_id())
                 computed = BitVec(new_var_name, 256)
                 params.mapping_overflow_var_expr[computed] = stack[0]
                 stack[0] = computed
-
-                computed_node = update_graph_computed(self.graph, opcode,
-                                                        computed, path_conditions_and_vars,
-                                                            global_state["pc"] - 1, param, self.gen.get_path_id())
                 self.graph.addVarNode(stack[0], computed_node)
+
+
 
         a_len = len(stack)
         if (a_len - b_len) != (opcode_by_name(opcode).push - opcode_by_name(opcode).pop):
@@ -1608,10 +1614,15 @@ class EVMInterpreter:
 
     def getSubstitudeExpr(self, expr, mapping_overflow_var_expr):
         result = to_symbolic(expr)
-        l_vars = get_vars(result)
-        for var in l_vars:
-            if var in mapping_overflow_var_expr:
-                result = z3.substitute(result, (var, mapping_overflow_var_expr[var]))
+        while True:
+            flag = False
+            l_vars = get_vars(result)
+            for var in l_vars:
+                if var in mapping_overflow_var_expr:
+                    flag = True
+                    result = z3.substitute(result, (var, mapping_overflow_var_expr[var]))
+            if not flag:
+                break
 
         return convertResult(result)
 

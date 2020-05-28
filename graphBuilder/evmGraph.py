@@ -40,11 +40,17 @@ underflow_opcode = ('SUB')
 
 zeorReturnStatusNode = ReturnStatusNode("0", 0)
 
+e_mapping_overflow_var_expr = {}
+
 def addExpressionNode(graph, expr, path_id):
     e_node = graph.getExprNode(expr)
     if e_node is None:
-        assert not is_const(expr), str(expr) # a no exist expr mustn't be const or variable type
-        e_node = ExpressionNode(str(expr), expr)
+        assert not is_const(expr), str(expr)  # a no exist expr mustn't be const or variable type
+        #  sustitue Expression
+        tmp_expr = getSubstitudeExpr(expr, e_mapping_overflow_var_expr)
+        e_node = ExpressionNode(str(tmp_expr), tmp_expr)
+
+        graph.addExprNode(expr, e_node)
         flow_edges = []
         for var in get_vars(to_symbolic(expr)):
             node = graph.getVarNode(var)
@@ -54,15 +60,54 @@ def addExpressionNode(graph, expr, path_id):
     else:
         return e_node
 
+def addConstrainNode(graph, expr, path_id):
+    e_node = graph.getConstrainNode(expr)
+    if e_node is None:
+        assert not is_const(expr), str(expr)  # a no exist expr mustn't be const or variable type
+        #  sustitue Expression
+        tmp_expr = getSubstitudeExpr(expr, e_mapping_overflow_var_expr)
+        e_node = ConstrainNode(str(tmp_expr), tmp_expr)
+
+        graph.addConstrainNode(expr, e_node)
+        flow_edges = []
+        for var in get_vars(to_symbolic(expr)):
+            node = graph.getVarNode(var)
+            flow_edges.append((node, e_node))
+        graph.addBranchEdge(flow_edges, "flowEdge", path_id)
+        return e_node
+    else:
+        return e_node
+
+
+def getSubstitudeExpr(expr, mapping_overflow_var_expr):
+    result = to_symbolic(expr)
+    while True:
+        flag = False
+        l_vars = get_vars(result)
+        for var in l_vars:
+            if var in mapping_overflow_var_expr:
+                flag = True
+                result = z3.substitute(result, (var, mapping_overflow_var_expr[var]))
+        if not flag:
+            break
+
+    return convertResult(result)
+
+
 def addAddressNode(graph, expr, path_id):
+
+
     a_node = graph.getAddressNode(expr)
     if a_node is None:
-        a_node = AddressNode(str(simplify(expr)), expr)
+        #  sustitue Expression
+        tmp_expr = getSubstitudeExpr(expr, e_mapping_overflow_var_expr)
+
+        a_node = AddressNode(str(tmp_expr), tmp_expr)
         flow_edges = []
         for var in get_vars(to_symbolic(expr)):
             node = graph.getVarNode(var)
             flow_edges.append((node, a_node))
-        graph.addNode(a_node)
+        graph.addAddressNode(expr, a_node)
         graph.addBranchEdge(flow_edges, "flowEdge", path_id)
         return a_node
     else:
@@ -78,8 +123,10 @@ def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc,
     # get computedNode
     operand = [node_first, node_second]
 
-    computedNode = ArithNode(opcode, operand, pc, path_conditions_and_vars["path_condition"],
-                             computed, param, path_id)
+    computedNode = ArithNode(opcode, operand, pc, path_conditions_and_vars["path_condition"], computed,
+                             [getSubstitudeExpr(param[0], e_mapping_overflow_var_expr),
+                                getSubstitudeExpr(param[1], e_mapping_overflow_var_expr)],
+                             path_id)
     # complete flow_edges and control_edges
     pushEdgesToNode(operand, computedNode, flow_edges)
     pushEdgesToNode(path_conditions_and_vars["path_condition_node"], computedNode, control_edges)
@@ -131,7 +178,7 @@ def update_delegatecall(graph, opcode, node_stack, global_state, path_conditions
     node_return_status = node_stack.pop()
     node_return_data = node_stack.pop()
 
-    arguments = [node_outgas, node_recipient, node_start_data_input, node_size_data_input,
+    arguments = [node_outgas.expre, node_recipient, node_start_data_input, node_size_data_input,
                  node_start_data_output, node_size_data_ouput]
 
     call_node = MessageCallNode(opcode, arguments, global_state["pc"], path_conditions_and_vars["path_condition"], path_id)
