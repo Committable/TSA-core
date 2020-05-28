@@ -650,7 +650,7 @@ class EVMInterpreter:
                         new_var_name = self.gen.gen_sha3_var(value)
                         computed = BitVec(new_var_name, 256)
                         # add to node
-                        e_node = addExpressionNode(value)
+                        e_node = addExpressionNode(self.graph, value, self.gen.get_path_id())
                         node = ShaNode(new_var_name, computed, value)
                         self.graph.addBranchEdge([(e_node, node)], "flowEdge", self.gen.get_path_id())
                         self.graph.addVarNode(computed, node)
