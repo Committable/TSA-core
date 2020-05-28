@@ -29,21 +29,13 @@ class SolidityCompiler:
         else:
             cmd = "solc --bin-runtime %s %s --allow-paths %s -o %s" % (
                 self.remap, self.source, self.allow_paths, self.path)
-        err = ''
 
         out, err = run_command_with_err(cmd)
         err = re.sub(self.root_path, "", err)
-        if err != '':
-            if not self.compilation_err:
-                logging.critical("Solidity compilation failed. Please use -ce flag to see the detail.")
-            else:
-                logging.critical(err)
-                logging.critical("Solidity compilation failed.")
-            exit(1)
 
-        return self._extract_bin_str()
+        return self._extract_bin_str(err)
 
-    def _extract_bin_str(self):
+    def _extract_bin_str(self, err):
         contracts = {}
         for root, dirs, files in os.walk(self.path):
             for file_name in files:
@@ -53,7 +45,11 @@ class SolidityCompiler:
                     contracts[os.path.join(root, file_name)] = bytecodes
 
             if len(contracts) == 0:
-                logging.critical("Solidity compiled files not founded in: %s", self.path)
+                if not self.compilation_err:
+                    logging.critical("Solidity compilation failed. Please use -ce flag to see the detail.")
+                else:
+                    logging.critical(err)
+                    logging.critical("Solidity compilation failed.")
                 exit(1)
 
         return contracts

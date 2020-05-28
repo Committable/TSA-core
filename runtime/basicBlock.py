@@ -7,15 +7,25 @@ class BasicBlock:
     def __init__(self, start_address, end_address=None, start_inst= None, end_inst = None):
         self.start = start_address
         self.start_inst = start_inst
+
         self.end = end_address
         self.end_inst = end_inst
+
         self.instructions = []  # each instruction is a string
-        self.jump_target = 0 #target for if conditional True and unconditional jump
-        self.jump_from = []  #all blocks from which can jump to this
-        self.jump_to = [] #all blocks which this can jump to
-        # self.jump_tables = []
-        self.jump_targets = [] #all true target for br_ indexed by array index
+
+        self.jump_from = []  # all blocks from which can jump to or fall to this block
+
+        self.falls_to = None
+
+        # all true targets for conditional jump or targets for uncondition jump, we don't use set() because the top of
+        # jump_targets is the aimed pc currently
+        self.jump_targets = []
+
         self.type = None
+
+        self.branch_expression = None
+        self.branch_expression_node = None
+        self.negated_branch_expression_node = None
         self.branch_id = []
 
     def set_jump_to(self, to):
@@ -51,33 +61,29 @@ class BasicBlock:
     def get_falls_to(self):
         return self.falls_to
 
-    def set_jump_target(self, address):
-        # TODO: ethereum different to wasm?
-        # if isinstance(address, six.integer_types):
-        #     self.jump_target = address
-        # else:
-        #     self.jump_target = -1
-        self.jump_target = address
+    def set_jump_targets(self, address):
+        for x in self.jump_targets:  # top element is the most recently setted jump target
+            if x == address:
+                self.jump_targets.remove(x)
 
-    def set_jump_targets(self,address):
         self.jump_targets.append(address)
 
     def get_jump_targets(self):
         return self.jump_targets
 
-    def get_jump_target(self):
-        return self.jump_target
+    def get_jump_target(self):  # top element is current jump target
+        return self.jump_targets[-1]
 
     def set_branch_expression(self, branch):
         self.branch_expression = branch
 
-    def set_branch_node_experssion(self, branch_node):
+    def set_branch_node_expression(self, branch_node):
         self.branch_expression_node = branch_node
 
-    def set_negated_branch_node_experssion(self, negated_branch_node):
+    def set_negated_branch_node_expression(self, negated_branch_node):
         self.negated_branch_expression_node = negated_branch_node
 
-    def set_jump_from(self,block):
+    def set_jump_from(self, block):
         self.jump_from.append(block)
 
     def get_jump_from(self):
@@ -91,12 +97,6 @@ class BasicBlock:
 
     def get_negated_branch_expression_node(self):
         return self.negated_branch_expression_node
-
-    def set_taint_branch_expression(self, taint_branch):
-        self.taint_branch_expression = taint_branch
-
-    def get_taint_branch_expression(self):
-        return self.taint_branch_expression
 
     def instructions_details(self, format='hex'):
         out = ''

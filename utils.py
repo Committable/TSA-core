@@ -12,6 +12,7 @@ import six
 import logging
 
 from z3 import *
+from solver.symbolicVar import *
 
 
 def run_command(cmd):
@@ -46,11 +47,24 @@ def custom_deepcopy(input):
             output[key] = input[key]
     return output
 
+
 def isReal(value):
     return isinstance(value, six.integer_types) or isinstance(value, float)
 
+
 def isSymbolic(value):
     return not (isinstance(value, six.integer_types) or isinstance(value, float))
+
+
+# simplify a expression if possible and convert a z3 type to int if possible
+def convertResult(value):
+    value = simplify(value) if is_expr(value) else value
+    try:
+        value = int(str(value))
+    except Exception:
+        pass
+    return value
+
 
 def isBitVec(value):
     return isinstance(value, z3.BitVec) or isinstance(value, z3.BitVecNumRef)
@@ -69,29 +83,39 @@ def to_unsigned(number):
         return number + 2**256
     return number
 
-def to_symbolic(number):
+def to_symbolic(number, bits=256):
     if isReal(number):
-        return BitVecVal(number, 256)
+        return BitVecVal(number, bits)
     return number
 
-# def evm_to_symbolic(number):
-#     if isReal(number):
-#         return BitVecVal(number, 256)
-#     return number
 
-def check_sat(solver, pop_if_exception=True):
+# if it's sat return True, else(i.e unsat\unknown\timeoutError) False
+# todo: check the difference of unsat\unknow\timeoutError
+def check_sat(solver):
+    if solver.getHasTimeOut():
+        return False
     try:
-        ret = solver.check()
-        if ret == unknown:
-            raise Z3Exception(solver.reason_unknown())
-    except Exception as e:
-        if pop_if_exception:
-            solver.pop()
-    return ret
+        if solver.check() == sat:
+            return True
+    except Exception:
+        return False
+
+
+
+# if it's unsat return True, else(i.e sat\unknown\timeoutError) False
+def check_unsat(solver):
+    if solver.getHasTimeOut():
+        return False
+    try:
+        if solver.check == unsat:
+            return True
+    except Exception:
+        return False
+
 
 def to_signed(number):
-    if number > 2**(256 - 1):
-        return (2**(256) - number) * (-1)
+    if number >= 2**255:
+        return (2**256 - number) * (-1)
     else:
         return number
 

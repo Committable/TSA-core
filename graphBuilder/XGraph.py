@@ -1,22 +1,68 @@
 import networkx as nx
+import re
+import six
+from z3 import *
+from solver.symbolicVar import *
+import global_params
+from utils import isReal
 
 
 class Node:
 
-    def __init__(self, nodeID):
-        self.nodeID = nodeID
+    def __init__(self, name, fromNodes = None, toNodes = None):
+        self.name = name
+        self.fromeNodes = fromNodes
+        self.toNodes = toNodes
 
     def getFromNodes(self, graph):
-        return list(graph.perdecessors(self))
+        if self.fromeNodes is None:
+            self.fromeNodes = list(graph.perdecessors(self))
+        return self.fromeNodes
 
     def getToNodes(self, graph):
-        return list(graph.successors(self))
+        if self.toNodes is None:
+            self.toNodes = list(graph.successors(self))
+        return self.toNodes
+
+    def __str__(self):
+        return "Node_" + self.name
+
+
+# CallReturnDataNode is different with ReturnDataNode, but it points to a ReturnDataNode
+class CallReturnDataNode(Node):
+    def __init__(self, name, pc, path_id):
+        super().__init__(name)
+        self.pc = pc
+        self.path_id = path_id
+
+    def getPc(self):
+        return self.pc
+
+    def getPathId(self):
+        return self.path_id
+
+    def __str__(self):
+        return "CallReturnDataNode_" + self.name + "_" + str(self.pc) + "_" + str(self.path_id)
+
+class ExpressionNode(Node):
+    def __init__(self, name, expression):
+        super().__init__(name)
+        self.expression = expression
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def __str__(self):
+        return "ExpressionNode_" + self.name
 
 
 class InstructionNode(Node):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
-        super().__init__(nodeID)
+    def __init__(self, instruction_name, arguments, global_pc, constraint):
+        super().__init__()
         self.name = instruction_name
         self.arguments = arguments
         self.global_pc = global_pc
@@ -28,143 +74,248 @@ class InstructionNode(Node):
     def getArguments(self):
         return self.arguments
 
+    def __str__(self):
+        return "InstructionNode_" + self.name + "_" + str(self.global_pc)
+
 
 class MessageCallNode(InstructionNode):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
-        super().__init__(instruction_name, arguments, global_pc, constraint, nodeID)
+    def __init__(self, instruction_name, arguments, global_pc, constraint, path_id):
+        super().__init__(instruction_name, arguments, global_pc, constraint)
+        self.path_id = path_id
 
     def __str__(self):
-        return "MessageCallNode " + self.name + " " + str(self.nodeID)
+        return "MessageCallNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
 
 
 class StateOPNode(InstructionNode):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
-        super().__init__(instruction_name, arguments, global_pc, constraint, nodeID)
+    def __init__(self, instruction_name, arguments, global_pc, constraint, path_id):
+        super().__init__(instruction_name, arguments, global_pc, constraint)
+        self.path_id = path_id
 
     def __str__(self):
-        return "StateOPNode " + self.name + " " + str(self.nodeID)
-
-
-class VariableNode(Node):
-
-    def __init__(self, name, value, nodeID):
-        super().__init__(nodeID)
-        self.name = name
-        self.value = value
-
-
-class StateNode(VariableNode):
-
-    def __init__(self, source, name, value, position, nodeID):
-        super().__init__(name, value, nodeID)
-        self.source = source
-        if source == "Ia":
-            self.position = position
-        else:
-            self.position = -1
-
-    def __str__(self):
-        return "StateNode " + str(self.name) + " " + str(self.nodeID)
-
-
-class ConstNode(VariableNode):
-
-    def __init__(self, name, value, nodeID):
-        super().__init__(name, value, nodeID)
-
-    def __str__(self):
-        return "ConstNode " + str(self.value) + " " + str(self.nodeID)
-
-
-class InputDataNode(VariableNode):
-
-    def __init__(self, name, value, nodeID):
-        super().__init__(name, value, nodeID)
-
-    def __str__(self):
-        return "InputDataNode " + self.name + " " + str(self.nodeID)
-
-
-class BlockDataNode(VariableNode):
-
-    def __init__(self, name, value, blockNumber, nodeID):
-        super().__init__(name, value, nodeID)
-        # if blockNumber > 0:
-        self.blockNumber = blockNumber
-        # else:
-        #     self.blockNumber = -1
-
-    def __str__(self):
-        return "BlockDataNode " + self.name + " " + str(self.nodeID)
-
-
-class MsgDataNode(VariableNode):
-
-    def __init__(self, name, value, nodeID):
-        super().__init__(name, value, nodeID)
-
-    def __str__(self):
-        return "MsgDataNode " + self.name + " " + str(self.nodeID)
-
-
-class SelfDefinedNode(VariableNode):
-
-    def __init__(self, name, value, nodeID):
-        super().__init__(name, value, nodeID)
-
-    def __str__(self):
-        return "SelfDefinedNode " + self.name + " " + str(self.nodeID)
-
-
-class ReturnDataNode(VariableNode):
-
-    def __init__(self, name, value, nodeID):
-        super().__init__(name, value, nodeID)
-
-    def __str__(self):
-        return "ReturnDataNode " + self.name + " " + str(self.nodeID)
+        return "StateOPNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
 
 
 class TerminalNode(InstructionNode):
 
-    def __init__(self, instruction_name, arguments, global_pc, constraint, nodeID):
-        super().__init__(instruction_name, arguments, global_pc, constraint, nodeID)
+    def __init__(self, instruction_name, arguments, global_pc, constraint, path_id):
+        super().__init__(instruction_name, arguments, global_pc, constraint)
+        self.path_id = path_id
 
     def __str__(self):
-        return "TerminalNode " + self.name + " " + str(self.nodeID)
+        return "TerminalNode_" + self.name + "_" + str(self.path_id)
 
 class ArithNode(InstructionNode):
 
-    def __init__(self, operation, operand, global_pc, constraint, expression, param, nodeID):
-        super().__init__(operation, operand, global_pc, constraint, nodeID)
+    def __init__(self, operation, operand, global_pc, constraint, expression, param, path_id):
+        super().__init__(operation, operand, global_pc, constraint)
         self.expression = expression
         self.params = param
+        self.path_id = path_id
 
     def __str__(self):
-        return "ArithNode " + self.name + " " + str(self.nodeID)
+        return "ArithNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
+
+class VariableNode(Node):
+
+    def __init__(self, name, value):
+        super().__init__(name)
+        self.value = value
+
+    def __str__(self):
+        return "VariableNode_" + self.name + "_" + str(self.value)
 
 
+class StateNode(VariableNode):
+
+    def __init__(self, name, value, position):
+        super().__init__(name, value)
+        self.position = position
+
+    def __str__(self):
+        return "StateNode_" + str(self.name) + "_" + str(self.position)
 
 
+class ConstNode(VariableNode):
 
-class FlowEdge:
+    def __init__(self, name, value):
+        super().__init__(name, value)
 
-    def __init__(self, expression):
-        self.expression = expression
-
-    def getExpression(self):
-        return self.expression
+    def __str__(self):
+        return "ConstNode_" + self.name
 
 
-class ControlEdge:
+class InputDataNode(VariableNode):
 
-    def __init__(self, constraints):
-        self.constraints = constraints
+    def __init__(self, name, value, position):
+        super().__init__(name, value)
+        self.position = position
 
-    def getConstraint(self):
-        return self.constraints
+    def __str__(self):
+        return "InputDataNode_" + self.name
+
+
+class InputDataSizeNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "InputDataSizeNode_" + self.name
+
+class ExpNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ExpNode_" + self.name
+
+class GasPriceNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "GasPriceNode_" + self.name
+
+class OriginNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "OriginNode_" + self.name
+
+class CoinbaseNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "CoinbaseNode_" + self.name
+
+class DifficultyNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "DifficultyNode_" + self.name
+
+class GasLimitNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "GasLimitNode_"  + self.name
+
+class CurrentNumberNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "CurrentNumberNode_" + self.name
+
+class TimeStampNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "TimeStampNode_" + self.name
+
+class AddressNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "AddressNode_" + self.name
+
+class BlockhashNode(VariableNode):
+    def __init__(self, name, value, blockNumber):
+        super().__init__(name, value)
+        self.blockNumber = blockNumber
+
+    def __str__(self):
+        return "BlockhashNode_" + self.name + "_" + str(self.blockNumber)
+
+class GasNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "GasNode_" + self.name
+
+class ShaNode(VariableNode):
+    def __init__(self, name, value, args):
+        super().__init__(name, value)
+        self.args = args
+
+    def __str__(self):
+        return "ShaNode_" + self.name + str(self.args)
+
+class MemoryNode(VariableNode):
+
+    def __init__(self, name, value, position):
+        super().__init__(name, value)
+        self.position = position
+
+    def __str__(self):
+        return "MemoryNode_" + self.name
+
+class ExtcodeSizeNode(VariableNode):
+    def __init__(self, name, value, address):
+        super().__init__(name, value)
+        self.address = address
+
+    def __str__(self):
+        return "ExtcodeSizeNode_" + self.name
+
+class DepositValueNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "DepositValueNode_" + self.name
+
+class BalanceNode(VariableNode):
+    def __init__(self, name, value, address):
+        super().__init__(name, value)
+        self.address = address
+
+    def __str__(self):
+        return "BalanceNode_" + self.name
+
+class ReturnDataNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ReturnDataNode_" + self.name
+
+class ReturnStatusNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ReturnStatusNode_" + self.name
+
+class ReturnDataSizeNode(VariableNode):
+
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ReturnDataSizeNode_" + self.name
+
+class CodeNode(VariableNode):
+
+    def __init__(self, name, value, address):
+        super().__init__(name, value)
+        self.address = address
+
+    def __str__(self):
+        return "CodeNode_" + self.name
 
 
 class XGraph:
@@ -173,46 +324,146 @@ class XGraph:
         self.graph = nx.DiGraph()
         self.count = 0
         self.overflow_related = ('ADD', 'SUB', 'MUL', 'EXP')
-        self.instruction_nodes = []
-        self.message_call_nodes = []
-        self.msg_data_nodes = []
-        self.arith_nodes = []
-        self.input_data_nodes = []
-        self.block_data_nodes = []
-        self.state_op_nodes = []
-        self.call_nodes = []
-        self.msg_sender_nodes = []
+
+        self.message_call_nodes = []  # all nodes included in {call, staticcall, delegatecall, callcode}
+        self.call_nodes = []  # for call instruction
+        self.arith_nodes = []  # only for {"add", "sub", "mul", "exp"}
+        self.state_op_nodes = []  # all nodes included in {sstore, sload}
+        self.sstore_nodes = []  # for sstore instruction
+        self.input_data_nodes = []  # for {calldataload, calldatacopy}
         self.state_nodes = []
-        self.sstore_nodes = []
-        self.sender_node = ""
+        self.terminal_nodes = []  # for "revert"
+        self.sender_node = None  # for msg.sender
+        self.address_nodes = []  # for all address nodes
+        self.return_status_nodes = []  # for all return status nodes
+
+
+        # (Var, VariableNode), mapping symbolic or real int to variableNodes
+        self.mapping_var_node = {}
+        # (expr, ExpressionNode)
+        self.mapping_expr_node = {}
+        # (expr/var, AddressNode)
+        self.mapping_address_node = {}
+        # (pc, [CallReturnNode])
+        self.mapping_pc_callReturnNode = {}
+        # (position, StateNode)
+        self.mapping_position_stateNode = {}
+
+    def addStateNode(self, position, node):
+        self.mapping_position_stateNode[position] = node
+
+    def getStateNode(self, position):
+        s = SSolver()
+        s.set("timeout", global_params.TIMEOUT)
+        for key in self.mapping_position_stateNode:
+            s.push()
+            s.add(Not(key == position))
+            if check_unsat(s):
+                s.pop()
+                return self.mapping_position_stateNode[key]
+            s.pop()
+        return None
+
+    def addCallReturnNode(self, pc, node):
+        if pc in self.mapping_pc_callReturnNode:
+            self.mapping_pc_callReturnNode[pc].append(node)
+        else:
+            self.mapping_pc_callReturnNode[pc] = [node]
+
+    def getCallReturnNode(self, pc):
+        return self.mapping_pc_callReturnNode[pc][-1]  # return the most rencent CallReturnNode
+
+    def addExprNode(self, expr, node):
+        if is_const(expr) or isReal(expr):
+            expr = convertResult(expr)
+            self.mapping_var_node[expr] = node
+        else:
+            self.mapping_expr_node[expr] = node
+
+    def getExprNode(self, expr):
+        s = SSolver()
+        s.set("timeout", global_params.TIMEOUT)
+        if is_const(expr) or isReal(expr):  # expr is variable or const
+            expr = convertResult(expr)  # all value of const are in real int type
+            for key in self.mapping_var_node:
+                s.push()
+                s.add(Not(key == expr))
+                if check_unsat(s):
+                    s.pop()
+                    return self.mapping_var_node[key]
+                s.pop()
+        else:
+            for key in self.mapping_expr_node:
+                s.push()
+                s.add(Not(key == expr))
+                if check_unsat(s):
+                    s.pop()
+                    return self.mapping_expr_node[key]
+                s.pop()
+        return None
+
+    def addAddressNode(self, expr, node):
+        self.mapping_address_node[expr] = node
+
+    def getAddressNode(self, expr):
+        s = SSolver()
+        s.set("timeout", global_params.TIMEOUT)
+
+        for key in self.mapping_address_node:
+            s.push()
+            s.add(Not(key == expr))
+            if check_unsat(s):
+                s.pop()
+                return self.mapping_address_node[key]
+            s.pop()
+        return None
+
+
+    def getVarNode(self, var):
+        if (type(var) == six.integer_types):
+            if var in self.mapping_var_node:
+                return self.mapping_var_node[var]
+            else:
+                node = ConstNode(str(var), var)
+                self.mapping_var_node[var] = node
+                return node
+        else:
+            var = convertResult(var)
+            if var in self.mapping_var_node:
+                return self.mapping_var_node[var]
+            else:
+                raise Exception("no match node for a symbolic var: %s", str(var))
+
+    def addVarNode(self, var, node):
+        self.mapping_var_node[var] = node
+        self.addNode(node)
 
     # The function for construct the graph for the contract
-    def addNode(self, nodeId):
+    def addNode(self, node):
         self.count += 1
-        self.graph.add_node(nodeId, count=self.count)
-        if type(nodeId) == MessageCallNode:
-            self.message_call_nodes.append(nodeId)
-            if nodeId.name == "CALL":
-                self.call_nodes.append(nodeId)
-        elif type(nodeId) == StateOPNode:
-            self.state_op_nodes.append(nodeId)
-            if nodeId.name == "SSTORE":
-                self.sstore_nodes.append(nodeId)
-        elif type(nodeId) == InputDataNode:
-            self.input_data_nodes.append(nodeId)
-        elif type(nodeId) == BlockDataNode:
-            self.block_data_nodes.append(nodeId)
-        elif type(nodeId) == MsgDataNode:
-            self.msg_data_nodes.append(nodeId)
-            if nodeId.name == "CALLER":
-                self.msg_sender_nodes.append(nodeId)
-        elif type(nodeId) == StateNode:
-            if nodeId.source == "Ia":
-                self.state_nodes.append(nodeId)
-            elif nodeId.source == "Is":
-                self.sender_node = nodeId
-        elif type(nodeId) == ArithNode and nodeId.name in self.overflow_related:
-            self.arith_nodes.append(nodeId)
+        self.graph.add_node(node, count=self.count)
+        if type(node) == MessageCallNode:
+            self.message_call_nodes.append(node)
+            if node.name == "CALL":
+                self.call_nodes.append(node)
+        elif type(node) == StateOPNode:
+            self.state_op_nodes.append(node)
+            if node.name == "SSTORE":
+                self.sstore_nodes.append(node)
+        elif type(node) == InputDataNode:
+            self.input_data_nodes.append(node)
+        elif type(node) == StateNode:
+            self.state_nodes.append(node)
+        elif type(node) == ArithNode:
+            self.arith_nodes.append(node)
+        elif type(node) == TerminalNode:
+            self.terminal_nodes.append(node)
+        elif type(node) == AddressNode:
+            if "Is" in node.name:
+                self.sender_node = node
+            self.address_nodes.append(node)
+        elif type(node) == ReturnStatusNode:
+            self.return_status_nodes.append(node)
 
     def addEdges(self, edgeList, edgeType, branch):
         branchList = [branch]
