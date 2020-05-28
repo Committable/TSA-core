@@ -1,6 +1,8 @@
 import logging
 import traceback
 from collections import namedtuple
+
+import psutil
 from numpy import long
 from graphBuilder.XGraph import *
 import interpreter.params
@@ -18,6 +20,7 @@ import pickle
 from solver.symbolicVar import subexpression, SSolver
 from interpreter.opcodes import  opcode_by_name
 from graphBuilder import evmGraph
+import time
 
 log = logging.getLogger(__name__)
 Edge = namedtuple("Edge", ["v1", "v2"])
@@ -81,7 +84,7 @@ class EVMInterpreter:
     # Symbolically executing a block from the start address
     def _sym_exec_block(self, params, block, pre_block):
         visited = params.visited
-
+        starttime = time.time()
         global_state = params.global_state
 
         if block < 0 or block not in self.runtime.vertices:
@@ -217,7 +220,14 @@ class EVMInterpreter:
             self.solver.setHasTimeOut(False)
         else:
             raise Exception('Unknown Jump-Type')
-
+        endtime = time.time()
+        executiontime = endtime - starttime
+        log.debug("block" + str(block) + " symbolic execution time: %.8s s"  %executiontime)
+        memory_inf = psutil.virtual_memory()
+        log.debug("total memory: %d M" % int(memory_inf.total/(1024 * 1024)))
+        log.debug("used memory: %d M" % int(memory_inf.used / (1024 * 1024)))
+        log.debug("free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
+        log.debug("percent: %d " % int(memory_inf.percent) + "%")
         return 0
 
     # TODO: 1.slot precision; 2.memory model; 3.sha3; 4.system contracts call; 5.evm instructions expansion;
@@ -644,7 +654,7 @@ class EVMInterpreter:
                         new_var_name = self.gen.gen_sha3_var(value)
                         computed = BitVec(new_var_name, 256)
                         # add to node
-                        e_node = addExpressionNode(value)
+                        e_node = addExpressionNode(self.graph, value, self.gen.get_path_id())
                         node = ShaNode(new_var_name, computed, value)
                         self.graph.addBranchEdge([(e_node, node)], "flowEdge", self.gen.get_path_id())
                         self.graph.addVarNode(computed, node)
