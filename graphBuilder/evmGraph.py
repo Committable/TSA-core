@@ -43,8 +43,8 @@ zeorReturnStatusNode = ReturnStatusNode("0", 0)
 def addExpressionNode(graph, expr, path_id):
     e_node = graph.getExprNode(expr)
     if e_node is None:
-        assert(not is_const(expr))  # a no exist expr mustn't be const or variable type
-        e_node = ExpressionNode(str(simplify(expr)), expr)
+        assert not is_const(expr), str(expr) # a no exist expr mustn't be const or variable type
+        e_node = ExpressionNode(str(expr), expr)
         flow_edges = []
         for var in get_vars(to_symbolic(expr)):
             node = graph.getVarNode(var)
@@ -69,34 +69,12 @@ def addAddressNode(graph, expr, path_id):
         return a_node
 
 def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc, param, path_id):
-    var_nodes = []
     flow_edges = []
     control_edges = []
     # get node_first
-    if is_expr(param[0]):
-        node_first = ExpressionNode(param[0])
-        graph.addNode()
-        for var in get_vars(param[0]):
-            node = graph.getVarNode(var)
-            var_nodes.append(node)
-            flow_edges.append((node, node_first))
-    elif isReal(param[0]):
-        node_first = graph.getConstNode(param[0])
-    else:
-        node_first = graph.getVariableNode(param[0])
-    var_nodes.append(node_first)
+    node_first = addExpressionNode(graph, param[0], path_id)
     # get node_second
-    if is_expr(param[1]):
-        node_second = ExpressionNode(param[1])
-        for var in get_vars(param[1]):
-            node = graph.getVariableNode(var)
-            var_nodes.append(node)
-            flow_edges.append((node, node_second))
-    elif isReal(param[1]):
-        node_second = graph.getConstNode(param[1])
-    else:
-        node_second = graph.getVariableNode(param[1])
-    var_nodes.append(node_second)
+    node_second = addExpressionNode(graph, param[1], path_id)
     # get computedNode
     operand = [node_first, node_second]
 
@@ -106,20 +84,24 @@ def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc,
     pushEdgesToNode(operand, computedNode, flow_edges)
     pushEdgesToNode(path_conditions_and_vars["path_condition_node"], computedNode, control_edges)
 
-    return var_nodes, flow_edges, control_edges, computedNode
+    graph.addBranchEdge(flow_edges, "flowEdge", path_id)
+    graph.addBranchEdge(control_edges, "controlEdge", path_id)
+
+
+    return computedNode
 
 
 def update_call(graph, opcode, node_stack, global_state, path_conditions_and_vars, path_id):
-    node_outgas = node_stack.pop(0)
-    node_recipient = node_stack.pop(0)
-    node_transfer_amount = node_stack.pop(0)
-    node_start_data_input = node_stack.pop(0)
-    node_size_data_input = node_stack.pop(0)
-    node_start_data_output = node_stack.pop(0)
-    node_size_data_ouput = node_stack.pop(0)
+    node_outgas = node_stack.pop()
+    node_recipient = node_stack.pop()
+    node_transfer_amount = node_stack.pop()
+    node_start_data_input = node_stack.pop()
+    node_size_data_input = node_stack.pop()
+    node_start_data_output = node_stack.pop()
+    node_size_data_ouput = node_stack.pop()
 
-    node_return_status = node_stack.pop(0)
-    node_return_data = node_stack.pop(0)
+    node_return_status = node_stack.pop()
+    node_return_data = node_stack.pop()
 
     arguments = [node_outgas, node_recipient, node_transfer_amount, node_start_data_input, node_size_data_input,
                  node_start_data_output, node_size_data_ouput]
@@ -139,15 +121,15 @@ def update_call(graph, opcode, node_stack, global_state, path_conditions_and_var
 
 
 def update_delegatecall(graph, opcode, node_stack, global_state, path_conditions_and_vars, path_id):
-    node_outgas = node_stack.pop(0)
-    node_recipient = node_stack.pop(0)
-    node_start_data_input = node_stack.pop(0)
-    node_size_data_input = node_stack.pop(0)
-    node_start_data_output = node_stack.pop(0)
-    node_size_data_ouput = node_stack.pop(0)
+    node_outgas = node_stack.pop()
+    node_recipient = node_stack.pop()
+    node_start_data_input = node_stack.pop()
+    node_size_data_input = node_stack.pop()
+    node_start_data_output = node_stack.pop()
+    node_size_data_ouput = node_stack.pop()
 
-    node_return_status = node_stack.pop(0)
-    node_return_data = node_stack.pop(0)
+    node_return_status = node_stack.pop()
+    node_return_data = node_stack.pop()
 
     arguments = [node_outgas, node_recipient, node_start_data_input, node_size_data_input,
                  node_start_data_output, node_size_data_ouput]
@@ -187,8 +169,7 @@ def update_suicide(graph, node_stack, global_state, path_conditions_and_vars, pa
 
 def update_graph_terminal(graph, opcode, global_state, path_conditions_and_vars, path_id):
     # instruction_name, arguments, global_pc, constraint, nodeID
-    node_revert = TerminalNode(opcode, [], global_state["pc"], path_conditions_and_vars["path_condition"],
-                               global_state["pc"], path_id)
+    node_revert = TerminalNode(opcode, [], global_state["pc"], path_conditions_and_vars["path_condition"], path_id)
     graph.addNode(node_revert)
 
     control_edge_list = []

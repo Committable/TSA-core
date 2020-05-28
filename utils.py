@@ -107,7 +107,7 @@ def check_unsat(solver):
     if solver.getHasTimeOut():
         return False
     try:
-        if solver.check == unsat:
+        if solver.check() == unsat:
             return True
     except Exception:
         return False

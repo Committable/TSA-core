@@ -14,11 +14,15 @@ class SSolver(Solver):
     def add(self, *args):
         for constrain in args:
             if isSymbolic(constrain):
-                vars = get_vars(constrain)
-                for var in vars:
-                    print(str(var))
-                    if var in self.mapping_var_expr:
-                        constrain = z3.substitute(constrain, (var, self.mapping_var_expr[var]))
+                while(True):
+                    flag = False
+                    vars = get_vars(constrain)
+                    for var in vars:
+                        if var in self.mapping_var_expr:
+                            flag = True
+                            constrain = z3.substitute(constrain, (var, self.mapping_var_expr[var]))
+                    if not flag:  # not substitute happen, so it's all clean
+                        break
                 super().add(constrain)
             else:
                 super().add(constrain)

@@ -247,6 +247,7 @@ def analyze_solidity_code():
         interpreter = EVMInterpreter(env)
         return_code = return_code or interpreter.sym_exec()
 
+        env.print_cfg_dot(interpreter.total_visited_edges)
         # overflowChecker = Overflow(interpreter.graph)
         # overflow_node_list, underflow_node_list = overflowChecker.check()
         # reentrancyChecker = Reentrancy(interpreter.graph)
@@ -307,7 +308,6 @@ def analyze_solidity_code():
         # todo: error
         # pos = nx.nx_agraph.graphviz_layout(interpreter.graph.graph)
         # nx.draw(interpreter.graph.graph, pos=pos)
-
         write_dot(interpreter.graph.graph, os.path.join(global_params.TMP_DIR, 'file.dot'))
         # A = nx.nx_agraph.to_agraph(interpreter.graph.graph)
         # plt.savefig("path.png")

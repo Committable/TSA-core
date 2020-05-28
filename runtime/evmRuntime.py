@@ -165,7 +165,7 @@ class EvmRuntime:
             block.display()
         log.debug(str(self.edges))
 
-    def print_cfg_dot(self):
+    def print_cfg_dot(self, visited_edges):
         g = Digraph(name="ControlFlowGraph",
                     comment=self.disasm_file,
                     format='pdf'
@@ -185,16 +185,36 @@ class EvmRuntime:
             start = str(start)
             if block_type == "falls_to":
                 g.node(name=start, label=label)
-                g.edge(start, str(block.get_falls_to()), color="black")  # black for falls to
+                if (int(start), block.get_falls_to()) in visited_edges:
+                    e_label = str(visited_edges[(int(start), block.get_falls_to())])
+                else:
+                    e_label = "0"
+                g.edge(start, str(block.get_falls_to()), color="black",
+                       label=e_label)  # black for falls to
             elif block_type == "unconditional":
                 g.node(name=start, label=label, color="blue")
                 for target in block.get_jump_targets():
-                    g.edge(start, str(target), color="blue")  # blue for unconditional jump
+                    if (int(start), target) in visited_edges:
+                        e_label = str(visited_edges[(int(start), target)])
+                    else:
+                        e_label = "0"
+                    g.edge(start, str(target), color="blue",
+                           label=e_label)  # blue for unconditional jump
             elif block_type == "conditional":
                 g.node(name=start, label=label, color="green")
-                g.edge(start, str(block.get_falls_to()), color="red")
+                if (int(start), block.get_falls_to()) in visited_edges:
+                    e_label = str(visited_edges[(int(start), block.get_falls_to())])
+                else:
+                    e_label = "0"
+                g.edge(start, str(block.get_falls_to()), color="red",
+                       label=e_label)
                 for target in block.get_jump_targets():
-                    g.edge(start, str(target), color="green")  # blue for unconditional jump
+                    if (int(start), target) in visited_edges:
+                        e_label = str(visited_edges[(int(start), target)])
+                    else:
+                        e_label = "0"
+                    g.edge(start, str(target), color="green",
+                           label=e_label)  # blue for unconditional jump
             elif block_type == "terminal":
                 g.node(name=start, label=label, color="red")
 
@@ -204,6 +224,6 @@ class EvmRuntime:
         #todo: test for building cfg process
         self.build_cfg()
         # self.print_cfg()
-        self.print_cfg_dot()
+        # self.print_cfg_dot()
         return 0
 

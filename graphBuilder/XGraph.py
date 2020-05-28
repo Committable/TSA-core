@@ -62,8 +62,7 @@ class ExpressionNode(Node):
 class InstructionNode(Node):
 
     def __init__(self, instruction_name, arguments, global_pc, constraint):
-        super().__init__()
-        self.name = instruction_name
+        super().__init__(instruction_name)
         self.arguments = arguments
         self.global_pc = global_pc
         self.constraint = constraint
@@ -392,6 +391,10 @@ class XGraph:
                     s.pop()
                     return self.mapping_var_node[key]
                 s.pop()
+            if isReal(expr):  # real int type or bitvecnumref type should be construct
+                node = ConstNode(str(expr), expr)
+                self.addVarNode(expr, node)
+                return node
         else:
             for key in self.mapping_expr_node:
                 s.push()
@@ -479,4 +482,6 @@ class XGraph:
             if self.graph.has_edge(edge[0], edge[1]) and self.graph[edge[0]][edge[1]]["label"] == edgeType:
                 self.graph[edge[0]][edge[1]]["branchList"].append(branch)
             else:
+                if edgeType == "controlEdge":
+                    return
                 self.graph.add_edge(edge[0], edge[1], label=edgeType, branchList=[branch])
