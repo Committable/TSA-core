@@ -320,6 +320,20 @@ class CodeNode(VariableNode):
     def __str__(self):
         return "CodeNode_" + self.name
 
+class SenderNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "SenderNode_" + self.name
+
+class ReceiverNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ReceiverNode_" + self.name
+
 
 class XGraph:
 
@@ -337,6 +351,8 @@ class XGraph:
         self.state_nodes = []
         self.terminal_nodes = []  # for "revert"
         self.sender_node = None  # for msg.sender
+        self.receiver_node = None  # for receiver
+        self.deposit_value_node = None # Iv
         self.address_nodes = []  # for all address nodes
         self.return_status_nodes = []  # for all return status nodes
 
@@ -477,11 +493,15 @@ class XGraph:
         elif type(node) == TerminalNode:
             self.terminal_nodes.append(node)
         elif type(node) == AddressNode:
-            if "Is" in node.name:
-                self.sender_node = node
             self.address_nodes.append(node)
+        elif type(node) == SenderNode:
+            self.sender_node = node
+        elif type(node) == ReceiverNode:
+            self.receiver_node = node
         elif type(node) == ReturnStatusNode:
             self.return_status_nodes.append(node)
+        elif type(node) == DepositValueNode:
+            self.deposit_value_node = node
 
     def addEdges(self, edgeList, edgeType, branch):
         branchList = [branch]

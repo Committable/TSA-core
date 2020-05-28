@@ -12,13 +12,13 @@ class UnfairpaySimple:
         unfairpayment_node = []
         call_nodes = self.XGraph.call_nodes
         sstore_nodes = self.XGraph.sstore_nodes
-        taint_node_list = self.XGraph.input_data_nodes + self.XGraph.msg_data_nodes
+        taint_node_list = self.XGraph.input_data_nodes + [self.XGraph.sender_node]
         sender_node = self.XGraph.sender_node
         call_samebranch_list = []
         call_branch_dict = {}
         sstore_branch_dict = {}
-        if len(self.XGraph.msg_data_nodes) > 0:
-            msgValue = self.XGraph.msg_data_nodes[0].value
+
+        msgValue = self.XGraph.deposit_value_node.value
         # get the branch_id_list of call instruction
         for call_node in call_nodes:
             call_param = get_argument_or_flow_node(self.XGraph.graph, call_node)
@@ -36,7 +36,7 @@ class UnfairpaySimple:
         for key_out in call_branch_dict:
             # define a branches list for checking callee
             for key_in in call_branch_dict:
-                if key_out.nodeID == key_in.nodeID:
+                if key_out.global_pc == key_in.global_pc and key_out.path_id == key_out.path_id:
                     continue
                 a = [x for x in call_branch_dict[key_out] if x in call_branch_dict[key_in]]
                 if a:
@@ -54,7 +54,7 @@ class UnfairpaySimple:
                         templist.pop(-1)
                 # templist = sorted(list(set(templist)), key=lambda node: node.nodeID)
                 if templist:
-                    call_samebranch_list.append(sorted(list(set(templist)), key=lambda node: node.nodeID))
+                    call_samebranch_list.append(sorted(list(set(templist)), key=lambda node: node.global_pc))
             call_branch_dict[key_out] = call_branch_dict_copy[key_out]
             templist.clear()
 

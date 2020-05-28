@@ -83,15 +83,15 @@ class EVMInterpreter:
 
     # Symbolically executing a block from the start address
     def _sym_exec_block(self, params, block, pre_block):
-        memory_inf = psutil.virtual_memory()
-        log.debug("total memory: %d M" % int(memory_inf.total / (1024 * 1024)))
-        log.debug("used memory: %d M" % int(memory_inf.used / (1024 * 1024)))
-        log.info("free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
-        log.debug("percent: %d " % int(memory_inf.percent) + "%")
-        if int(memory_inf.percent) > 80:
-            self.total_no_of_paths["exception"] += 1
-            log.info("Block %d, Limited Memory %d M. Terminating this path ...", pre_block, int(memory_inf.free / (1024 * 1024)))
-            return 1
+        # memory_inf = psutil.virtual_memory()
+        # log.debug("total memory: %d M" % int(memory_inf.total / (1024 * 1024)))
+        # log.debug("used memory: %d M" % int(memory_inf.used / (1024 * 1024)))
+        # log.info("free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
+        # log.debug("percent: %d " % int(memory_inf.percent) + "%")
+        # if int(memory_inf.percent) > 80:
+        #     self.total_no_of_paths["exception"] += 1
+        #     log.info("Block %d, Limited Memory %d M. Terminating this path ...", pre_block, int(memory_inf.free / (1024 * 1024)))
+        #     return 1
 
         visited = params.visited
         starttime = time.time()
@@ -164,9 +164,6 @@ class EVMInterpreter:
             traceback.print_exc()
             return 1
 
-        memory_inf = psutil.virtual_memory()
-        log.info("after instructions free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
-
         if self.is_testing_evm():
             self.compare_storage_and_gas_unit_test(global_state, global_params.UNIT_TEST)
 
@@ -192,15 +189,9 @@ class EVMInterpreter:
 
         elif self.runtime.jump_type[block] == "conditional":  # executing "JUMPI"
             # A choice point, we proceed with depth first search
-            memory_inf = psutil.virtual_memory()
-            log.info("0 free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
-
             branch_expression = self.runtime.vertices[block].get_branch_expression()
             branch_expression_node = self.runtime.vertices[block].get_branch_expression_node()
             negated_branch_expression_node = self.runtime.vertices[block].get_negated_branch_expression_node()
-
-            memory_inf = psutil.virtual_memory()
-            log.info("1 free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
 
             log.debug("Branch expression: " + str(branch_expression))
 
@@ -216,20 +207,10 @@ class EVMInterpreter:
             except Exception:
                 self.solver.setHasTimeOut(True)
             finally:
-
-                memory_inf = psutil.virtual_memory()
-                if int(memory_inf.free / (1024 * 1024)) < 800:
-                    print("branchExpression: " + str(branch_expression))
-                    print("solver: " + str(self.solver))
-                log.info("2 free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
                 if flag:
                     # there is only one real jump target for conditional jumpi
                     left_branch = self.runtime.vertices[block].get_jump_targets()[-1]
-                    memory_inf = psutil.virtual_memory()
-                    log.info("before copy free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
                     new_params = params.copy()
-                    memory_inf = psutil.virtual_memory()
-                    log.info("after copy free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
                     new_params.global_state["pc"] = left_branch
                     new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
                     new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
@@ -1502,14 +1483,14 @@ class EVMInterpreter:
         new_var = BitVec("Is", 256)
         sender_address = new_var & CONSTANT_ONES_159
         # add to graph
-        node = VariableNode("Is", new_var)
+        node = SenderNode("Is", new_var)
         self.graph.addVarNode(new_var, node)
         s_node = addAddressNode(self.graph, sender_address, self.gen.get_path_id())
 
         new_var = BitVec("Ia", 256)
         receiver_address = new_var & CONSTANT_ONES_159
         # add to graph
-        node = VariableNode("Ia", new_var)
+        node = ReceiverNode("Ia", new_var)
         self.graph.addVarNode(new_var, node)
         r_node = addAddressNode(self.graph, receiver_address, self.gen.get_path_id())
 
