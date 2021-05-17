@@ -35,16 +35,16 @@ class SourceMap:
         self.root_path = root_path
         self.cname = cname
         self.input_type = input_type
-        if not SourceMap.parent_filename:
-            SourceMap.remap = remap
-            SourceMap.allow_paths = allow_paths
-            SourceMap.parent_filename = parent_filename
-            if input_type == "solidity":
-                SourceMap.position_groups = SourceMap._load_position_groups()
-            else:
-                raise Exception("There is no such type of input")
-            SourceMap.ast_helper = AstHelper(SourceMap.parent_filename, input_type, SourceMap.remap, SourceMap.allow_paths)
-            SourceMap.func_to_sig_by_contract = SourceMap._get_sig_to_func_by_contract()
+        #if not SourceMap.parent_filename:
+        SourceMap.remap = remap
+        SourceMap.allow_paths = allow_paths
+        SourceMap.parent_filename = parent_filename
+        if input_type == "solidity":
+            SourceMap.position_groups = SourceMap._load_position_groups()
+        else:
+            raise Exception("There is no such type of input")
+        SourceMap.ast_helper = AstHelper(SourceMap.parent_filename, input_type, SourceMap.remap, SourceMap.allow_paths)
+        SourceMap.func_to_sig_by_contract = SourceMap._get_sig_to_func_by_contract()
 
         for x in SourceMap.func_to_sig_by_contract:
             c_name = x.split(":")[-1]

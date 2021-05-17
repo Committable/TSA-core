@@ -13,7 +13,7 @@ class SolidityCompiler:
         self.allow_paths = allow_paths
         self.remap = remap
         self.compilation_err = compilation_err
-        self.path = tmp_path
+        self.path = tmp_path + self.source.split("/")[-1].split(".")[0]
         if not os.path.exists(self.path):
             os.mkdir(self.path)
 

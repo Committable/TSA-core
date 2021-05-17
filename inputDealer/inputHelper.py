@@ -9,7 +9,7 @@ from disassembler.evmDisassembler import EvmDisassembler
 from disassembler.wasmModule import Module
 from inputDealer.solidityCompiler import SolidityCompiler
 from inputDealer.soliditySourceMap import SourceMap
-
+import networkx as nx
 
 class InputHelper:
     EVM_BYTECODE = 0
@@ -79,6 +79,8 @@ class InputHelper:
             contracts = compiler.get_compiled_contracts()
 
             for contract in contracts:
+                if contracts[contract] == "":
+                    continue
                 disassembler = EvmDisassembler(self.source, contract, global_params.TMP_DIR)
                 disassembler.prepare_disasm_file()
 
@@ -86,6 +88,7 @@ class InputHelper:
 
                 source_map = SourceMap(cname, self.source, 'solidity', self.root_path, self.remap, self.allow_paths)
                 c_source = source_map.cname.split(":")[0]
+
 
                 disasm_file = disassembler.get_temporary_files()['disasm']
                 inputs.append({

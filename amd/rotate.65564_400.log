@@ -1,0 +1,45 @@
+INFO:__main__:used memory: 12 M
+INFO:__main__:FuncIndex is 0, time overhead is 0.28357911109924316
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:__main__:used memory: 63 M
+INFO:__main__:FuncIndex is 1, time overhead is 84.67087483406067
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 2, time overhead is 0.3201453685760498
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:__main__:used memory: 4 M
+INFO:__main__:FuncIndex is 3, time overhead is 96.18071150779724
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:__main__:used memory: -32 M
+INFO:__main__:FuncIndex is 4, time overhead is 0.3297450542449951
+INFO:__main__:All time: 181.81945514678955

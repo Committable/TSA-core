@@ -1,0 +1,418 @@
+INFO:__main__:[exception] used memory: 27 M
+INFO:__main__:[exception] FuncIndex is 45, time overhead is 70.52449631690979
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 46, time overhead is 0.09922194480895996
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 47, time overhead is 0.0681617259979248
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 48, time overhead is 0.03144669532775879
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 49, time overhead is 0.10742807388305664
+INFO:__main__:used memory: 15 M
+INFO:__main__:FuncIndex is 50, time overhead is 5.335141897201538
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 51, time overhead is 0.03054499626159668
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 52, time overhead is 0.271071195602417
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 142 M
+INFO:__main__:FuncIndex is 53, time overhead is 104.76046299934387
+INFO:__main__:used memory: -8 M
+INFO:__main__:FuncIndex is 54, time overhead is 0.04425621032714844
+INFO:__main__:used memory: 2 M
+INFO:__main__:FuncIndex is 55, time overhead is 0.6145505905151367
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 56, time overhead is 0.09863400459289551
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 57, time overhead is 0.019272565841674805
+INFO:__main__:used memory: 14 M
+INFO:__main__:FuncIndex is 58, time overhead is 1.0762815475463867
+INFO:__main__:used memory: 3 M
+INFO:__main__:FuncIndex is 59, time overhead is 0.12953925132751465
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 60, time overhead is 0.027107715606689453
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 61, time overhead is 0.019618749618530273
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 62, time overhead is 0.03190135955810547
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 63, time overhead is 0.5743632316589355
+INFO:__main__:used memory: 218 M
+INFO:__main__:FuncIndex is 64, time overhead is 591.8168849945068
+INFO:__main__:used memory: -125 M
+INFO:__main__:FuncIndex is 65, time overhead is 0.14760446548461914
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 66, time overhead is 0.3320653438568115
+INFO:__main__:[exception] used memory: -229 M
+INFO:__main__:[exception] FuncIndex is 67, time overhead is 100.06608939170837
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 68, time overhead is 2.2008750438690186
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 69, time overhead is 0.03374767303466797
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 70, time overhead is 0.37296009063720703
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 71, time overhead is 0.09868335723876953
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 72, time overhead is 4.306512117385864
+INFO:__main__:used memory: 78 M
+INFO:__main__:FuncIndex is 73, time overhead is 68.17504644393921
+INFO:__main__:used memory: 2 M
+INFO:__main__:FuncIndex is 74, time overhead is 0.04293656349182129
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 75, time overhead is 0.15717339515686035
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 76, time overhead is 0.07925152778625488
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 77, time overhead is 0.11577510833740234
+INFO:__main__:used memory: 2 M
+INFO:__main__:FuncIndex is 78, time overhead is 0.4669630527496338
+INFO:__main__:used memory: 20 M
+INFO:__main__:FuncIndex is 79, time overhead is 3.5972037315368652
+INFO:__main__:[exception] used memory: 5 M
+INFO:__main__:[exception] FuncIndex is 80, time overhead is 91.86683630943298
+INFO:root:sort mismatch
+INFO:__main__:used memory: -76 M
+INFO:__main__:FuncIndex is 81, time overhead is 0.9335474967956543
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 82, time overhead is 5.708413600921631
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 83, time overhead is 15.737112522125244
+INFO:__main__:used memory: 9 M
+INFO:__main__:FuncIndex is 84, time overhead is 19.488208770751953
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 85, time overhead is 0.026909589767456055
+INFO:__main__:used memory: 380 M
+INFO:__main__:FuncIndex is 86, time overhead is 707.7212903499603
+INFO:__main__:used memory: -150 M
+INFO:__main__:FuncIndex is 87, time overhead is 0.36286139488220215
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 88, time overhead is 0.08483457565307617
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 89, time overhead is 0.10257196426391602
+INFO:__main__:used memory: -199 M
+INFO:__main__:FuncIndex is 90, time overhead is 2.6314594745635986
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 91, time overhead is 0.03229069709777832
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 92, time overhead is 0.021445274353027344
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 93, time overhead is 0.018479585647583008
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 94, time overhead is 0.018640756607055664
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 95, time overhead is 0.0604250431060791
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 96, time overhead is 0.05378460884094238
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 97, time overhead is 0.11545395851135254
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 98, time overhead is 0.3203275203704834
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 99, time overhead is 0.29193592071533203
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 100, time overhead is 0.2759430408477783
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 101, time overhead is 0.10724973678588867
+INFO:__main__:used memory: -19 M
+INFO:__main__:FuncIndex is 102, time overhead is 17.881226778030396
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 103, time overhead is 0.022272825241088867
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 104, time overhead is 0.017392873764038086
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 105, time overhead is 0.017234325408935547
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 106, time overhead is 0.017669200897216797
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 107, time overhead is 0.05701184272766113
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 108, time overhead is 0.05359196662902832
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 109, time overhead is 0.018642902374267578
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 110, time overhead is 0.02429485321044922
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 111, time overhead is 0.052564144134521484
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 112, time overhead is 0.20213770866394043
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 113, time overhead is 0.283308744430542
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 114, time overhead is 93.20836591720581
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 115, time overhead is 0.05686831474304199
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 116, time overhead is 0.07292842864990234
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 117, time overhead is 46.014710664749146
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 118, time overhead is 1.2866909503936768
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 119, time overhead is 6.408693313598633
+INFO:__main__:used memory: 7 M
+INFO:__main__:FuncIndex is 120, time overhead is 9.328396797180176
+INFO:__main__:used memory: -2 M
+INFO:__main__:FuncIndex is 121, time overhead is 1.7926626205444336
+INFO:__main__:used memory: 82 M
+INFO:__main__:FuncIndex is 122, time overhead is 26.55562663078308
+INFO:__main__:used memory: 19 M
+INFO:__main__:FuncIndex is 123, time overhead is 36.356069564819336
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 124, time overhead is 0.42122888565063477
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 125, time overhead is 0.04233384132385254
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 126, time overhead is 0.04529690742492676
+INFO:__main__:used memory: -85 M
+INFO:__main__:FuncIndex is 127, time overhead is 2.852154016494751
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 128, time overhead is 0.01711273193359375
+INFO:root:sort mismatch
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 129, time overhead is 0.2322700023651123
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 130, time overhead is 90.40731692314148
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 131, time overhead is 0.6109602451324463
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 132, time overhead is 0.020601987838745117
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 133, time overhead is 0.019149303436279297
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 134, time overhead is 0.023375272750854492
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 135, time overhead is 0.020223140716552734
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 136, time overhead is 0.02399444580078125
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 137, time overhead is 0.03213834762573242
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 138, time overhead is 0.03287243843078613
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 139, time overhead is 0.020137310028076172
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 140, time overhead is 0.020176410675048828
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 141, time overhead is 0.020349740982055664
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 142, time overhead is 0.020059585571289062
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 143, time overhead is 0.0202333927154541
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 144, time overhead is 0.019946813583374023
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 145, time overhead is 0.02830958366394043
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 146, time overhead is 0.019239425659179688
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 147, time overhead is 0.02836322784423828
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 148, time overhead is 0.025173664093017578
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 149, time overhead is 0.024698257446289062
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 150, time overhead is 0.029520273208618164
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 151, time overhead is 0.023934602737426758
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 152, time overhead is 0.05319356918334961
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 153, time overhead is 0.06781601905822754
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 154, time overhead is 0.08438611030578613
+INFO:__main__:used memory: 216 M
+INFO:__main__:FuncIndex is 155, time overhead is 547.4784083366394
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 156, time overhead is 0.15892505645751953
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 157, time overhead is 0.03596305847167969
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 158, time overhead is 0.11159014701843262
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 159, time overhead is 0.05600166320800781
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 160, time overhead is 0.05877351760864258
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 161, time overhead is 0.08938097953796387
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 162, time overhead is 0.08117961883544922
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 163, time overhead is 0.05722856521606445
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 164, time overhead is 1.9526724815368652
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 165, time overhead is 0.16281843185424805
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 166, time overhead is 0.07046246528625488
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 167, time overhead is 0.06612300872802734
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 168, time overhead is 0.04726266860961914
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 169, time overhead is 0.029096603393554688
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 170, time overhead is 0.07247114181518555
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 171, time overhead is 0.6800177097320557
+INFO:__main__:used memory: -196 M
+INFO:__main__:FuncIndex is 172, time overhead is 6.909242153167725
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 173, time overhead is 0.36541271209716797
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 174, time overhead is 0.14905214309692383
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 175, time overhead is 0.06901407241821289
+INFO:__main__:used memory: -24 M
+INFO:__main__:FuncIndex is 176, time overhead is 3.450741767883301
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 177, time overhead is 1.5447630882263184
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 178, time overhead is 1.3737189769744873
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 179, time overhead is 0.24895215034484863
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 180, time overhead is 6.240713357925415
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 181, time overhead is 0.24257922172546387
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 182, time overhead is 0.3725605010986328
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 183, time overhead is 0.8022177219390869
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 184, time overhead is 0.8304240703582764
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 185, time overhead is 0.12462782859802246
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 186, time overhead is 0.08636069297790527
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 187, time overhead is 0.12386274337768555
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 188, time overhead is 0.12334895133972168
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 189, time overhead is 0.4368879795074463
+INFO:root:sort mismatch
+INFO:root:fpMul() missing 2 required positional arguments: 'a' and 'b'
+INFO:root:sort mismatch
+INFO:root:fpMul() missing 2 required positional arguments: 'a' and 'b'
+INFO:root:fpMul() missing 2 required positional arguments: 'a' and 'b'
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 190, time overhead is 0.6832458972930908
+INFO:__main__:used memory: 13 M
+INFO:__main__:FuncIndex is 191, time overhead is 21.439948320388794
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 192, time overhead is 0.08203792572021484
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 1 M
+INFO:__main__:[exception] FuncIndex is 193, time overhead is 0.37665867805480957
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 194, time overhead is 0.29091811180114746
+INFO:__main__:used memory: 12 M
+INFO:__main__:FuncIndex is 195, time overhead is 19.016348838806152
+INFO:__main__:used memory: -2 M
+INFO:__main__:FuncIndex is 196, time overhead is 5.137605905532837
+INFO:__main__:used memory: -14 M
+INFO:__main__:FuncIndex is 197, time overhead is 1.6872403621673584
+INFO:__main__:used memory: -2 M
+INFO:__main__:FuncIndex is 198, time overhead is 11.06023645401001
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 199, time overhead is 7.804615497589111
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 200, time overhead is 0.9343564510345459
+INFO:__main__:All time: 2781.5073330402374

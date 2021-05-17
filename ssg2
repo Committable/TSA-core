@@ -1,0 +1,14 @@
+digraph G {
+	rankdir=TB
+	overlap=scale
+	splines=polyline
+	ratio=fill
+	subgraph ssg2 {
+		label=ssg2
+		color=grey
+		fontsize=50.0
+		overlap=false
+		splines=polyline
+		ratio=fill
+	}
+}

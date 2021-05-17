@@ -11,8 +11,8 @@ class EvmDisassembler:
         if not os.path.exists(path):
             os.mkdir(path)
         self.tmp = {
-            "evm": os.path.join(path, contract.split(os.path.sep)[-1] + ".evm"),
-            "disasm": os.path.join(path, contract.split(os.path.sep)[-1] + ".disasm")
+            "evm": os.path.join(path, contract.split(os.path.sep)[-1] + self.source.split("/")[-1].split(".")[0] + ".evm"),
+            "disasm": os.path.join(path, contract.split(os.path.sep)[-1] + self.source.split("/")[-1].split(".")[0] + ".disasm")
         }
 
     def prepare_disasm_file(self):

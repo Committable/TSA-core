@@ -42,17 +42,14 @@ zeorReturnStatusNode = ReturnStatusNode("0", 0)
 
 e_mapping_overflow_var_expr = {}
 
-def addExpressionNode(graph, expr, path_id):
+def addExpressionNode(graph, expr, path_id): # is_expr(expr) == True and is_const(expr)==False
     e_node = graph.getExprNode(expr)
     if e_node is None:
-        assert not is_const(expr), str(expr)  # a no exist expr mustn't be const or variable type
-        #  sustitue Expression
-        tmp_expr = getSubstitudeExpr(expr, e_mapping_overflow_var_expr)
-        e_node = ExpressionNode(str(tmp_expr), tmp_expr)
+        e_node = ExpressionNode(str(expr), expr)
 
         graph.addExprNode(expr, e_node)
         flow_edges = []
-        for var in get_vars(to_symbolic(expr)):
+        for var in get_vars(expr):
             node = graph.getVarNode(var)
             flow_edges.append((node, e_node))
         graph.addBranchEdge(flow_edges, "flowEdge", path_id)
@@ -63,11 +60,7 @@ def addExpressionNode(graph, expr, path_id):
 def addConstrainNode(graph, expr, path_id):
     e_node = graph.getConstrainNode(expr)
     if e_node is None:
-        assert not is_const(expr), str(expr)  # a no exist expr mustn't be const or variable type
-        #  sustitue Expression
-        tmp_expr = getSubstitudeExpr(expr, e_mapping_overflow_var_expr)
-        e_node = ConstrainNode(str(tmp_expr), tmp_expr)
-
+        e_node = ConstrainNode(str(expr), expr)
         graph.addConstrainNode(expr, e_node)
         flow_edges = []
         for var in get_vars(to_symbolic(expr)):
@@ -95,16 +88,12 @@ def getSubstitudeExpr(expr, mapping_overflow_var_expr):
 
 
 def addAddressNode(graph, expr, path_id):
-
-
+    expr = to_symbolic(expr)
     a_node = graph.getAddressNode(expr)
     if a_node is None:
-        #  sustitue Expression
-        tmp_expr = getSubstitudeExpr(expr, e_mapping_overflow_var_expr)
-
-        a_node = AddressNode(str(tmp_expr), tmp_expr)
+        a_node = AddressNode(str(expr), expr)
         flow_edges = []
-        for var in get_vars(to_symbolic(expr)):
+        for var in get_vars(expr):
             node = graph.getVarNode(var)
             flow_edges.append((node, a_node))
         graph.addAddressNode(expr, a_node)

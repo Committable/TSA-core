@@ -1,0 +1,858 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="modify inputDealer to put files into tmp dirs specified by -tmp or defaulted as ./tmp">
+      <change beforePath="$PROJECT_DIR$/disassembler/evmDisassembler.py" beforeDir="false" afterPath="$PROJECT_DIR$/disassembler/evmDisassembler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphBuilder/XGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/XGraph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphBuilder/evmGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/evmGraph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/inputHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/inputHelper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/solidityAstWalker.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/solidityAstWalker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/solidityCompiler.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/solidityCompiler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/soliditySourceMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/soliditySourceMap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/solidiytAstHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/solidiytAstHelper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interpreter/evmInterpreter.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/evmInterpreter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reporter/cfgPrinter.py" beforeDir="false" afterPath="$PROJECT_DIR$/reporter/cfgPrinter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/basicBlock.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/basicBlock.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/evmRuntime.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/evmRuntime.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/seraph.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="283597885">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="2" />
+          <entry key="project.open.time.10" value="1" />
+          <entry key="project.open.time.6" value="2" />
+          <entry key="project.opened" value="3" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="ast_graph1" value="2" />
+          <entry key="ast_graph2" value="2" />
+          <entry key="bin-runtime" value="10" />
+          <entry key="cfg1" value="1" />
+          <entry key="cfg2" value="1" />
+          <entry key="disasm" value="7" />
+          <entry key="evm" value="1" />
+          <entry key="py" value="65" />
+          <entry key="sol" value="8" />
+          <entry key="ssg1" value="2" />
+          <entry key="ssg2" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="PLAIN_TEXT" value="27" />
+          <entry key="Python" value="65" />
+          <entry key="Solidity file" value="8" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="Python Console" value="1162" />
+          <entry key="py" value="7079" />
+          <entry key="sol" value="63" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Python" value="8241" />
+          <entry key="Solidity file" value="63" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/seraph.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5895">
+              <caret line="300" column="43" selection-start-line="300" selection-start-column="43" selection-end-line="300" selection-end-column="43" />
+              <folding>
+                <element signature="e#23#38#0" expanded="true" />
+                <element signature="e#12266#14862#0" />
+                <element signature="e#15235#17554#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cfg2">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ssg2">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-24">
+              <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/inputDealer/solidityAstWalker.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="229">
+              <caret line="12" column="16" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/contracts/erc20.sol">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1200">
+              <caret line="50" column="53" selection-start-line="48" selection-start-column="8" selection-end-line="50" selection-end-column="53" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/graphBuilder/XGraph.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="315">
+              <caret line="486" column="59" selection-start-line="486" selection-start-column="59" selection-end-line="486" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cfg1">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-3740">
+              <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ast_graph1">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="192">
+              <caret line="8" column="21" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ast_graph2">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/contracts/erc20_1.sol">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="72">
+              <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>Unknown jump address</find>
+      <find>srcmap</find>
+      <find>filename</find>
+      <find>MLOAD</find>
+    </findStrings>
+    <replaceStrings>
+      <replace />
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/global_params.py" />
+        <option value="$PROJECT_DIR$/log.py" />
+        <option value="$PROJECT_DIR$/disassembler/evmDisassembler.py" />
+        <option value="$PROJECT_DIR$/reporter/cfgPrinter.py" />
+        <option value="$PROJECT_DIR$/inputDealer/solidityCompiler.py" />
+        <option value="$PROJECT_DIR$/inputDealer/soliditySourceMap.py" />
+        <option value="$PROJECT_DIR$/inputDealer/inputHelper.py" />
+        <option value="$PROJECT_DIR$/runtime/evmRuntime.py" />
+        <option value="$PROJECT_DIR$/interpreter/symbolicVarGenerator.py" />
+        <option value="$PROJECT_DIR$/graphBuilder/evmGraph.py" />
+        <option value="$PROJECT_DIR$/runtime/basicBlock.py" />
+        <option value="$PROJECT_DIR$/interpreter/evmInterpreter.py" />
+        <option value="$PROJECT_DIR$/inputDealer/solidiytAstHelper.py" />
+        <option value="$PROJECT_DIR$/inputDealer/solidityAstWalker.py" />
+        <option value="$PROJECT_DIR$/contracts/erc20.sol" />
+        <option value="$PROJECT_DIR$/graphBuilder/XGraph.py" />
+        <option value="$PROJECT_DIR$/seraph.py" />
+        <option value="$PROJECT_DIR$/contracts/erc20_1.sol" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="67" />
+    <option name="y" value="27" />
+    <option name="width" value="1410" />
+    <option name="height" value="900" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="seraph" type="b2602c69:ProjectViewProjectNode" />
+              <item name="seraph" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="seraph" type="b2602c69:ProjectViewProjectNode" />
+              <item name="seraph" type="462c0819:PsiDirectoryNode" />
+              <item name="reporter" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="seraph-V1.0" is-module-sdk="true">
+        <option name="useSoftWraps" value="true" />
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="seraph-V1.0" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.seraph">
+    <configuration name="networktest" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="seraph-V1.0" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$USER_HOME$/network" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$USER_HOME$/network/networktest.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="run_tests" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="seraph-V1.0" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/local/bin/python3.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/uinttest" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/uinttest/run_tests.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="seraph" type="PythonConfigurationType" factoryName="Python">
+      <module name="seraph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/seraph.py" />
+      <option name="PARAMETERS" value="-s $PROJECT_DIR$/contracts/erc20.sol -j $PROJECT_DIR$/contracts/erc20_1.sol -sol -ce -vb -p ethereum" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="true" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="seraph-V1.0" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/checker" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/checker/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.seraph" />
+      <item itemvalue="Python.networktest" />
+      <item itemvalue="Python.test" />
+      <item itemvalue="Python.run_tests" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.run_tests" />
+        <item itemvalue="Python.networktest" />
+        <item itemvalue="Python.test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="" />
+      <created>1568770799299</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1568770799299</updated>
+      <workItem from="1568770819364" duration="26313000" />
+      <workItem from="1569568282040" duration="2774000" />
+      <workItem from="1570504894773" duration="6918000" />
+      <workItem from="1570585838114" duration="27380000" />
+      <workItem from="1571060809982" duration="27944000" />
+      <workItem from="1571112833748" duration="6786000" />
+      <workItem from="1573783697777" duration="6615000" />
+      <workItem from="1573816625544" duration="19941000" />
+      <workItem from="1575007652430" duration="61905000" />
+      <workItem from="1578896751171" duration="109976000" />
+      <workItem from="1581431526461" duration="6068000" />
+      <workItem from="1581478620995" duration="13564000" />
+      <workItem from="1581596008889" duration="16238000" />
+      <workItem from="1581817602258" duration="23995000" />
+      <workItem from="1582209839439" duration="40751000" />
+      <workItem from="1583130305476" duration="7023000" />
+      <workItem from="1583150572818" duration="58771000" />
+      <workItem from="1583467341574" duration="33165000" />
+      <workItem from="1583906462332" duration="18756000" />
+      <workItem from="1584266637452" duration="11756000" />
+      <workItem from="1584620657032" duration="5315000" />
+      <workItem from="1584633461842" duration="2602000" />
+      <workItem from="1584671265878" duration="8132000" />
+      <workItem from="1584938795665" duration="4494000" />
+      <workItem from="1584980203061" duration="21024000" />
+      <workItem from="1585642835624" duration="34250000" />
+    </task>
+    <task id="LOCAL-00001" summary="delete unnecessary files">
+      <created>1573785113280</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1573785113280</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="67" y="25" width="1613" height="1025" extended-state="6" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20566037" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.26703912" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49959514" visible="true" weight="0.9139665" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.40335196" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49959514" weight="0.27081713" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.3299611" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32960895" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50040483" side_tool="true" weight="0.4614786" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.3299611" />
+      <window_info anchor="bottom" id="Python Console" order="11" weight="0.25251397" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="delete unnecessary files" />
+    <option name="LAST_COMMIT_MESSAGE" value="delete unnecessary files" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py</url>
+          <line>37</line>
+          <option name="timeStamp" value="46" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>273</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>268</line>
+          <option name="timeStamp" value="63" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>269</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>275</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>462</line>
+          <option name="timeStamp" value="98" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>458</line>
+          <option name="timeStamp" value="107" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/seraph.py</url>
+          <line>300</line>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="env.vertices[key].instructions" language="Python" />
+        <watch expression="env.jump_type[key]" language="Python" />
+        <watch expression="self.source.split(&quot;/&quot;)[-1].split(&quot;.&quot;)[0]" language="Python" />
+        <watch expression="n2[&quot;instructions&quot;]" language="Python" />
+        <watch expression="n1[&quot;instructions&quot;]" language="Python" />
+        <watch expression="cfg1.nodes" language="Python" />
+        <watch expression="inputs1" language="Python" />
+        <watch expression="inputs2" language="Python" />
+        <watch expression="cfg2.nodes" language="Python" />
+        <watch expression="contracts[contract] == &quot;&quot;" language="Python" />
+        <watch expression="inp['contract']" language="Python" />
+        <watch expression="ast_graph1" language="Python" />
+        <watch expression="n1[&quot;type&quot;]" language="Python" />
+        <watch expression="n2[&quot;type&quot;]" language="Python" />
+        <watch expression="ast_graph1.nodes._nodes" language="Python" />
+        <watch expression="ast_graph1.edges._adjdict" language="Python" />
+        <watch expression="n" language="Python" />
+        <watch expression="start+i" language="Python" />
+        <watch expression="len(params.memory)" language="Python" />
+        <watch expression="value" language="Python" />
+        <watch expression="str(n)" language="Python" />
+        <watch expression="n" language="Python" />
+        <watch expression="graph1.nodes._nodes[n]" language="Python" />
+        <watch expression="str(e)" language="Python" />
+        <watch expression="str(x)" language="Python" />
+        <watch expression="str(n)" language="Python" />
+        <watch expression="n" language="Python" />
+        <watch expression="graph1.edges._adjdict[e][x]" language="Python" />
+        <watch expression="child" language="Python" />
+        <watch expression="e1" language="Python" />
+        <watch expression="graph1.nodes._nodes[n]" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="watch">
+      <expression>
+        <expression-string>graph1.nodes._nodes[n]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>e1</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>child</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>graph1.edges._adjdict[e][x]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>graph1.edges._adjdict[e][x][&quot;label&quot;]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>n</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>str(n)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>str(x)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>str(e)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/disassembler/wasmModule.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="3" column="10" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="5" selection-start-line="5" selection-end-line="5" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1620963597/CodeToken.bin-runtimeerc20_1.disasm" />
+    <entry file="file://$PROJECT_DIR$/tmp/1620963597/CodeToken.bin-runtimeerc20.disasm" />
+    <entry file="file://$PROJECT_DIR$/tmp/1620962962/CodeToken.bin-runtime" />
+    <entry file="file://$PROJECT_DIR$/tmp/1620962962/CodeToken.bin-runtimeerc20_1.disasm" />
+    <entry file="file://$PROJECT_DIR$/tmp/1620962962/CodeToken.bin-runtimeerc20.disasm" />
+    <entry file="file://$PROJECT_DIR$/tmp/1620963597/CodeToken2.bin-runtime" />
+    <entry file="file://$PROJECT_DIR$/tmp/1620963597/CodeToken.bin-runtime" />
+    <entry file="file://$PROJECT_DIR$/tmp/1620964356/SafeMath.bin-runtimeerc20_1.disasm">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9339" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1620964356/CodeToken.bin-runtimeerc20.disasm">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-45411" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1620964356erc20_1/CodeToken2.bin-runtime">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1620964356erc20/CodeToken.bin-runtime">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1620964356erc20/ERC20Interface.bin-runtime">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1620964356erc20_1/ERC20Interface.bin-runtime">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1620964356erc20_1/SafeMath.bin-runtime">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/disassembler/evmDisassembler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-369">
+          <caret line="13" column="75" selection-start-line="13" selection-start-column="72" selection-end-line="13" selection-end-column="112" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="45" column="23" lean-forward="true" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/solidityCompiler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-18">
+          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/disassembler/params.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/interpreter/params.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="14" selection-start-column="14" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/networkx/algorithms/similarity.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="1038" selection-start-line="1038" selection-end-line="1038" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/inputHelper.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/global_params.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/z3/z3.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1105">
+          <caret line="1134" column="4" selection-start-line="1134" selection-start-column="4" selection-end-line="1134" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/interpreter/symbolicVarGenerator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="25" column="37" selection-start-line="25" selection-start-column="37" selection-end-line="25" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="50" column="4" selection-start-line="50" selection-start-column="4" selection-end-line="50" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/solver/symbolicVar.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="51" column="4" selection-start-line="51" selection-start-column="4" selection-end-line="51" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/z3/z3util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="142" column="4" selection-start-line="142" selection-start-column="4" selection-end-line="142" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1621051572/CodeToken.bin-runtimeerc20.evm">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/runtime/evmRuntime.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="316">
+          <caret line="134" column="28" selection-start-line="134" selection-start-column="28" selection-end-line="134" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/networkx/classes/digraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="377" column="8" selection-start-line="377" selection-start-column="8" selection-end-line="377" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tmp/1621051572/CodeToken.bin-runtimeerc20.disasm">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="287" column="9" selection-start-line="287" selection-start-column="4" selection-end-line="287" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ssg1">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/graphviz/lang.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1560">
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/runtime/basicBlock.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2784">
+          <caret line="117" column="20" selection-start-line="100" selection-start-column="6" selection-end-line="117" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/interpreter/evmInterpreter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243">
+          <caret line="850" column="37" selection-start-line="850" selection-start-column="37" selection-end-line="850" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/graphviz/dot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="134" column="8" selection-start-line="134" selection-start-column="8" selection-end-line="134" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphBuilder/evmGraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2184">
+          <caret line="89" column="4" selection-start-line="89" selection-start-column="4" selection-end-line="89" selection-end-column="4" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/reporter/cfgPrinter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="46" column="28" selection-start-line="34" selection-start-column="56" selection-end-line="34" selection-end-column="101" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/solidiytAstHelper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="424">
+          <caret line="64" column="31" selection-start-line="64" selection-start-column="31" selection-end-line="64" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ast_graph1">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="8" column="21" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/solidityAstWalker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="12" column="16" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ast_graph2">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cfg1">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3740">
+          <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cfg2">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ssg2">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-24">
+          <caret line="11" column="16" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphBuilder/XGraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="486" column="59" selection-start-line="486" selection-start-column="59" selection-end-line="486" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/seraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5895">
+          <caret line="300" column="43" selection-start-line="300" selection-start-column="43" selection-end-line="300" selection-end-column="43" />
+          <folding>
+            <element signature="e#23#38#0" expanded="true" />
+            <element signature="e#12266#14862#0" />
+            <element signature="e#15235#17554#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/contracts/erc20_1.sol">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/contracts/erc20.sol">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1200">
+          <caret line="50" column="53" selection-start-line="48" selection-start-column="8" selection-end-line="50" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

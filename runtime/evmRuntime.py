@@ -113,8 +113,8 @@ class EvmRuntime:
             idx += 1
 
         # check the sourcemap is well format
-        if self.source_map:
-            assert(idx == len(self.source_map.positions))
+        #if self.source_map:
+         #   assert(idx == len(self.source_map.positions))
 
         # last instruction don't indicate a block termination
         if current_block not in self.end_ins_dict and inst_pc:
@@ -162,11 +162,40 @@ class EvmRuntime:
                     self.vertices[key].set_jump_targets(target)
 
     def print_cfg(self):
-        keys = sorted(self.vertices.keys())
-        for key in keys:
-            block = self.vertices[key]
-            block.display()
-        log.debug(str(self.edges))
+        g = Digraph(name="ControlFlowGraph",
+                    comment=self.disasm_file,
+                    format='pdf'
+                    )
+
+        for block in self.vertices.values():
+            start = block.get_start_address()
+            end = block.get_end_address()
+            label = str(start) + "-" + str(end) + "\n"
+            if start != end:
+                label = label + self.instructions[start] + "\n...\n" + self.instructions[end]
+            else:
+                label = label + self.instructions[start]
+
+            block_type = block.get_block_type()
+
+            start = str(start)
+            if block_type == "falls_to":
+                g.node(name=start, label=label)
+                g.edge(start, str(block.get_falls_to()), color="black")  # black for falls to
+            elif block_type == "unconditional":
+                g.node(name=start, label=label, color="blue")
+                for target in block.get_jump_targets():
+                    g.edge(start, str(target), color="blue")  # blue for unconditional jump
+            elif block_type == "conditional":
+                g.node(name=start, label=label, color="green")
+                g.edge(start, str(block.get_falls_to()), color="red")
+                for target in block.get_jump_targets():
+                    g.edge(start, str(target), color="green")  # blue for unconditional jump
+            elif block_type == "terminal":
+                g.node(name=start, label=label, color="red")
+        EvmRuntime.cfg_count += 1
+        g.render(os.path.join(global_params.TMP_DIR, "cfg" + self.source_file.split("/")[-1].split(".")[0] + ".gv"),
+                 view=True)
 
     def print_cfg_dot(self, visited_edges):
         g = Digraph(name="ControlFlowGraph",
@@ -221,7 +250,7 @@ class EvmRuntime:
             elif block_type == "terminal":
                 g.node(name=start, label=label, color="red")
         EvmRuntime.cfg_count += 1
-        g.render(os.path.join(global_params.TMP_DIR, "cfg"+str(EvmRuntime.cfg_count)+".gv"), view=True)
+        g.render(os.path.join(global_params.TMP_DIR, "cfg"+self.source_file.split("/")[-1].split(".")[0]+".gv"), view=True)
 
     def build_runtime_env(self):
         #todo: test for building cfg process

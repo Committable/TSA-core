@@ -56,7 +56,7 @@ class BasicBlock:
         return self.type
 
     def set_falls_to(self, address):
-        self.falls_to = address #target for fall through and false branch for conditional jump
+        self.falls_to = address  # target for fall through and false branch for conditional jump
 
     def get_falls_to(self):
         return self.falls_to

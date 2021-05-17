@@ -50,6 +50,22 @@ class AstHelper:
                 ret["contractsByName"][k + ':' + node["attributes"]["name"]] = node
         return ret
 
+    def build_ast_graph(self, sourcesList, graph):
+        walker = AstWalker()
+        for k in sourcesList:
+            if self.input_type == "solidity":
+                ast = sourcesList[k]["AST"]
+            else:
+                ast = sourcesList[k]["legacyAST"]
+            nodes = []
+            walker.walk(ast, {"name": "ContractDefinition"}, nodes)
+            for node in nodes:
+                if "CodeToken" in node["attributes"]["name"]:
+                    walker.walkToGraph("0", node, graph,0,0)
+                    return True
+        return False
+
+
     def get_linearized_base_contracts(self, id, contractsById):
         return map(lambda id: contractsById[id], contractsById[id]["attributes"]["linearizedBaseContracts"])
 

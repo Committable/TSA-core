@@ -1,0 +1,2777 @@
+INFO:__main__:[exception] used memory: 24 M
+INFO:__main__:[exception] FuncIndex is 92, time overhead is 81.14645600318909
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 93, time overhead is 0.2082383632659912
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 94, time overhead is 0.021074533462524414
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 95, time overhead is 0.027791976928710938
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 96, time overhead is 0.03697013854980469
+INFO:__main__:used memory: 23 M
+INFO:__main__:FuncIndex is 97, time overhead is 3.8891897201538086
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 98, time overhead is 0.024197101593017578
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 99, time overhead is 0.023044347763061523
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 100, time overhead is 0.023270606994628906
+INFO:__main__:used memory: 7 M
+INFO:__main__:FuncIndex is 101, time overhead is 0.437777042388916
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 102, time overhead is 0.030140161514282227
+INFO:__main__:[exception] used memory: 1 M
+INFO:__main__:[exception] FuncIndex is 103, time overhead is 0.19275331497192383
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 104, time overhead is 0.02974987030029297
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 105, time overhead is 0.022601604461669922
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 106, time overhead is 7.739192008972168
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 107, time overhead is 0.023838043212890625
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 108, time overhead is 0.0639195442199707
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 109, time overhead is 0.03063201904296875
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 110, time overhead is 0.02143716812133789
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 111, time overhead is 0.020992517471313477
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 112, time overhead is 0.2084641456604004
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 113, time overhead is 0.06564497947692871
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 114, time overhead is 0.04259753227233887
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 115, time overhead is 0.06470847129821777
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 116, time overhead is 0.02275824546813965
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 7 M
+INFO:__main__:FuncIndex is 117, time overhead is 0.8625340461730957
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 118, time overhead is 0.021641969680786133
+INFO:__main__:used memory: -18 M
+INFO:__main__:FuncIndex is 119, time overhead is 5.850658655166626
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 120, time overhead is 0.07470154762268066
+INFO:__main__:[exception] used memory: 8 M
+INFO:__main__:[exception] FuncIndex is 121, time overhead is 96.94068193435669
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 122, time overhead is 0.08074402809143066
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 123, time overhead is 0.2597198486328125
+INFO:__main__:used memory: 37 M
+INFO:__main__:FuncIndex is 124, time overhead is 14.950154542922974
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 125, time overhead is 0.04335641860961914
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 126, time overhead is 0.03433346748352051
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 127, time overhead is 0.39479827880859375
+INFO:__main__:used memory: 6 M
+INFO:__main__:FuncIndex is 128, time overhead is 0.25836634635925293
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 129, time overhead is 0.03594708442687988
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 130, time overhead is 0.02731919288635254
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 131, time overhead is 0.0017800331115722656
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 132, time overhead is 0.02182769775390625
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 133, time overhead is 0.023799419403076172
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 134, time overhead is 0.03690624237060547
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 135, time overhead is 0.002443075180053711
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 136, time overhead is 0.14563632011413574
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 137, time overhead is 0.03677701950073242
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 2 M
+INFO:__main__:[exception] FuncIndex is 138, time overhead is 19.57654047012329
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 139, time overhead is 0.10094237327575684
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 140, time overhead is 0.0702517032623291
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 141, time overhead is 0.08980536460876465
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 142, time overhead is 0.2059779167175293
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 143, time overhead is 0.04178142547607422
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 144, time overhead is 0.023558616638183594
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 145, time overhead is 0.023654699325561523
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 146, time overhead is 0.04249715805053711
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 147, time overhead is 0.024117469787597656
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 148, time overhead is 0.024337053298950195
+INFO:__main__:used memory: -10 M
+INFO:__main__:FuncIndex is 149, time overhead is 4.1800291538238525
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 150, time overhead is 0.8516225814819336
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -17 M
+INFO:__main__:FuncIndex is 151, time overhead is 2.6413934230804443
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 152, time overhead is 0.04171609878540039
+INFO:__main__:used memory: 5 M
+INFO:__main__:FuncIndex is 153, time overhead is 10.4223952293396
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 154, time overhead is 0.029868602752685547
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 155, time overhead is 1.2472219467163086
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: -2 M
+INFO:__main__:[exception] FuncIndex is 156, time overhead is 1.26064133644104
+INFO:root:
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 157, time overhead is 0.053902387619018555
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 158, time overhead is 0.06508255004882812
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 159, time overhead is 0.0655970573425293
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 160, time overhead is 0.0245511531829834
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 161, time overhead is 0.10531020164489746
+INFO:__main__:used memory: 5 M
+INFO:__main__:FuncIndex is 162, time overhead is 1.4269347190856934
+INFO:__main__:used memory: -2 M
+INFO:__main__:FuncIndex is 163, time overhead is 10.050939559936523
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 164, time overhead is 0.05948686599731445
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 165, time overhead is 0.0661771297454834
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 166, time overhead is 0.02281332015991211
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 167, time overhead is 0.03092789649963379
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 168, time overhead is 0.518038272857666
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 169, time overhead is 0.0337979793548584
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 170, time overhead is 0.08247804641723633
+INFO:__main__:used memory: -7 M
+INFO:__main__:FuncIndex is 171, time overhead is 42.029837131500244
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 172, time overhead is 91.63636350631714
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 173, time overhead is 1.0993030071258545
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 174, time overhead is 0.03216433525085449
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 175, time overhead is 0.10394406318664551
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 7 M
+INFO:__main__:FuncIndex is 176, time overhead is 3.5154531002044678
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 177, time overhead is 0.12170839309692383
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 178, time overhead is 0.026369094848632812
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 179, time overhead is 0.11839032173156738
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 180, time overhead is 0.1461186408996582
+INFO:root:b'Sorts (_ BitVec 32) and (_ BitVec 64) are incompatible'
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 181, time overhead is 0.03264188766479492
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 182, time overhead is 90.11752700805664
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 183, time overhead is 2.318549871444702
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:__main__:[exception] used memory: 1 M
+INFO:__main__:[exception] FuncIndex is 184, time overhead is 27.4195396900177
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 1 M
+INFO:__main__:[exception] FuncIndex is 185, time overhead is 90.01391673088074
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 186, time overhead is 0.11766171455383301
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 187, time overhead is 0.06857466697692871
+INFO:root:b'Sorts (_ BitVec 32) and (_ BitVec 64) are incompatible'
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 188, time overhead is 0.04918074607849121
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 189, time overhead is 0.028052568435668945
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 190, time overhead is 1.0738425254821777
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 191, time overhead is 0.10709857940673828
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -4 M
+INFO:__main__:FuncIndex is 192, time overhead is 1.060901165008545
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 193, time overhead is 0.13454937934875488
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 194, time overhead is 0.23452401161193848
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 195, time overhead is 0.03927803039550781
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 196, time overhead is 0.05400514602661133
+INFO:__main__:used memory: 306 M
+INFO:__main__:FuncIndex is 197, time overhead is 86.20113492012024
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 5 M
+INFO:__main__:FuncIndex is 198, time overhead is 0.9160788059234619
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 199, time overhead is 0.345916748046875
+INFO:__main__:used memory: 20 M
+INFO:__main__:FuncIndex is 200, time overhead is 1.4120724201202393
+INFO:__main__:used memory: 95 M
+INFO:__main__:FuncIndex is 201, time overhead is 37.100855112075806
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 202, time overhead is 0.11223936080932617
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 203, time overhead is 0.025784969329833984
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 204, time overhead is 0.026326417922973633
+INFO:__main__:used memory: -31 M
+INFO:__main__:FuncIndex is 205, time overhead is 6.665550231933594
+INFO:__main__:used memory: 84 M
+INFO:__main__:FuncIndex is 206, time overhead is 71.09451198577881
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 207, time overhead is 69.8521499633789
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 208, time overhead is 0.12180924415588379
+INFO:__main__:used memory: 4 M
+INFO:__main__:FuncIndex is 209, time overhead is 0.5524678230285645
+INFO:__main__:used memory: -76 M
+INFO:__main__:FuncIndex is 210, time overhead is 3.0046613216400146
+INFO:__main__:used memory: -2 M
+INFO:__main__:FuncIndex is 211, time overhead is 0.1041562557220459
+INFO:root:fpMul() missing 2 required positional arguments: 'a' and 'b'
+INFO:root:fpMul() missing 2 required positional arguments: 'a' and 'b'
+INFO:root:fpMul() missing 2 required positional arguments: 'a' and 'b'
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 212, time overhead is 0.08529448509216309
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 213, time overhead is 2.112837553024292
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 214, time overhead is 0.07974052429199219
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 215, time overhead is 0.11468768119812012
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 216, time overhead is 0.19576811790466309
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 217, time overhead is 0.025461435317993164
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 218, time overhead is 0.05036807060241699
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 10 M
+INFO:__main__:FuncIndex is 219, time overhead is 9.837949991226196
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 220, time overhead is 93.32902479171753
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -2 M
+INFO:__main__:FuncIndex is 221, time overhead is 4.800371885299683
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 222, time overhead is 27.945985078811646
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 223, time overhead is 0.037833452224731445
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 224, time overhead is 0.02781081199645996
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 225, time overhead is 0.027504444122314453
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 226, time overhead is 0.027653932571411133
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 227, time overhead is 0.027626514434814453
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 228, time overhead is 0.09680771827697754
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 229, time overhead is 0.4610612392425537
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 230, time overhead is 0.0838785171508789
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 231, time overhead is 0.028204917907714844
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 232, time overhead is 0.03128504753112793
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 233, time overhead is 0.23488545417785645
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 234, time overhead is 0.22078204154968262
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 235, time overhead is 0.03248429298400879
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 236, time overhead is 0.032227516174316406
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 237, time overhead is 0.02545452117919922
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 238, time overhead is 0.6536514759063721
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 239, time overhead is 0.0363917350769043
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 240, time overhead is 0.044365882873535156
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 241, time overhead is 1.123542070388794
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 242, time overhead is 90.06868696212769
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 243, time overhead is 90.1126778125763
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 244, time overhead is 0.02913951873779297
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 245, time overhead is 0.044077396392822266
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -10 M
+INFO:__main__:FuncIndex is 246, time overhead is 1.6794943809509277
+INFO:__main__:used memory: 12 M
+INFO:__main__:FuncIndex is 247, time overhead is 12.3476402759552
+INFO:__main__:used memory: 4 M
+INFO:__main__:FuncIndex is 248, time overhead is 17.432137489318848
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 249, time overhead is 74.46188569068909
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 250, time overhead is 53.08223605155945
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 251, time overhead is 90.11754608154297
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 252, time overhead is 87.0090434551239
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 253, time overhead is 0.006632328033447266
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 254, time overhead is 0.006068706512451172
+INFO:root:sort mismatch
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 255, time overhead is 0.1732180118560791
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 256, time overhead is 0.13705062866210938
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 257, time overhead is 1.8142893314361572
+INFO:__main__:[exception] used memory: -2 M
+INFO:__main__:[exception] FuncIndex is 258, time overhead is 35.36841917037964
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 259, time overhead is 0.04956984519958496
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 260, time overhead is 0.08663129806518555
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 261, time overhead is 0.03219294548034668
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 262, time overhead is 0.03042769432067871
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 263, time overhead is 0.3693811893463135
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 264, time overhead is 0.24886512756347656
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 265, time overhead is 1.1633951663970947
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 266, time overhead is 0.17428898811340332
+INFO:__main__:[exception] used memory: 1 M
+INFO:__main__:[exception] FuncIndex is 267, time overhead is 94.01147699356079
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 268, time overhead is 0.03983592987060547
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 269, time overhead is 0.042653560638427734
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 270, time overhead is 0.03851652145385742
+INFO:root:b'Sorts (_ BitVec 256) and (_ BitVec 32) are incompatible'
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 271, time overhead is 0.02897930145263672
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 272, time overhead is 0.03180646896362305
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 273, time overhead is 0.03170657157897949
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 274, time overhead is 0.0716714859008789
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 275, time overhead is 0.1636676788330078
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 276, time overhead is 0.06914901733398438
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 277, time overhead is 0.049394845962524414
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 278, time overhead is 0.023389101028442383
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 279, time overhead is 0.030994892120361328
+INFO:__main__:used memory: 5 M
+INFO:__main__:FuncIndex is 280, time overhead is 10.82819390296936
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 281, time overhead is 0.0586390495300293
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 282, time overhead is 0.05091667175292969
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 283, time overhead is 0.03347277641296387
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 284, time overhead is 0.060343265533447266
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 285, time overhead is 0.22609782218933105
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 286, time overhead is 0.030731201171875
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 287, time overhead is 0.032266855239868164
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 288, time overhead is 0.20329737663269043
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 289, time overhead is 0.033548831939697266
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 290, time overhead is 0.03284573554992676
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 291, time overhead is 0.2639014720916748
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 292, time overhead is 0.19971728324890137
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 293, time overhead is 21.66256308555603
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 294, time overhead is 0.0537111759185791
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 295, time overhead is 0.030946969985961914
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 296, time overhead is 0.021583080291748047
+INFO:root:b'Sorts (_ BitVec 32) and (_ BitVec 64) are incompatible'
+INFO:root:b'Sorts (_ BitVec 32) and (_ BitVec 64) are incompatible'
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 297, time overhead is 0.20201730728149414
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 298, time overhead is 2.6536014080047607
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 299, time overhead is 2.46150279045105
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 300, time overhead is 1.7627379894256592
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 301, time overhead is 0.031197309494018555
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 302, time overhead is 0.029065608978271484
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 303, time overhead is 0.024457693099975586
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 304, time overhead is 121.70776581764221
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 305, time overhead is 0.028403759002685547
+INFO:root:
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 306, time overhead is 0.13778400421142578
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 307, time overhead is 0.47919774055480957
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 308, time overhead is 0.06454586982727051
+INFO:root:sort mismatch
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 309, time overhead is 0.034487247467041016
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 310, time overhead is 0.03526449203491211
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 311, time overhead is 0.02268505096435547
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 312, time overhead is 0.017789840698242188
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 313, time overhead is 0.05993509292602539
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 314, time overhead is 1.892937183380127
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 315, time overhead is 0.03060460090637207
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 316, time overhead is 0.027497053146362305
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 317, time overhead is 0.009467601776123047
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 318, time overhead is 0.0007703304290771484
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 319, time overhead is 0.061325788497924805
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 320, time overhead is 0.006066560745239258
+INFO:__main__:used memory: 3 M
+INFO:__main__:FuncIndex is 321, time overhead is 9.11790132522583
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 322, time overhead is 0.34806203842163086
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 323, time overhead is 0.034465789794921875
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 324, time overhead is 0.18964505195617676
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 325, time overhead is 0.14200401306152344
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 326, time overhead is 0.6439104080200195
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 327, time overhead is 0.00924992561340332
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 328, time overhead is 51.11967611312866
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 1 M
+INFO:__main__:[exception] FuncIndex is 329, time overhead is 90.04722285270691
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 330, time overhead is 0.2007913589477539
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 331, time overhead is 0.0019223690032958984
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 332, time overhead is 0.15943384170532227
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 333, time overhead is 0.08412337303161621
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 334, time overhead is 0.08448171615600586
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 335, time overhead is 0.5861294269561768
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 336, time overhead is 0.0027475357055664062
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 337, time overhead is 0.002301454544067383
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:unsupport call_indirect now
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 338, time overhead is 3.4577245712280273
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:__main__:[exception] used memory: 13 M
+INFO:__main__:[exception] FuncIndex is 339, time overhead is 90.27827978134155
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:root:sort mismatch
+INFO:__main__:used memory: 140 M
+INFO:__main__:FuncIndex is 340, time overhead is 30.763661861419678
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 341, time overhead is 0.03849530220031738
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 342, time overhead is 0.1090536117553711
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 343, time overhead is 0.5795702934265137
+INFO:__main__:used memory: 3 M
+INFO:__main__:FuncIndex is 344, time overhead is 16.137794256210327
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 14 M
+INFO:__main__:FuncIndex is 345, time overhead is 14.405693531036377
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 346, time overhead is 0.29906272888183594
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 347, time overhead is 0.06405329704284668
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -10 M
+INFO:__main__:FuncIndex is 348, time overhead is 2.9223313331604004
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 349, time overhead is 8.196361303329468
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 350, time overhead is 0.047014474868774414
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 351, time overhead is 0.05599093437194824
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 352, time overhead is 0.2112140655517578
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 353, time overhead is 0.1699390411376953
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 354, time overhead is 0.11441493034362793
+INFO:root:sort mismatch
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 355, time overhead is 0.03932356834411621
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 356, time overhead is 0.19698786735534668
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 357, time overhead is 0.34694600105285645
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 358, time overhead is 10.12656044960022
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 359, time overhead is 0.03600358963012695
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 360, time overhead is 0.11194491386413574
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 361, time overhead is 0.07085824012756348
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 362, time overhead is 43.36423587799072
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 363, time overhead is 0.14011383056640625
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 364, time overhead is 0.029335737228393555
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 365, time overhead is 0.03004145622253418
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 9 M
+INFO:__main__:FuncIndex is 366, time overhead is 3.282820224761963
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 367, time overhead is 0.035178184509277344
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 368, time overhead is 0.03165555000305176
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 369, time overhead is 0.03292727470397949
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 370, time overhead is 0.03213381767272949
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 371, time overhead is 0.03139305114746094
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 372, time overhead is 0.03376173973083496
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 373, time overhead is 0.032306671142578125
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 374, time overhead is 0.03255939483642578
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 375, time overhead is 0.03223228454589844
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 376, time overhead is 0.0312042236328125
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 377, time overhead is 0.21465110778808594
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:root:unsupport call_indirect now
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 378, time overhead is 0.09624195098876953
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 379, time overhead is 0.04922080039978027
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 380, time overhead is 0.03249526023864746
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 381, time overhead is 0.04255867004394531
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 382, time overhead is 0.07814550399780273
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 383, time overhead is 0.049059391021728516
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 384, time overhead is 0.03114938735961914
+INFO:__main__:used memory: -5 M
+INFO:__main__:FuncIndex is 385, time overhead is 11.190042495727539
+INFO:__main__:used memory: 105 M
+INFO:__main__:FuncIndex is 386, time overhead is 55.093462228775024
+INFO:__main__:used memory: -91 M
+INFO:__main__:FuncIndex is 387, time overhead is 3.692446708679199
+INFO:__main__:used memory: -7 M
+INFO:__main__:FuncIndex is 388, time overhead is 12.534504175186157
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 389, time overhead is 0.047644853591918945
+INFO:__main__:used memory: 84 M
+INFO:__main__:FuncIndex is 390, time overhead is 61.800742387771606
+INFO:__main__:used memory: -75 M
+INFO:__main__:FuncIndex is 391, time overhead is 1.882885456085205
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 392, time overhead is 0.09517121315002441
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 393, time overhead is 0.07097339630126953
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 394, time overhead is 0.13555216789245605
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 395, time overhead is 0.16486644744873047
+INFO:root:
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 396, time overhead is 0.0657505989074707
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 397, time overhead is 0.0689387321472168
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 398, time overhead is 0.08469963073730469
+INFO:root:
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 399, time overhead is 0.04098391532897949
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 400, time overhead is 0.06155729293823242
+INFO:__main__:All time: 2413.1606187820435

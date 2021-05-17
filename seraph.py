@@ -26,6 +26,10 @@ from reporter.vulnerability import *
 from runtime.evmRuntime import EvmRuntime
 from runtime.wasmRuntime import WASMRuntime
 from utils import run_command, compare_versions
+import networkx as nx
+from inputDealer.soliditySourceMap import SourceMap
+import matplotlib.pyplot as plt
+from graphviz import Digraph
 
 log = logging.getLogger(__name__)
 def main():
@@ -44,6 +48,9 @@ def main():
 
     group2 = parser.add_mutually_exclusive_group(required=True)
     group2.add_argument("-s", "--source", type=str,
+                        help="local source file name. Use -e to process evm bytecode file. Use -w to process wasm bytecode file. Use -sol to process solidity. Use -cc to process cpp. Use -go to process go file")
+
+    parser.add_argument("-j", "--joker", type=str,
                         help="local source file name. Use -e to process evm bytecode file. Use -w to process wasm bytecode file. Use -sol to process solidity. Use -cc to process cpp. Use -go to process go file")
 
     parser.add_argument("-v", "--version", action="version", version="%(prog)s 1.0.0")
@@ -111,7 +118,7 @@ def main():
             exit_code = analyze_go_code()
     elif args.solidity:
         if has_dependencies_installed(solc=True, evm=True):
-            exit_code = analyze_solidity_code()
+            exit_code = static_solidity_code()
 
     exit(exit_code)
 
@@ -229,6 +236,341 @@ def analyze_cpp_code():
 def analyze_go_code():
     # TODO
     pass
+
+def compare_cfg_block(n1, n2):
+    if len(n1["instructions"]) != len(n2["instructions"]):
+        return False
+    for index, item in enumerate(n1["instructions"]):
+        i1 = item.split(" ")[1]
+        i2 = n2["instructions"][index].split(" ")[1]
+        if i1 != i2:
+            return False
+    return True
+
+def compare_cfg_edge(e1, e2):
+    if e1["type"] == e2["type"]:
+        return True
+    else:
+        return False
+
+def compare_ast_block(n1, n2):
+    if n1["type"] == n2["type"] and n1["depth"] == n2["depth"] and n1["sequence"] == n2["sequence"]:
+        return True
+    else:
+        return False
+
+def compare_ast_edge(e1, e2):
+    if e1["depth"] == e2["depth"] and e1["before"] == e2["before"] and e1["after"] == e2["after"]:
+        return True
+    return False
+
+def compare_ssg_block(n1, n2):
+    if type(n1) == type(n2) and str(n1) == str(n2):
+        return True
+    return False
+
+def compare_ssg_edge(e1, e2):
+    if e1["label"] == e2["label"]:
+        return True
+    else:
+        return False
+
+
+def print_ast_nx_graph(graph1, graph2, file_name1="default", file_name2="default2", design=None, color='grey'):
+    g1 = Digraph('G', filename=file_name1)
+    g1.attr(rankdir='TB')
+    g1.attr(overlap='scale')
+    g1.attr(splines='polyline')
+    g1.attr(ratio='fill')
+
+    g2 = Digraph('G', filename=file_name2)
+    g2.attr(rankdir='TB')
+    g2.attr(overlap='scale')
+    g2.attr(splines='polyline')
+    g2.attr(ratio='fill')
+
+    with g1.subgraph(name=file_name1, node_attr=design) as c:
+        c.attr(label=file_name1)
+        c.attr(color=color)
+        c.attr(fontsize='50.0')
+        c.attr(overlap='false')
+        c.attr(splines='polyline')
+        c.attr(ratio='fill')
+
+        for n in graph1.nodes._nodes:
+            if graph1.nodes._nodes[n]["type"] == "FunctionCall":
+                c.node(str(n), label=graph1.nodes._nodes[n]["type"], splines='true', color="red")
+            else:
+                c.node(str(n), label=graph1.nodes._nodes[n]["type"], splines='true', color="black")
+        for e in graph1.edges._adjdict:
+            for x in graph1.edges._adjdict[e]:
+                c.edge(str(e), str(x), color='black')
+
+    with g2.subgraph(name=file_name2, node_attr=design) as c:
+        c.attr(label=file_name2)
+        c.attr(color=color)
+        c.attr(fontsize='50.0')
+        c.attr(overlap='false')
+        c.attr(splines='polyline')
+        c.attr(ratio='fill')
+
+        for n in graph2.nodes._nodes:
+            flag = False
+            for n1 in graph1.nodes._nodes:
+                if str(n) == str(n1):
+                    flag = True
+                    break
+            if flag:
+                c.node(str(n), label=graph2.nodes._nodes[n]["type"], splines='true', color="black")
+            else:
+                c.node(str(n), label=graph2.nodes._nodes[n]["type"], splines='false', color="red")
+        for e in graph2.edges._adjdict:
+            for x in graph2.edges._adjdict[e]:
+                flag = False
+                for e1 in graph1.edges._adjdict:
+                    for x1 in graph1.edges._adjdict[e1]:
+                        if str(e1) == str(e) and str(x1) == str(x):
+                            flag = True
+                            break
+                    if flag:
+                        break
+                if flag:
+                    c.edge(str(e), str(x), color='black')
+                else:
+                    c.edge(str(e), str(x), color='red')
+    g1.render(file_name1, view=True)
+    g2.render(file_name2, view=True)
+
+    return
+
+def print_cfg_nx_graph(graph1, graph2, file_name1="default", file_name2="default2", design=None, color='grey'):
+    g1 = Digraph('G', filename=file_name1)
+    g1.attr(rankdir='TB')
+    g1.attr(overlap='scale')
+    g1.attr(splines='polyline')
+    g1.attr(ratio='fill')
+
+    g2 = Digraph('G', filename=file_name2)
+    g2.attr(rankdir='TB')
+    g2.attr(overlap='scale')
+    g2.attr(splines='polyline')
+    g2.attr(ratio='fill')
+
+    with g1.subgraph(name=file_name1, node_attr=design) as c:
+        c.attr(label=file_name1)
+        c.attr(color=color)
+        c.attr(fontsize='50.0')
+        c.attr(overlap='false')
+        c.attr(splines='polyline')
+        c.attr(ratio='fill')
+
+        for n in graph1.nodes._nodes:
+            c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="black")
+        for e in graph1.edges._adjdict:
+            for x in graph1.edges._adjdict[e]:
+                c.edge(str(e), str(x), color='black')
+
+    with g2.subgraph(name=file_name2, node_attr=design) as c:
+        c.attr(label=file_name2)
+        c.attr(color=color)
+        c.attr(fontsize='50.0')
+        c.attr(overlap='false')
+        c.attr(splines='polyline')
+        c.attr(ratio='fill')
+
+        for n in graph2.nodes._nodes:
+            flag = False
+            for n1 in graph1.nodes._nodes:
+                flag = True
+                if len(graph2.nodes._nodes[n]["instructions"]) != len(graph1.nodes._nodes[n1]["instructions"]):
+                    flag = False
+                else:
+                    for index, i1 in enumerate(graph2.nodes._nodes[n]["instructions"]):
+                        if i1.split(" ")[1] != graph1.nodes._nodes[n1]["instructions"][index].split(" ")[1]:
+                            flag = False
+                            break
+                if flag:
+                    break
+            if flag:
+                c.node(str(n), label=graph2.nodes._nodes[n]["label"], splines='true', color="black")
+            else:
+                c.node(str(n), label=graph2.nodes._nodes[n]["label"], splines='false', color="red")
+        for e in graph2.edges._adjdict:
+            for x in graph2.edges._adjdict[e]:
+                flag = False
+                for e1 in graph1.edges._adjdict:
+                    for x1 in graph1.edges._adjdict[e1]:
+                        if graph1.edges._adjdict[e1][x1]["type"] == graph2.edges._adjdict[e][x]["type"]:
+                            flag = True
+                            break
+                    if flag:
+                        break
+                if flag:
+                    c.edge(str(e), str(x), color='black')
+                else:
+                    c.edge(str(e), str(x), color='red')
+    g1.render(file_name1, view=True)
+    g2.render(file_name2, view=True)
+
+    return
+
+def print_ssg_nx_graph(graph1, graph2, file_name1="default", file_name2="default2", design=None, color='grey'):
+    g1 = Digraph('G', filename=file_name1)
+    g1.attr(rankdir='TB')
+    g1.attr(overlap='scale')
+    g1.attr(splines='polyline')
+    g1.attr(ratio='fill')
+
+    g2 = Digraph('G', filename=file_name2)
+    g2.attr(rankdir='TB')
+    g2.attr(overlap='scale')
+    g2.attr(splines='polyline')
+    g2.attr(ratio='fill')
+
+    with g1.subgraph(name=file_name1, node_attr=design) as c:
+        c.attr(label=file_name1)
+        c.attr(color=color)
+        c.attr(fontsize='50.0')
+        c.attr(overlap='false')
+        c.attr(splines='polyline')
+        c.attr(ratio='fill')
+
+        for n in graph1.nodes._nodes:
+            c.node(str(n), label=str(n), splines='true', color="black")
+        for e in graph1.edges._adjdict:
+            for x in graph1.edges._adjdict[e]:
+                c.edge(str(e), str(x), label=graph1.edges._adjdict[e][x]["label"], color='black')
+
+    with g2.subgraph(name=file_name2, node_attr=design) as c:
+        c.attr(label=file_name2)
+        c.attr(color=color)
+        c.attr(fontsize='50.0')
+        c.attr(overlap='false')
+        c.attr(splines='polyline')
+        c.attr(ratio='fill')
+
+        for n in graph2.nodes._nodes:
+            flag = False
+            for n1 in graph1.nodes._nodes:
+                flag = True
+                if str(n1) != str(n):
+                    flag = False
+                if flag:
+                    break
+            if flag:
+                c.node(str(n), label=str(n), splines='true', color="black")
+            else:
+                c.node(str(n), label=str(n), splines='false', color="red")
+        for e in graph2.edges._adjdict:
+            for x in graph2.edges._adjdict[e]:
+                flag = False
+                for e1 in graph1.edges._adjdict:
+                    for x1 in graph1.edges._adjdict[e1]:
+                        if str(e1) == str(e) and str(x1) == str(x):
+                            flag = True
+                            break
+                    if flag:
+                        break
+                if flag:
+                    c.edge(str(e), str(x), label=graph2.edges._adjdict[e][x]["label"], color='black')
+                else:
+                    c.edge(str(e), str(x), label=graph2.edges._adjdict[e][x]["label"], color='red')
+    g1.render(file_name1, view=True)
+    g2.render(file_name2, view=True)
+
+    return
+
+
+def static_solidity_code():
+    global args
+
+    exit_code = 0
+    helper1 = InputHelper(InputHelper.SOLIDITY, source=args.source, compilation_err=args.compilation_err, root_path="",
+                         remap="",
+                         allow_paths="")
+    inputs1 = helper1.get_inputs()
+    ast_graph1 = nx.DiGraph()
+
+    succ = SourceMap.ast_helper.build_ast_graph(SourceMap.ast_helper.source_list, ast_graph1)
+    helper2 = InputHelper(InputHelper.SOLIDITY, source=args.joker, compilation_err=args.compilation_err, root_path="",
+                          remap="",
+                          allow_paths="")
+    inputs2 = helper2.get_inputs()
+    ast_graph2 = nx.DiGraph()
+
+    succ = SourceMap.ast_helper.build_ast_graph(SourceMap.ast_helper.source_list, ast_graph2)
+
+    print_ast_nx_graph(ast_graph1, ast_graph2, file_name1="ast_graph1", file_name2="ast_graph2")
+    #ast_distance = nx.graph_edit_distance(ast_graph1, ast_graph2, node_match=compare_ast_block, edge_match=compare_ast_edge)
+    #log.info("ast_distance:" + str(ast_distance))
+    graph1 = XGraph()
+    graph2 = XGraph()
+
+    cfg1 = nx.DiGraph()
+    cfg2 = nx.DiGraph()
+
+    for inp in inputs1:
+        logging.info("contract %s:", inp['contract'])
+        if("CodeToken" not in inp['contract']):
+            continue
+        env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'], source_map=inp["source_map"],
+                         source_file=inp["source"])
+
+        return_code = env.build_runtime_env()
+
+        if return_code != 1:
+            ## construct cfg
+            for key in env.vertices:
+                basicblock = env.vertices[key]
+                label = str(basicblock.start)+"_"+str(basicblock.end)
+
+                cfg1.add_node(key, instructions=basicblock.instructions, label=label)
+            for key in env.edges:
+                for target in env.edges[key]:
+                    cfg1.add_edge(key, target, type=env.jump_type[target])
+
+        interpreter = EVMInterpreter(env)
+        return_code = return_code or interpreter.sym_exec()
+        log.info(str(interpreter.total_no_of_paths))
+        graph1 = interpreter.graph
+
+        #env.print_cfg()
+    for inp in inputs2:
+        logging.info("contract %s:", inp['contract'])
+        if ("CodeToken" not in inp['contract']):
+            continue
+        env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'], source_map=inp["source_map"],
+                         source_file=inp["source"])
+
+        return_code = env.build_runtime_env()
+
+        if return_code != 1:
+            for key in env.vertices:
+                basicblock = env.vertices[key]
+                label=str(basicblock.start) + "_" + str(basicblock.end)
+                cfg2.add_node(key, instructions=env.vertices[key].instructions, label=label)
+            for key in env.edges:
+                for target in env.edges[key]:
+                    cfg2.add_edge(key, target, type=env.jump_type[target])
+
+        interpreter = EVMInterpreter(env)
+        return_code = return_code or interpreter.sym_exec()
+        log.info(str(interpreter.total_no_of_paths))
+        graph2 = interpreter.graph
+
+
+        #env.print_cfg()
+
+    print_cfg_nx_graph(cfg1, cfg2, file_name1="cfg1", file_name2="cfg2")
+    print_ssg_nx_graph(graph1.ssg, graph2.ssg, file_name1="ssg1", file_name2="ssg2")
+
+    ssg_distance = nx.graph_edit_distance(graph1.ssg, graph2.ssg, node_match=compare_ssg_block, edge_match=compare_ssg_edge)
+    log.info("ssg_distance:" + str(ssg_distance))
+
+    cfg_distance = nx.graph_edit_distance(cfg1, cfg2, node_match=compare_cfg_block, edge_match=compare_cfg_edge)
+    log.info("cfg_distance:" + str(cfg_distance))
+
+    return exit_code
 
 
 def analyze_solidity_code():

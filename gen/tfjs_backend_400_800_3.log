@@ -1,0 +1,370 @@
+INFO:__main__:FuncIndex is 401, start time is 1620657776.3171592
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 401, end time is 1620657776.3535259
+INFO:__main__:used memory: 3 M
+INFO:__main__:FuncIndex is 401, time overhead is 0.03636670112609863
+INFO:__main__:FuncIndex is 402, start time is 1620657776.354212
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 402, end time is 1620657776.3806374
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 402, time overhead is 0.02642536163330078
+INFO:__main__:FuncIndex is 403, start time is 1620657776.3814454
+INFO:__main__:FuncIndex is 403, end time is 1620657776.4068086
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 403, time overhead is 0.02536320686340332
+INFO:__main__:FuncIndex is 404, start time is 1620657776.4074223
+INFO:__main__:FuncIndex is 404, end time is 1620657776.4910245
+INFO:__main__:used memory: 6 M
+INFO:__main__:FuncIndex is 404, time overhead is 0.0836021900177002
+INFO:__main__:FuncIndex is 405, start time is 1620657776.4931295
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 405, end time is 1620657776.5216641
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 405, time overhead is 0.028534650802612305
+INFO:__main__:FuncIndex is 406, start time is 1620657776.5223389
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 406, end time is 1620657776.5848083
+INFO:__main__:used memory: 2 M
+INFO:__main__:FuncIndex is 406, time overhead is 0.062469482421875
+INFO:__main__:FuncIndex is 407, start time is 1620657776.5855892
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 407, end time is 1620657776.6310472
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 407, time overhead is 0.045458078384399414
+INFO:__main__:FuncIndex is 408, start time is 1620657776.6329436
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 408, end time is 1620657776.661948
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 408, time overhead is 0.029004335403442383
+INFO:__main__:FuncIndex is 409, start time is 1620657776.663126
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 409, end time is 1620657776.7020593
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 409, time overhead is 0.03893327713012695
+INFO:__main__:FuncIndex is 410, start time is 1620657776.702775
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 410, end time is 1620657776.740307
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 410, time overhead is 0.03753209114074707
+INFO:__main__:FuncIndex is 411, start time is 1620657776.7412617
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 411, end time is 1620657776.7732158
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 411, time overhead is 0.031954050064086914
+INFO:__main__:FuncIndex is 412, start time is 1620657776.7738967
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 412, end time is 1620657776.8252773
+INFO:__main__:used memory: 2 M
+INFO:__main__:FuncIndex is 412, time overhead is 0.05138063430786133
+INFO:__main__:FuncIndex is 413, start time is 1620657776.8259969
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 413, end time is 1620657776.8786201
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 413, time overhead is 0.05262327194213867
+INFO:__main__:FuncIndex is 414, start time is 1620657776.8793502
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 414, end time is 1620657776.9344718
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 414, time overhead is 0.055121660232543945
+INFO:__main__:FuncIndex is 415, start time is 1620657776.9352968
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 415, end time is 1620657776.9825222
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 415, time overhead is 0.0472254753112793
+INFO:__main__:FuncIndex is 416, start time is 1620657776.9834025
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 416, end time is 1620657777.030761
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 416, time overhead is 0.04735851287841797
+INFO:__main__:FuncIndex is 417, start time is 1620657777.031649
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 417, end time is 1620657777.161268
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 417, time overhead is 0.12961888313293457
+INFO:__main__:FuncIndex is 418, start time is 1620657777.1621914
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 418, end time is 1620657777.2086937
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 418, time overhead is 0.04650235176086426
+INFO:__main__:FuncIndex is 419, start time is 1620657777.2095244
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 419, end time is 1620657777.2589076
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 419, time overhead is 0.04938316345214844
+INFO:__main__:FuncIndex is 420, start time is 1620657777.2596903
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 420, end time is 1620657777.3085196
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 420, time overhead is 0.04882931709289551
+INFO:__main__:FuncIndex is 421, start time is 1620657777.3094745
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 421, end time is 1620657777.3604267
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 421, time overhead is 0.05095219612121582
+INFO:__main__:FuncIndex is 422, start time is 1620657777.3611503
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 422, end time is 1620657777.3966587
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 422, time overhead is 0.03550839424133301
+INFO:__main__:FuncIndex is 423, start time is 1620657777.3976235
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 423, end time is 1620657777.4428098
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 423, time overhead is 0.04518628120422363
+INFO:__main__:FuncIndex is 424, start time is 1620657777.4435134
+INFO:__main__:FuncIndex is 424, end time is 1620657788.765555
+INFO:__main__:used memory: 12 M
+INFO:__main__:FuncIndex is 424, time overhead is 11.322041511535645
+INFO:__main__:FuncIndex is 425, start time is 1620657788.7666318
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 425, time overhead is 0.0014901161193847656
+INFO:__main__:FuncIndex is 426, start time is 1620657788.7687404
+INFO:root:unsupport call_indirect now
+INFO:__main__:FuncIndex is 426, end time is 1620657788.856018
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 426, time overhead is 0.08727765083312988
+INFO:__main__:FuncIndex is 427, start time is 1620657788.8568926
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 427, time overhead is 0.0481715202331543
+INFO:__main__:FuncIndex is 428, start time is 1620657788.906676
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 428, time overhead is 0.0458223819732666
+INFO:__main__:FuncIndex is 429, start time is 1620657788.9540956
+INFO:__main__:FuncIndex is 429, end time is 1620657788.9817894
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 429, time overhead is 0.027693748474121094
+INFO:__main__:FuncIndex is 430, start time is 1620657788.98262
+INFO:root:reached unreachable
+INFO:__main__:FuncIndex is 430, end time is 1620657789.036059
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 430, time overhead is 0.05343890190124512
+INFO:__main__:FuncIndex is 431, start time is 1620657789.0385556
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:__main__:FuncIndex is 431, end time is 1620657789.102129
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 431, time overhead is 0.06357336044311523
+INFO:__main__:FuncIndex is 432, start time is 1620657789.104508
+INFO:__main__:FuncIndex is 432, end time is 1620657789.1318536
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 432, time overhead is 0.027345657348632812
+INFO:__main__:FuncIndex is 433, start time is 1620657789.1325696
+INFO:__main__:FuncIndex is 433, end time is 1620657789.190086
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 433, time overhead is 0.05751633644104004
+INFO:__main__:FuncIndex is 434, start time is 1620657789.1923614
+INFO:__main__:FuncIndex is 434, end time is 1620657789.2961247
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 434, time overhead is 0.10376334190368652
+INFO:__main__:FuncIndex is 435, start time is 1620657789.2969213
+INFO:__main__:FuncIndex is 435, end time is 1620657789.3393633
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 435, time overhead is 0.04244208335876465
+INFO:__main__:FuncIndex is 436, start time is 1620657789.34152
+INFO:__main__:FuncIndex is 436, end time is 1620657789.3673146
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 436, time overhead is 0.025794506072998047
+INFO:__main__:FuncIndex is 437, start time is 1620657789.3679879
+INFO:__main__:FuncIndex is 437, end time is 1620657789.4525192
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 437, time overhead is 0.08453130722045898
+INFO:__main__:FuncIndex is 438, start time is 1620657789.4548082
+INFO:root:
+INFO:__main__:FuncIndex is 438, end time is 1620657789.5281243
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 438, time overhead is 0.07331609725952148
+INFO:__main__:FuncIndex is 439, start time is 1620657789.5288353
+INFO:__main__:FuncIndex is 439, end time is 1620657789.6087952
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 439, time overhead is 0.07995986938476562
+INFO:__main__:FuncIndex is 440, start time is 1620657789.611143
+INFO:__main__:FuncIndex is 440, end time is 1620657789.6351042
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 440, time overhead is 0.02396106719970703
+INFO:__main__:FuncIndex is 441, start time is 1620657789.6360621
+INFO:__main__:FuncIndex is 441, end time is 1620657789.686818
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 441, time overhead is 0.05075573921203613
+INFO:__main__:FuncIndex is 442, start time is 1620657789.6890676
+INFO:root:sort mismatch
+INFO:__main__:FuncIndex is 442, end time is 1620657789.7169178
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 442, time overhead is 0.02785015106201172
+INFO:__main__:FuncIndex is 443, start time is 1620657789.7176824
+INFO:__main__:FuncIndex is 443, end time is 1620657789.7674146
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 443, time overhead is 0.049732208251953125
+INFO:__main__:FuncIndex is 444, start time is 1620657789.769564
+INFO:__main__:FuncIndex is 444, end time is 1620657789.793824
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 444, time overhead is 0.02426004409790039
+INFO:__main__:FuncIndex is 445, start time is 1620657789.794461
+INFO:root:reached unreachable
+INFO:root:Timed out!
+INFO:root:reached unreachable
+INFO:__main__:[exception] used memory: -1 M
+INFO:__main__:[exception] FuncIndex is 445, time overhead is 26.957918882369995
+INFO:__main__:FuncIndex is 446, start time is 1620657816.7555985
+INFO:root:reached unreachable
+Exception ignored in: <bound method AstRef.__del__ of call_11_2>
+Traceback (most recent call last):
+  File "/home/yangzq18/.local/lib/python3.6/site-packages/z3/z3.py", line 313, in __del__
+    if self.ctx.ref() is not None and self.ast is not None:
+  File "/home/yangzq18/.local/lib/python3.6/site-packages/z3/z3.py", line 196, in ref
+    def ref(self):
+  File "seraph.py", line 249, in signal_handler
+    raise Exception("Timed out!")
+Exception: Timed out!
+INFO:root:reached unreachable
+INFO:__main__:[exception] used memory: 4 M
+INFO:__main__:[exception] FuncIndex is 446, time overhead is 34.90344047546387
+INFO:__main__:FuncIndex is 447, start time is 1620657851.6622899
+INFO:__main__:FuncIndex is 447, end time is 1620657851.7750773
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 447, time overhead is 0.11278748512268066
+INFO:__main__:FuncIndex is 448, start time is 1620657851.7758677
+INFO:__main__:FuncIndex is 448, end time is 1620657851.9975677
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 448, time overhead is 0.22169995307922363
+INFO:__main__:FuncIndex is 449, start time is 1620657852.0011616
+INFO:__main__:FuncIndex is 449, end time is 1620657852.0391548
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 449, time overhead is 0.03799319267272949
+INFO:__main__:FuncIndex is 450, start time is 1620657852.040077
+INFO:__main__:FuncIndex is 450, end time is 1620657852.1399803
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 450, time overhead is 0.09990334510803223
+INFO:__main__:FuncIndex is 451, start time is 1620657852.1427062
+INFO:__main__:FuncIndex is 451, end time is 1620657852.2439072
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 451, time overhead is 0.10120105743408203
+INFO:__main__:FuncIndex is 452, start time is 1620657852.2469714
+INFO:__main__:FuncIndex is 452, end time is 1620657853.1129985
+INFO:__main__:used memory: 7 M
+INFO:__main__:FuncIndex is 452, time overhead is 0.8660271167755127
+INFO:__main__:FuncIndex is 453, start time is 1620657853.1159155
+INFO:__main__:FuncIndex is 453, end time is 1620657853.1496186
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 453, time overhead is 0.03370308876037598
+INFO:__main__:FuncIndex is 454, start time is 1620657853.1508627
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:__main__:FuncIndex is 454, end time is 1620657853.2209938
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 454, time overhead is 0.07013106346130371
+INFO:__main__:FuncIndex is 455, start time is 1620657853.2242322
+INFO:__main__:FuncIndex is 455, end time is 1620657853.2605157
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 455, time overhead is 0.03628349304199219
+INFO:__main__:FuncIndex is 456, start time is 1620657853.2612698
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 456, time overhead is 0.08916759490966797
+INFO:__main__:FuncIndex is 457, start time is 1620657853.3518822
+INFO:root:reached unreachable
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:root:First argument must be a Z3 bit-vector expression
+INFO:__main__:FuncIndex is 457, end time is 1620657855.6091301
+INFO:__main__:used memory: 7 M
+INFO:__main__:FuncIndex is 457, time overhead is 2.2572479248046875
+INFO:__main__:FuncIndex is 458, start time is 1620657855.612515
+INFO:__main__:FuncIndex is 458, end time is 1620657855.694251
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 458, time overhead is 0.08173608779907227
+INFO:__main__:FuncIndex is 459, start time is 1620657855.697363
+INFO:__main__:FuncIndex is 459, end time is 1620657855.7610993
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 459, time overhead is 0.0637364387512207
+INFO:__main__:FuncIndex is 460, start time is 1620657855.7637253
+INFO:root:reached unreachable
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 460, time overhead is 0.04320573806762695
+INFO:__main__:FuncIndex is 461, start time is 1620657855.808816
+INFO:root:reached unreachable
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 461, time overhead is 0.06946516036987305
+INFO:__main__:FuncIndex is 462, start time is 1620657855.8818476
+INFO:__main__:FuncIndex is 462, end time is 1620657855.9324226
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 462, time overhead is 0.05057501792907715
+INFO:__main__:FuncIndex is 463, start time is 1620657855.93527
+INFO:__main__:FuncIndex is 463, end time is 1620657855.9895842
+INFO:__main__:used memory: -1 M
+INFO:__main__:FuncIndex is 463, time overhead is 0.05431413650512695
+INFO:__main__:FuncIndex is 464, start time is 1620657855.9922895
+INFO:__main__:FuncIndex is 464, end time is 1620657856.0369687
+INFO:__main__:used memory: 1 M
+INFO:__main__:FuncIndex is 464, time overhead is 0.04467916488647461
+INFO:__main__:FuncIndex is 465, start time is 1620657856.039673
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 465, time overhead is 0.0021877288818359375
+INFO:__main__:FuncIndex is 466, start time is 1620657856.042298
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+INFO:root:reached unreachable
+Exception ignored in: <bound method AstRef.__del__ of Bool>
+Traceback (most recent call last):
+  File "/home/yangzq18/.local/lib/python3.6/site-packages/z3/z3.py", line 314, in __del__
+    Z3_dec_ref(self.ctx.ref(), self.as_ast())
+  File "/home/yangzq18/.local/lib/python3.6/site-packages/z3/z3core.py", line 1480, in Z3_dec_ref
+    _elems.Check(a0)
+  File "/home/yangzq18/.local/lib/python3.6/site-packages/z3/z3core.py", line 1412, in Check
+    err = self.get_error_code(ctx)
+  File "seraph.py", line 249, in signal_handler
+    raise Exception("Timed out!")
+Exception: Timed out!
+INFO:__main__:[exception] used memory: 7 M
+INFO:__main__:[exception] FuncIndex is 466, time overhead is 12.168159008026123
+INFO:__main__:FuncIndex is 467, start time is 1620657868.2135596
+INFO:__main__:FuncIndex is 467, end time is 1620657868.2754939
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 467, time overhead is 0.06193423271179199
+INFO:__main__:FuncIndex is 468, start time is 1620657868.2782352
+INFO:__main__:[exception] used memory: 0 M
+INFO:__main__:[exception] FuncIndex is 468, time overhead is 0.0014965534210205078
+INFO:__main__:FuncIndex is 469, start time is 1620657868.2801404
+INFO:__main__:FuncIndex is 469, end time is 1620657868.312226
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 469, time overhead is 0.03208565711975098
+INFO:__main__:FuncIndex is 470, start time is 1620657868.3131285
+INFO:root:fpSqrt() missing 1 required positional argument: 'a'
+INFO:__main__:FuncIndex is 470, end time is 1620657868.3537023
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 470, time overhead is 0.040573835372924805
+INFO:__main__:FuncIndex is 471, start time is 1620657868.3546689
+INFO:__main__:FuncIndex is 471, end time is 1620657870.612326
+INFO:__main__:used memory: 3 M
+INFO:__main__:FuncIndex is 471, time overhead is 2.257657051086426
+INFO:__main__:FuncIndex is 472, start time is 1620657870.6147697
+INFO:__main__:FuncIndex is 472, end time is 1620657870.6459026
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 472, time overhead is 0.031132936477661133
+INFO:__main__:FuncIndex is 473, start time is 1620657870.6467288
+INFO:__main__:FuncIndex is 473, end time is 1620657870.7016144
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 473, time overhead is 0.0548856258392334
+INFO:__main__:FuncIndex is 474, start time is 1620657870.7054908
+INFO:__main__:FuncIndex is 474, end time is 1620657870.7665555
+INFO:__main__:used memory: 0 M
+INFO:__main__:FuncIndex is 474, time overhead is 0.061064720153808594
+INFO:__main__:All time: 95.31529760360718
+mprof: Sampling memory every 0.1s
+running new process

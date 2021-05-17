@@ -22,8 +22,8 @@ class Generator:
     def gen_return_status(self, pc, path_id):
         return "return_status_" + str(pc) + "_" + str(path_id)
 
-    def gen_return_data_size(self, pc, path_id):
-        return "Rd_size_" + str(pc) + "_" + str(path_id)
+    def gen_return_data_size(self, call_pc, path_id):
+        return "Rd_size_" + str(call_pc) + "_" + str(path_id)
 
     def gen_evm_data(self, start, end):
         return "evm_" + str(start) + "_" + str(end)

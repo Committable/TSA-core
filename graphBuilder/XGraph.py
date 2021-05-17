@@ -168,13 +168,14 @@ class InputDataSizeNode(VariableNode):
     def __str__(self):
         return "InputDataSizeNode_" + self.name
 
-class ExpNode(VariableNode):
 
+class ExpNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "ExpNode_" + self.name
+
 
 class GasPriceNode(VariableNode):
     def __init__(self, name, value):
@@ -183,12 +184,14 @@ class GasPriceNode(VariableNode):
     def __str__(self):
         return "GasPriceNode_" + self.name
 
+
 class OriginNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "OriginNode_" + self.name
+
 
 class CoinbaseNode(VariableNode):
     def __init__(self, name, value):
@@ -197,12 +200,14 @@ class CoinbaseNode(VariableNode):
     def __str__(self):
         return "CoinbaseNode_" + self.name
 
+
 class DifficultyNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "DifficultyNode_" + self.name
+
 
 class GasLimitNode(VariableNode):
     def __init__(self, name, value):
@@ -211,12 +216,14 @@ class GasLimitNode(VariableNode):
     def __str__(self):
         return "GasLimitNode_"  + self.name
 
+
 class CurrentNumberNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "CurrentNumberNode_" + self.name
+
 
 class TimeStampNode(VariableNode):
     def __init__(self, name, value):
@@ -225,12 +232,14 @@ class TimeStampNode(VariableNode):
     def __str__(self):
         return "TimeStampNode_" + self.name
 
+
 class AddressNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "AddressNode_" + self.name
+
 
 class BlockhashNode(VariableNode):
     def __init__(self, name, value, blockNumber):
@@ -240,12 +249,14 @@ class BlockhashNode(VariableNode):
     def __str__(self):
         return "BlockhashNode_" + self.name + "_" + str(self.blockNumber)
 
+
 class GasNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "GasNode_" + self.name
+
 
 class ShaNode(VariableNode):
     def __init__(self, name, value, args):
@@ -254,6 +265,7 @@ class ShaNode(VariableNode):
 
     def __str__(self):
         return "ShaNode_" + str(self.args)
+
 
 class MemoryNode(VariableNode):
 
@@ -264,6 +276,7 @@ class MemoryNode(VariableNode):
     def __str__(self):
         return "MemoryNode_" + self.name
 
+
 class ExtcodeSizeNode(VariableNode):
     def __init__(self, name, value, address):
         super().__init__(name, value)
@@ -272,12 +285,14 @@ class ExtcodeSizeNode(VariableNode):
     def __str__(self):
         return "ExtcodeSizeNode_" + self.name
 
+
 class DepositValueNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "DepositValueNode_" + self.name
+
 
 class BalanceNode(VariableNode):
     def __init__(self, name, value, address):
@@ -287,6 +302,7 @@ class BalanceNode(VariableNode):
     def __str__(self):
         return "BalanceNode_" + self.name
 
+
 class ReturnDataNode(VariableNode):
 
     def __init__(self, name, value):
@@ -294,6 +310,7 @@ class ReturnDataNode(VariableNode):
 
     def __str__(self):
         return "ReturnDataNode_" + self.name
+
 
 class ReturnStatusNode(VariableNode):
 
@@ -303,6 +320,7 @@ class ReturnStatusNode(VariableNode):
     def __str__(self):
         return "ReturnStatusNode_" + self.name
 
+
 class ReturnDataSizeNode(VariableNode):
 
     def __init__(self, name, value):
@@ -310,6 +328,7 @@ class ReturnDataSizeNode(VariableNode):
 
     def __str__(self):
         return "ReturnDataSizeNode_" + self.name
+
 
 class CodeNode(VariableNode):
 
@@ -320,12 +339,14 @@ class CodeNode(VariableNode):
     def __str__(self):
         return "CodeNode_" + self.name
 
+
 class SenderNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
 
     def __str__(self):
         return "SenderNode_" + self.name
+
 
 class ReceiverNode(VariableNode):
     def __init__(self, name, value):
@@ -336,9 +357,9 @@ class ReceiverNode(VariableNode):
 
 
 class XGraph:
-
     def __init__(self):
         self.graph = nx.DiGraph()
+        self.ssg = nx.DiGraph()
         self.count = 0
         self.overflow_related = ('ADD', 'SUB', 'MUL', 'EXP')
 
@@ -383,15 +404,12 @@ class XGraph:
         self.mapping_position_stateNode[position] = node
 
     def getStateNode(self, position):
-        s = SSolver()
-        s.set("timeout", global_params.TIMEOUT)
         for key in self.mapping_position_stateNode:
-            s.push()
-            s.add(Not(key == position))
-            if check_unsat(s):
-                s.pop()
-                return self.mapping_position_stateNode[key]
-            s.pop()
+            try:
+                if int(str(simplify(to_symbolic(key-position)))) == 0:
+                    return self.mapping_position_stateNode[key]
+            except:
+                pass
         return None
 
     def addCallReturnNode(self, pc, node):
@@ -404,52 +422,27 @@ class XGraph:
         return self.mapping_pc_callReturnNode[pc][-1]  # return the most rencent CallReturnNode
 
     def addExprNode(self, expr, node):
-        if is_const(expr) or isReal(expr):
-            expr = convertResult(expr)
-            self.mapping_var_node[expr] = node
-        else:
-            self.mapping_expr_node[expr] = node
+        self.mapping_expr_node[expr] = node
 
     def getExprNode(self, expr):
-        s = SSolver()
-        s.set("timeout", global_params.TIMEOUT)
-        if is_const(expr) or isReal(expr):  # expr is variable or const
-            expr = convertResult(expr)  # all value of const are in real int type
-            for key in self.mapping_var_node:
-                s.push()
-                s.add(Not(key == expr))
-                if check_unsat(s):
-                    s.pop()
-                    return self.mapping_var_node[key]
-                s.pop()
-            if isReal(expr):  # real int type or bitvecnumref type should be construct
-                node = ConstNode(str(expr), expr)
-                self.addVarNode(expr, node)
-                return node
-        else:
-            for key in self.mapping_expr_node:
-                s.push()
-                s.add(Not(key == expr))
-                if check_unsat(s):
-                    s.pop()
+        for key in self.mapping_expr_node:
+            try:
+                if int(str(simplify(key-expr))) == 0:
                     return self.mapping_expr_node[key]
-                s.pop()
+            except Exception:
+                pass
         return None
 
     def addAddressNode(self, expr, node):
         self.mapping_address_node[expr] = node
 
     def getAddressNode(self, expr):
-        s = SSolver()
-        s.set("timeout", global_params.TIMEOUT)
-
         for key in self.mapping_address_node:
-            s.push()
-            s.add(Not(key == expr))
-            if check_unsat(s):
-                s.pop()
-                return self.mapping_address_node[key]
-            s.pop()
+            try:
+                if int(str(simplify(key-expr))) == 0:
+                    return self.mapping_address_node[key]
+            except:
+                pass
         return None
 
 
@@ -471,6 +464,28 @@ class XGraph:
     def addVarNode(self, var, node):
         self.mapping_var_node[var] = node
         self.addNode(node)
+
+    def ssgAddNode(self, node, pid):
+        self.ssg.add_node(node)
+        stored_value = node.arguments[0]
+        stored_address = node.arguments[1]
+        e_node = ExpressionNode(str(stored_value), stored_value)
+        if is_expr(stored_value):
+            for x in get_vars(stored_value):
+                n = self.getVarNode(x)
+                self.ssg.add_edge(n, e_node, label="flowEdge")
+        self.ssg.add_edge(e_node, node, label="flowEdge_value")
+        a_node = ExpressionNode(str(stored_address), stored_address)
+        if is_expr(stored_address):
+            for x in get_vars(stored_address):
+                n = self.getVarNode(x)
+                self.ssg.add_edge(n, a_node, label="flowEdge")
+        self.ssg.add_edge(a_node, node, label="flowEdge_address")
+
+        constrains = node.constraint
+        c_node = ConstrainNode("constraint", constrains)
+        self.ssg.add_edge(c_node, node, label="constraint")
+
 
     # The function for construct the graph for the contract
     def addNode(self, node):
