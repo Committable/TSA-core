@@ -14,21 +14,45 @@ class EvmRuntime:
     block_jump_types = {"terminal", "conditional", "unconditional", "falls_to"}
     cfg_count = 0
 
-    def __init__(self, platform=None, disasm_file=None,source_map=None, source_file=None):
+    def __init__(self, platform=None, disasm_file=None, source_map=None, source_file=None, input_type=None, evm=None):
         self.disasm_file = disasm_file
         self.source_map = source_map
         self.platFrom = platform
         self.source_file = source_file
-
+        self.input_type = input_type
+        self.evm = evm
 
 
     def build_cfg(self):
-        self.change_format()
-        with open(self.disasm_file, 'r') as disasm_file:
-            file_contents = disasm_file.readlines()
+        if self.input_type == "solidity-json":
+            # 1. transfer from token string to
+            tokens = self.disasm_file.split(" ")
+            file_contents = []
+            content = []
+            pc = 0
+            for i, token in enumerate(tokens):
+                if token.startswith("0x"):
+                    content.append(token)
+                else:
+                    if content:
+                        file_contents.append(' '.join(content))
+                        if content[1].startswith("PUSH"):
+                            pc += int(content[1].split('PUSH')[1])
+                        content = []
+                        pc += 1
+                    content.append(str(pc))
+                    content.append(token)
+
             self._collect_vertices(file_contents)
             self._construct_bb()
             self._construct_static_edges()
+        else:
+            self.change_format()
+            with open(self.disasm_file, 'r') as disasm_file:
+                file_contents = disasm_file.readlines()
+                self._collect_vertices(file_contents)
+                self._construct_bb()
+                self._construct_static_edges()
 
     def change_format(self):
         with open(self.disasm_file, 'r') as disasm_file:
@@ -61,9 +85,8 @@ class EvmRuntime:
         with open(self.disasm_file, 'w') as disasm_file:
             disasm_file.write("".join(file_contents))
 
-    def _collect_vertices(self,file_contents):
-        if self.source_map:
-            idx = 0
+    def _collect_vertices(self, file_contents):
+        idx = 0
         self.end_ins_dict ={}
         self.instructions ={}
         self.jump_type = {}
@@ -158,6 +181,8 @@ class EvmRuntime:
                 if len(instrs) > 1 and "PUSH" in instrs[-2]:
                     target = int(instrs[-2].split(" ")[2], 16)
                     self.edges[key].append(target)
+                    if target not in self.vertices:
+                        print("HAHAH")
                     self.vertices[target].set_jump_from(key)
                     self.vertices[key].set_jump_targets(target)
 
@@ -256,6 +281,5 @@ class EvmRuntime:
         #todo: test for building cfg process
         self.build_cfg()
         # self.print_cfg()
-        # self.print_cfg_dot({})
         return 0
 

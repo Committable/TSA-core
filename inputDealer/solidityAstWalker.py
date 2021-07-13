@@ -6,17 +6,17 @@ class AstWalker:
         else:
             self._walk_with_list_of_attrs(node, attributes, nodes)
 
-    def walkToGraph(self, nodeID, node, graph,depth, sequence):
+    def walkToGraph(self, nodeID, node, graph, depth, sequence):
         if node:
             graph.add_node(nodeID, type=node["name"], depth=depth, sequence=sequence)
             if "children" in node and node["children"]:
                 i = 0
                 for child in node["children"]:
-                   # if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
-                    if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
-                        graph.add_edge(nodeID, nodeID+"."+str(i), depth=depth, before=node["name"], after=child["name"])
-                        self.walkToGraph(nodeID+"."+str(i), child, graph, depth+1, i)
-                        i = i + 1
+                    # if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
+                    # if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
+                    graph.add_edge(nodeID, nodeID+"."+str(i), depth=depth, before=node["name"], after=child["name"])
+                    self.walkToGraph(nodeID+"."+str(i), child, graph, depth+1, i)
+                    i = i + 1
         return
 
 

@@ -532,7 +532,7 @@ class EVMInterpreter:
         #
         # 20s: SHA3
         #
-        elif opcode == "SHA3":
+        elif opcode == "SHA3" or opcode == "KECCAK256":
             if len(stack) > 1:
                 global_state["pc"] = global_state["pc"] + 1
                 s0 = stack.pop(0)
@@ -1270,6 +1270,39 @@ class EVMInterpreter:
             node_stack.insert(0, node_amount)
             update_suicide(self.graph, node_stack, global_state, path_conditions_and_vars, self.gen.get_path_id())
             return
+        elif opcode == "SAR":
+            if len(stack) > 1:
+                global_state["pc"] = global_state["pc"] + 1
+                first = stack.pop(0)
+                second = stack.pop(0)
+
+                computed = (to_symbolic(first) >> second)
+
+                stack.insert(0, convertResult(computed))
+            else:
+                raise ValueError('STACK underflow')
+        elif opcode == "SHR":
+            if len(stack) > 1:
+                global_state["pc"] = global_state["pc"] + 1
+                first = stack.pop(0)
+                second = stack.pop(0)
+
+                computed = LShR(to_symbolic(first), second)
+
+                stack.insert(0, convertResult(computed))
+            else:
+                raise ValueError('STACK underflow')
+        elif opcode == "SHL":
+            if len(stack) > 1:
+                global_state["pc"] = global_state["pc"] + 1
+                first = stack.pop(0)
+                second = stack.pop(0)
+
+                computed = (to_symbolic(first) << second)
+
+                stack.insert(0, convertResult(computed))
+            else:
+                raise ValueError('STACK underflow')
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
@@ -1319,9 +1352,10 @@ class EVMInterpreter:
         # the bytecode of evm bytecode
         if self.runtime.disasm_file.endswith('.disasm'):
             evm_file_name = self.runtime.disasm_file[:-6] + "evm"
-        with open(evm_file_name, 'r') as evm_file:
-            self.evm = evm_file.read()
-
+            with open(evm_file_name, 'r') as evm_file:
+                self.evm = evm_file.read()
+        else:
+            self.evm = self.runtime.evm
         new_var_name = self.gen.gen_gas_price_var()
         gas_price = BitVec(new_var_name, 256)
         # add to graph

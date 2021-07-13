@@ -64,6 +64,35 @@ class InputHelper:
             else:
                 setattr(self, attr, val)
 
+    def get_json_inputs(self, target):
+        inputs = []
+        if self.input_type == InputHelper.SOLIDITY:
+            compiler = SolidityCompiler(self.source, self.root_path, self.allow_paths, self.remap,
+                                        self.compilation_err, global_params.TMP_DIR)
+            contracts = compiler.get_compiled_contracts_from_json()
+
+            for contract in contracts:
+                if target == contract.split(":")[0]:
+                    cname = contract
+                    disasm_file = contracts[contract]['evm']['deployedBytecode']['opcodes']
+
+                    source_map = SourceMap(cname=cname, input_type='solidity-json', contract=contract, sources=compiler.combined_json)
+
+
+                    inputs.append({
+                        'contract': contract,
+                        'source_map': source_map,
+                        'source': self.source,
+                        'c_source': source_map.position_groups[cname],
+                        'c_name': cname,
+                        'disasm_file': disasm_file,
+                        'evm': contracts[contract]['evm']['bytecode']['object']
+                    })
+        else:
+            logging.critical("Unknow file type")
+            exit(1)
+        return inputs
+
     def get_inputs(self):
         inputs = []
         if self.input_type == InputHelper.EVM_BYTECODE:

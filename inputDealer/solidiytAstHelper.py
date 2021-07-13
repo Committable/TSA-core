@@ -5,15 +5,17 @@ from utils import run_command
 
 
 class AstHelper:
-    def __init__(self, filename, input_type, remap, allow_paths=""):
+    def __init__(self, filename, input_type, remap, allow_paths="", sources=None):
         self.input_type = input_type
         self.allow_paths = allow_paths
         if input_type == "solidity":
             self.remap = remap
             self.source_list = self.get_source_list(filename)
+        elif input_type == "solidity-json":
+            self.source_list = sources
         else:
             raise Exception("There is no such type of input")
-        self.contracts = self.extract_contract_definitions(self.source_list)
+        # self.contracts = self.extract_contract_definitions(self.source_list)
 
     def get_source_list_standard_json(self, filename):
         with open('standard_json_output', 'r') as f:
@@ -50,20 +52,12 @@ class AstHelper:
                 ret["contractsByName"][k + ':' + node["attributes"]["name"]] = node
         return ret
 
-    def build_ast_graph(self, sourcesList, graph):
+    def build_ast_graph(self, sourcesList, target, graph):
         walker = AstWalker()
-        for k in sourcesList:
-            if self.input_type == "solidity":
-                ast = sourcesList[k]["AST"]
-            else:
-                ast = sourcesList[k]["legacyAST"]
-            nodes = []
-            walker.walk(ast, {"name": "ContractDefinition"}, nodes)
-            for node in nodes:
-                if "CodeToken" in node["attributes"]["name"]:
-                    walker.walkToGraph("0", node, graph,0,0)
-                    return True
-        return False
+        ast = sourcesList[target]["legacyAST"]
+        node = ast
+        walker.walkToGraph("0", node, graph, 0, 0)
+        return
 
 
     def get_linearized_base_contracts(self, id, contractsById):

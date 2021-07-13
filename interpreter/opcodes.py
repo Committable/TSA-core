@@ -139,6 +139,7 @@ SHR = OpCode("SHR", 0x1c, 2, 1)
 SAR = OpCode("SAR", 0x1d, 2, 1)
 
 SHA3 = OpCode("SHA3", 0x20, 2, 1)
+KECCAK256 = OpCode("KECCAK256", 0x20, 2, 1)
 
 # Environmental Information
 ADDRESS = OpCode("ADDRESS", 0x30, 0, 1)
