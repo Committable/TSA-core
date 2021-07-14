@@ -283,6 +283,7 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     g1.attr(overlap='scale')
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
+    g1.attr(size="7.75,10.25")
 
     edgelist=[]
     node_map = {}
@@ -312,7 +313,7 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
         edgelist_file.write("".join(edgelist))
 
 
-    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=False)
+    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=True)
 
     return
 
@@ -323,6 +324,7 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
     g1.attr(overlap='scale')
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
+    g1.attr(size="7.75,10.25")
 
     edgelist = []
     node_map = {}
@@ -334,29 +336,48 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
         c.attr(overlap='false')
         c.attr(splines='polyline')
         c.attr(ratio='fill')
+        c.attr(size="7.75,10.25")
 
         for n in graph1.nodes._nodes:
-            c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="black")
+            block_type = graph1.nodes._nodes[n]["type"]
+            if block_type == "falls_to":
+                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="black")
+            elif block_type == "unconditional":
+                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="blue")
+            elif block_type == "conditional":
+                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="green")
+            elif block_type == "terminal":
+                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="red")
             node_map[str(n)] = str(i)
             i += 1
         for e in graph1.edges._adjdict:
             for x in graph1.edges._adjdict[e]:
-                c.edge(str(e), str(x), color='black')
+                edge_type = graph1.edges._adjdict[e][x]["type"]
+                if edge_type == "falls_to":
+                    c.edge(str(e), str(x), color='black')
+                elif edge_type == "unconditional":
+                    c.edge(str(e), str(x), color='blue')
+                elif edge_type == "conditional":
+                    c.edge(str(e), str(x), color='green')
+                elif edge_type == "terminal":
+                    c.edge(str(e), str(x), color='red')
                 edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
 
     with open(reporter.params.DEST_PATH+os.sep+"cfg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
 
-    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=False)
+    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=True)
     return
 
 
 def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     g1 = Digraph('G', filename=file_name1)
-    g1.attr(rankdir='TB')
-    g1.attr(overlap='scale')
+    g1.attr(rankdir='LR')
+    g1.attr(overlap='true')
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
+    #g1.attr(rotate="90")
+    g1.attr(size="7.75,10.25")
 
     edgelist = []
     node_map = {}
@@ -364,23 +385,34 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
         c.attr(color=color)
-        c.attr(fontsize='50.0')
-        c.attr(overlap='false')
+        # c.attr(fontsize='50.0')
+        c.attr(overlap='true')
         c.attr(splines='polyline')
+        c.attr(rankdir="LR")
         c.attr(ratio='fill')
+        #c.attr(rotate="90")
+        c.attr(size="7.75,10.25")
 
         for n in graph1.nodes._nodes:
-            c.node(str(n), label=str(n), splines='true', color="black")
+            c.node(str(n), label=str(n).split("_")[0], splines='true', color="black")
             node_map[str(n)] = str(i)
             i += 1
         for e in graph1.edges._adjdict:
             for x in graph1.edges._adjdict[e]:
-                c.edge(str(e), str(x), label=graph1.edges._adjdict[e][x]["label"], color='black')
+                if graph1.edges._adjdict[e][x]["label"] == "flowEdge_address":
+                    c.edge(str(e), str(x), color='green')
+                elif graph1.edges._adjdict[e][x]["label"] == "flowEdge_value":
+                    c.edge(str(e), str(x), color='blue')
+                elif graph1.edges._adjdict[e][x]["label"] == "flowEdge":
+                    c.edge(str(e), str(x), color='black')
+                elif graph1.edges._adjdict[e][x]["label"] == "constraint":
+                    c.edge(str(e), str(x), color='red')
+
                 edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
 
     with open(reporter.params.DEST_PATH+os.sep+"ssg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
-    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=False)
+    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=True)
     return
 
 
@@ -416,7 +448,7 @@ def single_static_solidity_code():
                 basicblock = env.vertices[key]
                 label = str(basicblock.start) + "_" + str(basicblock.end)
 
-                cfg.add_node(key, instructions=basicblock.instructions, label=label)
+                cfg.add_node(key, instructions=basicblock.instructions, label=label, type=basicblock.get_block_type())
             for key in env.edges:
                 for target in env.edges[key]:
                     cfg.add_edge(key, target, type=env.jump_type[target])
