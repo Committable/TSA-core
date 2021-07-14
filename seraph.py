@@ -315,7 +315,7 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
         edgelist_file.write("".join(edgelist))
 
 
-    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=True)
+    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=False)
 
     return
 
@@ -368,7 +368,7 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
     with open(reporter.params.DEST_PATH+os.sep+"cfg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
 
-    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=True)
+    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=False)
     return
 
 
@@ -414,7 +414,7 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
 
     with open(reporter.params.DEST_PATH+os.sep+"ssg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
-    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=True)
+    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=False)
     return
 
 
