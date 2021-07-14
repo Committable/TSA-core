@@ -9,7 +9,7 @@ class EvmDisassembler:
         self.source = source
         self.contract = contract
         if not os.path.exists(path):
-            os.mkdir(path)
+            os.mkdirs(path)
         self.tmp = {
             "evm": os.path.join(path, contract.split(os.path.sep)[-1] + self.source.split("/")[-1].split(".")[0] + ".evm"),
             "disasm": os.path.join(path, contract.split(os.path.sep)[-1] + self.source.split("/")[-1].split(".")[0] + ".disasm")

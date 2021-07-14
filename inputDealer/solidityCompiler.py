@@ -16,8 +16,7 @@ class SolidityCompiler:
         self.remap = remap
         self.compilation_err = compilation_err
         self.path = tmp_path + self.source.split("/")[-1].split(".")[0]
-        if not os.path.exists(self.path):
-            os.mkdir(self.path)
+        
 
 
     def get_compiled_contracts(self):
