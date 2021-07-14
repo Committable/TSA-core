@@ -27,7 +27,7 @@ class SolidityCompiler:
     def get_compiled_contracts_from_json(self):
         if not self.compiled_contracts:
             # 1. compile with npx waffle
-            child = subprocess.Popen('npx waffle .waffle.json', cwd=self.source, shell=True, stdout=subprocess.PIPE,
+            child = subprocess.Popen('npx waffle .waffle_bak.json', cwd=self.source, shell=True, stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
             try:
                 outs, errs = child.communicate(timeout=15)
