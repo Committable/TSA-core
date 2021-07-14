@@ -284,6 +284,9 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
 
+    edgelist=[]
+    node_map = {}
+    i = 0
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
         c.attr(color=color)
@@ -297,11 +300,19 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
                 c.node(str(n), label=graph1.nodes._nodes[n]["type"], splines='true', color="red")
             else:
                 c.node(str(n), label=graph1.nodes._nodes[n]["type"], splines='true', color="black")
+            node_map[str(n)] = str(i)
+            i += 1
+
         for e in graph1.edges._adjdict:
             for x in graph1.edges._adjdict[e]:
                 c.edge(str(e), str(x), color='black')
+                edgelist.append(node_map[str(e)]+" "+node_map[str(x)]+"\n")
 
-    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=True)
+    with open(reporter.params.DEST_PATH+os.sep+"ast_edgelist", 'w') as edgelist_file:
+        edgelist_file.write("".join(edgelist))
+
+
+    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=False)
 
     return
 
@@ -313,6 +324,9 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
 
+    edgelist = []
+    node_map = {}
+    i = 0
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
         c.attr(color=color)
@@ -323,11 +337,17 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
 
         for n in graph1.nodes._nodes:
             c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="black")
+            node_map[str(n)] = str(i)
+            i += 1
         for e in graph1.edges._adjdict:
             for x in graph1.edges._adjdict[e]:
                 c.edge(str(e), str(x), color='black')
+                edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
 
-    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=True)
+    with open(reporter.params.DEST_PATH+os.sep+"cfg_edgelist", 'w') as edgelist_file:
+        edgelist_file.write("".join(edgelist))
+
+    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=False)
     return
 
 
@@ -338,6 +358,9 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
 
+    edgelist = []
+    node_map = {}
+    i = 0
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
         c.attr(color=color)
@@ -348,11 +371,16 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
 
         for n in graph1.nodes._nodes:
             c.node(str(n), label=str(n), splines='true', color="black")
+            node_map[str(n)] = str(i)
+            i += 1
         for e in graph1.edges._adjdict:
             for x in graph1.edges._adjdict[e]:
                 c.edge(str(e), str(x), label=graph1.edges._adjdict[e][x]["label"], color='black')
+                edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
 
-    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=True)
+    with open(reporter.params.DEST_PATH+os.sep+"ssg_edgelist", 'w') as edgelist_file:
+        edgelist_file.write("".join(edgelist))
+    g1.render(file_name1, directory=reporter.params.DEST_PATH, view=False)
     return
 
 
