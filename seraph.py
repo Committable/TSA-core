@@ -103,7 +103,7 @@ def main():
     if args.output:
         reporter.params.DEST_PATH = args.output
         if not os.path.exists(args.output):
-            os.mkdirs(args.output)
+            os.makedirs(args.output)
 
     exit_code = 0
 
