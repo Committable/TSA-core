@@ -180,9 +180,10 @@ class EvmRuntime:
                 instrs = self.vertices[key].get_instructions()
                 if len(instrs) > 1 and "PUSH" in instrs[-2]:
                     target = int(instrs[-2].split(" ")[2], 16)
-                    self.edges[key].append(target)
                     if target not in self.vertices:
-                        print("HAHAH")
+                        continue
+                    self.edges[key].append(target)
+
                     self.vertices[target].set_jump_from(key)
                     self.vertices[key].set_jump_targets(target)
 

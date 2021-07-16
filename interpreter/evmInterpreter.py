@@ -1303,6 +1303,7 @@ class EVMInterpreter:
                 stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
+
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
