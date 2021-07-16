@@ -1303,7 +1303,22 @@ class EVMInterpreter:
                 stack.insert(0, convertResult(computed))
             else:
                 raise ValueError('STACK underflow')
+        elif opcode == "CREATE2":
+            if len(stack) > 4:
+                global_state["pc"] += 1
+                stack.pop(0)
+                stack.pop(0)
+                stack.pop(0)
+                stack.pop(0)
 
+                new_var_name = self.gen.gen_address(global_state["pc"]-1)
+                new_var = BitVec(new_var_name, 256)
+                node = AddressNode(new_var_name, new_var)
+                self.graph.addVarNode(new_var, node)
+
+                stack.insert(0, new_var)
+            else:
+                raise ValueError('STACK underflow')
         else:
             log.debug("UNKNOWN INSTRUCTION: " + opcode)
             raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
