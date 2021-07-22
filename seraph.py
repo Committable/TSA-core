@@ -285,7 +285,7 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     g1.attr(overlap='scale')
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
-    g1.attr(size="7.75,10.25")
+    # g1.attr(size="7.75,10.25")
 
     edgelist=[]
     node_map = {}
@@ -293,7 +293,7 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
         c.attr(color=color)
-        c.attr(fontsize='50.0')
+        # c.attr(fontsize='50.0')
         c.attr(overlap='false')
         c.attr(splines='polyline')
         c.attr(ratio='fill')
@@ -315,7 +315,7 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
         edgelist_file.write("".join(edgelist))
 
 
-    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=False)
+    g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=False)
 
     return
 
@@ -326,7 +326,7 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
     g1.attr(overlap='scale')
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
-    g1.attr(size="7.75,10.25")
+    #g1.attr(size="7.75,10.25")
 
     edgelist = []
     node_map = {}
@@ -334,11 +334,11 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
         c.attr(color=color)
-        c.attr(fontsize='50.0')
+        # c.attr(fontsize='50.0')
         c.attr(overlap='false')
         c.attr(splines='polyline')
         c.attr(ratio='fill')
-        c.attr(size="7.75,10.25")
+        #c.attr(size="7.75,10.25")
 
         for n in graph1.nodes._nodes:
             block_type = graph1.nodes._nodes[n]["type"]
@@ -368,7 +368,7 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
     with open(reporter.params.DEST_PATH+os.sep+"cfg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
 
-    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=False)
+    g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=False)
     return
 
 
@@ -379,7 +379,7 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
     g1.attr(splines='polyline')
     g1.attr(ratio='fill')
     #g1.attr(rotate="90")
-    g1.attr(size="7.75,10.25")
+    #g1.attr(size="7.75,10.25")
 
     edgelist = []
     node_map = {}
@@ -393,7 +393,7 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
         c.attr(rankdir="LR")
         c.attr(ratio='fill')
         #c.attr(rotate="90")
-        c.attr(size="7.75,10.25")
+        #c.attr(size="7.75,10.25")
 
         for n in graph1.nodes._nodes:
             c.node(str(n), label=str(n).split("_")[0], splines='true', color="black")
@@ -414,7 +414,7 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
 
     with open(reporter.params.DEST_PATH+os.sep+"ssg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
-    g1.render(file_name1, format='png', directory=reporter.params.DEST_PATH, view=False)
+    g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=False)
     return
 
 
