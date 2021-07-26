@@ -98,12 +98,14 @@ class InputHelper:
 
                             source_map = SourceMap(cname=cname, input_type='solidity-json', contract=contract,
                                                    sources=compiler.combined_json)
-
+                            c_source = None
+                            if cname in source_map.position_groups:
+                                c_source = source_map.position_groups[cname]
                             inputs.append({
                                 'contract': contract,
                                 'source_map': source_map,
                                 'source': self.source,
-                                'c_source': source_map.position_groups[cname],
+                                'c_source': c_source,
                                 'c_name': cname,
                                 'disasm_file': disasm_file,
                                 'evm': contracts[contract][cname]['evm']['bytecode']['object']
