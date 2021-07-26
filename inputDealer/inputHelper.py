@@ -75,11 +75,11 @@ class InputHelper:
             contracts = {}
             try:
 
-                solcx.install_solc("0.5.0")
+                solcx.install_solc("0.4.25")
                 data_dict = solcx.compile_files(
                     [self.source + os.sep + target],
                     output_values=["abi", "bin-runtime", "ast", "asm", "opcodes"],
-                    solc_version="0.5.0"
+                    solc_version="0.4.25"
                 )
                 combined_json = {"contracts":{}, "sources":{}}
                 for contract in data_dict:
