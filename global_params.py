@@ -8,3 +8,5 @@ GLOBAL_TIMEOUT = 2000
 
 # DIR for temp files
 TMP_DIR = "./tmp"
+
+PROJECT = ""

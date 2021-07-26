@@ -422,6 +422,10 @@ def single_static_solidity_code():
     global args
     exit_code = 0
 
+    if "uniswap-v2-core" in args.source:
+        global_params.PROJECT = "uniswap-v2-core"
+    elif "openzeppelin-contracts" in args.source:
+        global_params.PROJECT = "openzeppelin-contracts"
     # 1. prepare input
     helper = InputHelper(InputHelper.SOLIDITY, source=args.source, compilation_err=args.compilation_err)
     inputs = helper.get_json_inputs(args.joker)

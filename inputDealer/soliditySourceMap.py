@@ -1,6 +1,6 @@
 import ast
 import json
-
+import global_params
 import six
 
 from inputDealer.solidiytAstHelper import AstHelper
@@ -65,7 +65,11 @@ class SourceMap:
             self.input_type = input_type
 
             if input_type == 'solidity-json':
-                SourceMap.position_groups[cname] = sources["contracts"][contract]['evm']['legacyAssembly']
+                if global_params.PROJECT == "uniswap-v2-core":
+                    SourceMap.position_groups[cname] = sources["contracts"][contract]['evm']['legacyAssembly']
+                elif global_params.PROJECT == "openzeppelin-contracts":
+                    SourceMap.position_groups[cname] = sources["contracts"][contract][cname]['evm']['legacyAssembly']
+
             else:
                 raise Exception("There is no such type of input")
             SourceMap.ast_helper = AstHelper(parent_filename, input_type, remap,

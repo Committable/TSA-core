@@ -1,5 +1,5 @@
 import json
-
+import global_params
 from inputDealer.solidityAstWalker import AstWalker
 from utils import run_command
 
@@ -54,7 +54,10 @@ class AstHelper:
 
     def build_ast_graph(self, sourcesList, target, graph):
         walker = AstWalker()
-        ast = sourcesList[target]["legacyAST"]
+        if global_params.PROJECT == "uniswap-v2-core":
+            ast = sourcesList[target]["legacyAST"]
+        elif global_params.PROJECT == "openzeppelin-contracts":
+            ast = sourcesList[target]["ast"]
         node = ast
         walker.walkToGraph("0", node, graph, 0, 0)
         return

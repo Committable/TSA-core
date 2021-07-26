@@ -3,6 +3,7 @@ import os
 import re
 import subprocess
 import json
+import global_params
 from utils import run_command_with_err
 
 
@@ -27,23 +28,46 @@ class SolidityCompiler:
     def get_compiled_contracts_from_json(self):
         if not self.compiled_contracts:
             # 1. compile with npx waffle
-            child = subprocess.Popen('npx waffle .waffle_bak.json', cwd=self.source, shell=True, stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
-            try:
-                outs, errs = child.communicate(timeout=15)
-            except subprocess.TimeoutExpired:
-                child.kill()
-                outs, errs = child.communicate()
-            if child.returncode != 0:
-                logging.critical(errs)
-                logging.critical("npx waffle compile fail")
-                exit(1)
-            # 2. load Combined-Json.json
-            with open(self.source+os.sep+'build'+os.sep+'Combined-Json.json', 'r') as jsonfile:
-                combined_json = json.load(jsonfile)
-            self.combined_json = combined_json
+            if global_params.PROJECT == "uniswap-v2-core":
+                child = subprocess.Popen('npx waffle .waffle_bak.json', cwd=self.source, shell=True, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE)
+                try:
+                    outs, errs = child.communicate(timeout=15)
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    outs, errs = child.communicate()
+                if child.returncode != 0:
+                    logging.critical(errs)
+                    logging.critical("npx waffle compile fail")
+                    exit(1)
+                # 2. load Combined-Json.json
+                with open(self.source+os.sep+'build'+os.sep+'Combined-Json.json', 'r') as jsonfile:
+                    combined_json = json.load(jsonfile)
+                self.combined_json = combined_json
 
-            self.compiled_contracts = combined_json['contracts']
+                self.compiled_contracts = combined_json['contracts']
+            elif global_params.PROJECT == "openzeppelin-contracts":
+                child = subprocess.Popen('yarn compile', cwd=self.source, shell=True,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE)
+                try:
+                    outs, errs = child.communicate(timeout=15)
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    outs, errs = child.communicate()
+                if child.returncode != 0:
+                    logging.critical(errs)
+                    logging.critical("yarn compile fail")
+                    exit(1)
+                filePath = self.source+os.sep+'artifacts'+os.sep+"build-info"
+                fileName = ""
+                for i, j, fileName in os.walk(filePath):
+                    print(i, j, fileName)
+                with open(filePath+os.sep+fileName[0], 'r') as jsonfile:
+                    combined_json = json.load(jsonfile)
+                self.combined_json = combined_json['output']
+
+                self.compiled_contracts = combined_json['output']['contracts']
         return self.compiled_contracts
 
     def _compile_solidity(self):

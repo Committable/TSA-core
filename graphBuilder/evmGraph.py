@@ -43,6 +43,7 @@ zeorReturnStatusNode = ReturnStatusNode("0", 0)
 e_mapping_overflow_var_expr = {}
 
 def addExpressionNode(graph, expr, path_id): # is_expr(expr) == True and is_const(expr)==False
+    expr = to_symbolic(expr)
     e_node = graph.getExprNode(expr)
     if e_node is None:
         e_node = ExpressionNode(str(expr), expr)
@@ -167,7 +168,7 @@ def update_delegatecall(graph, opcode, node_stack, global_state, path_conditions
     node_return_status = node_stack.pop()
     node_return_data = node_stack.pop()
 
-    arguments = [node_outgas.expre, node_recipient, node_start_data_input, node_size_data_input,
+    arguments = [node_outgas, node_recipient, node_start_data_input, node_size_data_input,
                  node_start_data_output, node_size_data_ouput]
 
     call_node = MessageCallNode(opcode, arguments, global_state["pc"], path_conditions_and_vars["path_condition"], path_id)

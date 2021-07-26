@@ -71,23 +71,43 @@ class InputHelper:
                                         self.compilation_err, global_params.TMP_DIR)
             contracts = compiler.get_compiled_contracts_from_json()
 
-            for contract in contracts:
-                if target == contract.split(":")[0]:
-                    cname = contract
-                    disasm_file = contracts[contract]['evm']['deployedBytecode']['opcodes']
+            if global_params.PROJECT == "uniswap-v2-core":
+                for contract in contracts:
+                    if target == contract.split(":")[0]:
+                        cname = contract
+                        disasm_file = contracts[contract]['evm']['deployedBytecode']['opcodes']
 
-                    source_map = SourceMap(cname=cname, input_type='solidity-json', contract=contract, sources=compiler.combined_json)
+                        source_map = SourceMap(cname=cname, input_type='solidity-json', contract=contract, sources=compiler.combined_json)
 
 
-                    inputs.append({
-                        'contract': contract,
-                        'source_map': source_map,
-                        'source': self.source,
-                        'c_source': source_map.position_groups[cname],
-                        'c_name': cname,
-                        'disasm_file': disasm_file,
-                        'evm': contracts[contract]['evm']['bytecode']['object']
-                    })
+                        inputs.append({
+                            'contract': contract,
+                            'source_map': source_map,
+                            'source': self.source,
+                            'c_source': source_map.position_groups[cname],
+                            'c_name': cname,
+                            'disasm_file': disasm_file,
+                            'evm': contracts[contract]['evm']['bytecode']['object']
+                        })
+            elif global_params.PROJECT == "openzeppelin-contracts":
+                for contract in contracts:
+                    if target == contract:
+                        for c in contracts[contract]:
+                            cname = c
+                            disasm_file = contracts[contract][c]['evm']['deployedBytecode']['opcodes']
+
+                            source_map = SourceMap(cname=cname, input_type='solidity-json', contract=contract,
+                                                   sources=compiler.combined_json)
+
+                            inputs.append({
+                                'contract': contract,
+                                'source_map': source_map,
+                                'source': self.source,
+                                'c_source': source_map.position_groups[cname],
+                                'c_name': cname,
+                                'disasm_file': disasm_file,
+                                'evm': contracts[contract][cname]['evm']['bytecode']['object']
+                            })
         else:
             logging.critical("Unknow file type")
             exit(1)

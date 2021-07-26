@@ -884,10 +884,17 @@ class EVMInterpreter:
                     self.runtime.edges[block].append(target_address)
 
                 flag = stack.pop(0)
-                branch_expression = simplify(to_symbolic(flag != 0))
+                if type(flag) == int and flag == 0:
+                    branch_expression = BoolVal(False)
+                elif type(flag) == int and flag != 0:
+                    branch_expression = BoolVal(True)
+                else:
+                    branch_expression = simplify(to_symbolic(flag != 0))
                 branch_e_node = addConstrainNode(self.graph, branch_expression, self.gen.get_path_id())
-                branch_n_e_node = addConstrainNode(self.graph, Not(branch_expression), self.gen.get_path_id())
-
+                try:
+                    branch_n_e_node = addConstrainNode(self.graph, Not(branch_expression), self.gen.get_path_id())
+                except:
+                    branch_n_e_node = addConstrainNode(self.graph, Not(True), self.gen.get_path_id())
                 self.runtime.vertices[block].set_branch_expression(branch_expression)
                 self.runtime.vertices[block].set_branch_node_expression(branch_e_node)
                 self.runtime.vertices[block].set_negated_branch_node_expression(branch_n_e_node)
@@ -1061,7 +1068,7 @@ class EVMInterpreter:
                 node_stack.insert(0, node_return_status)
 
                 node_call_return_data = CallReturnDataNode(opcode, global_state["pc"], self.gen.get_path_id())
-                self.graph.addCallReturnNode(global_state["pc"], node_call_return_data)
+                self.graph.addCallReturnNode(global_state["pc"]-1, node_call_return_data)
 
                 node_stack.insert(0, node_call_return_data)
 
@@ -1151,7 +1158,7 @@ class EVMInterpreter:
                 node_call_return_data = CallReturnDataNode(self.opcode + ":" + str(global_state["pc"]) + "_" +
                                                            str(self.gen.get_path_id()), global_state["pc"],
                                                            self.gen.get_path_id())
-                self.graph.addCallReturnNode(global_state["pc"], node_call_return_data)
+                self.graph.addCallReturnNode(global_state["pc"]-1, node_call_return_data)
 
                 node_stack.insert(0, node_call_return_data)
 
@@ -1204,10 +1211,10 @@ class EVMInterpreter:
                     node_return_status = self.graph.getVarNode(stack[0])
                 node_stack.insert(0, node_return_status)
 
-                node_call_return_data = CallReturnDataNode(self.opcode + ":" + str(global_state["pc"]) + "_" +
+                node_call_return_data = CallReturnDataNode(opcode + ":" + str(global_state["pc"]) + "_" +
                                                            str(self.gen.get_path_id()), global_state["pc"],
                                                            self.gen.get_path_id())
-                self.graph.addCallReturnNode(global_state["pc"], node_call_return_data)
+                self.graph.addCallReturnNode(global_state["pc"]-1, node_call_return_data)
 
                 node_stack.insert(0, node_call_return_data)
 
