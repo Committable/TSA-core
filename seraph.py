@@ -30,6 +30,7 @@ import networkx as nx
 from inputDealer.soliditySourceMap import SourceMap
 import matplotlib.pyplot as plt
 from graphviz import Digraph
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
@@ -422,6 +423,17 @@ def single_static_solidity_code():
     global args
     exit_code = 0
 
+    source_path = Path(args.source)
+    file_path = Path(args.source + os.sep + args.joker)
+    if not source_path.exists() or not file_path.exists():
+        ast_graph = nx.DiGraph()
+        cfg = nx.DiGraph()
+        ssg = nx.DiGraph()
+        print_ast_nx_graph(ast_graph, file_name1="ast_graph")
+        print_cfg_nx_graph(cfg, file_name1="cfg")
+        print_ssg_nx_graph(ssg, file_name1="ssg")
+        return 0
+
     if "uniswap-v2-core" in args.source:
         global_params.PROJECT = "uniswap-v2-core"
     elif "openzeppelin-contracts" in args.source:
@@ -562,6 +574,7 @@ def analyze_solidity_code():
     global args
 
     exit_code = 0
+
     helper = InputHelper(InputHelper.SOLIDITY, source=args.source, compilation_err=args.compilation_err, root_path="",
                          remap="",
                          allow_paths="")
