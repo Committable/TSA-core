@@ -450,7 +450,11 @@ def single_static_solidity_code():
 
     cfg = nx.DiGraph()
 
+    last = 0
     for inp in inputs:
+        if len(inp["evm"]) < last:
+            continue
+        last = len(inp["evm"])
         logging.info("contract %s:", inp['contract'])
         env = EvmRuntime(platform=args.platform, disasm_file=inp['disasm_file'], source_map=None,
                          source_file=inp["source"], input_type="solidity-json", evm=inp['evm'])

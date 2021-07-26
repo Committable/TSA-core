@@ -14,11 +14,11 @@ class AstWalker:
                 if "children" in node and node["children"]:
                     i = 0
                     for child in node["children"]:
-                        # if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
-                        # if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
-                        graph.add_edge(nodeID, nodeID+"."+str(i), depth=depth, before=node["name"], after=child["name"])
-                        self.walkToGraph(nodeID+"."+str(i), child, graph, depth+1, i)
-                        i = i + 1
+                        if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
+                            if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
+                                graph.add_edge(nodeID, nodeID+"."+str(i), depth=depth, before=node["name"], after=child["name"])
+                                self.walkToGraph(nodeID+"."+str(i), child, graph, depth+1, i)
+                                i = i + 1
             elif global_params.PROJECT == "openzeppelin-contracts":
                 graph.add_node(nodeID, type=node["nodeType"], depth=depth, sequence=sequence)
                 i = 0
