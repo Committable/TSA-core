@@ -220,7 +220,7 @@ class EvmRuntime:
             elif block_type == "terminal":
                 g.node(name=start, label=label, color="red")
         EvmRuntime.cfg_count += 1
-        g.render(os.path.join(global_params.TMP_DIR, "cfg" + self.source_file.split("/")[-1].split(".")[0] + ".gv"),
+        g.render(os.path.join(global_params.TMP_DIR, "cfg" + self.source_file.split("/")[-1].split(".")[0]),
                  view=True)
 
     def print_cfg_dot(self, visited_edges):
@@ -281,6 +281,6 @@ class EvmRuntime:
     def build_runtime_env(self):
         #todo: test for building cfg process
         self.build_cfg()
-        # self.print_cfg()
+        self.print_cfg()
         return 0
 

@@ -173,7 +173,9 @@ MSTORE8 = OpCode("MSTORE8", 0x53, 2, 0)
 SLOAD = OpCode("SLOAD", 0x54, 1, 1)
 SSTORE = OpCode("SSTORE", 0x55, 2, 0)
 JUMP = OpCode("JUMP", 0x56, 1, 0)
-JUMPI = OpCode("JUMPI", 0x57, 2, 0)
+JUMPI = OpCode(
+
+    "JUMPI", 0x57, 2, 0)
 PC = OpCode("PC", 0x58, 0, 1)
 MSIZE = OpCode("MSIZE", 0x59, 0, 1)
 GAS = OpCode("GAS", 0x5a, 0, 1)

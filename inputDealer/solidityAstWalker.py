@@ -8,33 +8,41 @@ class AstWalker:
             self._walk_with_list_of_attrs(node, attributes, nodes)
 
     def walkToGraph(self, nodeID, node, graph, depth, sequence):
+        json_result = {}
         if node:
             if global_params.PROJECT == "uniswap-v2-core":
                 graph.add_node(nodeID, type=node["name"], depth=depth, sequence=sequence)
+
+                json_result["id"] = nodeID
+                json_result["name"] = node["name"]
+                json_result["layer"] = depth
+                json_result["children"] = []
                 if "children" in node and node["children"]:
                     i = 0
                     for child in node["children"]:
                         if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
                             if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
                                 graph.add_edge(nodeID, nodeID+"."+str(i), depth=depth, before=node["name"], after=child["name"])
-                                self.walkToGraph(nodeID+"."+str(i), child, graph, depth+1, i)
+                                json_result["children"].append(self.walkToGraph(nodeID+"."+str(i), child, graph, depth+1, i))
                                 i = i + 1
             elif global_params.PROJECT == "openzeppelin-contracts":
                 graph.add_node(nodeID, type=node["nodeType"], depth=depth, sequence=sequence)
+
+                json_result["id"] = nodeID
+                json_result["name"] = node["nodeType"]
+                json_result["layer"] = depth
+                json_result["children"] = []
+
                 i = 0
-                # if "nodes" in node and node["nodes"]:
-                #     for child in node["nodes"]:
-                #         # if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
-                #         # if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
-                #         graph.add_edge(nodeID, nodeID + "." + str(i), depth=depth, before=node["nodeType"],
-                #                        after=child["nodeType"])
-                #         self.walkToGraph(nodeID + "." + str(i), child, graph, depth + 1, i)
-                #         i = i + 1
                 for x in node:
                     if isinstance(node[x], dict):
                         if "nodeType" in node[x]:
-                            graph.add_node(nodeID+"."+str(i), type=node[x]["nodeType"], depth=depth, sequence=sequence)
-                            graph.add_edge(nodeID, nodeID + "." + str(i), depth=depth, before=node["nodeType"],
+                            child = {"id":nodeID+"."+str(i),
+                                    "name":node[x]["nodeType"],
+                                    "depth": depth+1,
+                                     "children": []}
+                            graph.add_node(nodeID+"."+str(i), type=node[x]["nodeType"], depth=depth+1, sequence=sequence)
+                            graph.add_edge(nodeID, nodeID + "." + str(i), depth=depth+1, before=node["nodeType"],
                                            after=node[x]["nodeType"])
                             for y in node[x]:
                                 if isinstance(node[x][y], list):
@@ -46,11 +54,10 @@ class AstWalker:
                                             graph.add_edge(nodeID+"."+str(i), nodeID + "." + str(i)+"."+str(j), depth=depth+1,
                                                            before=node[x]["nodeType"],
                                                            after=child["nodeType"])
-                                            self.walkToGraph(nodeID + "." + str(i)+"."+str(j), child, graph, depth + 1, j)
+                                            child["children"].append(self.walkToGraph(nodeID + "." + str(i)+"."+str(j), child, graph, depth + 1, j))
                                             j = j + 1
                             i = i+1
-
-
+                            json_result["children"].append(child)
                     elif isinstance(node[x], list):
                         for child in node[x]:
                             # if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
@@ -58,11 +65,11 @@ class AstWalker:
                             if isinstance(child, dict) and "nodeType" in child:
                                 graph.add_edge(nodeID, nodeID + "." + str(i), depth=depth, before=node["nodeType"],
                                                after=child["nodeType"])
-                                self.walkToGraph(nodeID + "." + str(i), child, graph, depth + 1, i)
+                                json_result["children"].append(self.walkToGraph(nodeID + "." + str(i), child, graph, depth + 1, i))
                                 i = i + 1
 
 
-        return
+        return json_result
 
 
     def _walk_with_attrs(self, node, attributes, nodes):

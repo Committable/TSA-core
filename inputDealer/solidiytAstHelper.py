@@ -59,8 +59,8 @@ class AstHelper:
         elif global_params.PROJECT == "openzeppelin-contracts":
             ast = sourcesList[target]["ast"]
         node = ast
-        walker.walkToGraph("0", node, graph, 0, 0)
-        return
+        return walker.walkToGraph("0", node, graph, 0, 0)
+
 
 
     def get_linearized_base_contracts(self, id, contractsById):

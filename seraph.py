@@ -317,7 +317,8 @@ def print_ast_nx_graph(graph1, file_name1="default", design=None, color='grey'):
 
 
     g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=False)
-
+    # with open(os.path.join(reporter.params.DEST_PATH, file_name1+".json"),'w') as outputfile:
+    #     json.dump(graph_json, outputfile)
     return
 
 
@@ -331,6 +332,9 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
 
     edgelist = []
     node_map = {}
+    graph_json = {}
+    graph_json["nodes"] = []
+    graph_json["edges"] = []
     i = 0
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
@@ -345,12 +349,16 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
             block_type = graph1.nodes._nodes[n]["type"]
             if block_type == "falls_to":
                 c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="black")
+                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "type":"falls_to"})
             elif block_type == "unconditional":
                 c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="blue")
+                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "color":"unconditional"})
             elif block_type == "conditional":
                 c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="green")
+                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "color":"conditional"})
             elif block_type == "terminal":
                 c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="red")
+                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "color":"terminal"})
             node_map[str(n)] = str(i)
             i += 1
         for e in graph1.edges._adjdict:
@@ -365,11 +373,14 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
                 elif edge_type == "terminal":
                     c.edge(str(e), str(x), color='red')
                 edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
+                graph_json["edges"].append({"source":str(e), "target":str(x), "type":edge_type})
 
     with open(reporter.params.DEST_PATH+os.sep+"cfg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
 
-    g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=False)
+    g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=True)
+    with open(os.path.join(reporter.params.DEST_PATH, file_name1 + ".json"),'w') as outputfile:
+        json.dump(graph_json, outputfile)
     return
 
 
@@ -384,6 +395,9 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
 
     edgelist = []
     node_map = {}
+    graph_json = {}
+    graph_json["nodes"] = []
+    graph_json["edges"] = []
     i = 0
     with g1.subgraph(name=file_name1, node_attr=design) as c:
         c.attr(label=file_name1)
@@ -399,6 +413,7 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
         for n in graph1.nodes._nodes:
             c.node(str(n), label=str(n).split("_")[0], splines='true', color="black")
             node_map[str(n)] = str(i)
+            graph_json["nodes"].append({"id":str(n), "name":str(n).split("_")[0]})
             i += 1
         for e in graph1.edges._adjdict:
             for x in graph1.edges._adjdict[e]:
@@ -412,10 +427,13 @@ def print_ssg_nx_graph(graph1, file_name1="default", design=None, color='grey'):
                     c.edge(str(e), str(x), color='red')
 
                 edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
+                graph_json["edges"].append({"source":str(e), "target":str(x), "type":graph1.edges._adjdict[e][x]["label"]})
 
     with open(reporter.params.DEST_PATH+os.sep+"ssg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
     g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=False)
+    with open(os.path.join(reporter.params.DEST_PATH, file_name1 + ".json"),'w') as outputfile:
+        json.dump(graph_json, outputfile)
     return
 
 
@@ -444,7 +462,10 @@ def single_static_solidity_code():
 
     # 2. get ast graph
     ast_graph = nx.DiGraph()
-    SourceMap.ast_helper.build_ast_graph(SourceMap.ast_helper.source_list, args.joker, ast_graph)
+    ast_json = SourceMap.ast_helper.build_ast_graph(SourceMap.ast_helper.source_list, args.joker, ast_graph)
+
+    with open(os.path.join(reporter.params.DEST_PATH, "ast_graph.json"),'w') as outputfile:
+        json.dump(ast_json, outputfile)
 
     print_ast_nx_graph(ast_graph, file_name1="ast_graph")
 
@@ -460,6 +481,17 @@ def single_static_solidity_code():
                          source_file=inp["source"], input_type="solidity-json", evm=inp['evm'])
 
         return_code = env.build_runtime_env()
+
+        ## construct cfg
+        for key in env.vertices:
+            basicblock = env.vertices[key]
+            label = str(basicblock.start) + "_" + str(basicblock.end)
+
+            cfg.add_node(key, instructions=basicblock.instructions, label=label, type=basicblock.get_block_type())
+        for key in env.edges:
+            for target in env.edges[key]:
+                cfg.add_edge(key, target, type=env.jump_type[target])
+        print_cfg_nx_graph(cfg, file_name1="cfg")
 
         interpreter = EVMInterpreter(env)
         return_code = return_code or interpreter.sym_exec()
@@ -670,6 +702,7 @@ def analyze_solidity_code():
     # helper.rm_tmp_files()
 
     return exit_code
+
 
 
 if __name__ == '__main__':

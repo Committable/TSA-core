@@ -98,7 +98,6 @@ class EVMInterpreter:
             visited.update({current_edge: updated_count_number})
         else:
             visited.update({current_edge: 1})
-
         # update visited edges for global symbolic execution
         if current_edge in self.total_visited_edges:
             updated_count_number = self.total_visited_edges[current_edge] + 1
@@ -106,9 +105,11 @@ class EVMInterpreter:
         else:
             self.total_visited_edges.update({current_edge: 1})
 
+        log.info("visiting edge: "+str(current_edge.v1) + "->" + str(current_edge.v2) + " ;path times: " + str(visited[current_edge]) + " ;total times: " + str(self.total_visited_edges[current_edge]))
+
         # TODO: how to implement better loop dectection?
         # now we only detect occurancly of the same edge under loop_limit
-        if visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional":
+        if (visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional") or self.total_visited_edges[current_edge] > 5:
             self.total_no_of_paths["normal"] += 1
             self.gen.gen_path_id()
             log.debug("Overcome a number of loop limit. Terminating this path ...")
@@ -178,25 +179,25 @@ class EVMInterpreter:
             branch_expression = self.runtime.vertices[block].get_branch_expression()
             branch_expression_node = self.runtime.vertices[block].get_branch_expression_node()
             negated_branch_expression_node = self.runtime.vertices[block].get_negated_branch_expression_node()
-
-            log.debug("Branch expression: " + str(branch_expression))
-
-            left_branch = self.runtime.vertices[block].get_jump_targets()[-1]
-            new_params = params.copy()
-            new_params.global_state["pc"] = left_branch
-            new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
-            new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
-            self._sym_exec_block(new_params, left_branch, block)
+            str_expr = str(branch_expression)
+            log.debug("Branch expression: " + str_expr)
+            if str_expr != "False":
+                left_branch = self.runtime.vertices[block].get_jump_targets()[-1]
+                new_params = params.copy()
+                new_params.global_state["pc"] = left_branch
+                new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
+                new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
+                self._sym_exec_block(new_params, left_branch, block)
 
             negated_branch_expression = Not(branch_expression)
 
             log.debug("Negated branch expression: " + str(negated_branch_expression))
-
-            right_branch = self.runtime.vertices[block].get_falls_to()
-            params.global_state["pc"] = right_branch
-            params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
-            params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
-            self._sym_exec_block(params, right_branch, block)
+            if str_expr != "True":
+                right_branch = self.runtime.vertices[block].get_falls_to()
+                params.global_state["pc"] = right_branch
+                params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
+                params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
+                self._sym_exec_block(params, right_branch, block)
         else:
             raise Exception('Unknown Jump-Type')
         end_time = time.time()
@@ -233,10 +234,11 @@ class EVMInterpreter:
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[1]
 
-        log.debug("==============================")
-        log.debug("EXECUTING: " + instr + "LENG_MEM:" + str(len(memory)))
+        # log.debug("==============================")
+        # log.debug("EXECUTING: " + instr + "LENG_MEM:" + str(len(memory)))
         # log.debug("STACK: " + str(stack))
-
+        # log.info("==============================")
+        # log.info("EXECUTING: " + instr + "LENG_MEM:" + str(len(memory)))
         #
         #  0s: Stop and Arithmetic Operations
         #
@@ -865,6 +867,8 @@ class EVMInterpreter:
         elif opcode == "JUMP":
             if len(stack) > 0:
                 target_address = stack.pop(0)
+                if target_address == 8680:
+                    print("here")
 
                 if isSymbolic(target_address):
                     raise TypeError("Target address must be an real integer but it is: %s", str(target_address))
@@ -877,6 +881,8 @@ class EVMInterpreter:
             # We need to prepare two branches
             if len(stack) > 1:
                 target_address = stack.pop(0)
+                if target_address == 8680:
+                    print("here")
                 if isSymbolic(target_address):
                     raise TypeError("Target address must be an integer: but it is %s", str(target_address))
                 self.runtime.vertices[block].set_jump_targets(target_address)
@@ -1042,7 +1048,7 @@ class EVMInterpreter:
                 global_state["balance"][recipient] = new_balance
                 # copy returndata to memory
                 self.write_memory(start_data_output, start_data_output+size_data_ouput-1,
-                                  MemReturn(0, size_data_ouput, calls[-1]), params)
+                                  MemReturn(0, size_data_ouput-1, calls[-1]), params)
 
                 # add to graph
                 node_stack = []
@@ -1128,7 +1134,7 @@ class EVMInterpreter:
                 global_state["balance"][recipient] = new_balance
                 # copy returndata to memory
                 self.write_memory(start_data_output, start_data_output + size_data_ouput - 1,
-                                  MemReturn(0, size_data_ouput, calls[-1]), params)
+                                  MemReturn(0, size_data_ouput-1, calls[-1]), params)
 
 
 
@@ -1180,7 +1186,7 @@ class EVMInterpreter:
 
                 # copy returndata to memory
                 self.write_memory(start_data_output, start_data_output + size_data_ouput - 1,
-                                  MemReturn(0, size_data_ouput, calls[-1]), params)
+                                  MemReturn(0, size_data_ouput-1, calls[-1]), params)
 
                 # the execution is possibly okay
                 new_var_name = self.gen.gen_return_status(calls[-1], self.gen.get_path_id())
@@ -1538,11 +1544,11 @@ class EVMInterpreter:
 
             for (v1, v2) in params.mem:
                 key = v1  # todo: v2 is not used for detection of out of bounds
-                subs = subexpression(key, start)
+                subs = subexpression(to_symbolic(key), start)
                 if subs is None:
                     continue
                 else:
-                    value = params.mem[key]
+                    value = params.mem[(v1, v2)]
                     if type(value) == MemInput:
                         result = self.load_inputdata(convertResult(subs + value.start), params)
                     elif type(value) == MemEvm:
@@ -1589,89 +1595,19 @@ class EVMInterpreter:
         # check if there is the same root symbolic values
         for key in returndata.keys():
             try:
-                size = int(str(simplify(key-start)))  # explicitly include in old values
-                exist_flag = True
-                break
+                size = int(str(simplify(to_symbolic(start)-key)))  # explicitly include in old values
+                if one_byte and size < 32 and size >= 0:
+                    exist_flag = True
+                    value = returndata[key]
+                    break
+                elif not one_byte and size == 0:
+                    return returndata[key]
             except:
                 continue
 
-        if exist_flag:
+        if exist_flag and one_byte:
             offset = (size % 32)
-            if offset:  # not in a slot, value should be a concat of bits extracted from both value1 and value
-                start1 = start - offset
-                value1 = None
-
-                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
-                s.set("timeout", global_params.TIMEOUT)
-                for x in returndata:
-                    s.push()
-                    s.add(Not(x == start1))
-                    if check_unsat(s):
-                        value1 = returndata[x]
-                        break
-                    s.pop()
-                if value1 is None:
-                    new_var_name = self.gen.gen_return_data(pc, convertResult(start1), convertResult(start1+31), self.gen.get_path_id())
-                    value1 = BitVec(new_var_name, 256)
-                    # add to graph
-                    s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
-                    node = ReturnDataNode(new_var_name, value1)
-                    r_node = self.graph.getCallReturnNode(pc)
-                    self.graph.addBranchEdge([(s_node, node), [(r_node, node)]], "flow_edge", self.gen.get_path_id())
-                    self.graph.addVarNode(value1, node)
-
-                    returndata[start1] = value1
-
-                if one_byte:  # return only a byte of inputdata indexed by start, so there is no need for value2
-                    return Extract(8*offset+7, 8*offset, value1)
-
-                start2 = start - offset + 32
-                value2 = None
-
-
-                for x in returndata:
-                    s.push()
-                    s.add(Not(x == start2))
-                    if check_unsat(s):
-                        value2 = returndata[x]
-                        break
-                    s.pop()
-                if value2 is None:
-                    new_var_name = self.gen.gen_return_data(pc, convertResult(start2), convertResult(start2 + 31), self.gen.get_path_id())
-                    value2 = BitVec(new_var_name, 256)
-                    # add to graph
-                    s_node = addExpressionNode(self.graph, start2, self.gen.get_path_id())
-                    node = ReturnDataNode(new_var_name, value2)
-                    r_node = self.graph.getCallReturnNode(pc)
-                    self.graph.addBranchEdge([(s_node, node), (r_node, node)], "flow_edge", self.gen.get_path_id())
-                    self.graph.addVarNode(value2, node)
-
-                    returndata[start2] = value2
-
-                value = Concat(Extract(offset-1, 0, value2), Extract(255, offset, value1))
-
-            else:
-                s = SSolver(mapping_var_expr=params.mapping_overflow_var_expr)
-                s.set("timeout", global_params.TIMEOUT)
-                for x in returndata:
-                    s.push()
-                    s.add(Not(x == start))
-                    if check_unsat(s):
-                        value = returndata[x]
-                        s.pop()
-                        break
-                    s.pop()
-                if value is None:
-                    new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31), self.gen.get_path_id())
-                    value = BitVec(new_var_name, 256)
-                    # add to graph
-                    s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
-                    node = ReturnDataNode(new_var_name, value)
-                    r_node = self.graph.getCallReturnNode(pc)
-                    self.graph.addBranchEdge([(s_node, node), (r_node, node)], "flow_edge", self.gen.get_path_id())
-                    self.graph.addVarNode(value, node)
-
-                    returndata[start] = value
+            return Extract(255-8*offset, 255-(8*offset+7), value)
         else:
             new_var_name = self.gen.gen_return_data(pc, convertResult(start), convertResult(start + 31), self.gen.get_path_id())
             value = BitVec(new_var_name, 256)
@@ -1684,7 +1620,7 @@ class EVMInterpreter:
 
             returndata[start] = value
             if one_byte:
-                return Extract(7, 0, value)
+                return Extract(255-start*8, 255-start*8-7, value)
 
         return value
 
