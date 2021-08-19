@@ -378,7 +378,7 @@ def print_cfg_nx_graph(graph1,file_name1="default", design=None, color='grey'):
     with open(reporter.params.DEST_PATH+os.sep+"cfg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))
 
-    g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=True)
+    g1.render(file_name1, format='svg', directory=reporter.params.DEST_PATH, view=False)
     with open(os.path.join(reporter.params.DEST_PATH, file_name1 + ".json"),'w') as outputfile:
         json.dump(graph_json, outputfile)
     return

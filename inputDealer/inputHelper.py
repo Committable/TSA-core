@@ -74,7 +74,8 @@ class InputHelper:
             data_dict = {}
             contracts = {}
             try:
-
+                #with open(self.source+os.sep+target, 'r') as inputfile:
+                    
                 solcx.install_solc("0.4.25")
                 data_dict = solcx.compile_files(
                     [self.source + os.sep + target],
