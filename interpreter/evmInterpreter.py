@@ -85,7 +85,7 @@ class EVMInterpreter:
 
         if block < 0 or block not in self.runtime.vertices:
             self.total_no_of_paths["exception"] += 1
-            log.critical("Unknown jump address %d. Terminating this path ...", block)
+            log.info("Unknown jump address %d. Terminating this path ...", block)
             return
 
         log.debug("Reach block address %d \n", block)
@@ -105,7 +105,7 @@ class EVMInterpreter:
         else:
             self.total_visited_edges.update({current_edge: 1})
 
-        log.info("visiting edge: "+str(current_edge.v1) + "->" + str(current_edge.v2) + " ;path times: " + str(visited[current_edge]) + " ;total times: " + str(self.total_visited_edges[current_edge]))
+        log.debug("visiting edge: "+str(current_edge.v1) + "->" + str(current_edge.v2) + " ;path times: " + str(visited[current_edge]) + " ;total times: " + str(self.total_visited_edges[current_edge]))
 
         # TODO: how to implement better loop dectection?
         # now we only detect occurancly of the same edge under loop_limit
@@ -867,8 +867,6 @@ class EVMInterpreter:
         elif opcode == "JUMP":
             if len(stack) > 0:
                 target_address = stack.pop(0)
-                if target_address == 8680:
-                    print("here")
 
                 if isSymbolic(target_address):
                     raise TypeError("Target address must be an real integer but it is: %s", str(target_address))
@@ -881,8 +879,6 @@ class EVMInterpreter:
             # We need to prepare two branches
             if len(stack) > 1:
                 target_address = stack.pop(0)
-                if target_address == 8680:
-                    print("here")
                 if isSymbolic(target_address):
                     raise TypeError("Target address must be an integer: but it is %s", str(target_address))
                 self.runtime.vertices[block].set_jump_targets(target_address)
@@ -1466,36 +1462,39 @@ class EVMInterpreter:
     # value is type of {BitVec(256), , MemInput, MemEvm, real},
     # elements in mem/memory are of {BitVec(256)/BitVec(8), MemInput, MemEvm, real}
     def write_memory(self, start, end, value, params):
-        if isAllReal(start, end):
-            memory = params.memory
-            old_size = len(memory) // 32
-            new_size = ceil32(end) // 32
-            mem_extend = (new_size - old_size) * 32
-            memory.extend([0] * mem_extend)
-            size = end - start
-            for i in range(size, -1, -1):
-                if type(value) == MemInput:  # CallDataCopy
-                    memory[start + i] = MemInput(value.start+i, value.start+i)
-                elif type(value) == MemEvm:  # CodeCopy
-                    memory[start + i] = MemEvm(value.start+i, value.start+i)
-                elif type(value) == MemReturn:
-                    memory[start + i] = MemReturn(value.start+i, value.start+i, value.pc)
-                elif type(value) == MemExtCode:
-                    memory[start + i] = MemExtCode(value.start+i, value.start+i, value.address)
-                else:
-                    assert(size <= 31)  # MSTORE8 or MSTORE
-                    value = to_symbolic(value)
-                    memory[start + i] = convertResult(Extract(8 * (size - i) + 7, 8 * (size - i), value))
-        else:
-            # todo: the overlaps between symbolic vars should be dealed with? but it's very difficult.
-            for key in params.mem:
-                try:
-                    if int(str(start - key)) == 0:
-                        params.mem.pop(key)
-                except:
-                    pass
+        try:
+            if isAllReal(start, end):
+                memory = params.memory
+                old_size = len(memory) // 32
+                new_size = ceil32(end) // 32
+                mem_extend = (new_size - old_size) * 32
+                memory.extend([0] * mem_extend)
+                size = end - start
+                for i in range(size, -1, -1):
+                    if type(value) == MemInput:  # CallDataCopy
+                        memory[start + i] = MemInput(value.start+i, value.start+i)
+                    elif type(value) == MemEvm:  # CodeCopy
+                        memory[start + i] = MemEvm(value.start+i, value.start+i)
+                    elif type(value) == MemReturn:
+                        memory[start + i] = MemReturn(value.start+i, value.start+i, value.pc)
+                    elif type(value) == MemExtCode:
+                        memory[start + i] = MemExtCode(value.start+i, value.start+i, value.address)
+                    else:
+                        assert(size <= 31)  # MSTORE8 or MSTORE
+                        value = to_symbolic(value)
+                        memory[start + i] = convertResult(Extract(8 * (size - i) + 7, 8 * (size - i), value))
+            else:
+                # todo: the overlaps between symbolic vars should be dealed with? but it's very difficult.
+                for key in params.mem:
+                    try:
+                        if int(str(start - key)) == 0:
+                            params.mem.pop(key)
+                    except:
+                        pass
 
-            params.mem[(start, end)] = value
+                params.mem[(start, end)] = value
+        except Exception as err:
+            log.error(str(err))
         return
 
     def getSubstitudeExpr(self, expr, mapping_overflow_var_expr):
@@ -1515,71 +1514,74 @@ class EVMInterpreter:
     # load a value of 32 bytes size from memory indexed by "start"(in byte)
     # the sort of return value should be in { real int, BitVec(256)}
     def load_memory(self, start, params):
-        if isReal(start):
-            data = []
-            for i in range(0, 32):  # [31, 30, ..., 0]
-                if start+i >= len(params.memory):
-                    return 0
-                value = params.memory[start+i]
-                if type(value) == MemInput:   # a Mnemonic of a need of input data
-                    value = self.load_inputdata(value.start, params, one_byte=True)
-                elif type(value) == MemEvm:  # a Mnemonic of a need of evm bytecode
-                    if isAllReal(value.start, value.end):  # we can get the real value from bytecode file
-                        value = int(self.evm[value.start*2:(value.end+1)*2], 16)
-                    else:  # we have to construct a new symbolic value from evm
-                        value = self.load_evm_data(value.start, params, one_byte=True)
-                elif type(value) == MemReturn:
-                    value = self.load_returndata(value.start, value.pc, params, one_byte=True)
-                elif type(value) == MemExtCode:
-                    value = self.load_extcode(value.start, value.address, params, one_byte=True)
-                else:  # the value from memory is exactly what we want, so nothing is needed to do
-                    value = to_symbolic(value, 8)  # it maybe real
-                data.append(value)
-
-            result = data[0]
-            for i in range(1, 32):
-                result = Concat(result, data[i])
-        else:
-            result = None
-
-            for (v1, v2) in params.mem:
-                key = v1  # todo: v2 is not used for detection of out of bounds
-                subs = subexpression(to_symbolic(key), start)
-                if subs is None:
-                    continue
-                else:
-                    value = params.mem[(v1, v2)]
-                    if type(value) == MemInput:
-                        result = self.load_inputdata(convertResult(subs + value.start), params)
-                    elif type(value) == MemEvm:
-                        if isReal(convertResult(subs)) and isAllReal(value.start, value.end):
-                            result = int(self.evm[(convertResult(subs) + value.start)*2:
-                                                  ((convertResult(subs) + value.start)+32)*2], 16)
-                        else:
-                            result = self.load_evm_data(convertResult(subs + value.start), params)
+        try:
+            if isReal(start):
+                data = []
+                for i in range(0, 32):  # [31, 30, ..., 0]
+                    if start+i >= len(params.memory):
+                        return 0
+                    value = params.memory[start+i]
+                    if type(value) == MemInput:   # a Mnemonic of a need of input data
+                        value = self.load_inputdata(value.start, params, one_byte=True)
+                    elif type(value) == MemEvm:  # a Mnemonic of a need of evm bytecode
+                        if isAllReal(value.start, value.end):  # we can get the real value from bytecode file
+                            value = int(self.evm[value.start*2:(value.end+1)*2], 16)
+                        else:  # we have to construct a new symbolic value from evm
+                            value = self.load_evm_data(value.start, params, one_byte=True)
                     elif type(value) == MemReturn:
-                        result = self.load_returndata(convertResult(subs + value.start), value.pc, params)
+                        value = self.load_returndata(value.start, value.pc, params, one_byte=True)
                     elif type(value) == MemExtCode:
-                        result = self.load_extcode(convertResult(subs + value.start), value.address, params)
-                    else:  # BitVec(256) or real
-                        assert (type(value) == six.integer_types or value.sort() == BitVecSort(256))
-                        if str(subs) != "0":  # conditions we don't expect
-                            log.info("conditions we don't expect from memory load of symbolic indexs")
-                        result = value
+                        value = self.load_extcode(value.start, value.address, params, one_byte=True)
+                    else:  # the value from memory is exactly what we want, so nothing is needed to do
+                        value = to_symbolic(value, 8)  # it maybe real
+                    data.append(value)
 
-                    break
+                result = to_symbolic(data[0])
+                for i in range(1, 32):
+                    result = Concat(result, to_symbolic(data[i]))
+            else:
+                result = None
 
-            if result is None:
-                log.info("conditions we don't expect from memory load of symbolic indexs for not stored value")
-                new_var_name = self.gen.gen_mem_var(start, params.global_state["pc"]-1, self.gen.get_path_id())
-                result = BitVec(new_var_name, 256)
-                # add to graph
-                s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
-                node = MemoryNode(new_var_name, result, start)
-                self.graph.addBranchEdge([(s_node, node)], "flowEdge", self.gen.get_path_id())
-                self.graph.addVarNode(result, node)
+                for (v1, v2) in params.mem:
+                    key = v1  # todo: v2 is not used for detection of out of bounds
+                    subs = subexpression(to_symbolic(key), start)
+                    if subs is None:
+                        continue
+                    else:
+                        value = params.mem[(v1, v2)]
+                        if type(value) == MemInput:
+                            result = self.load_inputdata(convertResult(subs + value.start), params)
+                        elif type(value) == MemEvm:
+                            if isReal(convertResult(subs)) and isAllReal(value.start, value.end):
+                                result = int(self.evm[(convertResult(subs) + value.start)*2:
+                                                      ((convertResult(subs) + value.start)+32)*2], 16)
+                            else:
+                                result = self.load_evm_data(convertResult(subs + value.start), params)
+                        elif type(value) == MemReturn:
+                            result = self.load_returndata(convertResult(subs + value.start), value.pc, params)
+                        elif type(value) == MemExtCode:
+                            result = self.load_extcode(convertResult(subs + value.start), value.address, params)
+                        else:  # BitVec(256) or real
+                            assert (type(value) == six.integer_types or value.sort() == BitVecSort(256))
+                            if str(subs) != "0":  # conditions we don't expect
+                                log.info("conditions we don't expect from memory load of symbolic indexs")
+                            result = value
 
-                params.mem[start, convertResult(start + 31)] = result
+                        break
+        except Exception as err:
+            log.error(str(err))
+
+        if result is None:
+            log.info("conditions we don't expect from memory load of symbolic indexs for not stored value")
+            new_var_name = self.gen.gen_mem_var(start, params.global_state["pc"]-1, self.gen.get_path_id())
+            result = BitVec(new_var_name, 256)
+            # add to graph
+            s_node = addExpressionNode(self.graph, start, self.gen.get_path_id())
+            node = MemoryNode(new_var_name, result, start)
+            self.graph.addBranchEdge([(s_node, node)], "flowEdge", self.gen.get_path_id())
+            self.graph.addVarNode(result, node)
+
+            params.mem[start, convertResult(start + 31)] = result
 
         return convertResult(result)
 

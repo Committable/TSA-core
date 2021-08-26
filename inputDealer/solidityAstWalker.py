@@ -1,94 +1,163 @@
 import global_params
+
+
 class AstWalker:
+    count = 0
+    count_2 = 0
+    def __init__(self, ast_type):
+        self.type = ast_type
 
     def walk(self, node, attributes, nodes):
-        if isinstance(attributes, dict):
-            self._walk_with_attrs(node, attributes, nodes)
+        if global_params.AST == "legacyAST":
+            if isinstance(attributes, dict):
+                self._walk_with_attrs_legacy(node, attributes, nodes)
+            else:
+                self._walk_with_list_of_attrs_legacy(node, attributes, nodes)
         else:
-            self._walk_with_list_of_attrs(node, attributes, nodes)
+            return
 
-    def walkToGraph(self, nodeID, node, graph, depth, sequence):
+    def walk_to_graph(self, source, node, graph, depth):
         json_result = {}
         if node:
-            if global_params.PROJECT == "uniswap-v2-core":
-                graph.add_node(nodeID, type=node["name"], depth=depth, sequence=sequence)
+            if global_params.AST == "legacyAST":
+                node_id = str(node["id"])
 
-                json_result["id"] = nodeID
+                position = node["src"].split(":")
+                tmp = AstWalker.lines_and_changed_line_from_position(source.line_break_positions,
+                                                                     int(position[0]),
+                                                                     int(position[1]))
+                changed = tmp["changed"]
+                if changed:
+                    AstWalker.count += 1
+                graph.add_node(node_id, type=node["name"], depth=depth, ischanged=changed, position=node["src"], line=tmp["lines"])
+
+                json_result["id"] = node_id
                 json_result["name"] = node["name"]
                 json_result["layer"] = depth
                 json_result["children"] = []
+                json_result["ischanged"] = changed
+                json_result["position"] = node["src"]
+                json_result["lines"] = tmp["lines"]
+
                 if "children" in node and node["children"]:
-                    i = 0
                     for child in node["children"]:
-                        if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
-                            if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
-                                graph.add_edge(nodeID, nodeID+"."+str(i), depth=depth, before=node["name"], after=child["name"])
-                                json_result["children"].append(self.walkToGraph(nodeID+"."+str(i), child, graph, depth+1, i))
-                                i = i + 1
-            elif global_params.PROJECT == "openzeppelin-contracts":
-                graph.add_node(nodeID, type=node["nodeType"], depth=depth, sequence=sequence)
+                        position = child["src"].split(":")
+                        tmp = AstWalker.lines_and_changed_line_from_position(source.line_break_positions,
+                                                                                       int(position[0]),
+                                                                                       int(position[1]))
+                        child_changed = tmp["changed"]
+                        edge_changed = changed and child_changed
+                        graph.add_edge(node_id, str(child["id"]), depth=depth, before=node["name"],
+                                       after=child["name"], ischanged=edge_changed)
+                        json_result["children"].append(self.walk_to_graph(source, child, graph, depth+1))
+                else:
+                    start = int(position[0])
+                    end = int(position[0]) + int(position[1])
+                    graph._node[node_id]["content"] = source.content[start:end]
+                    json_result["content"] = source.content[start:end]
+            elif global_params.AST == "ast":
+                nodeID = str(node["id"])
+
+                position = node["src"].split(":")
+                tmp = AstWalker.lines_and_changed_line_from_position(source.line_break_positions,
+                                                                     int(position[0]),
+                                                                     int(position[1]))
+                changed = tmp["changed"]
+                if changed:
+                    AstWalker.count += 1
+                graph.add_node(nodeID, type=node["nodeType"], depth=depth,
+                               ischanged=changed, position=node["src"],
+                               line=tmp["lines"])
 
                 json_result["id"] = nodeID
                 json_result["name"] = node["nodeType"]
                 json_result["layer"] = depth
                 json_result["children"] = []
+                json_result["ischanged"] = changed
+                json_result["position"] = node["src"]
+                json_result["lines"] = tmp["lines"]
 
-                i = 0
+                children_num = 0
                 for x in node:
                     if isinstance(node[x], dict):
-                        if "nodeType" in node[x]:
-                            child = {"id":nodeID+"."+str(i),
-                                    "name":node[x]["nodeType"],
-                                    "depth": depth+1,
-                                     "children": []}
-                            graph.add_node(nodeID+"."+str(i), type=node[x]["nodeType"], depth=depth+1, sequence=sequence)
-                            graph.add_edge(nodeID, nodeID + "." + str(i), depth=depth+1, before=node["nodeType"],
-                                           after=node[x]["nodeType"])
-                            for y in node[x]:
-                                if isinstance(node[x][y], list):
-                                    j = 0
-                                    for child in node[x][y]:
-                                        # if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
-                                        # if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
-                                        if isinstance(child, dict) and "nodeType" in child:
-                                            graph.add_edge(nodeID+"."+str(i), nodeID + "." + str(i)+"."+str(j), depth=depth+1,
-                                                           before=node[x]["nodeType"],
-                                                           after=child["nodeType"])
-                                            child["children"].append(self.walkToGraph(nodeID + "." + str(i)+"."+str(j), child, graph, depth + 1, j))
-                                            j = j + 1
-                            i = i+1
-                            json_result["children"].append(child)
+                        if "nodeType" in node[x] and "src" in node[x] and "id" in node[x]:
+                            position = node[x]["src"].split(":")
+                            tmp = AstWalker.lines_and_changed_line_from_position(source.line_break_positions,
+                                                                                 int(position[0]),
+                                                                                 int(position[1]))
+                            child_changed = tmp["changed"]
+                            edge_changed = changed and child_changed
+
+                            graph.add_edge(nodeID, str(node[x]["id"]), depth=depth+1, before=node["nodeType"],
+                                           after=node[x]["nodeType"], ischanged=edge_changed)
+                            children_num += 1
+                            json_result["children"].append(self.walk_to_graph(source,
+                                                                              node[x],
+                                                                              graph,
+                                                                              depth + 1))
                     elif isinstance(node[x], list):
                         for child in node[x]:
-                            # if child["name"] not in ["VariableDeclaration","ParameterList","InheritanceSpecifier","Identifier","IndexAccess"]:
-                            # if child["name"] in ["ContractDefinition", "FunctionDefinition","Block","ExpressionStatement","Assignment", "FunctionCall", "IndexAccess","MemberAccess","Identifier"]:
                             if isinstance(child, dict) and "nodeType" in child:
-                                graph.add_edge(nodeID, nodeID + "." + str(i), depth=depth, before=node["nodeType"],
-                                               after=child["nodeType"])
-                                json_result["children"].append(self.walkToGraph(nodeID + "." + str(i), child, graph, depth + 1, i))
-                                i = i + 1
+                                position = child["src"].split(":")
+                                tmp = AstWalker.lines_and_changed_line_from_position(source.line_break_positions,
+                                                                                     int(position[0]),
+                                                                                     int(position[1]))
+                                child_changed = tmp["changed"]
+                                edge_changed = changed and child_changed
 
-
+                                children_num += 1
+                                graph.add_edge(nodeID, str(child["id"]), depth=depth, before=node["nodeType"],
+                                               after=child["nodeType"], ischanged=edge_changed)
+                                json_result["children"].append(self.walk_to_graph(source,
+                                                                                  child,
+                                                                                  graph,
+                                                                                  depth + 1))
+                if children_num == 0:
+                    start = int(position[0])
+                    end = int(position[0]) + int(position[1])
+                    graph._node[nodeID]["content"] = source.content[start:end]
+                    json_result["content"] = source.content[start:end]
         return json_result
 
+    @classmethod
+    def get_lines_from_position(cls, source, start, end):
+        lines = []
+        last = 0
+        for n in range(0, len(source)):
+            if start < source[n] and end > last:
+                lines.append(n+1)
+            if end < source[n]:
+                break
+            last = source[n]
 
-    def _walk_with_attrs(self, node, attributes, nodes):
-        if self._check_attributes(node, attributes):
+        return lines
+
+    @classmethod
+    def lines_and_changed_line_from_position(clz, source, start, size):
+        lines = AstWalker.get_lines_from_position(source, start, start+size)
+        for x in lines:
+            if x in global_params.DIFFS:
+                AstWalker.count_2 += 1
+                return {"changed": True, "lines": lines}
+        return {"changed": False, "lines": lines}
+
+    def _walk_with_attrs_legacy(self, node, attributes, nodes):
+        if self._check_attributes_legacy(node, attributes):
             nodes.append(node)
         else:
             if "children" in node and node["children"]:
                 for child in node["children"]:
-                    self._walk_with_attrs(child, attributes, nodes)
+                    self._walk_with_attrs_legacy(child, attributes, nodes)
 
-    def _walk_with_list_of_attrs(self, node, list_of_attributes, nodes):
-        if self._check_list_of_attributes(node, list_of_attributes):
+    def _walk_with_list_of_attrs_legacy(self, node, list_of_attributes, nodes):
+        if self._check_list_of_attributes_legacy(node, list_of_attributes):
             nodes.append(node)
         else:
             if "children" in node and node["children"]:
                 for child in node["children"]:
-                    self._walk_with_list_of_attrs(child, list_of_attributes, nodes)
+                    self._walk_with_list_of_attrs_legacy(child, list_of_attributes, nodes)
 
-    def _check_attributes(self, node, attributes):
+    def _check_attributes_legacy(self, node, attributes):
         for name in attributes:
             if name == "attributes":
                 if "attributes" not in node or not self._check_attributes(node["attributes"], attributes["attributes"]):
@@ -98,7 +167,7 @@ class AstWalker:
                     return False
         return True
 
-    def _check_list_of_attributes(self, node, list_of_attributes):
+    def _check_list_of_attributes_legacy(self, node, list_of_attributes):
         for attrs in list_of_attributes:
             if self._check_attributes(node, attrs):
                 return True

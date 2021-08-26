@@ -2,9 +2,12 @@ import ast
 import json
 import global_params
 import six
-
+import os
+import logging
 from inputDealer.solidiytAstHelper import AstHelper
 from utils import run_command
+
+logger = logging.getLogger(__name__)
 
 
 class Source:
@@ -14,70 +17,41 @@ class Source:
         self.line_break_positions = self._load_line_break_positions()
 
     def _load_content(self):
-        with open(self.filename, 'r') as f:
+        with open(os.path.join(global_params.SRC_DIR, self.filename), 'r') as f:
             content = f.read()
         return content
 
     def _load_line_break_positions(self):
         return [i for i, letter in enumerate(self.content) if letter == '\n']
 
+
 class SourceMap:
-    parent_filename = ""
-    position_groups = {}
+    parent_file = ""
     sources = {}
+    position_groups = {}
     ast_helper = None
     func_to_sig_by_contract = {}
-    remap = ""
-    allow_paths = ""
-    cname_to_sourcefile = {}
 
-    def __init__(self, cname="", parent_filename="", input_type="", root_path="", remap="", allow_paths="", contract="", sources=None):
+    def __init__(self, cname="", input_type="", parent_file="", sources=None):
         try:
-            if sources is None:
-                self.root_path = root_path
+            if input_type == global_params.SOLIDITY:
+                SourceMap.parent_file = parent_file
+                SourceMap.position_groups[cname] = sources["contracts"][parent_file][cname]['evm']['legacyAssembly']
+                SourceMap.ast_helper = AstHelper(parent_file, input_type, sources["sources"])
+                SourceMap.func_to_sig_by_contract[cname] = sources["contracts"][parent_file][cname]['evm']["methodIdentifiers"]
+
                 self.cname = cname
                 self.input_type = input_type
-                #if not SourceMap.parent_filename:
-                SourceMap.remap = remap
-                SourceMap.allow_paths = allow_paths
-                SourceMap.parent_filename = parent_filename
-                if input_type == "solidity":
-                    SourceMap.position_groups = SourceMap._load_position_groups()
-                else:
-                    raise Exception("There is no such type of input")
-                SourceMap.ast_helper = AstHelper(SourceMap.parent_filename, input_type, SourceMap.remap, SourceMap.allow_paths)
-                SourceMap.func_to_sig_by_contract = SourceMap._get_sig_to_func_by_contract()
-
-                for x in SourceMap.func_to_sig_by_contract:
-                    c_name = x.split(":")[-1]
-                    SourceMap.cname_to_sourcefile[c_name] = x
-                    if c_name == self.cname:
-                        self.cname = x
-                self.source = self._get_source()
+                self.source = SourceMap._get_source()
                 self.positions = self._get_positions()
                 self.instr_positions = {}
-                self.var_names = self._get_var_names()
-                self.func_call_names = self._get_func_call_names()
-                self.callee_src_pairs = self._get_callee_src_pairs()
-                self.func_name_to_params = self._get_func_name_to_params()
                 self.sig_to_func = self._get_sig_to_func()
+
+                SourceMap.ast_helper.set_source(self.source)
             else:
-                self.cname = cname
-                self.input_type = input_type
-
-                if input_type == 'solidity-json':
-                    if global_params.PROJECT == "uniswap-v2-core":
-                        SourceMap.position_groups[cname] = sources["contracts"][contract]['evm']['legacyAssembly']
-                    elif global_params.PROJECT == "openzeppelin-contracts":
-                        SourceMap.position_groups[cname] = sources["contracts"][contract][cname]['evm']['legacyAssembly']
-
-                else:
-                    raise Exception("There is no such type of input")
-        except:
-            print("sourceMapError")
-        SourceMap.ast_helper = AstHelper(parent_filename, input_type, remap,
-                                         allow_paths, sources=sources['sources'])
-
+                raise Exception("There is no such type of input")
+        except Exception as err:
+            logger.error("sourceMapError: %s", str(err))
 
     def get_source_code(self, pc):
         try:
@@ -140,53 +114,14 @@ class SourceMap:
         return pos
 
     def _get_sig_to_func(self):
-        func_to_sig = SourceMap.func_to_sig_by_contract[self.cname]['hashes']
+        func_to_sig = SourceMap.func_to_sig_by_contract[self.cname]
         return dict((sig, func) for func, sig in six.iteritems(func_to_sig))
 
-    def _get_func_name_to_params(self):
-        func_name_to_params = SourceMap.ast_helper.get_func_name_to_params(self.cname)
-        for func_name in func_name_to_params:
-            calldataload_position = 0
-            for param in func_name_to_params[func_name]:
-                if param['type'] == 'ArrayTypeName':
-                    param['position'] = calldataload_position
-                    calldataload_position += param['value']
-                else:
-                    param['position'] = calldataload_position
-                    calldataload_position += 1
-        return func_name_to_params
-
-    def _get_source(self):
-        fname = self.get_filename()
-        if fname not in SourceMap.sources:
-            SourceMap.sources[fname] = Source(fname)
-        return SourceMap.sources[fname]
-
-    def _get_callee_src_pairs(self):
-        return SourceMap.ast_helper.get_callee_src_pairs(self.cname)
-
-    def _get_var_names(self):
-        return SourceMap.ast_helper.extract_state_variable_names(self.cname)
-
-    def _get_func_call_names(self):
-        func_call_srcs = SourceMap.ast_helper.extract_func_call_srcs(self.cname)
-        func_call_names = []
-        for src in func_call_srcs:
-            src = src.split(":")
-            start = int(src[0])
-            end = start + int(src[1])
-            func_call_names.append(self.source.content[start:end])
-        return func_call_names
-
     @classmethod
-    def _get_sig_to_func_by_contract(cls):
-        if cls.allow_paths:
-            cmd = 'solc --combined-json hashes %s %s --allow-paths %s' % (cls.remap, cls.parent_filename, cls.allow_paths)
-        else:
-            cmd = 'solc --combined-json hashes %s %s' % (cls.remap, cls.parent_filename)
-        out = run_command(cmd)
-        out = json.loads(out)
-        return out['contracts']
+    def _get_source(cls):
+        if SourceMap.parent_file not in SourceMap.sources:
+            SourceMap.sources[SourceMap.parent_file] = Source(SourceMap.parent_file)
+        return SourceMap.sources[SourceMap.parent_file]
 
     @classmethod
     def _load_position_groups_standard_json(cls):
@@ -206,19 +141,23 @@ class SourceMap:
         return out['contracts']
 
     def _get_positions(self):
-        if self.input_type == "solidity":
-            asm = SourceMap.position_groups[self.cname]['asm']['.data']['0']
-        else:
-            raise Exception("There is no such type of input")
-        positions = asm['.code']
-        while(True):
-            try:
-                positions.append(None)
-                positions += asm['.data']['0']['.code']
-                asm = asm['.data']['0']
-            except:
-                break
-        return positions
+        try:
+            if self.input_type == global_params.SOLIDITY:
+                asm = SourceMap.position_groups[self.cname]['.data']['0']
+            else:
+                raise Exception("There is no such type of input")
+            positions = asm['.code']
+            while(True):
+                try:
+                    positions.append(None)
+                    positions += asm['.data']['0']['.code']
+                    asm = asm['.data']['0']
+                except:
+                    break
+            return positions
+        except Exception as err:
+            logger.info("has no positions for bytecodes")
+            return None
 
     def _convert_offset_to_line_column(self, pos):
         ret = {}

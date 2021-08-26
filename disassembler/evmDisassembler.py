@@ -3,6 +3,8 @@ import os
 import re
 import subprocess
 
+logger = logging.getLogger(__name__)
+
 
 class EvmDisassembler:
     def __init__(self, source, contract, path):
@@ -41,7 +43,7 @@ class EvmDisassembler:
             disasm_p = subprocess.Popen(["evm", "disasm", evm_file], stdout=subprocess.PIPE)
             disasm_out = disasm_p.communicate()[0].decode('utf-8', 'strict')
         except:
-            logging.critical("Disassembly failed.")
+            logger.critical("Disassembly failed.")
             exit(1)
 
         with open(disasm_file, 'w') as of:
