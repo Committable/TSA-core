@@ -15,7 +15,7 @@ class BasicBlock:
 
         self.jump_from = []  # all blocks from which can jump to or fall to this block
 
-        self.falls_to = None
+        self.falls_to = None  # the block this block can falls to
 
         # all true targets for conditional jump or targets for uncondition jump, we don't use set() because the top of
         # jump_targets is the aimed pc currently

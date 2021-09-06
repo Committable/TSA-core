@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 class Source:
     def __init__(self, filename):
         self.filename = filename
-        self.content = self._load_content()
-        self.line_break_positions = self._load_line_break_positions()
+        self.content = self._load_content()  # the all file content in string type
+        self.line_break_positions = self._load_line_break_positions()  # the position of all "\n"
 
     def _load_content(self):
         with open(os.path.join(global_params.SRC_DIR, self.filename), 'r') as f:
@@ -26,37 +26,77 @@ class Source:
 
 
 class SourceMap:
-    parent_file = ""
+    parent_file = ""  # relative path of .sol file
     sources = {}
-    position_groups = {}
-    ast_helper = None
+    position_groups = {}  # map from contract name to legacyAssembly of contract
+    ast_helper = None  # AstHelper of parentfile
     func_to_sig_by_contract = {}
 
     def __init__(self, cname="", input_type="", parent_file="", sources=None):
-        try:
-            if input_type == global_params.SOLIDITY:
-                SourceMap.parent_file = parent_file
-                SourceMap.position_groups[cname] = sources["contracts"][parent_file][cname]['evm']['legacyAssembly']
-                SourceMap.ast_helper = AstHelper(parent_file, input_type, sources["sources"])
-                SourceMap.func_to_sig_by_contract[cname] = sources["contracts"][parent_file][cname]['evm']["methodIdentifiers"]
+        if input_type == global_params.SOLIDITY:
+            SourceMap.parent_file = parent_file
+            SourceMap.position_groups[cname] = sources["contracts"][parent_file][cname]['evm']['legacyAssembly']
+            SourceMap.ast_helper = AstHelper(parent_file, input_type, sources["sources"])
+            SourceMap.func_to_sig_by_contract[cname] = sources["contracts"][parent_file][cname]['evm']["methodIdentifiers"]
 
-                self.cname = cname
-                self.input_type = input_type
-                self.source = SourceMap._get_source()
-                self.positions = self._get_positions()
-                self.instr_positions = {}
-                self.sig_to_func = self._get_sig_to_func()
+            self.cname = cname
+            self.input_type = input_type
+            self.source = SourceMap._get_source()
+            self.sig_to_func = self._get_sig_to_func()
 
-                SourceMap.ast_helper.set_source(self.source)
-            else:
-                raise Exception("There is no such type of input")
-        except Exception as err:
-            logger.error("sourceMapError: %s", str(err))
+            SourceMap.ast_helper.set_source(self.source)
+
+            self.instr_positions = {}
+            self.positions = self._get_positions()
+
+            self.var_names = self._get_var_names()
+            self.func_call_names = self._get_func_call_names()
+            self.callee_src_pairs = self._get_callee_src_pairs()
+            self.func_name_to_params = self._get_func_name_to_params()
+            self.sig_to_func = self._get_sig_to_func()
+        else:
+            raise Exception("There is no such type of input")
+
+        return
+
+    def _get_var_names(self):
+        return SourceMap.ast_helper.extract_state_variable_names(SourceMap.parent_file+":"+self.cname)
+
+    def _get_func_call_names(self):
+        func_call_srcs = SourceMap.ast_helper.extract_func_call_srcs(SourceMap.parent_file+":"+self.cname)
+        func_call_names = []
+        for src in func_call_srcs:
+            src = src.split(":")
+            start = int(src[0])
+            end = start + int(src[1])
+            func_call_names.append(self.source.content[start:end])
+        return func_call_names
+
+    def _get_callee_src_pairs(self):
+        return SourceMap.ast_helper.get_callee_src_pairs(SourceMap.parent_file+":"+self.cname)
+
+    def _get_func_name_to_params(self):
+        func_name_to_params = SourceMap.ast_helper.get_func_name_to_params(SourceMap.parent_file+":"+self.cname)
+        for func_name in func_name_to_params:
+            calldataload_position = 0
+            for param in func_name_to_params[func_name]:
+                if param['type'] == 'ArrayTypeName':
+                    param['position'] = calldataload_position
+                    calldataload_position += param['value']
+                else:
+                    param['position'] = calldataload_position
+                    calldataload_position += 1
+        return func_name_to_params
+
+    def _get_sig_to_func(self):
+        func_to_sig = SourceMap.func_to_sig_by_contract[self.cname]['hashes']
+        return dict((sig, func) for func, sig in six.iteritems(func_to_sig))
 
     def get_source_code(self, pc):
         try:
             pos = self.instr_positions[pc]
-        except:
+        except Exception as err:
+            logger.error(str(err))
             return ""
         begin = pos['begin']
         end = pos['end']
@@ -71,7 +111,8 @@ class SourceMap:
     def get_buggy_line(self, pc):
         try:
             pos = self.instr_positions[pc]
-        except:
+        except Exception as err:
+            logger.error(str(err))
             return ""
         location = self.get_location(pc)
         begin = self.source.line_break_positions[location['begin']['line'] - 1] + 1
@@ -191,3 +232,5 @@ class SourceMap:
 
     def get_filename(self):
         return self.cname.split(":")[0]
+
+

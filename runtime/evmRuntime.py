@@ -1,37 +1,42 @@
 import logging
+import os
+
+from graphviz import Digraph
+
 from utils import compare_versions
 from runtime.basicBlock import BasicBlock
 import disassembler.params
-from graphviz import Digraph
 import global_params
-import os
+
 
 log = logging.getLogger()
 
+
 class EvmRuntime:
-    terminal_opcode = {"STOP", "RETURN", "SUICIDE", "REVERT", "ASSERTFAIL"}
+    terminal_opcode = {"STOP", "RETURN", "SUICIDE", "REVERT", "ASSERTFAIL", "INVALID"}
     jump_opcode = {"JUMP", "JUMPI"}
     block_jump_types = {"terminal", "conditional", "unconditional", "falls_to"}
-    cfg_count = 0
 
     def __init__(self, platform=None, disasm_file=None, source_map=None, source_file=None, input_type=None, evm=None):
-        self.disasm_file = disasm_file
-        self.source_map = source_map
+        self.disasm_file = disasm_file  # disassemble file of contract in string like "PUSH1 0x55 PUSH1 0x23 PUSH1 0xB"
+        self.source_map = source_map  # SourceMap class of solidity of the contract
+        # specified block chain platform, eg. ethereum, xuper-chain, fisco-bcos, for specific analysis
         self.platFrom = platform
-        self.source_file = source_file
-        self.input_type = input_type
-        self.evm = evm
-
+        self.source_file = source_file  # complete path of solidity file
+        self.input_type = input_type  # input file defined in file global_params.py and assigned in cmd
+        self.evm = evm  # runtime evm bytes of the contract
 
     def build_cfg(self):
-        if self.input_type == "solidity-json":
+        if self.input_type == global_params.SOLIDITY:
             # 1. transfer from token string to
             tokens = self.disasm_file.split(" ")
             file_contents = []
             content = []
             pc = 0
             for i, token in enumerate(tokens):
-                if token.startswith("0x"):
+                if pc == 18704:
+                    print("here")
+                if token.startswith("0x") and len(content) == 2 and content[1].startswith("PUSH"):
                     content.append(token)
                 else:
                     if content:
@@ -41,7 +46,10 @@ class EvmRuntime:
                         content = []
                         pc += 1
                     content.append(str(pc))
-                    content.append(token)
+                    if token.startswith("0x"):
+                        content.append("INVALID")
+                    else:
+                        content.append(token)
 
             self._collect_vertices(file_contents)
             self._construct_bb()
@@ -86,7 +94,12 @@ class EvmRuntime:
             disasm_file.write("".join(file_contents))
 
     def _collect_vertices(self, file_contents):
-        idx = 0
+
+        if self.source_map:
+            idx = 0
+            positions = self.source_map.positions
+            length = len(positions)
+
         self.end_ins_dict ={}
         self.instructions ={}
         self.jump_type = {}
@@ -97,7 +110,7 @@ class EvmRuntime:
         inst_pc = None
 
         for index, value in enumerate(file_contents):
-            line_parts = value.strip("\n").split(" ")
+            line_parts = value.split(" ")
 
             last_tok_string = tok_string
             tok_string = line_parts[1]
@@ -105,13 +118,13 @@ class EvmRuntime:
             last_inst_pc = inst_pc
             inst_pc = int(line_parts[0])
 
-            self.instructions[inst_pc] = value.strip("\n")
+            self.instructions[inst_pc] = value
 
             if is_new_block:
                 current_block = inst_pc
                 is_new_block = False
 
-            if tok_string == "STOP" or tok_string == "RETURN" or tok_string == "SUICIDE" or tok_string == "REVERT" or tok_string == "ASSERTFAIL":
+            if tok_string in EvmRuntime.terminal_opcode:
                 self.jump_type[current_block] = "terminal"
                 self.end_ins_dict[current_block] = inst_pc
                 is_new_block = True
@@ -131,13 +144,12 @@ class EvmRuntime:
                     current_block = inst_pc
 
             if self.source_map:
-                self.source_map.instr_positions[inst_pc] = self.source_map.positions[idx]
+                if idx < length and positions[idx] and positions[idx] == "tag":
+                    idx += 1
+                if idx < length and positions[idx] and tok_string.startswith(positions[idx]['name'].split(" ")[0]):
+                    self.source_map.instr_positions[inst_pc] = self.source_map.positions[idx]
 
             idx += 1
-
-        # check the sourcemap is well format
-        #if self.source_map:
-         #   assert(idx == len(self.source_map.positions))
 
         # last instruction don't indicate a block termination
         if current_block not in self.end_ins_dict and inst_pc:
@@ -181,46 +193,52 @@ class EvmRuntime:
                 if len(instrs) > 1 and "PUSH" in instrs[-2]:
                     target = int(instrs[-2].split(" ")[2], 16)
                     if target not in self.vertices:
-                        continue
+                        raise Exception("unrecognized target address %d", target)
                     self.edges[key].append(target)
 
                     self.vertices[target].set_jump_from(key)
                     self.vertices[key].set_jump_targets(target)
 
     def print_cfg(self):
-        g = Digraph(name="ControlFlowGraph",
-                    comment=self.disasm_file,
-                    format='pdf'
-                    )
+        file_name = "cfg" + self.source_file.split("/")[-1].split(".")[0]
+        g1 = Digraph('G', filename=file_name)
+        g1.attr(rankdir='TB')
+        g1.attr(overlap='scale')
+        g1.attr(splines='polyline')
+        g1.attr(ratio='fill')
 
-        for block in self.vertices.values():
-            start = block.get_start_address()
-            end = block.get_end_address()
-            label = str(start) + "-" + str(end) + "\n"
-            if start != end:
-                label = label + self.instructions[start] + "\n...\n" + self.instructions[end]
-            else:
-                label = label + self.instructions[start]
+        with g1.subgraph(name=file_name) as g:
+            g.attr(label=file_name)
+            g.attr(overlap='false')
+            g.attr(splines='polyline')
+            g.attr(ratio='fill')
+            for block in self.vertices.values():
+                start = block.get_start_address()
+                end = block.get_end_address()
+                label = str(start) + "-" + str(end) + "\n"
+                if start != end:
+                    label = label + self.instructions[start] + "\n...\n" + self.instructions[end]
+                else:
+                    label = label + self.instructions[start]
 
-            block_type = block.get_block_type()
+                block_type = block.get_block_type()
 
-            start = str(start)
-            if block_type == "falls_to":
-                g.node(name=start, label=label)
-                g.edge(start, str(block.get_falls_to()), color="black")  # black for falls to
-            elif block_type == "unconditional":
-                g.node(name=start, label=label, color="blue")
-                for target in block.get_jump_targets():
-                    g.edge(start, str(target), color="blue")  # blue for unconditional jump
-            elif block_type == "conditional":
-                g.node(name=start, label=label, color="green")
-                g.edge(start, str(block.get_falls_to()), color="red")
-                for target in block.get_jump_targets():
-                    g.edge(start, str(target), color="green")  # blue for unconditional jump
-            elif block_type == "terminal":
-                g.node(name=start, label=label, color="red")
-        EvmRuntime.cfg_count += 1
-        g.render(os.path.join(global_params.TMP_DIR, "cfg" + self.source_file.split("/")[-1].split(".")[0]),
+                start = str(start)
+                if block_type == "falls_to":
+                    g.node(name=start, label=label)
+                    g.edge(start, str(block.get_falls_to()), color="black")  # black for falls to
+                elif block_type == "unconditional":
+                    g.node(name=start, label=label, color="blue")
+                    for target in block.get_jump_targets():
+                        g.edge(start, str(target), color="blue")  # blue for unconditional jump
+                elif block_type == "conditional":
+                    g.node(name=start, label=label, color="green")
+                    g.edge(start, str(block.get_falls_to()), color="red")
+                    for target in block.get_jump_targets():
+                        g.edge(start, str(target), color="green")  # blue for unconditional jump
+                elif block_type == "terminal":
+                    g.node(name=start, label=label, color="red")
+        g1.render(file_name, format='png', directory=global_params.TMP_DIR,
                  view=True)
 
     def print_cfg_dot(self, visited_edges):
@@ -275,11 +293,6 @@ class EvmRuntime:
                            label=e_label)  # blue for unconditional jump
             elif block_type == "terminal":
                 g.node(name=start, label=label, color="red")
-        EvmRuntime.cfg_count += 1
         g.render(os.path.join(global_params.TMP_DIR, "cfg"+self.source_file.split("/")[-1].split(".")[0]+".gv"), view=True)
 
-    def build_runtime_env(self):
-        #todo: test for building cfg process
-        self.build_cfg()
-        return 0
 

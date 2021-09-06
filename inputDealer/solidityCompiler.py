@@ -3,48 +3,50 @@ import os
 import re
 import subprocess
 import json
-import global_params
+
 import solcx
-from pathlib import Path
-from utils import run_command_with_err
+
+import global_params
 
 logger = logging.getLogger(__name__)
 
 
 class SolidityCompiler:
     def __init__(self, source, joker, root_path, allow_paths, remap, compilation_err):
-        self.compiled_contracts = []
-        self.combined_json = {"contracts": {}, "sources": {}}
-        self.source = source
-        self.joker = joker
+        self.compiled_contracts = []  # contracts of compiled result json
+        self.combined_json = {"contracts": {}, "sources": {}}  # compile result of json type
+
+        self.source = source  # source dir of project
+        self.joker = joker  # relative dir of the analyse file
+
         self.root_path = root_path
         self.allow_paths = allow_paths
         self.remap = remap
         self.compilation_err = compilation_err
-        self.path = os.path.join(global_params.TMP_DIR, self.joker.split("/")[-1].split(".")[0])
 
-    def get_compiled_contracts(self):
-        if not self.compiled_contracts:
-            self.compiled_contracts = self._compile_solidity()
-        return self.compiled_contracts
+        try:
+            self.path = os.path.join(global_params.TMP_DIR, self.joker.split("/")[-1].split(".")[0])
+        except Exception as err:
+            logger.error(err)
+            self.path = global_params.TMP_DIR
 
-    def get_compiled_contracts_from_json(self):
+    def get_compiled_contracts_as_json(self):
         if not self.compiled_contracts:
             # 0. try with solcx
             try:
                 self._compile_with_solcx()
-            except Exception as err1:
-                logger.error(err1)
+            except Exception as err:
+                logger.error(err)
                 # 1. try with npx
                 try:
                     self._compile_with_npx_waffle()
-                except Exception as err2:
-                    logger.error(err2)
+                except Exception as err:
+                    logger.error(err)
                     # 2. try with hardhot
                     try:
                         self._compile_with_yarn_hard_hot()
-                    except Exception as err3:
-                        logger.error(err3)
+                    except Exception as err:
+                        logger.error(err)
                         raise Exception("cannot compile target file: %s", self.source+os.sep+self.joker)
 
         return self.compiled_contracts
@@ -61,16 +63,17 @@ class SolidityCompiler:
                 line = inputfile.readline()
         if version != "":
             logger.info("get solc version: %s", version)
-            solcx.install_solc(match_obj.group(2))
-            data_dict = solcx.compile_files( [self.source + os.sep + self.joker],
-                                             output_values=["abi", "bin", "bin-runtime", "ast", "asm", "opcodes", "hashes"],
-                                             solc_version=version,
-                                             allow_empty=True,
-                                             allow_paths=self.source
-                                             )
+            solcx.install_solc(version)
+            data_dict = solcx.compile_files([self.source + os.sep + self.joker],
+                                            output_values=["abi", "bin", "bin-runtime", "ast",
+                                                           "asm", "opcodes", "hashes"],
+                                            solc_version=version,
+                                            allow_empty=True,
+                                            allow_paths=self.source
+                                            )
             # get runtime bytecode from opcodes
             for key in data_dict:
-                file = key.split(":")[0].replace(global_params.SRC_DIR+os.sep,"")
+                file = key.split(":")[0].replace(global_params.SRC_DIR+os.sep, "")
                 cname = key.split(":")[-1]
 
                 match_obj = re.match(r'(PUSH1 0x80 PUSH1 0x40 .*) (PUSH1 0x80 PUSH1 0x40 .*)',
@@ -92,10 +95,11 @@ class SolidityCompiler:
                                     'opcodes': data_dict[key]["opcodes"],
                                     "object": data_dict[key]["bin"]
                                 },
-                            'legacyAssembly': data_dict[key]["asm"] if "asm" in data_dict[key] else "" ,
+                            'legacyAssembly': data_dict[key]["asm"] if "asm" in data_dict[key] else "",
                             "methodIdentifiers": data_dict[key]['hashes']
                         }
                 }
+
                 if "children" in data_dict[key]["ast"]:
                     self.combined_json["sources"][file] = {
                             "legacyAST": data_dict[key]['ast']
@@ -107,9 +111,11 @@ class SolidityCompiler:
                     }
                     global_params.AST = "ast"
                 if match_obj:
-                    self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = match_obj.group(2)
+                    self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = \
+                        match_obj.group(2)
                 else:
-                    self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = data_dict[key]["opcodes"]
+                    self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = \
+                        data_dict[key]["opcodes"]
 
         self.compiled_contracts = self.combined_json["contracts"][self.joker]
 
@@ -188,35 +194,4 @@ class SolidityCompiler:
         self.compiled_contracts = self.combined_json['contracts'][self.joker]
         global_params.AST = "ast"
         return
-
-    def _compile_solidity(self):
-        if not self.allow_paths:
-            cmd = "solc --bin-runtime %s %s -o %s" % (self.remap, self.source, self.path)
-        else:
-            cmd = "solc --bin-runtime %s %s --allow-paths %s -o %s" % (
-                self.remap, self.source, self.allow_paths, self.path)
-
-        out, err = run_command_with_err(cmd)
-        err = re.sub(self.root_path, "", err)
-
-        return self._extract_bin_str(err)
-
-    def _extract_bin_str(self, err):
-        contracts = {}
-        for root, dirs, files in os.walk(self.path):
-            for file_name in files:
-                if file_name.endswith(".bin-runtime"):
-                    with open(os.path.join(root, file_name)) as f:
-                        bytecodes = f.read()
-                    contracts[os.path.join(root, file_name)] = bytecodes
-
-            if len(contracts) == 0:
-                if not self.compilation_err:
-                    logger.critical("Solidity compilation failed. Please use -ce flag to see the detail.")
-                else:
-                    logger.critical(err)
-                    logger.critical("Solidity compilation failed.")
-                exit(1)
-
-        return contracts
 

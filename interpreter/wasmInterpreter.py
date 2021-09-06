@@ -19,6 +19,7 @@ from utils import custom_deepcopy, isSymbolic, check_sat, isDecisiable, isAllRea
 
 Edge = namedtuple("Edge", ["func", "v1", "v2"])
 
+
 class WASMInterpreter:
     def __init__(self, runtime):
         self.gen = Generator()

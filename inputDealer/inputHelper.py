@@ -1,17 +1,14 @@
 import logging
-import os
 import shutil
-import re
 import six
+import os
 
 import global_params
+
 from disassembler.evmDisassembler import EvmDisassembler
 from disassembler.wasmModule import Module
 from inputDealer.solidityCompiler import SolidityCompiler
 from inputDealer.soliditySourceMap import SourceMap
-import networkx as nx
-import solcx
-import subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +24,8 @@ class InputHelper:
             }
         elif input_type == global_params.SOLIDITY:
             attr_defaults = {
-                'source': None,
-                'joker': None,
+                'source': None,  # source dir of project
+                'joker': None,  # relative path of the analized file to source dir
                 'evm': False,
                 'root_path': "",
                 'compiled_contracts': [],
@@ -42,6 +39,10 @@ class InputHelper:
                 'source': None
             }
 
+        else:
+            logger.critical("input type not supported")
+            raise Exception
+
         for (attr, default) in six.iteritems(attr_defaults):
             val = kwargs.get(attr, default)
             if val is None:
@@ -49,18 +50,22 @@ class InputHelper:
             else:
                 setattr(self, attr, val)
 
-    def get_json_inputs(self):
+    def get_solidity_inputs(self):
         inputs = []
+
         if self.input_type == global_params.SOLIDITY:
-            compiler = SolidityCompiler(self.source, self.joker, self.root_path, self.allow_paths, self.remap,
+            compiler = SolidityCompiler(self.source, self.joker,
+                                        self.root_path, self.allow_paths, self.remap,
                                         self.compilation_err)
 
-            contracts = compiler.get_compiled_contracts_from_json()
+            contracts = compiler.get_compiled_contracts_as_json()
 
             for contract in contracts:
                 disasm_file = contracts[contract]['evm']['deployedBytecode']['opcodes']
 
-                source_map = SourceMap(cname=contract, input_type=self.input_type, parent_file=self.joker,
+                source_map = SourceMap(cname=contract,
+                                       input_type=self.input_type,
+                                       parent_file=self.joker,
                                        sources=compiler.combined_json)
 
                 inputs.append({
@@ -76,5 +81,25 @@ class InputHelper:
             raise Exception
         return inputs
 
-    def rm_tmp_files(self):
+    def get_evm_inputs(self):
+        inputs = []
+        if self.input_type == global_params.EVM_BYTECODE:
+            disassembler = EvmDisassembler(self.source, self.source, global_params.TMP_DIR)
+            disassembler.prepare_disasm_file()
+            disasm_file = disassembler.get_temporary_files()['disasm']
+
+            inputs.append({'disasm_file': disasm_file})
+        return inputs
+
+    def get_wasm_inputs(self):
+        inputs = []
+        if self.input_type == global_params.WASM_BYTECODE:
+            with open(self.source, 'rb') as f:
+                self.module = Module.from_reader(f)
+
+            inputs.append({"module": self.module})
+        return inputs
+
+    @classmethod
+    def rm_tmp_files(cls):
         shutil.rmtree(global_params.TMP_DIR, ignore_errors=True)
