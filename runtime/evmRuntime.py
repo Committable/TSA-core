@@ -95,7 +95,7 @@ class EvmRuntime:
 
     def _collect_vertices(self, file_contents):
 
-        if self.source_map:
+        if self.source_map and self.source_map.positions:
             idx = 0
             positions = self.source_map.positions
             length = len(positions)
@@ -137,19 +137,23 @@ class EvmRuntime:
                 self.end_ins_dict[current_block] = inst_pc
                 is_new_block = True
             elif tok_string == "JUMPDEST":
-                idx += 1  # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
+                if self.source_map and self.source_map.positions:
+                    idx += 1  # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
                 if last_tok_string and (last_tok_string not in EvmRuntime.terminal_opcode) and (last_tok_string not in EvmRuntime.jump_opcode): #last instruction don't indicate a new block
                     self.end_ins_dict[current_block] = last_inst_pc
                     self.jump_type[current_block] = "falls_to"
                     current_block = inst_pc
 
-            if self.source_map:
+            if self.source_map and self.source_map.positions:
                 if idx < length and positions[idx] and positions[idx] == "tag":
                     idx += 1
                 if idx < length and positions[idx] and tok_string.startswith(positions[idx]['name'].split(" ")[0]):
                     self.source_map.instr_positions[inst_pc] = self.source_map.positions[idx]
 
-            idx += 1
+                idx += 1
+                # for bytecodes > length in legacyAssembly, it's useless
+                if idx > length:
+                    break
 
         # last instruction don't indicate a block termination
         if current_block not in self.end_ins_dict and inst_pc:

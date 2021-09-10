@@ -4,7 +4,7 @@ import six
 from z3 import *
 from solver.symbolicVar import *
 import global_params
-from utils import isReal
+from utils import isReal, convertResult
 
 
 class Node:

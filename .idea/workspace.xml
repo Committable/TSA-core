@@ -2,10 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5000b02a-95c2-4686-a070-70f4f7308ec4" name="Default Changelist" comment="modify inputDealer to put files into tmp dirs specified by -tmp or defaulted as ./tmp">
-      <change afterPath="$PROJECT_DIR$/.idea/seraph.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphBuilder/XGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphBuilder/XGraph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/solidityCompiler.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/solidityCompiler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/soliditySourceMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/soliditySourceMap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputDealer/solidiytAstHelper.py" beforeDir="false" afterPath="$PROJECT_DIR$/inputDealer/solidiytAstHelper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/runtime/evmRuntime.py" beforeDir="false" afterPath="$PROJECT_DIR$/runtime/evmRuntime.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,15 +19,15 @@
     <session id="283597885">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
+          <entry key="project.closed" value="5" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.open.time.6" value="3" />
-          <entry key="project.open.time.7" value="1" />
+          <entry key="project.open.time.6" value="4" />
+          <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="2" />
-          <entry key="project.opened" value="10" />
+          <entry key="project.opened" value="12" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -41,7 +43,7 @@
           <entry key="evm" value="3" />
           <entry key="gitignore" value="1" />
           <entry key="gv" value="4" />
-          <entry key="py" value="132" />
+          <entry key="py" value="142" />
           <entry key="sol" value="8" />
           <entry key="ssg1" value="2" />
           <entry key="ssg2" value="1" />
@@ -50,7 +52,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="PLAIN_TEXT" value="44" />
-          <entry key="Python" value="132" />
+          <entry key="Python" value="142" />
           <entry key="Solidity file" value="8" />
         </counts>
       </usages-collector>
@@ -58,14 +60,14 @@
         <counts>
           <entry key="Python Console" value="1349" />
           <entry key="gitignore" value="13" />
-          <entry key="py" value="14945" />
+          <entry key="py" value="15358" />
           <entry key="sol" value="63" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="13" />
-          <entry key="Python" value="16294" />
+          <entry key="Python" value="16707" />
           <entry key="Solidity file" value="63" />
         </counts>
       </usages-collector>
@@ -82,34 +84,34 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/seraph.py">
+        <entry file="file://$PROJECT_DIR$/inputDealer/solidityCompiler.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3648">
-              <caret line="264" selection-start-line="264" selection-end-line="264" />
-              <folding>
-                <element signature="e#23#38#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-275">
+              <caret line="78" selection-start-line="78" selection-end-line="78" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/analyze_solidity.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="718">
-              <caret line="59" column="66" lean-forward="true" selection-start-line="59" selection-start-column="66" selection-end-line="59" selection-end-column="66" />
+            <state relative-caret-position="576">
+              <caret line="31" selection-start-line="31" selection-end-line="31" />
               <folding>
-                <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#0#21#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/inputDealer/solidityAstWalker.py">
+        <entry file="file://$PROJECT_DIR$/graphBuilder/XGraph.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="6" selection-start-line="6" selection-end-line="6" />
+            <state relative-caret-position="312">
+              <caret line="13" column="22" selection-start-line="13" selection-start-column="22" selection-end-line="13" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#21#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -117,11 +119,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/inputDealer/solidiytAstHelper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="51" selection-start-line="51" selection-end-line="51" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="234">
+              <caret line="30" selection-start-line="30" selection-end-line="30" />
             </state>
           </provider>
         </entry>
@@ -129,7 +128,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/inputDealer/inputHelper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1417">
+            <state relative-caret-position="174">
               <caret line="65" selection-start-line="65" selection-end-line="65" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
@@ -138,47 +137,52 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/runtime/evmRuntime.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3768">
+              <caret line="165" lean-forward="true" selection-start-line="165" selection-end-line="165" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/interpreter/evmInterpreter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5112">
-              <caret line="1031" selection-start-line="1031" selection-end-line="1031" />
+            <state relative-caret-position="402">
+              <caret line="1332" selection-start-line="1332" selection-end-line="1332" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/integration_test/test_commit.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
               <folding>
-                <element signature="e#0#14#0" expanded="true" />
-                <element signature="e#1328#2489#0" />
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/runtime/evmRuntime.py">
+        <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="22" selection-start-line="22" selection-end-line="22" />
+            <state relative-caret-position="1080">
+              <caret line="59" column="4" selection-start-line="59" selection-start-column="4" selection-end-line="59" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tmp/1627369643/cfguniswap-v2-core.gv">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tmp/1627369698/cfguniswap-v2-core.gv">
+        <entry file="file://$PROJECT_DIR$/graphBuilder/evmGraph.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="96">
-              <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/solver/symbolicVar.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1200">
-              <caret line="56" selection-start-line="56" selection-end-line="56" />
+            <state relative-caret-position="1320">
+              <caret line="67" selection-start-line="67" selection-end-line="67" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -194,9 +198,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>shl(</find>
-      <find>SHR</find>
-      <find>SHA3</find>
       <find>kecc</find>
       <find>dot</find>
       <find>os.mk</find>
@@ -212,7 +213,6 @@
       <find>0xc8</find>
       <find>0x21</find>
       <find>incomplete</find>
-      <find>jumpi</find>
       <find>dep</find>
       <find>&quot;jumpi&quot;</find>
       <find>MemReturn</find>
@@ -224,6 +224,10 @@
       <find>True</find>
       <find>view=</find>
       <find>instr_positions</find>
+      <find>func_name_to_params</find>
+      <find>unrecog</find>
+      <find>PUSH1 0x80 PUSH1 0x40</find>
+      <find>jumpi</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -249,17 +253,17 @@
         <option value="$PROJECT_DIR$/disassembler/evmDisassembler.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/global_params.py" />
-        <option value="$PROJECT_DIR$/inputDealer/solidityCompiler.py" />
-        <option value="$PROJECT_DIR$/graphBuilder/XGraph.py" />
         <option value="$PROJECT_DIR$/graphBuilder/evmGraph.py" />
-        <option value="$PROJECT_DIR$/inputDealer/soliditySourceMap.py" />
         <option value="$PROJECT_DIR$/interpreter/opcodes.py" />
-        <option value="$PROJECT_DIR$/runtime/evmRuntime.py" />
         <option value="$PROJECT_DIR$/inputDealer/solidityAstWalker.py" />
-        <option value="$PROJECT_DIR$/inputDealer/solidiytAstHelper.py" />
         <option value="$PROJECT_DIR$/interpreter/evmInterpreter.py" />
         <option value="$PROJECT_DIR$/seraph.py" />
         <option value="$PROJECT_DIR$/inputDealer/inputHelper.py" />
+        <option value="$PROJECT_DIR$/graphBuilder/XGraph.py" />
+        <option value="$PROJECT_DIR$/inputDealer/solidiytAstHelper.py" />
+        <option value="$PROJECT_DIR$/inputDealer/soliditySourceMap.py" />
+        <option value="$PROJECT_DIR$/inputDealer/solidityCompiler.py" />
+        <option value="$PROJECT_DIR$/runtime/evmRuntime.py" />
       </list>
     </option>
   </component>
@@ -274,6 +278,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -284,13 +289,12 @@
             <path>
               <item name="seraph" type="b2602c69:ProjectViewProjectNode" />
               <item name="seraph" type="462c0819:PsiDirectoryNode" />
-              <item name="runtime" type="462c0819:PsiDirectoryNode" />
+              <item name="integration_test" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -356,7 +360,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/seraph.py" />
-      <option name="PARAMETERS" value="-s $PROJECT_DIR$/../uniswap-v2-core -j contracts/UniswapV2Pair.sol -sol -p ethereum -o $USER_HOME$/result" />
+      <option name="PARAMETERS" value="-s $PROJECT_DIR$/../uniswap-v2-core -j contracts/ERC20.sol -sol -p ethereum -o $USER_HOME$/result" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="true" />
       <option name="MODULE_MODE" value="false" />
@@ -386,13 +390,36 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test_commit" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="seraph" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/integration_test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/integration_test/test_commit.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.seraph" />
       <item itemvalue="Python.test" />
       <item itemvalue="Python.run_tests" />
+      <item itemvalue="Python.test_commit" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test_commit" />
         <item itemvalue="Python.run_tests" />
         <item itemvalue="Python.test" />
       </list>
@@ -445,15 +472,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="2493" height="1415" extended-state="6" />
+    <frame x="67" y="25" width="1613" height="1025" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49828178" visible="true" weight="0.1145749" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49828178" visible="true" weight="0.22515723" />
       <window_info id="Structure" order="1" sideWeight="0.5008606" side_tool="true" weight="0.17798743" />
       <window_info id="Favorites" order="2" sideWeight="0.50094163" side_tool="true" weight="0.17798743" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.26536965" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49959514" weight="0.33072627" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.35719845" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.26480448" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49959514" visible="true" weight="0.3988827" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.41340783" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49959514" weight="0.27081713" />
@@ -498,39 +526,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py</url>
-          <line>32</line>
-          <option name="timeStamp" value="46" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/seraph.py</url>
           <line>264</line>
           <option name="timeStamp" value="62" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/inputDealer/solidiytAstHelper.py</url>
-          <line>30</line>
-          <option name="timeStamp" value="111" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py</url>
-          <line>186</line>
-          <option name="timeStamp" value="112" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/inputDealer/inputHelper.py</url>
-          <line>65</line>
-          <option name="timeStamp" value="189" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/interpreter/evmInterpreter.py</url>
-          <line>1719</line>
+          <line>1742</line>
           <option name="timeStamp" value="224" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py</url>
-          <line>47</line>
-          <option name="timeStamp" value="233" />
+          <url>file://$PROJECT_DIR$/runtime/evmRuntime.py</url>
+          <line>199</line>
+          <option name="timeStamp" value="241" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -543,80 +551,68 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="sources[&quot;contracts&quot;][contract]['evm']['legacyAssembly']" language="Python" />
+        <watch expression="&quot; &quot;.join(file_contents[1618:-1])" language="Python" />
+        <watch expression="tmp" language="Python" />
+        <watch expression="file_contents[1215:]" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
       <expression>
-        <expression-string>sources[&quot;contracts&quot;][contract]['evm']['legacyAssembly']</expression-string>
+        <expression-string>file_contents[1215:]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>os.path.join(global_params.TMP_DIR, &quot;cfg&quot; + self.source_file.split(&quot;/&quot;)[-1].split(&quot;.&quot;)[0] + &quot;.gv&quot;)</expression-string>
+        <expression-string>file_contents[1215]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>global_params.TMP_DIR, &quot;cfg&quot; + self.source_file.split(&quot;/&quot;)[-1].split(&quot;.&quot;)[0] + &quot;.gv&quot;)</expression-string>
+        <expression-string>tmp</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>len(params.memory)</expression-string>
+        <expression-string>&quot; &quot;.join(file_contents[1618:-1])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>simplify(result)</expression-string>
+        <expression-string>tmp[1618]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>simplify(branch_expression)</expression-string>
+        <expression-string>tmp[1619]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>str(branch_expression)</expression-string>
+        <expression-string>&quot; &quot;.join(file_contents[6086:-1])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>branch_expression == BoolVal(False)</expression-string>
+        <expression-string>&quot; &quot;.join(file_contents[6070:6086])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lines[1999]</expression-string>
+        <expression-string>tmp[6070:6087]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lines[2000]</expression-string>
+        <expression-string>tmp[6070:6086]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ssg1" />
-    <entry file="file://$USER_HOME$/.local/lib/python3.6/site-packages/graphviz/lang.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1560">
-          <caret line="71" selection-start-line="71" selection-end-line="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/reporter/cfgPrinter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="46" column="28" selection-start-line="34" selection-start-column="56" selection-end-line="34" selection-end-column="101" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/reporter/cfgPrinter.py" />
     <entry file="file://$PROJECT_DIR$/cfg1" />
     <entry file="file://$PROJECT_DIR$/cfg2" />
     <entry file="file://$PROJECT_DIR$/ssg2" />
@@ -658,13 +654,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/reporter/params.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/reporter/params.py" />
     <entry file="file://$PROJECT_DIR$/ast_graph1" />
     <entry file="file://$PROJECT_DIR$/ast_graph" />
     <entry file="file://$PROJECT_DIR$/.gitignore">
@@ -723,31 +713,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/inputDealer/solidityCompiler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1651">
-          <caret line="69" column="45" selection-start-line="69" selection-start-column="45" selection-end-line="69" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/graphBuilder/XGraph.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="414" column="18" selection-start-line="414" selection-start-column="18" selection-end-line="414" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../GraphEmbedding/venv/lib/python3.6/site-packages/solcx/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5064">
           <caret line="283" column="34" lean-forward="true" selection-start-line="283" selection-start-column="34" selection-end-line="283" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/graphBuilder/evmGraph.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="170" column="28" selection-start-line="170" selection-start-column="28" selection-end-line="170" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -774,13 +743,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1704">
-          <caret line="85" selection-start-line="85" selection-end-line="85" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/checker/utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4056">
@@ -792,6 +754,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1080">
           <caret line="48" column="4" selection-start-line="48" selection-start-column="4" selection-end-line="48" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/seraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5448">
+          <caret line="242" selection-start-line="242" selection-end-line="242" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/solidityAstWalker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
         </state>
       </provider>
     </entry>
@@ -807,31 +783,60 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/solver/symbolicVar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1200">
+        <state relative-caret-position="1296">
           <caret line="56" selection-start-line="56" selection-end-line="56" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/inputDealer/solidiytAstHelper.py">
+    <entry file="file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="51" selection-start-line="51" selection-end-line="51" />
+        <state relative-caret-position="1128">
+          <caret line="54" selection-start-line="54" selection-end-line="54" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/inputDealer/solidityAstWalker.py">
+    <entry file="file://$PROJECT_DIR$/analyze_solidity.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        <state relative-caret-position="576">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/integration_test/test_commit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1080">
+          <caret line="59" column="4" selection-start-line="59" selection-start-column="4" selection-end-line="59" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphBuilder/evmGraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1320">
+          <caret line="67" selection-start-line="67" selection-end-line="67" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/inputDealer/inputHelper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1417">
+        <state relative-caret-position="174">
           <caret line="65" selection-start-line="65" selection-end-line="65" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
@@ -839,41 +844,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/solidityCompiler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-275">
+          <caret line="78" selection-start-line="78" selection-end-line="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputDealer/solidiytAstHelper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphBuilder/XGraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="13" column="22" selection-start-line="13" selection-start-column="22" selection-end-line="13" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/interpreter/evmInterpreter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5112">
-          <caret line="1031" selection-start-line="1031" selection-end-line="1031" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-            <element signature="e#1328#2489#0" />
-          </folding>
+        <state relative-caret-position="402">
+          <caret line="1332" selection-start-line="1332" selection-end-line="1332" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/runtime/evmRuntime.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="22" selection-start-line="22" selection-end-line="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/seraph.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3648">
-          <caret line="264" selection-start-line="264" selection-end-line="264" />
-          <folding>
-            <element signature="e#23#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/inputDealer/soliditySourceMap.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="718">
-          <caret line="59" column="66" lean-forward="true" selection-start-line="59" selection-start-column="66" selection-end-line="59" selection-end-column="66" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="3768">
+          <caret line="165" lean-forward="true" selection-start-line="165" selection-end-line="165" />
         </state>
       </provider>
     </entry>

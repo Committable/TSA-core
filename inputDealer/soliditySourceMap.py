@@ -77,15 +77,16 @@ class SourceMap:
 
     def _get_func_name_to_params(self):
         func_name_to_params = SourceMap.ast_helper.get_func_name_to_params(SourceMap.parent_file+":"+self.cname)
-        for func_name in func_name_to_params:
-            calldataload_position = 0
-            for param in func_name_to_params[func_name]:
-                if param['type'] == 'ArrayTypeName':
-                    param['position'] = calldataload_position
-                    calldataload_position += param['value']
-                else:
-                    param['position'] = calldataload_position
-                    calldataload_position += 1
+        if func_name_to_params:
+            for func_name in func_name_to_params:
+                calldataload_position = 0
+                for param in func_name_to_params[func_name]:
+                    if param['type'] == 'ArrayTypeName':
+                        param['position'] = calldataload_position
+                        calldataload_position += param['value']
+                    else:
+                        param['position'] = calldataload_position
+                        calldataload_position += 1
         return func_name_to_params
 
     def _get_sig_to_func(self):

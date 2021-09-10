@@ -182,5 +182,7 @@ class AstHelper:
                     else:
                         func_name_to_params[func_name].append(param)
             return func_name_to_params
+        else:
+            return None
 
 
