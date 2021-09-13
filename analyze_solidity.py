@@ -39,6 +39,8 @@ def analyze_solidity_code():
     ast_graph = nx.DiGraph()
     ast_json = SourceMap.ast_helper.build_ast_graph(ast_graph)
 
+    ast_json["source"] = inputs[0]["source_map"].source.content
+
     with open(os.path.join(global_params.DEST_PATH, "ast_graph.json"), 'w') as outputfile:
         json.dump(ast_json, outputfile)
 
