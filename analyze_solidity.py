@@ -1,6 +1,7 @@
 import networkx as nx
 import logging
 
+
 from runtime.evmRuntime import EvmRuntime
 from interpreter.evmInterpreter import EVMInterpreter
 from inputDealer.soliditySourceMap import SourceMap

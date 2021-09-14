@@ -1,4 +1,6 @@
 from graphviz import Digraph
+import networkx as nx
+import pygraphviz
 from inputDealer.soliditySourceMap import Source
 import global_params
 import os
@@ -45,7 +47,7 @@ def print_ast_nx_graph(graph, file_name="default", design=None, color='grey'):
     return
 
 
-def print_cfg_nx_graph(graph1, file_name="default", design=None, color='grey'):
+def print_cfg_nx_graph(graph, file_name="default", design=None, color='grey'):
     g1 = Digraph('G', filename=file_name)
     g1.attr(rankdir='TB')
     g1.attr(overlap='scale')
@@ -59,6 +61,8 @@ def print_cfg_nx_graph(graph1, file_name="default", design=None, color='grey'):
     graph_json["edges"] = []
     i = 0
     with g1.subgraph(name=file_name, node_attr=design) as c:
+        pos = nx.drawing.nx_agraph.graphviz_layout(graph, prog='dot', args='-Grankdir=TB')
+
         c.attr(label=file_name)
         c.attr(color=color)
         # c.attr(fontsize='50.0')
@@ -66,25 +70,37 @@ def print_cfg_nx_graph(graph1, file_name="default", design=None, color='grey'):
         c.attr(splines='polyline')
         c.attr(ratio='fill')
 
-        for n in graph1.nodes._nodes:
-            block_type = graph1.nodes._nodes[n]["type"]
+        for n in graph.nodes._nodes:
+            block_type = graph.nodes._nodes[n]["type"]
             if block_type == "falls_to":
-                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="black")
-                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "type":"falls_to"})
+                c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="black")
+                graph_json["nodes"].append({"id": str(n),
+                                            "name": graph.nodes._nodes[n]["label"],
+                                            "type": "falls_to",
+                                            "pos": str(pos[n])})
             elif block_type == "unconditional":
-                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="blue")
-                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "type":"unconditional"})
+                c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="blue", pos=str(pos[n]))
+                graph_json["nodes"].append({"id": str(n),
+                                            "name": graph.nodes._nodes[n]["label"],
+                                            "type": "unconditional",
+                                            "pos": str(pos[n])})
             elif block_type == "conditional":
-                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="green")
-                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "type":"conditional"})
+                c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="green", pos=str(pos[n]))
+                graph_json["nodes"].append({"id": str(n),
+                                            "name": graph.nodes._nodes[n]["label"],
+                                            "type": "conditional",
+                                            "pos": str(pos[n])})
             elif block_type == "terminal":
-                c.node(str(n), label=graph1.nodes._nodes[n]["label"], splines='true', color="red")
-                graph_json["nodes"].append({"id":str(n), "name":graph1.nodes._nodes[n]["label"], "type":"terminal"})
+                c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="red", pos=str(pos[n]))
+                graph_json["nodes"].append({"id": str(n),
+                                            "name": graph.nodes._nodes[n]["label"],
+                                            "type": "terminal",
+                                            "pos": str(pos[n])})
             node_map[str(n)] = str(i)
             i += 1
-        for e in graph1.edges._adjdict:
-            for x in graph1.edges._adjdict[e]:
-                edge_type = graph1.edges._adjdict[e][x]["type"]
+        for e in graph.edges._adjdict:
+            for x in graph.edges._adjdict[e]:
+                edge_type = graph.edges._adjdict[e][x]["type"]
                 if edge_type == "falls_to":
                     c.edge(str(e), str(x), color='black')
                 elif edge_type == "unconditional":
@@ -105,7 +121,7 @@ def print_cfg_nx_graph(graph1, file_name="default", design=None, color='grey'):
     return
 
 
-def print_ssg_nx_graph(graph1, file_name="default", design=None, color='grey'):
+def print_ssg_nx_graph(graph, file_name="default", design=None, color='grey'):
     g1 = Digraph('G', filename=file_name)
     g1.attr(rankdir='LR')
     g1.attr(overlap='true')
@@ -126,24 +142,28 @@ def print_ssg_nx_graph(graph1, file_name="default", design=None, color='grey'):
         c.attr(rankdir="LR")
         c.attr(ratio='fill')
 
-        for n in graph1.nodes._nodes:
+        pos = nx.drawing.nx_agraph.graphviz_layout(graph, prog='dot', args='-Grankdir=LR')
+
+        for n in graph.nodes._nodes:
             c.node(str(n), label=str(n).split("_")[0], splines='true', color="black")
             node_map[str(n)] = str(i)
-            graph_json["nodes"].append({"id": str(n), "name": str(n).split("_")[0]})
+            graph_json["nodes"].append({"id": str(n),
+                                        "name": str(n).split("_")[0],
+                                        "pos": pos[n]})
             i += 1
-        for e in graph1.edges._adjdict:
-            for x in graph1.edges._adjdict[e]:
-                if graph1.edges._adjdict[e][x]["label"] == "flowEdge_address":
+        for e in graph.edges._adjdict:
+            for x in graph.edges._adjdict[e]:
+                if graph.edges._adjdict[e][x]["label"] == "flowEdge_address":
                     c.edge(str(e), str(x), color='green')
-                elif graph1.edges._adjdict[e][x]["label"] == "flowEdge_value":
+                elif graph.edges._adjdict[e][x]["label"] == "flowEdge_value":
                     c.edge(str(e), str(x), color='blue')
-                elif graph1.edges._adjdict[e][x]["label"] == "flowEdge":
+                elif graph.edges._adjdict[e][x]["label"] == "flowEdge":
                     c.edge(str(e), str(x), color='black')
-                elif graph1.edges._adjdict[e][x]["label"] == "constraint":
+                elif graph.edges._adjdict[e][x]["label"] == "constraint":
                     c.edge(str(e), str(x), color='red')
 
                 edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
-                graph_json["edges"].append({"source":str(e), "target":str(x), "type":graph1.edges._adjdict[e][x]["label"]})
+                graph_json["edges"].append({"source":str(e), "target":str(x), "type":graph.edges._adjdict[e][x]["label"]})
 
     with open(global_params.DEST_PATH+os.sep+"ssg_edgelist", 'w') as edgelist_file:
         edgelist_file.write("".join(edgelist))

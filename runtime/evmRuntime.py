@@ -3,6 +3,7 @@ import os
 
 from graphviz import Digraph
 
+from inputDealer.solidityAstWalker import AstWalker
 from utils import compare_versions
 from runtime.basicBlock import BasicBlock
 import disassembler.params
@@ -34,8 +35,6 @@ class EvmRuntime:
             content = []
             pc = 0
             for i, token in enumerate(tokens):
-                if pc == 18704:
-                    print("here")
                 if token.startswith("0x") and len(content) == 2 and content[1].startswith("PUSH"):
                     content.append(token)
                 else:
@@ -118,6 +117,17 @@ class EvmRuntime:
             last_inst_pc = inst_pc
             inst_pc = int(line_parts[0])
 
+            if self.source_map and self.source_map.positions:
+                # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
+                if idx < length and positions[idx] and positions[idx]["name"] == "tag":
+                    idx += 1
+                if idx < length and positions[idx]:
+                    self.source_map.instr_positions[inst_pc] = self.source_map.positions[idx]
+                else:
+                    # for bytecodes has no position in legacyAssembly, it's useless
+                    break
+                idx += 1
+
             self.instructions[inst_pc] = value
 
             if is_new_block:
@@ -137,23 +147,10 @@ class EvmRuntime:
                 self.end_ins_dict[current_block] = inst_pc
                 is_new_block = True
             elif tok_string == "JUMPDEST":
-                if self.source_map and self.source_map.positions:
-                    idx += 1  # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
                 if last_tok_string and (last_tok_string not in EvmRuntime.terminal_opcode) and (last_tok_string not in EvmRuntime.jump_opcode): #last instruction don't indicate a new block
                     self.end_ins_dict[current_block] = last_inst_pc
                     self.jump_type[current_block] = "falls_to"
                     current_block = inst_pc
-
-            if self.source_map and self.source_map.positions:
-                if idx < length and positions[idx] and positions[idx] == "tag":
-                    idx += 1
-                if idx < length and positions[idx] and tok_string.startswith(positions[idx]['name'].split(" ")[0]):
-                    self.source_map.instr_positions[inst_pc] = self.source_map.positions[idx]
-
-                idx += 1
-                # for bytecodes > length in legacyAssembly, it's useless
-                if idx > length:
-                    break
 
         # last instruction don't indicate a block termination
         if current_block not in self.end_ins_dict and inst_pc:
@@ -173,9 +170,19 @@ class EvmRuntime:
 
             block = BasicBlock(start_address, end_address)
 
+            lines = []
+            walker = AstWalker(global_params.AST, global_params.DIFFS)
             for i in range(start_address, end_address + 1):
                 if i in self.instructions:
                     block.add_instruction(self.instructions[i])
+                    if self.source_map.instr_positions:
+                        offset = self.source_map.instr_positions[i]["begin"]
+                        size = self.source_map.instr_positions[i]["end"] - offset
+                        result = walker.lines_and_changed_line_from_position(self.source_map.source.line_break_positions,
+                                                                             offset,
+                                                                             size)
+
+
 
             block.set_block_type(self.jump_type[start_address])
 

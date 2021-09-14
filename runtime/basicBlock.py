@@ -28,6 +28,8 @@ class BasicBlock:
         self.negated_branch_expression_node = None
         self.branch_id = []
 
+        self.position = None
+
     def set_jump_to(self, to):
         self.jump_to.append(to)
 
@@ -98,6 +100,8 @@ class BasicBlock:
     def get_negated_branch_expression_node(self):
         return self.negated_branch_expression_node
 
+    def set_position(self, src):
+        self.position = src
     # def instructions_details(self, format='hex'):
     #     out = ''
     #     line = ''
