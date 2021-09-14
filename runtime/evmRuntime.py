@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 from graphviz import Digraph
 
@@ -170,20 +171,27 @@ class EvmRuntime:
 
             block = BasicBlock(start_address, end_address)
 
-            lines = []
+            changed = False
             walker = AstWalker(global_params.AST, global_params.DIFFS)
+            start = sys.maxsize
+            end = 0
             for i in range(start_address, end_address + 1):
                 if i in self.instructions:
                     block.add_instruction(self.instructions[i])
                     if self.source_map.instr_positions:
-                        offset = self.source_map.instr_positions[i]["begin"]
-                        size = self.source_map.instr_positions[i]["end"] - offset
+                        t_start = self.source_map.instr_positions[i]["begin"]
+                        t_end = self.source_map.instr_positions[i]["end"]
                         result = walker.lines_and_changed_line_from_position(self.source_map.source.line_break_positions,
-                                                                             offset,
-                                                                             size)
+                                                                             t_start,
+                                                                             t_end-t_start)
+                        changed = changed or result["changed"]
+                        if t_start < start:
+                            start = t_start
+                        if t_end > end:
+                            end = t_end
 
-
-
+            block.set_position(str(start)+":"+str(end))
+            block.set_changed(changed)
             block.set_block_type(self.jump_type[start_address])
 
             self.vertices[start_address] = block

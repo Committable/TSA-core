@@ -72,7 +72,12 @@ def analyze_solidity_code():
                 basicblock = env.vertices[key]
                 label = str(basicblock.start) + "_" + str(basicblock.end)
 
-                cfg.add_node(key, instructions=basicblock.instructions, label=label, type=basicblock.get_block_type())
+                cfg.add_node(key,
+                             instructions=basicblock.instructions,
+                             label=label,
+                             type=basicblock.get_block_type(),
+                             changed=basicblock.changed,
+                             src=basicblock.position)
             for key in env.edges:
                 for target in env.edges[key]:
                     cfg.add_edge(key, target, type=env.jump_type[target])

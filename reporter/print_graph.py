@@ -77,25 +77,37 @@ def print_cfg_nx_graph(graph, file_name="default", design=None, color='grey'):
                 graph_json["nodes"].append({"id": str(n),
                                             "name": graph.nodes._nodes[n]["label"],
                                             "type": "falls_to",
-                                            "pos": str(pos[n])})
+                                            "pos": str(pos[n]),
+                                            "changed": graph.nodes._nodes[n]["changed"],
+                                            "src": graph.nodes._nodes[n]["src"]
+                                            })
             elif block_type == "unconditional":
                 c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="blue", pos=str(pos[n]))
                 graph_json["nodes"].append({"id": str(n),
                                             "name": graph.nodes._nodes[n]["label"],
                                             "type": "unconditional",
-                                            "pos": str(pos[n])})
+                                            "pos": str(pos[n]),
+                                            "changed": graph.nodes._nodes[n]["changed"],
+                                            "src": graph.nodes._nodes[n]["src"]
+                                            })
             elif block_type == "conditional":
                 c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="green", pos=str(pos[n]))
                 graph_json["nodes"].append({"id": str(n),
                                             "name": graph.nodes._nodes[n]["label"],
                                             "type": "conditional",
-                                            "pos": str(pos[n])})
+                                            "pos": str(pos[n]),
+                                            "changed": graph.nodes._nodes[n]["changed"],
+                                            "src": graph.nodes._nodes[n]["src"]
+                                            })
             elif block_type == "terminal":
                 c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="red", pos=str(pos[n]))
                 graph_json["nodes"].append({"id": str(n),
                                             "name": graph.nodes._nodes[n]["label"],
                                             "type": "terminal",
-                                            "pos": str(pos[n])})
+                                            "pos": str(pos[n]),
+                                            "changed": graph.nodes._nodes[n]["changed"],
+                                            "src": graph.nodes._nodes[n]["src"]
+                                            })
             node_map[str(n)] = str(i)
             i += 1
         for e in graph.edges._adjdict:
@@ -116,7 +128,7 @@ def print_cfg_nx_graph(graph, file_name="default", design=None, color='grey'):
         edgelist_file.write("".join(edgelist))
 
     g1.render(file_name, format='svg', directory=global_params.DEST_PATH, view=False)
-    with open(os.path.join(global_params.DEST_PATH, file_name + ".json"),'w') as outputfile:
+    with open(os.path.join(global_params.DEST_PATH, file_name + ".json"), 'w') as outputfile:
         json.dump(graph_json, outputfile)
     return
 

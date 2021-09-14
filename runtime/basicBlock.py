@@ -29,6 +29,7 @@ class BasicBlock:
         self.branch_id = []
 
         self.position = None
+        self.changed = False
 
     def set_jump_to(self, to):
         self.jump_to.append(to)
@@ -102,6 +103,9 @@ class BasicBlock:
 
     def set_position(self, src):
         self.position = src
+
+    def set_changed(self, changed):
+        self.changed = changed
     # def instructions_details(self, format='hex'):
     #     out = ''
     #     line = ''

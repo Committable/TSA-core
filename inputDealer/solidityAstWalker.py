@@ -33,7 +33,7 @@ class AstWalker:
                 json_result["layer"] = depth
                 json_result["children"] = []
                 json_result["ischanged"] = changed
-                json_result["position"] = node["src"]
+                json_result["src"] = node["src"]
                 json_result["lines"] = tmp["lines"]
 
                 if "children" in node and node["children"]:
@@ -69,7 +69,7 @@ class AstWalker:
                 json_result["layer"] = depth
                 json_result["children"] = []
                 json_result["ischanged"] = changed
-                json_result["position"] = node["src"]
+                json_result["src"] = node["src"]
                 json_result["lines"] = tmp["lines"]
 
                 children_num = 0
