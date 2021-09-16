@@ -66,17 +66,18 @@ class SolidityCompiler:
             solcx.install_solc(version)
             data_dict = solcx.compile_files([self.source + os.sep + self.joker],
                                             output_values=["abi", "bin", "bin-runtime", "ast",
-                                                           "asm", "opcodes", "hashes"],
+                                                           "asm", "opcodes", "hashes", "srcmap-runtime"],
                                             solc_version=version,
                                             allow_empty=True,
                                             allow_paths=self.source
                                             )
+
             # get runtime bytecode from opcodes
             for key in data_dict:
                 file = key.split(":")[0].replace(global_params.SRC_DIR+os.sep, "")
                 cname = key.split(":")[-1]
 
-                match_obj = re.match(r'.* RETURN INVALID (PUSH1 0x80 PUSH1 0x40 .*)',
+                match_obj = re.match(r'PUSH1 0x80 PUSH1 0x40 .*? RETURN INVALID (PUSH1 0x80 PUSH1 0x40 .*)',
                                      data_dict[key]["opcodes"])
 
                 if file not in self.combined_json["contracts"]:
@@ -116,6 +117,37 @@ class SolidityCompiler:
                 else:
                     self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = \
                         data_dict[key]["opcodes"]
+
+                ## start
+                # tokens =self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'].split(" ")
+                # file_contents = []
+                # content = []
+                # pc = 0
+                # for i, token in enumerate(tokens):
+                #     if token.startswith("0x") and len(content) == 2 and content[1].startswith("PUSH"):
+                #         content.append(token)
+                #     else:
+                #         if content:
+                #             file_contents.append(' '.join(content))
+                #             if content[1].startswith("PUSH"):
+                #                 pc += int(content[1].split('PUSH')[1])
+                #             content = []
+                #             pc += 1
+                #         content.append(str(pc))
+                #         if token.startswith("0x"):
+                #             content.append("INVALID")
+                #         else:
+                #             content.append(token)
+                #
+                # srcs = data_dict[key]["srcmap-runtime"].split(";")
+                #
+                # tmp_position = []
+                # positions = data_dict[key]['asm']['.data']['0']['.code']
+                # for x in positions:
+                #     if x and x["name"] != "tag":
+                #         tmp_position.append(x)
+                # print("here")
+                ## end
 
         self.compiled_contracts = self.combined_json["contracts"][self.joker]
 

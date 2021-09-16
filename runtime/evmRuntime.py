@@ -100,6 +100,11 @@ class EvmRuntime:
             positions = self.source_map.positions
             length = len(positions)
 
+        # tmp_position = []
+        # for x in positions:
+        #     if x and x["name"] != "tag":
+        #         tmp_position.append(x)
+
         self.end_ins_dict ={}
         self.instructions ={}
         self.jump_type = {}
@@ -122,7 +127,7 @@ class EvmRuntime:
                 # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
                 if idx < length and positions[idx] and positions[idx]["name"] == "tag":
                     idx += 1
-                if idx < length and positions[idx]:
+                if idx < length and positions[idx] and tok_string.startswith(positions[idx]['name'].split(" ")[0]):
                     self.source_map.instr_positions[inst_pc] = self.source_map.positions[idx]
                 else:
                     # for bytecodes has no position in legacyAssembly, it's useless
