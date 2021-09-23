@@ -77,7 +77,8 @@ def analyze_solidity_code():
                              label=label,
                              type=basicblock.get_block_type(),
                              changed=basicblock.changed,
-                             src=basicblock.position)
+                             src=basicblock.position,
+                             lines=basicblock.lines)
             for key in env.edges:
                 for target in env.edges[key]:
                     cfg.add_edge(key, target, type=env.jump_type[target])

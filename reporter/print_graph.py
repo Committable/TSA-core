@@ -79,7 +79,8 @@ def print_cfg_nx_graph(graph, file_name="default", design=None, color='grey'):
                                             "type": "falls_to",
                                             "pos": str(pos[n]),
                                             "changed": graph.nodes._nodes[n]["changed"],
-                                            "src": graph.nodes._nodes[n]["src"]
+                                            "src": graph.nodes._nodes[n]["src"],
+                                            "lines": graph.nodes._nodes[n]["lines"]
                                             })
             elif block_type == "unconditional":
                 c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="blue", pos=str(pos[n]))
@@ -88,7 +89,8 @@ def print_cfg_nx_graph(graph, file_name="default", design=None, color='grey'):
                                             "type": "unconditional",
                                             "pos": str(pos[n]),
                                             "changed": graph.nodes._nodes[n]["changed"],
-                                            "src": graph.nodes._nodes[n]["src"]
+                                            "src": graph.nodes._nodes[n]["src"],
+                                            "lines": graph.nodes._nodes[n]["lines"]
                                             })
             elif block_type == "conditional":
                 c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="green", pos=str(pos[n]))
@@ -97,7 +99,8 @@ def print_cfg_nx_graph(graph, file_name="default", design=None, color='grey'):
                                             "type": "conditional",
                                             "pos": str(pos[n]),
                                             "changed": graph.nodes._nodes[n]["changed"],
-                                            "src": graph.nodes._nodes[n]["src"]
+                                            "src": graph.nodes._nodes[n]["src"],
+                                            "lines": graph.nodes._nodes[n]["lines"]
                                             })
             elif block_type == "terminal":
                 c.node(str(n), label=graph.nodes._nodes[n]["label"], splines='true', color="red", pos=str(pos[n]))
@@ -106,7 +109,8 @@ def print_cfg_nx_graph(graph, file_name="default", design=None, color='grey'):
                                             "type": "terminal",
                                             "pos": str(pos[n]),
                                             "changed": graph.nodes._nodes[n]["changed"],
-                                            "src": graph.nodes._nodes[n]["src"]
+                                            "src": graph.nodes._nodes[n]["src"],
+                                            "lines": graph.nodes._nodes[n]["lines"]
                                             })
             node_map[str(n)] = str(i)
             i += 1

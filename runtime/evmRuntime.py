@@ -177,6 +177,7 @@ class EvmRuntime:
             block = BasicBlock(start_address, end_address)
 
             changed = False
+            lines = set()
             walker = AstWalker(global_params.AST, global_params.DIFFS)
             start = sys.maxsize
             end = 0
@@ -190,12 +191,15 @@ class EvmRuntime:
                                                                              t_start,
                                                                              t_end-t_start)
                         changed = changed or result["changed"]
+                        for x in result["lines"]:
+                            lines.add(x)
                         if t_start < start:
                             start = t_start
                         if t_end > end:
                             end = t_end
 
             block.set_position(str(start)+":"+str(end))
+            block.set_lines(list(lines))
             block.set_changed(changed)
             block.set_block_type(self.jump_type[start_address])
 

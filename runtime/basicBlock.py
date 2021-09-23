@@ -30,6 +30,7 @@ class BasicBlock:
 
         self.position = None
         self.changed = False
+        self.lines = []
 
     def set_jump_to(self, to):
         self.jump_to.append(to)
@@ -103,6 +104,9 @@ class BasicBlock:
 
     def set_position(self, src):
         self.position = src
+
+    def set_lines(self, lines):
+        self.lines = lines
 
     def set_changed(self, changed):
         self.changed = changed
