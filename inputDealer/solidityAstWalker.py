@@ -35,7 +35,7 @@ class AstWalker:
                 json_result["ischanged"] = changed
                 json_result["src"] = node["src"]
                 json_result["lines"] = tmp["lines"]
-                if depth > 3:
+                if depth > 2:
                     json_result["collapsed"] = True
                 else:
                     json_result["collapsed"] = False
@@ -75,7 +75,7 @@ class AstWalker:
                 json_result["ischanged"] = changed
                 json_result["src"] = node["src"]
                 json_result["lines"] = tmp["lines"]
-                if depth > 3:
+                if depth > 2:
                     json_result["collapsed"] = True
                 else:
                     json_result["collapsed"] = False
