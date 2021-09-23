@@ -25,7 +25,7 @@ coloredlogs.DEFAULT_FIELD_STYLES = dict(
                                     process=dict(color='magenta'))
 coloredlogs.install(level='INFO')
 
-project = "openzeppelin-contracts"
+project = "uniswap-v2-core"
 wb = xlrd.open_workbook(project+".xlsx")
 sh1 = wb.sheet_by_index(0)
 

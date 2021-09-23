@@ -35,6 +35,10 @@ class AstWalker:
                 json_result["ischanged"] = changed
                 json_result["src"] = node["src"]
                 json_result["lines"] = tmp["lines"]
+                if depth > 3:
+                    json_result["collapsed"] = True
+                else:
+                    json_result["collapsed"] = False
 
                 if "children" in node and node["children"]:
                     for child in node["children"]:
@@ -71,6 +75,10 @@ class AstWalker:
                 json_result["ischanged"] = changed
                 json_result["src"] = node["src"]
                 json_result["lines"] = tmp["lines"]
+                if depth > 3:
+                    json_result["collapsed"] = True
+                else:
+                    json_result["collapsed"] = False
 
                 children_num = 0
                 for x in node:
