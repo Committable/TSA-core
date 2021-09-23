@@ -50,8 +50,11 @@ def analyze_solidity_code():
     #  there may be over one contracts in the solidity file and one contract correspones to one graph each
     cfg_graphs = []
     ssg_graphs = []
-
+    last = 0
     for inp in inputs:
+        if len(inp["evm"]) < last:
+            continue
+        last = len(inp["evm"])
         logger.info("contract %s:", inp['contract'])
         cfg = nx.DiGraph()
         env = EvmRuntime(platform=global_params.PLATFORM,

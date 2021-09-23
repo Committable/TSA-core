@@ -77,7 +77,7 @@ class SolidityCompiler:
                 file = key.split(":")[0].replace(global_params.SRC_DIR+os.sep, "")
                 cname = key.split(":")[-1]
 
-                match_obj = re.match(r'PUSH1 0x80 PUSH1 0x40 .*? RETURN INVALID (PUSH1 0x80 PUSH1 0x40 .*)',
+                match_obj = re.match(r'PUSH1 0x80 PUSH1 0x40 .*? RETURN (INVALID|STOP) (PUSH1 0x80 PUSH1 0x40 .*)',
                                      data_dict[key]["opcodes"])
 
                 if file not in self.combined_json["contracts"]:
@@ -113,7 +113,7 @@ class SolidityCompiler:
                     global_params.AST = "ast"
                 if match_obj:
                     self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = \
-                        match_obj.group(1)
+                        match_obj.group(2)
                 else:
                     self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = \
                         data_dict[key]["opcodes"]
