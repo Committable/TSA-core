@@ -25,7 +25,7 @@ coloredlogs.DEFAULT_FIELD_STYLES = dict(
                                     process=dict(color='magenta'))
 coloredlogs.install(level='INFO')
 
-project = "uniswap-v2-core"
+project = "openzeppelin-contracts"
 wb = xlrd.open_workbook(project+".xlsx")
 sh1 = wb.sheet_by_index(0)
 
@@ -150,6 +150,8 @@ for i in range(0, sh1.nrows):
     if status != "fail":
         try:
             output_path = result_path+os.sep+commit_id+os.sep+file.split("/")[-1].split(".sol")[0]
+            if commit_id == "4e2641a9151fcbb0cd59126a52040fea68ecb807" and file=="contracts/utils/introspection/ERC165Checker.sol":
+                print("here")
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
             seraph_cmd = subprocess.Popen(["python",
@@ -170,10 +172,11 @@ for i in range(0, sh1.nrows):
                                          stdout=subprocess.PIPE)
             stdout, stderr = seraph_cmd.communicate()
 
-            if seraph_cmd.returncode != 0:
+            if seraph_cmd.returncode != 100:
                 status = "fail"
                 reason = "Seraph fail::" + str(stderr)
                 logger.error("seraph error: %s", str(stderr))
+                logger.error("returncode: %s", str(seraph_cmd.returncode))
             # else:
             #     lines = str(stderr, "utf-8").split("\n")
             #     for line in lines:

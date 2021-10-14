@@ -10,7 +10,6 @@ import re
 import difflib
 import six
 import logging
-
 from z3 import *
 from solver.symbolicVar import *
 

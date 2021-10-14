@@ -24,16 +24,13 @@ class InputHelper:
             }
         elif input_type == global_params.SOLIDITY:
             attr_defaults = {
-                'source': None,  # source dir of project
-                'joker': None,  # relative path of the analized file to source dir
-                'evm': False,
+                'source': "",  # source dir of project
+                'joker': "",  # relative path of the analized file to source dir
                 'root_path': "",
-                'compiled_contracts': [],
-                'compilation_err': False,
                 'remap': "",
-                'allow_paths': ""
+                'allow_paths': "",
+                'compilation_err': False
             }
-
         elif input_type == global_params.WASM_BYTECODE:
             attr_defaults = {
                 'source': None
@@ -58,8 +55,12 @@ class InputHelper:
                                         self.root_path, self.allow_paths, self.remap,
                                         self.compilation_err)
 
-            contracts = compiler.get_compiled_contracts_as_json()
+            try:
+                compiler.get_compiled_contracts_as_json()
+            except Exception as err:
+                raise Exception("Complied Fail: %s", str(err))
 
+            contracts = compiler.combined_json["contracts"][self.joker]
             for contract in contracts:
                 disasm_file = contracts[contract]['evm']['deployedBytecode']['opcodes']
 

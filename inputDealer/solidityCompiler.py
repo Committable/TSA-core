@@ -3,7 +3,6 @@ import os
 import re
 import subprocess
 import json
-
 import solcx
 
 import global_params
@@ -13,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class SolidityCompiler:
     def __init__(self, source, joker, root_path, allow_paths, remap, compilation_err):
-        self.compiled_contracts = []  # contracts of compiled result json
         self.combined_json = {"contracts": {}, "sources": {}}  # compile result of json type
 
         self.source = source  # source dir of project
@@ -24,32 +22,31 @@ class SolidityCompiler:
         self.remap = remap
         self.compilation_err = compilation_err
 
-        try:
-            self.path = os.path.join(global_params.TMP_DIR, self.joker.split("/")[-1].split(".")[0])
-        except Exception as err:
-            logger.error(err)
-            self.path = global_params.TMP_DIR
+        self.type = None
 
     def get_compiled_contracts_as_json(self):
-        if not self.compiled_contracts:
-            # 0. try with solcx
+        # 0. try with solcx
+        try:
+            # raise Exception
+            self._compile_with_solcx()
+            self.type = "solcx"
+        except Exception as err:
+            logger.error(err)
+            # 1. try with npx
             try:
-                self._compile_with_solcx()
+                # raise Exception
+                self._compile_with_npx_waffle()
+                self.type = "waffle"
             except Exception as err:
                 logger.error(err)
-                # 1. try with npx
+                # 2. try with hardhat
                 try:
-                    self._compile_with_npx_waffle()
+                    self._compile_with_yarn_hard_hot()
+                    self.type = "hardhat"
                 except Exception as err:
                     logger.error(err)
-                    # 2. try with hardhot
-                    try:
-                        self._compile_with_yarn_hard_hot()
-                    except Exception as err:
-                        logger.error(err)
-                        raise Exception("cannot compile target file: %s", self.source+os.sep+self.joker)
-
-        return self.compiled_contracts
+                    raise Exception("cannot compile target file: %s", self.source+os.sep+self.joker)
+        return
 
     def _compile_with_solcx(self):
         with open(self.source + os.sep + self.joker, 'r') as inputfile:
@@ -77,7 +74,7 @@ class SolidityCompiler:
                 file = key.split(":")[0].replace(global_params.SRC_DIR+os.sep, "")
                 cname = key.split(":")[-1]
 
-                match_obj = re.match(r'PUSH1 0x80 PUSH1 0x40 .*? RETURN (INVALID|STOP) (PUSH1 0x80 PUSH1 0x40 .*)',
+                match_obj = re.match(r'.*? RETURN (INVALID|STOP) (PUSH1 0x80 PUSH1 0x40 .*)',
                                      data_dict[key]["opcodes"])
 
                 if file not in self.combined_json["contracts"]:
@@ -89,7 +86,8 @@ class SolidityCompiler:
                             'deployedBytecode':
                                 {
                                     'opcodes': "",
-                                    "object": data_dict[key]["bin-runtime"]
+                                    "object": data_dict[key]["bin-runtime"],
+                                    "sourceMap": data_dict[key]["srcmap-runtime"]
                                 },
                             "bytecode":
                                 {
@@ -117,39 +115,6 @@ class SolidityCompiler:
                 else:
                     self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = \
                         data_dict[key]["opcodes"]
-
-                ## start
-                # tokens =self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'].split(" ")
-                # file_contents = []
-                # content = []
-                # pc = 0
-                # for i, token in enumerate(tokens):
-                #     if token.startswith("0x") and len(content) == 2 and content[1].startswith("PUSH"):
-                #         content.append(token)
-                #     else:
-                #         if content:
-                #             file_contents.append(' '.join(content))
-                #             if content[1].startswith("PUSH"):
-                #                 pc += int(content[1].split('PUSH')[1])
-                #             content = []
-                #             pc += 1
-                #         content.append(str(pc))
-                #         if token.startswith("0x"):
-                #             content.append("INVALID")
-                #         else:
-                #             content.append(token)
-                #
-                # srcs = data_dict[key]["srcmap-runtime"].split(";")
-                #
-                # tmp_position = []
-                # positions = data_dict[key]['asm']['.data']['0']['.code']
-                # for x in positions:
-                #     if x and x["name"] != "tag":
-                #         tmp_position.append(x)
-                # print("here")
-                ## end
-
-        self.compiled_contracts = self.combined_json["contracts"][self.joker]
 
         return
 
@@ -190,16 +155,16 @@ class SolidityCompiler:
             logger.error("npx waffle compile fail")
             raise Exception
         # 2. load Combined-Json.json
-        with open(self.source + os.sep + 'build' + os.sep + 'Combined-Json.json', 'r') as jsonfile:
-            combined_json = json.load(jsonfile)
-        for key in combined_json["contracts"]:
+        with open(self.source + os.sep + 'build' + os.sep + 'Combined-Json.json', 'r') as json_file:
+            result_json = json.load(json_file)
+        for key in result_json["contracts"]:
             file = key.split(":")[0]
             cname = key.split(":")[1]
-            if not self.combined_json["contracts"][file]:
+            if file not in self.combined_json["contracts"]:
                 self.combined_json["contracts"][file] = {}
-            self.combined_json["contracts"][file][cname] = combined_json["contracts"][key]
-            self.combined_json["sources"][file] = combined_json["sources"][file]["legacyAST"]
-        self.compiled_contracts = self.combined_json["contracts"][self.joker]
+            self.combined_json["contracts"][file][cname] = result_json["contracts"][key]
+            if file not in self.combined_json["sources"]:
+                self.combined_json["sources"][file] = {"legacyAST": result_json["sources"][file]["legacyAST"]}
         global_params.AST = "legacyAST"
         return
 
@@ -217,13 +182,16 @@ class SolidityCompiler:
             logger.critical("yarn compile fail")
             raise Exception
         filePath = self.source + os.sep + 'artifacts' + os.sep + "build-info"
-        fileName = ""
-        with open(filePath + os.sep + fileName[0], 'r') as jsonfile:
-            combined_json = json.load(jsonfile)
-        self.combined_json["contracts"] = combined_json['output']["contracts"]
-        self.combined_json["sources"] = combined_json['output']["sources"]
-
-        self.compiled_contracts = self.combined_json['contracts'][self.joker]
-        global_params.AST = "ast"
-        return
+        for i, j, files in os.walk(filePath):
+            for file in files:
+                with open(filePath + os.sep + file, 'r') as jsonfile:
+                    single_json = json.load(jsonfile)
+                    if self.joker in single_json['output']["contracts"] and self.joker in single_json['output']["sources"]:
+                        self.combined_json["contracts"] = single_json['output']["contracts"]
+                        self.combined_json["sources"] = single_json['output']["sources"]
+                        global_params.AST = "ast"
+                        return
+        # self.combined_json["contracts"] = combined_json['output']["contracts"]
+        # self.combined_json["sources"] = combined_json['output']["sources"]
+        raise Exception("not %s in result", self.joker)
 

@@ -100,11 +100,6 @@ class EvmRuntime:
             positions = self.source_map.positions
             length = len(positions)
 
-        # tmp_position = []
-        # for x in positions:
-        #     if x and x["name"] != "tag":
-        #         tmp_position.append(x)
-
         self.end_ins_dict ={}
         self.instructions ={}
         self.jump_type = {}
@@ -124,13 +119,10 @@ class EvmRuntime:
             inst_pc = int(line_parts[0])
 
             if self.source_map and self.source_map.positions:
-                # TODO:there is always a "tag" before "JUMPDEST", why it's necessary and it's sure?
-                if idx < length and positions[idx] and positions[idx]["name"] == "tag":
-                    idx += 1
-                if idx < length and positions[idx] and tok_string.startswith(positions[idx]['name'].split(" ")[0]):
+                if idx < length:
                     self.source_map.instr_positions[inst_pc] = self.source_map.positions[idx]
                 else:
-                    # for bytecodes has no position in legacyAssembly, it's useless
+                    # for bytecodes has no position in runtime sourcemap, it's useless
                     break
                 idx += 1
 
@@ -185,18 +177,17 @@ class EvmRuntime:
                 if i in self.instructions:
                     block.add_instruction(self.instructions[i])
                     if self.source_map.instr_positions:
-                        t_start = self.source_map.instr_positions[i]["begin"]
-                        t_end = self.source_map.instr_positions[i]["end"]
-                        result = walker.lines_and_changed_line_from_position(self.source_map.source.line_break_positions,
-                                                                             t_start,
-                                                                             t_end-t_start)
-                        changed = changed or result["changed"]
-                        for x in result["lines"]:
-                            lines.add(x)
-                        if t_start < start:
-                            start = t_start
-                        if t_end > end:
-                            end = t_end
+                        if self.source_map.instr_positions[i]["f"] == self.source_map.source.index:
+                            t_start = self.source_map.instr_positions[i]["s"]
+                            t_end = self.source_map.instr_positions[i]["s"] + self.source_map.instr_positions[i]["l"]
+                            i_lines = self.source_map.source.get_lines_from_position(t_start, t_end)
+                            changed = changed or walker.is_changed(i_lines)
+                            for x in i_lines:
+                                lines.add(x)
+                            if t_start < start:
+                                start = t_start
+                            if t_end > end:
+                                end = t_end
 
             block.set_position(str(start)+":"+str(end))
             block.set_lines(list(lines))

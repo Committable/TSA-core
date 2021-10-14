@@ -144,6 +144,7 @@ KECCAK256 = OpCode("KECCAK256", 0x20, 2, 1)
 # Environmental Information
 ADDRESS = OpCode("ADDRESS", 0x30, 0, 1)
 BALANCE = OpCode("BALANCE", 0x31, 1, 1)
+SELFBALANCE = OpCode("SELFBALANCE", 0x47, 1, 1)
 ORIGIN = OpCode("ORIGIN", 0x32, 0, 1)
 CALLER = OpCode("CALLER", 0x33, 0, 1)
 CALLVALUE = OpCode("CALLVALUE", 0x34, 0, 1)

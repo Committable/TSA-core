@@ -70,8 +70,6 @@ def main():
 
     parser.add_argument("-o", "--output", help="file path for results", type=str)
 
-    parser.add_argument("-tmp", "--tempdir", help="file path for temp files", type=str)
-
     parser.add_argument("-db", "--debug", help="display debug information", action="store_true")
 
     args = parser.parse_args()
@@ -88,15 +86,7 @@ def main():
     if args.global_timeout:
         global_params.GLOBAL_TIMEOUT = args.global_timeout
 
-    time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
-    if args.tempdir:
-        global_params.TMP_DIR = os.path.join(args.tempdir, time_str)
-    else:
-        global_params.TMP_DIR = os.path.join(global_params.TMP_DIR, time_str)
-
-    if not os.path.exists(global_params.TMP_DIR):
-        os.makedirs(global_params.TMP_DIR)
+    # time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     if args.verbose:
         coloredlogs.install(level='DEBUG')
@@ -110,64 +100,35 @@ def main():
             global_params.SRC_DIR = args.source
     else:
         logger.error("project source dir not assigned")
-        exit(1)
+        exit(102)
 
     if args.joker:
         # change from ./contract to contract
         if len(args.joker) > 2 and args.joker[0] == '.' and args.joker[1] == os.sep:
             global_params.SRC_FILE = args.joker[2:]
         elif len(args.joker) > 1 and args.joker[0] == os.sep:
-            logger.error("joker should be relative dir to source")
-            exit(1)
+            logger.error("joker should be relative path to source")
+            exit(102)
         else:
             global_params.SRC_FILE = args.joker
     else:
         logger.error("analysis file not assigned")
-        exit(1)
+        exit(102)
 
     if args.differences:
-        try:
-            with open(args.differences, 'r') as inputfile:
-                differences = inputfile.readlines()
-            if args.before and differences is not None:
-                for i in range(0, len(differences)):
-                    line = differences[i]
-
-                    n = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", line)
-                    if n:
-                        start_line = int(n.group(2))
-                        line_num = 0
-                        continue
-
-                    m = re.match(r"\s*(['|\"]?)(\+|-|\s)(.*)", line)
-                    if m and m.group(2) == "-":
-                        global_params.DIFFS.append(start_line+line_num)
-                    if m and m.group(2) != "+":
-                        line_num += 1
-            elif differences is not None:
-                for i in range(0, len(differences)):
-                    line = differences[i]
-
-                    n = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", line)
-                    if n:
-                        start_line = int(n.group(4))
-                        line_num = 0
-                        continue
-
-                    m = re.match(r"\s*(['|\"]?)(\+|-|\s)(.*)", line)
-                    if m and m.group(2) == "+":
-                        global_params.DIFFS.append(start_line+line_num)
-                    if m and m.group(2) != "-":
-                        line_num += 1
-        except Exception as err:
-            logger.error(str(err))
+        if not get_diff(args.differences, args.before):
+            exit(102)
 
     if args.output:
         global_params.DEST_PATH = args.output
-        if not os.path.exists(args.output):
-            os.makedirs(args.output)
+        try:
+            if not os.path.exists(args.output):
+                os.makedirs(args.output)
+        except Exception as err:
+            logger.error("destination path not exist: %s",str(err))
+            exit(102)
 
-    exit_code = 0
+    exit_code = 100
 
     if args.evm:
         if has_dependencies_installed(evm=True):
@@ -177,10 +138,10 @@ def main():
             exit_code = analyze_wasm_bytecode()
     elif args.cpp:
         logger.error("cpp file not supported yet")
-        exit_code = 1
+        exit_code = 102
     elif args.golang:
         logger.error("golang file not supported yet")
-        exit_code = 1
+        exit_code = 102
     elif args.solidity:
         exit_code = analyze_solidity_code()
 
@@ -189,6 +150,46 @@ def main():
 
 def cmd_exists(cmd):
     return subprocess.call("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+
+
+def get_diff(diff_file, is_before):
+    try:
+        with open(diff_file, 'r') as inputfile:
+            differences = inputfile.readlines()
+        if is_before and differences is not None:
+            for i in range(0, len(differences)):
+                line = differences[i]
+
+                n = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", line)
+                if n:
+                    start_line = int(n.group(2))
+                    line_num = 0
+                    continue
+
+                m = re.match(r"\s*(['|\"]?)(\+|-|\s)(.*)", line)
+                if m and m.group(2) == "-":
+                    global_params.DIFFS.append(start_line + line_num)
+                if m and m.group(2) != "+":
+                    line_num += 1
+        elif differences is not None:
+            for i in range(0, len(differences)):
+                line = differences[i]
+
+                n = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", line)
+                if n:
+                    start_line = int(n.group(4))
+                    line_num = 0
+                    continue
+
+                m = re.match(r"\s*(['|\"]?)(\+|-|\s)(.*)", line)
+                if m and m.group(2) == "+":
+                    global_params.DIFFS.append(start_line + line_num)
+                if m and m.group(2) != "-":
+                    line_num += 1
+        return 1
+    except Exception as err:
+        logger.error(str(err))
+        return 0
 
 
 def has_dependencies_installed(evm=False, emcc=False, golang=False, solc=False):

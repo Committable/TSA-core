@@ -580,7 +580,7 @@ class EVMInterpreter:
         elif opcode == "ADDRESS":  # get address of currently executing account
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["receiver_address"])
-        elif opcode == "BALANCE":
+        elif opcode == "BALANCE" or opcode == "SELFBALANCE":
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 address = stack.pop(0)

@@ -3,26 +3,28 @@ from inputDealer.solidityAstWalker import AstWalker
 
 
 class AstHelper:
-    def __init__(self, filename, input_type, sources=None):
+    def __init__(self, input_type, sources=None):
         if input_type == global_params.SOLIDITY:
-            self.filename = filename  # relative path of file
             self.input_type = input_type  # input type of file
-            self.source_list = sources  # "sources" of the complied json result, i.e. ast or legacyAST data
-            self.source = None  # Source class of file
+            self.asts = {}
+            for x in sources:
+                self.asts[x] = sources[x][global_params.AST]
+            self.sources = {}  # Source class of file
         else:
             raise Exception("There is no such type of input")
 
-        self.contracts = self.extract_contract_definitions(self.source_list)
+        self.contracts = self.extract_contract_definitions()
 
-    def set_source(self, source):
-        self.source = source
+    def set_source(self, key, source):
+        if key not in self.sources:
+            self.sources[key] = source
 
-    def build_ast_graph(self, graph):
+    def get_ast_report(self, filename):
         walker = AstWalker(global_params.AST, global_params.DIFFS)
-        root = self.source_list[self.filename][global_params.AST]
-        return walker.walk_to_graph(self.source, root, graph, 0)
+        root = self.asts[filename]
+        return walker.walk_to_json(self.sources[filename], root, 0)
 
-    def extract_contract_definitions(self, sourcesList):
+    def extract_contract_definitions(self):
         ret = {
             "contractsById": {},
             "contractsByName": {},
@@ -30,8 +32,8 @@ class AstHelper:
         }
         if global_params.AST == "legacyAST":
             walker = AstWalker()
-            for k in sourcesList:
-                ast = sourcesList[k]["legacyAST"]
+            for k in self.asts:
+                ast = self.asts[k]
                 nodes = []
                 walker.walk(ast, {"name": "ContractDefinition"}, nodes)
                 for node in nodes:
@@ -184,5 +186,4 @@ class AstHelper:
             return func_name_to_params
         else:
             return None
-
 
