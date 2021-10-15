@@ -17,15 +17,19 @@ def analyze_solidity_code():
     source_dir = global_params.SRC_DIR
     file_path = global_params.SRC_DIR + os.sep + global_params.SRC_FILE
     if not os.path.exists(source_dir) or not os.path.exists(file_path):
-        ast = nx.DiGraph()
-        cfg = nx.DiGraph()
-        ssg = nx.DiGraph()
-        print_ast_nx_graph(ast, file_name="ast")
-        print_cfg_nx_graph(cfg, file_name="cfg")
-        print_ssg_nx_graph(ssg, file_name="ssg")
+        report = Reporter("")
+        report.set_ast({"nodes": [], "edges": []})
+        report.dump_ast()
+        report.dump_ast_edge_list()
+        report.print_ast_graph()
 
-        with open(os.path.join(global_params.DEST_PATH, "ast.json"), 'w') as outputfile:
-            json.dump({"nodes": [], "edges": []}, outputfile)
+        report.dump_cfg()
+        report.dump_cfg_edge_list()
+        report.print_cfg_graph()
+
+        report.dump_ssg()
+        report.dump_ssg_edge_list()
+        report.print_ssg_graph()
 
         return 101
 

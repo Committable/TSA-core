@@ -225,9 +225,10 @@ class Reporter:
             edgelist_file.write("".join(complete))
 
     def _add_ast_edge_list(self, node, edge_list):
-        for child in node["children"]:
-            edge_list.append(node["id"] + " " + child["id"] + "\n")
-            self._add_ast_edge_list(child, edge_list)
+        if "childrent" in node:
+            for child in node["children"]:
+                edge_list.append(node["id"] + " " + child["id"] + "\n")
+                self._add_ast_edge_list(child, edge_list)
 
     def _get_ast_graph(self, current, graph):
         if current:

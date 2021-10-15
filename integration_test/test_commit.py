@@ -173,7 +173,7 @@ for i in range(0, sh1.nrows):
             stdout, stderr = seraph_cmd.communicate()
 
             if seraph_cmd.returncode != 100:
-                status = "fail"
+                status = "fail:" + str(seraph_cmd.returncode)
                 reason = "Seraph fail::" + str(stderr)
                 logger.error("seraph error: %s", str(stderr))
                 logger.error("returncode: %s", str(seraph_cmd.returncode))
@@ -190,7 +190,7 @@ for i in range(0, sh1.nrows):
             reason = "Seraph fail::" + str(err)
             logger.error("seraph error: %s", str(err))
 
-    if status == "fail":
+    if "fail" in status:
         failed += 1
     else:
         success += 1

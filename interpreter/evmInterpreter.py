@@ -870,6 +870,8 @@ class EVMInterpreter:
 
                 if isSymbolic(target_address):
                     raise TypeError("Target address must be an real integer but it is: %s", str(target_address))
+                if target_address not in self.runtime.vertices:
+                    raise Exception("Target address for jump illegal")
                 self.runtime.vertices[block].set_jump_targets(target_address)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
@@ -881,6 +883,8 @@ class EVMInterpreter:
                 target_address = stack.pop(0)
                 if isSymbolic(target_address):
                     raise TypeError("Target address must be an integer: but it is %s", str(target_address))
+                if target_address not in self.runtime.vertices:
+                    raise Exception("Target address for jumpi illegal")
                 self.runtime.vertices[block].set_jump_targets(target_address)
                 if target_address not in self.runtime.edges[block]:
                     self.runtime.edges[block].append(target_address)
