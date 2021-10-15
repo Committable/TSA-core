@@ -107,7 +107,7 @@ class Reporter:
             node_map[str(n)] = str(i)
             graph_json["nodes"].append({"id": str(n),
                                         "name": str(n).split("_")[0],
-                                        "pos": pos[n],
+                                        "pos": str(pos[n]),
                                         "lines": []})
             i += 1
         for edge in list(graph.edges):
@@ -189,7 +189,7 @@ class Reporter:
 
     def dump_ssg(self):
         with open(os.path.join(global_params.DEST_PATH, "ssg.json"), 'w') as outputfile:
-            json.dump(self.cfgs, outputfile)
+            json.dump(self.ssgs, outputfile)
 
     def print_ssg_graph(self):
         g = nx.DiGraph()

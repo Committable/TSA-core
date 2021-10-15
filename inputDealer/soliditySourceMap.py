@@ -53,18 +53,6 @@ class SourceMap:
             if not SourceMap.ast_helper:
                 SourceMap.ast_helper = AstHelper(input_type, sources["sources"])
 
-            if 'legacyAssembly' in sources["contracts"][parent_file][cname]['evm']:
-                self.position_groups = sources["contracts"][parent_file][cname]['evm']['legacyAssembly']
-            else:
-                self.positions_groups = None
-            self.source_map = sources["contracts"][parent_file][cname]['evm']['deployedBytecode']['sourceMap']
-            if "methodIdentifiers" in sources["contracts"][parent_file][cname]['evm']:
-                self.func_to_sig = sources["contracts"][parent_file][cname]['evm']["methodIdentifiers"]
-                self.sig_to_func = self._get_sig_to_func()
-            else:
-                self.func_to_sig = None
-                self.sig_to_func = None
-
             self.parent_file = parent_file
             self.cname = cname
             self.input_type = input_type
@@ -73,13 +61,26 @@ class SourceMap:
 
             SourceMap.ast_helper.set_source(parent_file, self.source)
 
-            self.instr_positions = {}
-            self.positions = self._get_positions()
+            if cname != "":
+                if 'legacyAssembly' in sources["contracts"][parent_file][cname]['evm']:
+                    self.position_groups = sources["contracts"][parent_file][cname]['evm']['legacyAssembly']
+                else:
+                    self.positions_groups = None
+                self.source_map = sources["contracts"][parent_file][cname]['evm']['deployedBytecode']['sourceMap']
+                if "methodIdentifiers" in sources["contracts"][parent_file][cname]['evm']:
+                    self.func_to_sig = sources["contracts"][parent_file][cname]['evm']["methodIdentifiers"]
+                    self.sig_to_func = self._get_sig_to_func()
+                else:
+                    self.func_to_sig = None
+                    self.sig_to_func = None
 
-            self.var_names = self._get_var_names()
-            self.func_call_names = self._get_func_call_names()
-            self.callee_src_pairs = self._get_callee_src_pairs()
-            self.func_name_to_params = self._get_func_name_to_params()
+                self.instr_positions = {}
+                self.positions = self._get_positions()
+
+                self.var_names = self._get_var_names()
+                self.func_call_names = self._get_func_call_names()
+                self.callee_src_pairs = self._get_callee_src_pairs()
+                self.func_name_to_params = self._get_func_name_to_params()
         else:
             raise Exception("There is no such type of input")
 

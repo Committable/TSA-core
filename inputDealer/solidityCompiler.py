@@ -115,7 +115,8 @@ class SolidityCompiler:
                 else:
                     self.combined_json["contracts"][file][cname]['evm']['deployedBytecode']['opcodes'] = \
                         data_dict[key]["opcodes"]
-
+        if self.joker not in self.combined_json["contracts"] or self.joker not in self.combined_json["sources"]:
+            raise Exception
         return
 
     def _compile_with_npx_waffle(self):
@@ -186,12 +187,12 @@ class SolidityCompiler:
             for file in files:
                 with open(filePath + os.sep + file, 'r') as jsonfile:
                     single_json = json.load(jsonfile)
-                    if self.joker in single_json['output']["contracts"] and self.joker in single_json['output']["sources"]:
+                    if self.joker in single_json['output']["contracts"] or self.joker in single_json['output']["sources"]:
                         self.combined_json["contracts"] = single_json['output']["contracts"]
                         self.combined_json["sources"] = single_json['output']["sources"]
                         global_params.AST = "ast"
                         return
         # self.combined_json["contracts"] = combined_json['output']["contracts"]
         # self.combined_json["sources"] = combined_json['output']["sources"]
-        raise Exception("not %s in result", self.joker)
+        logger.error("not %s in result", self.joker)
 

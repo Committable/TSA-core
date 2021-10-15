@@ -7,8 +7,9 @@ class AstHelper:
         if input_type == global_params.SOLIDITY:
             self.input_type = input_type  # input type of file
             self.asts = {}
-            for x in sources:
-                self.asts[x] = sources[x][global_params.AST]
+            if sources:
+                for x in sources:
+                    self.asts[x] = sources[x][global_params.AST]
             self.sources = {}  # Source class of file
         else:
             raise Exception("There is no such type of input")
@@ -21,8 +22,14 @@ class AstHelper:
 
     def get_ast_report(self, filename):
         walker = AstWalker(global_params.AST, global_params.DIFFS)
-        root = self.asts[filename]
-        return walker.walk_to_json(self.sources[filename], root, 0)
+        if filename in self.asts:
+            root = self.asts[filename]
+        else:
+            return {"nodes": [], "edges": []}
+        if filename in self.sources:
+            return walker.walk_to_json(self.sources[filename], root, 0)
+        else:
+            return {"nodes": [], "edges": []}
 
     def extract_contract_definitions(self):
         ret = {

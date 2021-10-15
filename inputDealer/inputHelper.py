@@ -59,6 +59,14 @@ class InputHelper:
                 compiler.get_compiled_contracts_as_json()
             except Exception as err:
                 raise Exception("Complied Fail: %s", str(err))
+            # self.joker may not in build result if not code in solidity file
+            if self.joker not in compiler.combined_json["contracts"]:
+                if self.joker in compiler.combined_json["sources"]:
+                    source_map = SourceMap(cname="",
+                                           input_type=self.input_type,
+                                           parent_file=self.joker,
+                                           sources=compiler.combined_json)
+                return []
 
             contracts = compiler.combined_json["contracts"][self.joker]
             for contract in contracts:

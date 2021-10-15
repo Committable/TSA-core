@@ -1,6 +1,5 @@
 import logging
 
-
 from runtime.evmRuntime import EvmRuntime
 from interpreter.evmInterpreter import EVMInterpreter
 from inputDealer.soliditySourceMap import SourceMap
@@ -44,9 +43,15 @@ def analyze_solidity_code():
         logger.error(str(err))
         return 103
 
-    report = Reporter(SourceMap.sources[global_params.SRC_FILE].get_content())
+    if global_params.SRC_FILE in SourceMap.sources:
+        report = Reporter(SourceMap.sources[global_params.SRC_FILE].get_content())
+    else:
+        report = Reporter("")
     # 2. get ast graph
-    ast_json = SourceMap.ast_helper.get_ast_report(global_params.SRC_FILE)
+    if SourceMap.ast_helper:
+        ast_json = SourceMap.ast_helper.get_ast_report(global_params.SRC_FILE)
+    else:
+        ast_json = {"nodes": [], "edges": []}
     report.set_ast(ast_json)
 
     report.dump_ast()
