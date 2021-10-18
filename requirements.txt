@@ -1,0 +1,12 @@
+xlrd==1.2.0
+graphviz==0.17
+psutil==5.8.0
+networkx==2.1
+xlutils==2.0.0
+coloredlogs==15.0.1
+z3_solver==4.8.12.0
+xlwt==1.2.0
+numpy==1.19.5
+six==1.15.0
+pygraphviz==1.6
+py_solc_x==1.1.0

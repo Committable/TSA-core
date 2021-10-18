@@ -466,7 +466,9 @@ class XGraph:
         self.addNode(node)
 
     def ssgAddNode(self, node, pid):
-        self.ssg.add_node(node)
+        if str(node) in self.ssg.nodes:
+            print("here")
+        self.ssg.add_node(str(node))
         stored_value = node.arguments[0]
         stored_address = node.arguments[1]
         e_node = ExpressionNode(str(stored_value), stored_value)
