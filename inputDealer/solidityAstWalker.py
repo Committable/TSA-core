@@ -14,10 +14,14 @@ class AstWalker:
         json_result = {}
         if node:
             if self.type == "legacyAST":
-                node_id = str(node["id"])
+                if "id" in node:
+                    node_id = str(node["id"])
+                else:
+                    node_id = str(node["name"])
 
+                if "src" not in node:
+                    node["src"] = "0:0:-1"
                 position = node["src"].split(":")
-                assert int(position[2]) == source.index
                 lines = source.get_lines_from_position(int(position[0]),
                                                        int(position[0]) + int(position[1]))
                 changed = self.is_changed(lines)
@@ -41,7 +45,6 @@ class AstWalker:
                 nodeID = str(node["id"])
 
                 position = node["src"].split(":")
-                assert int(position[2]) == source.index
                 lines = source.get_lines_from_position(int(position[0]),
                                                        int(position[0]) + int(position[1]))
                 changed = self.is_changed(lines)

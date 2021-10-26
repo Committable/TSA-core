@@ -32,11 +32,11 @@ logger.info(u"sheet %s 共 %d 行 %d 列" % (sh1.name, sh1.nrows, sh1.ncols))
 
 BASE_CMD_ENVIRONMENT_VARIABLES = {'http_proxy': 'http://192.168.177.1:7890',
                                   'https_proxy': 'http://192.168.177.1:7890'}
-local_repository_path = "/home/yangzq18/transparentC/"+project
+local_repository_path = "/Users/zhiqiang/transparenC/"+project
 
 branch_name = "master"
 environment_variables = BASE_CMD_ENVIRONMENT_VARIABLES
-result_path = "/home/yangzq18/result/"+project
+result_path = "/Users/zhiqiang/transparenC/result/"+project
 
 if not os.path.exists(result_path):
     os.makedirs(result_path)
@@ -44,6 +44,7 @@ if not os.path.exists(result_path):
 success = 0
 failed = 0
 tried = 0
+total = 0
 
 result = [["commit", "file", "status", "reason"]]
 
@@ -77,9 +78,17 @@ def write_excel_xls_append(path, value):
 last_commit = ""
 
 for i in range(0, sh1.nrows):
+    if tried >= 100:
+        write_excel_xls(result_path+"_compile_result_"+str(total)+".xlsx", "sheet1", result)
+        write_excel_xls_append(result_path+"_compile_result_"+str(total)+".xlsx", [[tried, success, failed]])
+        success = 0
+        failed = 0
+        tried = 0
+        result = [["commit", "file", "status", "reason"]]
     commit_id = sh1.cell_value(i, 0)
     if last_commit != commit_id:
         tried += 1
+        total += 1
         status = "success"
         reason = ""
         build_type = "unknown"
@@ -109,17 +118,18 @@ for i in range(0, sh1.nrows):
     logger.info("detecting build type...")
     if status != "fail":
         try:
-            if os.path.exists(os.path.join("/home/yangzq18/transparentC/openzeppelin-contracts",
+            if os.path.exists(os.path.join(local_repository_path,
                                            "hardhat.config.js")):
                 build_type = "hardhad"
-            elif os.path.exists(os.path.join("/home/yangzq18/transparentC/openzeppelin-contracts",
+            elif os.path.exists(os.path.join(local_repository_path,
                                              ".waffle.json")):
                 build_type = "waffle"
-            elif os.path.exists(os.path.join("/home/yangzq18/transparentC/openzeppelin-contracts",
-                                             "builder.config.js")):
-                build_type = "builder"
-            elif os.path.exists(os.path.join("/home/yangzq18/transparentC/openzeppelin-contracts",
-                                             "truffle-config.js")):
+            elif os.path.exists(os.path.join(local_repository_path,
+                                             "buidler.config.js")):
+                build_type = "buidler"
+            elif os.path.exists(os.path.join(local_repository_path,
+                                             "truffle-config.js")) or os.path.exists(os.path.join(local_repository_path,
+                                             "truffle.js")):
                 build_type = "truffle"
             else:
                 build_type = "unknown"
@@ -136,16 +146,23 @@ for i in range(0, sh1.nrows):
             stdout, stderr = compile_cmd.communicate()
 
             if compile_cmd.returncode != 0:
-                status = "fail"
-                reason = "compile fail::" + str(stderr)
+                if build_type == "truffle":
+                    compile_cmd = subprocess.Popen("npx truffle compile",
+                                           shell=True, cwd=local_repository_path,
+                                           stderr=subprocess.PIPE,
+                                           stdout=subprocess.PIPE)
+                    stdout, stderr = compile_cmd.communicate()
+                if compile_cmd.returncode != 0:
+                    status = "fail"
+                    reason = "compile fail::" + str(stderr)
 
         except Exception as err:
             status = "fail"
             reason = "compile fail::" + str(err)
 
     if status == "fail":
-        logger.info("npm installing...")
-        install_cmd = subprocess.Popen("npm install node-fetch-with-proxy",
+        logger.info("yarn installing...")
+        install_cmd = subprocess.Popen("yarn",
                                        shell=True, cwd=local_repository_path,
                                        stderr=subprocess.PIPE,
                                        stdout=subprocess.PIPE)
@@ -155,8 +172,8 @@ for i in range(0, sh1.nrows):
             if install_cmd.returncode != 0:
                 status = "fail"
                 reason = "compile fail::" + str(stderr)
-            logger.error("err: %s",str(stderr))
-            logger.error("out: %s", str(stdout))
+            #logger.error("err: %s",str(stderr))
+            #logger.error("out: %s", str(stdout))
         except subprocess.TimeoutExpired:
             install_cmd.kill()
             install_cmd.terminate()
@@ -178,9 +195,18 @@ for i in range(0, sh1.nrows):
             if compile_cmd.returncode != 0:
                 status = "fail"
                 reason = "compile fail::" + str(stderr)
-            else:
-                status = "success"
-                reason = ""
+                if build_type == "truffle":
+                    compile_cmd = subprocess.Popen("npx truffle compile",
+                                           shell=True, cwd=local_repository_path,
+                                           stderr=subprocess.PIPE,
+                                           stdout=subprocess.PIPE)
+                    stdout, stderr = compile_cmd.communicate()
+                if compile_cmd.returncode != 0:
+                    status = "fail"
+                    reason = "compile fail::" + str(stderr)
+                else:
+                    status = "success"
+                    reason = ""
         except Exception as err:
             status = "fail"
             reason = "compile fail::" + str(err)

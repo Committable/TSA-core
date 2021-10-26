@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class Source:
-    def __init__(self, filename, index):
-        self.index = index
+    def __init__(self, filename):
         self.filename = filename
         self.content = self._load_content()  # the all file content in string type
         self.line_break_positions = self._load_line_break_positions()  # the position of all "\n"
@@ -41,14 +40,11 @@ class Source:
 
 
 class SourceMap:
-    index_to_filename = {}
     sources = {}
     ast_helper = None  # AstHelper for all
 
     def __init__(self, cname="", input_type="", parent_file="", sources=None):
         if input_type == global_params.SOLIDITY:
-            index = int(sources["sources"][parent_file][global_params.AST]["src"].split(":")[-1])
-            SourceMap.index_to_filename[index] = parent_file
 
             if not SourceMap.ast_helper:
                 SourceMap.ast_helper = AstHelper(input_type, sources["sources"])
@@ -57,7 +53,7 @@ class SourceMap:
             self.cname = cname
             self.input_type = input_type
 
-            self.source = self._get_source(index)
+            self.source = self._get_source()
 
             SourceMap.ast_helper.set_source(parent_file, self.source)
 
@@ -132,13 +128,15 @@ class SourceMap:
         func_to_sig = self.func_to_sig
         return dict((sig, func) for func, sig in six.iteritems(func_to_sig))
 
-    def _get_source(self, index):
+    def _get_source(self):
         if self.parent_file not in SourceMap.sources:
-            SourceMap.sources[self.parent_file] = Source(self.parent_file, index)
+            SourceMap.sources[self.parent_file] = Source(self.parent_file)
         return SourceMap.sources[self.parent_file]
 
     def _get_positions(self):
         if self.input_type == global_params.SOLIDITY:
+            if not self.source_map:
+                return None
             source_map_position = self.source_map.split(";")
             new_positions = []
             p = {"s": -1, "l": -1, "f": -1, "j": "-", "m": 0}

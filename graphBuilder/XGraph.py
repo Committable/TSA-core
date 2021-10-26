@@ -25,7 +25,7 @@ class Node:
         return self.toNodes
 
     def __str__(self):
-        return "Node_" + self.name
+        return ("Node_" + self.name).replace("\n", "")
 
 
 # CallReturnDataNode is different with ReturnDataNode, but it points to a ReturnDataNode
@@ -42,7 +42,7 @@ class CallReturnDataNode(Node):
         return self.path_id
 
     def __str__(self):
-        return "CallReturnDataNode_" + self.name + "_" + str(self.pc) + "_" + str(self.path_id)
+        return ("CallReturnDataNode_" + self.name + "_" + str(self.pc) + "_" + str(self.path_id)).replace("\n", "")
 
 
 
@@ -62,7 +62,7 @@ class InstructionNode(Node):
         return self.arguments
 
     def __str__(self):
-        return "InstructionNode_" + self.name + "_" + str(self.global_pc)
+        return ("InstructionNode_" + self.name + "_" + str(self.global_pc)).replace("\n", "")
 
 
 class MessageCallNode(InstructionNode):
@@ -72,7 +72,7 @@ class MessageCallNode(InstructionNode):
         self.path_id = path_id
 
     def __str__(self):
-        return "MessageCallNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
+        return ("MessageCallNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)).replace("\n", "")
 
 
 class StateOPNode(InstructionNode):
@@ -82,7 +82,7 @@ class StateOPNode(InstructionNode):
         self.path_id = path_id
 
     def __str__(self):
-        return "StateOPNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
+        return ("StateOPNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)).replace("\n", "")
 
 
 class TerminalNode(InstructionNode):
@@ -92,7 +92,7 @@ class TerminalNode(InstructionNode):
         self.path_id = path_id
 
     def __str__(self):
-        return "TerminalNode_" + self.name + "_" + str(self.path_id)
+        return ("TerminalNode_" + self.name + "_" + str(self.path_id)).replace("\n", "")
 
 class ArithNode(InstructionNode):
 
@@ -103,7 +103,7 @@ class ArithNode(InstructionNode):
         self.path_id = path_id
 
     def __str__(self):
-        return "ArithNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)
+        return ("ArithNode_" + self.name + "_" + str(self.global_pc) + "_" + str(self.path_id)).replace("\n", "")
 
 class VariableNode(Node):
 
@@ -112,7 +112,7 @@ class VariableNode(Node):
         self.value = value
 
     def __str__(self):
-        return "VariableNode_" + self.name + "_" + str(self.value)
+        return ("VariableNode_" + self.name + "_" + str(self.value)).replace("\n", "")
 
 
 class ExpressionNode(VariableNode):
@@ -120,7 +120,7 @@ class ExpressionNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ExpressionNode_" + self.name
+        return ("ExpressionNode_" + self.name).replace("\n", "")
 
 
 class ConstrainNode(VariableNode):
@@ -128,7 +128,7 @@ class ConstrainNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ConstrainNode_" + self.name
+        return ("ConstrainNode_" + self.name).replace("\n", "")
 
 
 class StateNode(VariableNode):
@@ -138,7 +138,7 @@ class StateNode(VariableNode):
         self.position = position
 
     def __str__(self):
-        return "StateNode_" + str(self.name) + "_" + str(self.position)
+        return ("StateNode_" + str(self.name) + "_" + str(self.position)).replace("\n", "")
 
 
 class ConstNode(VariableNode):
@@ -147,7 +147,7 @@ class ConstNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ConstNode_" + self.name
+        return ("ConstNode_" + self.name).replace("\n", "")
 
 
 class InputDataNode(VariableNode):
@@ -157,7 +157,7 @@ class InputDataNode(VariableNode):
         self.position = position
 
     def __str__(self):
-        return "InputDataNode_" + self.name
+        return ("InputDataNode_" + self.name).replace("\n", "")
 
 
 class InputDataSizeNode(VariableNode):
@@ -166,7 +166,7 @@ class InputDataSizeNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "InputDataSizeNode_" + self.name
+        return ("InputDataSizeNode_" + self.name).replace("\n", "")
 
 
 class ExpNode(VariableNode):
@@ -174,7 +174,7 @@ class ExpNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ExpNode_" + self.name
+        return ("ExpNode_" + self.name).replace("\n", "")
 
 
 class GasPriceNode(VariableNode):
@@ -182,7 +182,7 @@ class GasPriceNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "GasPriceNode_" + self.name
+        return ("GasPriceNode_" + self.name).replace("\n", "")
 
 
 class OriginNode(VariableNode):
@@ -190,7 +190,7 @@ class OriginNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "OriginNode_" + self.name
+        return ("OriginNode_" + self.name).replace("\n", "")
 
 
 class CoinbaseNode(VariableNode):
@@ -198,7 +198,7 @@ class CoinbaseNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "CoinbaseNode_" + self.name
+        return ("CoinbaseNode_" + self.name).replace("\n", "")
 
 
 class DifficultyNode(VariableNode):
@@ -206,7 +206,7 @@ class DifficultyNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "DifficultyNode_" + self.name
+        return ("DifficultyNode_" + self.name).replace("\n", "")
 
 
 class GasLimitNode(VariableNode):
@@ -214,7 +214,7 @@ class GasLimitNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "GasLimitNode_"  + self.name
+        return ("GasLimitNode_"  + self.name).replace("\n", "")
 
 
 class CurrentNumberNode(VariableNode):
@@ -222,7 +222,7 @@ class CurrentNumberNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "CurrentNumberNode_" + self.name
+        return ("CurrentNumberNode_" + self.name).replace("\n", "")
 
 
 class TimeStampNode(VariableNode):
@@ -230,7 +230,7 @@ class TimeStampNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "TimeStampNode_" + self.name
+        return ("TimeStampNode_" + self.name).replace("\n", "")
 
 
 class AddressNode(VariableNode):
@@ -238,7 +238,7 @@ class AddressNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "AddressNode_" + self.name
+        return ("AddressNode_" + self.name).replace("\n", "")
 
 
 class BlockhashNode(VariableNode):
@@ -247,7 +247,7 @@ class BlockhashNode(VariableNode):
         self.blockNumber = blockNumber
 
     def __str__(self):
-        return "BlockhashNode_" + self.name + "_" + str(self.blockNumber)
+        return ("BlockhashNode_" + self.name + "_" + str(self.blockNumber)).replace("\n", "")
 
 
 class GasNode(VariableNode):
@@ -255,7 +255,7 @@ class GasNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "GasNode_" + self.name
+        return ("GasNode_" + self.name).replace("\n", "")
 
 
 class ShaNode(VariableNode):
@@ -264,7 +264,7 @@ class ShaNode(VariableNode):
         self.args = args
 
     def __str__(self):
-        return "ShaNode_" + str(self.args)
+        return ("ShaNode_" + str(self.args)).replace("\n", "")
 
 
 class MemoryNode(VariableNode):
@@ -274,7 +274,7 @@ class MemoryNode(VariableNode):
         self.position = position
 
     def __str__(self):
-        return "MemoryNode_" + self.name
+        return ("MemoryNode_" + self.name).replace("\n", "")
 
 
 class ExtcodeSizeNode(VariableNode):
@@ -283,7 +283,7 @@ class ExtcodeSizeNode(VariableNode):
         self.address = address
 
     def __str__(self):
-        return "ExtcodeSizeNode_" + self.name
+        return ("ExtcodeSizeNode_" + self.name).replace("\n", "")
 
 
 class DepositValueNode(VariableNode):
@@ -291,7 +291,7 @@ class DepositValueNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "DepositValueNode_" + self.name
+        return ("DepositValueNode_" + self.name).replace("\n", "")
 
 
 class BalanceNode(VariableNode):
@@ -300,7 +300,7 @@ class BalanceNode(VariableNode):
         self.address = address
 
     def __str__(self):
-        return "BalanceNode_" + self.name
+        return ("BalanceNode_" + self.name).replace("\n", "")
 
 
 class ReturnDataNode(VariableNode):
@@ -309,7 +309,7 @@ class ReturnDataNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ReturnDataNode_" + self.name
+        return ("ReturnDataNode_" + self.name).replace("\n", "")
 
 
 class ReturnStatusNode(VariableNode):
@@ -318,7 +318,7 @@ class ReturnStatusNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ReturnStatusNode_" + self.name
+        return ("ReturnStatusNode_" + self.name).replace("\n", "")
 
 
 class ReturnDataSizeNode(VariableNode):
@@ -327,7 +327,7 @@ class ReturnDataSizeNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ReturnDataSizeNode_" + self.name
+        return ("ReturnDataSizeNode_" + self.name).replace("\n", "")
 
 
 class CodeNode(VariableNode):
@@ -337,7 +337,7 @@ class CodeNode(VariableNode):
         self.address = address
 
     def __str__(self):
-        return "CodeNode_" + self.name
+        return ("CodeNode_" + self.name).replace("\n", "")
 
 
 class SenderNode(VariableNode):
@@ -345,7 +345,7 @@ class SenderNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "SenderNode_" + self.name
+        return ("SenderNode_" + self.name).replace("\n", "")
 
 
 class ReceiverNode(VariableNode):
@@ -353,13 +353,13 @@ class ReceiverNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return "ReceiverNode_" + self.name
+        return ("ReceiverNode_" + self.name).replace("\n", "")
 
 
 class XGraph:
-    def __init__(self):
+    def __init__(self, cname=""):
         self.graph = nx.DiGraph()
-        self.ssg = nx.DiGraph()
+        self.ssg = nx.DiGraph(name=cname)
         self.count = 0
         self.overflow_related = ('ADD', 'SUB', 'MUL', 'EXP')
 
@@ -466,26 +466,29 @@ class XGraph:
         self.addNode(node)
 
     def ssgAddNode(self, node, pid):
-        if str(node) in self.ssg.nodes:
-            print("here")
-        self.ssg.add_node(str(node))
+        self.ssg.add_node(node, label=str(node))
         stored_value = node.arguments[0]
         stored_address = node.arguments[1]
         e_node = ExpressionNode(str(stored_value), stored_value)
+        self.ssg.add_node(e_node, label=str(e_node))
         if is_expr(stored_value):
             for x in get_vars(stored_value):
                 n = self.getVarNode(x)
+                self.ssg.add_node(n, label=str(n))
                 self.ssg.add_edge(n, e_node, label="flowEdge")
         self.ssg.add_edge(e_node, node, label="flowEdge_value")
         a_node = ExpressionNode(str(stored_address), stored_address)
+        self.ssg.add_node(a_node, label=str(a_node))
         if is_expr(stored_address):
             for x in get_vars(stored_address):
                 n = self.getVarNode(x)
+                self.ssg.add_node(n, label=str(n))
                 self.ssg.add_edge(n, a_node, label="flowEdge")
         self.ssg.add_edge(a_node, node, label="flowEdge_address")
 
         constrains = node.constraint
         c_node = ConstrainNode("constraint", constrains)
+        self.ssg.add_node(c_node, label=str(c_node))
         self.ssg.add_edge(c_node, node, label="constraint")
 
 

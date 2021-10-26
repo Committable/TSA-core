@@ -177,7 +177,7 @@ class EvmRuntime:
                 if i in self.instructions:
                     block.add_instruction(self.instructions[i])
                     if self.source_map.instr_positions:
-                        if self.source_map.instr_positions[i]["f"] == self.source_map.source.index:
+                        if self.source_map.instr_positions[i]["f"] != -1:
                             t_start = self.source_map.instr_positions[i]["s"]
                             t_end = self.source_map.instr_positions[i]["s"] + self.source_map.instr_positions[i]["l"]
                             i_lines = self.source_map.source.get_lines_from_position(t_start, t_end)

@@ -40,7 +40,8 @@ def analyze_solidity_code():
     try:
         inputs = helper.get_solidity_inputs()
     except Exception as err:
-        logger.error(str(err))
+        logger.exception(err)
+        #logger.error(str(err))
         return 103
 
     if global_params.SRC_FILE in SourceMap.sources:
@@ -60,7 +61,7 @@ def analyze_solidity_code():
 
     #  There may be over one contracts in the solidity file and one contract correspones to one graph each
     for inp in inputs:
-        logger.info("contract %s:", inp['contract'])
+        logger.info("begin analysing contract: %s:", inp['contract'])
         # cfg = nx.DiGraph()
         env = EvmRuntime(platform=global_params.PLATFORM,
                          disasm_file=inp['disasm_file'],
@@ -71,15 +72,15 @@ def analyze_solidity_code():
         try:
             env.build_cfg()
         except Exception as err:
-            logger.error("fail to build cfg for %s, err: %s", inp["contract"], str(err))
+            logger.exception("fail to build cfg for %s, err: %s", inp["contract"], str(err))
             return 104
-        interpreter = EVMInterpreter(env)
+        interpreter = EVMInterpreter(env, inp["contract"])
         try:
             return_code = interpreter.sym_exec()
         except Exception as err:
             logger.error("fail to symbolic execute for %s, err: %s", inp["contract"], str(err))
             return 105
-        logger.info("contract %s: %s", inp["contract"], str(interpreter.total_no_of_paths))
+        logger.info("end analysing contract %s: %s", inp["contract"], str(interpreter.total_no_of_paths))
 
         # add cfg
         report.add_cfg(inp["contract"], env)

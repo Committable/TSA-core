@@ -38,12 +38,13 @@ CONSTANT_ONES_159 = BitVecVal((1 << 160) - 1, 256)
 
 
 class EVMInterpreter:
-    def __init__(self, runtime):
+    def __init__(self, runtime, cname):
+        self.cname = cname
         self.gen = Generator()
 
         self.runtime = runtime
 
-        self.graph = XGraph()
+        self.graph = XGraph(cname)
         self.path_conditions = []
 
         self.total_no_of_paths = {"normal": 0, "exception": 0}  # number of paths, terminated by normal or exception
@@ -859,7 +860,7 @@ class EVMInterpreter:
                 self.graph.addBranchEdge(control_edges, "controlEdge", self.gen.get_path_id())
                 self.graph.addBranchEdge([(e_node, SStore_node), (SStore_node, node)], "flowEdge", self.gen.get_path_id())
 
-                self.graph.ssgAddNode(SStore_node,self.gen.get_path_id())
+                self.graph.ssgAddNode(SStore_node, self.gen.get_path_id())
 
 
             else:
