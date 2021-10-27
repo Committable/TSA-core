@@ -119,6 +119,9 @@ def main():
         if not get_diff(args.differences, args.before):
             exit(102)
 
+    if not args.before:
+        global_params.IS_BEFORE = False
+
     if args.output:
         global_params.DEST_PATH = args.output
         try:

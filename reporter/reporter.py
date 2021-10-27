@@ -3,6 +3,8 @@ import global_params
 import json
 import networkx as nx
 
+from inputDealer.solidityAstWalker import AstWalker
+
 
 class Reporter:
     def __init__(self, source):
@@ -19,6 +21,20 @@ class Reporter:
         self.ssgs = {}  # {"contractName":value}}
         self.ssg_graphs = {}
         self.ssg_edge_lists = {}
+
+        self.new_lines = 0
+
+        self.sequence_src = 0
+        self.sequence_bin = 0
+
+        self.selection_src = 0
+        self.selection_bin = 0
+
+        self.reputation_src = 0
+        self.reputation_bin = 0
+
+        self.data_flow = 0
+        self.control_flow = 0
 
     def set_ast(self, ast):
         ast["source"] = self.source
@@ -157,17 +173,20 @@ class Reporter:
 
     def print_cfg_graph(self):
         g = nx.DiGraph()
-        # for x in self.cfg_graphs:
-        #     for n in list(self.cfg_graphs[x].nodes):
-        #         node = self.cfg_graphs[x].nodes[n]
-        #         g.add_node(n, label=node["label"], color=node['color'])
-        #     for edge in list(self.cfg_graphs[x].edges):
-        #         s = edge[0]
-        #         t = edge[1]
-        #         g.add_edge(s, t,
-        #                    label=self.cfg_graphs[x].edges[(s, t)]['type'],
-        #                    color=self.cfg_graphs[x].edges[(s, t)]['color']
-        #                    )
+        for x in self.cfg_graphs:
+            for n in list(self.cfg_graphs[x].nodes):
+                node = self.cfg_graphs[x].nodes[n]
+                pos = node["src"].split(":")
+                begin = int(pos[0])
+                end = begin + int(pos[1])
+                g.add_node(n, label=node["label"]+"\n"+self.source[begin:end], color=node['color'])
+            for edge in list(self.cfg_graphs[x].edges):
+                s = edge[0]
+                t = edge[1]
+                g.add_edge(s, t,
+                           label=self.cfg_graphs[x].edges[(s, t)]['type'],
+                           color=self.cfg_graphs[x].edges[(s, t)]['color']
+                           )
 
         g1 = nx.nx_agraph.to_agraph(g)
         g1.graph_attr["rankdir"] = 'TB'
@@ -193,18 +212,18 @@ class Reporter:
 
     def print_ssg_graph(self):
         g = nx.DiGraph()
-        # for x in self.ssg_graphs:
-        #     for n in list(self.ssg_graphs[x].nodes):
-        #         node = self.ssg_graphs[x].nodes[n]
-        #         g.add_node(n, label=node["label"], color=node['color'])
-        #
-        #     for edge in list(self.ssg_graphs[x].edges):
-        #         s = edge[0]
-        #         t = edge[1]
-        #         g.add_edge(s, t,
-        #                    label=self.ssg_graphs[x].edges[(s, t)]['label'],
-        #                    color=self.ssg_graphs[x].edges[(s, t)]['color']
-        #                    )
+        for x in self.ssg_graphs:
+            for n in list(self.ssg_graphs[x].nodes):
+                node = self.ssg_graphs[x].nodes[n]
+                g.add_node(n, label=node["label"], color=node['color'])
+
+            for edge in list(self.ssg_graphs[x].edges):
+                s = edge[0]
+                t = edge[1]
+                g.add_edge(s, t,
+                           label=self.ssg_graphs[x].edges[(s, t)]['label'],
+                           color=self.ssg_graphs[x].edges[(s, t)]['color']
+                           )
 
         g1 = nx.nx_agraph.to_agraph(g)
         g1.graph_attr["rankdir"] = 'LR'
@@ -246,3 +265,90 @@ class Reporter:
                             graph.add_edge(node["id"], child["id"], ischanged=True, color="red")
                         else:
                             graph.add_edge(node["id"], child["id"], ischanged=False, color="black")
+
+    def get_structure_src(self, ast, source):
+        if not ast or not source:
+            return
+        content = source.get_content()
+        if global_params.AST == "legacyAST":
+            walker = AstWalker()
+            nodes = []
+            self._get_recursive_blocks(ast, walker, nodes)
+            for block in nodes:
+                for statement in block["children"]:
+                    if statement["name"] == "ExpressionStatement":
+                        pos = statement["src"].split(":")
+                        if "require" in content[int(pos[0]):int(pos[0])+int(pos[1])]:
+                            self.selection_src += 1
+                    elif statement["name"] == "IfStatement":
+                        self._get_recursive_if(statement)
+                    elif statement["name"] in {"WhileStatement", "DoWhileStatement", "ForStatement"}:
+                        self.reputation_src += 1
+                    else:
+                        self.sequence_src += 1
+        elif global_params.AST == "AST":
+            pass
+        return
+
+    def get_structure_bin(self):
+        cycles = []
+        for x in self.cfg_graphs:
+            cycles.extend(nx.simple_cycles(self.cfg_graphs[x]))
+        self.reputation_bin = len(cycles)
+
+        for x in self.cfg_graphs:
+            for edge in list(self.cfg_graphs[x].edges):
+                s = edge[0]
+                t = edge[1]
+                label = self.cfg_graphs[x].edges[(s, t)]['type']
+                if label == "conditional":
+                    self.selection_bin += 1
+                else:
+                    self.sequence_bin += 1
+
+    def get_sementic(self):
+        for x in self.ssg_graphs:
+            for edge in list(self.ssg_graphs[x].edges):
+                s = edge[0]
+                t = edge[1]
+                label = self.ssg_graphs[x].edges[(s, t)]['label']
+                if label in {"flowEdge", "flowEdge_value", "flowEdge_address"}:
+                    self.data_flow += 1
+                elif label in {"constraint"}:
+                    self.control_flow += 1
+                else:
+                    raise Exception("no such type edge: %s", label)
+
+    def _get_recursive_blocks(self, ast, walker, nodes):
+        new_nodes = []
+        walker.walk(ast, {"name": "Block"}, new_nodes)
+        for n in new_nodes:
+            nodes.append(n)
+            for child in n["children"]:
+                self._get_recursive_blocks(child, walker, nodes)
+
+    def _get_recursive_if(self, statement):
+        for child in statement["children"]:
+            if child["name"] == "Block":
+                self.selection_src += 1
+            elif child["name"] == "IfStatement":
+                self._get_recursive_if(child)
+
+    def dump_meta_commit(self):
+        meta_commit = {}
+        meta_commit["new_lines"] = self.new_lines
+
+        meta_commit["sequence_src"] = self.sequence_src
+        meta_commit["sequence_bin"] = self.sequence_bin
+
+        meta_commit["selection_src"] = self.selection_src
+        meta_commit["selection_bin"] = self.selection_bin
+
+        meta_commit["reputation_src"] = self.reputation_src
+        meta_commit["reputation_bin"] = self.reputation_bin
+
+        meta_commit["data_flow"] = self.data_flow
+        meta_commit["control_flow"] = self.control_flow
+
+        with open(os.path.join(global_params.DEST_PATH, "meta_commit.json"), 'w') as outputfile:
+            json.dump(meta_commit, outputfile)

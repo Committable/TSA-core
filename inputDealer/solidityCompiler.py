@@ -33,6 +33,7 @@ class SolidityCompiler:
     def get_compiled_contracts_as_json(self):
         # 1. try with solcx
         try:
+            #raise Exception
             self._compile_with_solcx()
             self.type = "solcx"
             self._convert_opcodes()

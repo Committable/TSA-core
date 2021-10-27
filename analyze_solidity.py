@@ -48,6 +48,12 @@ def analyze_solidity_code():
         report = Reporter(SourceMap.sources[global_params.SRC_FILE].get_content())
     else:
         report = Reporter("")
+
+    if not global_params.IS_BEFORE:
+        report.new_lines = len(global_params.DIFFS)
+
+    report.get_structure_src(SourceMap.ast_helper.get_ast(global_params.SRC_FILE),
+                             SourceMap.ast_helper.get_source(global_params.SRC_FILE))
     # 2. get ast graph
     if SourceMap.ast_helper:
         ast_json = SourceMap.ast_helper.get_ast_report(global_params.SRC_FILE)
@@ -95,5 +101,9 @@ def analyze_solidity_code():
     report.dump_ssg()
     report.print_ssg_graph()
     report.dump_ssg_edge_list()
+
+    report.get_structure_bin()
+    report.get_sementic()
+    report.dump_meta_commit()
 
     return exit_code

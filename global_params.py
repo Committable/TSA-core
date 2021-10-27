@@ -26,6 +26,7 @@ SRC_DIR = ""
 # file for analysis
 SRC_FILE = ""
 
+IS_BEFORE = True
 # diffenence for this file
 DIFFS = []
 

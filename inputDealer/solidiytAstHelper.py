@@ -20,6 +20,18 @@ class AstHelper:
         if key not in self.sources:
             self.sources[key] = source
 
+    def get_source(self, key):
+        if key in self.sources:
+            return self.sources[key]
+        else:
+            return None
+
+    def get_ast(self, file):
+        if file in self.asts:
+            return self.asts[file]
+        else:
+            return None
+
     def get_ast_report(self, filename):
         walker = AstWalker(global_params.AST, global_params.DIFFS)
         if filename in self.asts:

@@ -17,7 +17,7 @@ class AstWalker:
                 if "id" in node:
                     node_id = str(node["id"])
                 else:
-                    node_id = str(node["name"])
+                    node_id = 0
 
                 if "src" not in node:
                     node["src"] = "0:0:-1"
