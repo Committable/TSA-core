@@ -5,6 +5,7 @@ __pycache__
 *.gv
 *.png
 *tmp*
+.idea/
 *build*
 *.evm
 *.disasm
