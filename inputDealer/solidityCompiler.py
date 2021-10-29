@@ -217,9 +217,9 @@ class SolidityCompiler:
             child.kill()
             child.terminate()
             os.killpg(child.pid, signal.SIGTERM)
-            raise Exception("npx waffle compile fail: timeout")
+            raise Exception("default truffle compile fail: timeout")
         if child.returncode != 0:
-            raise Exception("npx truffle fail: %s", errs)
+            raise Exception("default truffle fail: %s", errs)
         self._deal_with_truffle()
 
     def _compile_with_buidler(self):
@@ -398,7 +398,7 @@ class SolidityCompiler:
                     break
                 line = inputfile.readline()
             for line in lines[i:]:
-                match_obj = re.match(r'import "(.*)";\n', line)
+                match_obj = re.match(r'import ["|\'](.*)["|\'];\n', line)
                 if match_obj:
                     import_files.append(match_obj.group(1))
                 else:
