@@ -273,21 +273,41 @@ class Reporter:
         if global_params.AST == "legacyAST":
             walker = AstWalker()
             nodes = []
-            self._get_recursive_blocks(ast, walker, nodes)
+            walker.walk(ast, {"name": "Block"}, nodes)
             for block in nodes:
                 for statement in block["children"]:
                     if statement["name"] == "ExpressionStatement":
                         pos = statement["src"].split(":")
                         if "require" in content[int(pos[0]):int(pos[0])+int(pos[1])]:
                             self.selection_src += 1
-                    elif statement["name"] == "IfStatement":
-                        self._get_recursive_if(statement)
+                    if statement["name"] == "IfStatement":
+                        if "children" in statement:
+                            self.selection_src += len(statement["children"]) - 1
                     elif statement["name"] in {"WhileStatement", "DoWhileStatement", "ForStatement"}:
                         self.reputation_src += 1
                     else:
                         self.sequence_src += 1
-        elif global_params.AST == "AST":
-            pass
+        elif global_params.AST == "ast":
+            walker = AstWalker(ast_type="ast")
+            nodes = []
+            walker.walk(ast, {"nodeType": "Block"}, nodes)
+            for node in nodes:
+                if "statements" in node:
+                    for statement in node["statements"]:
+                        if statement["nodeType"] == "ExpressionStatement":
+                            pos = statement["src"].split(":")
+                            if "require" in content[int(pos[0]):int(pos[0]) + int(pos[1])]:
+                                self.selection_src += 1
+                        if statement["nodeType"] == "IfStatement":
+                            if "trueBody" in statement and statement["trueBody"]:
+                                self.selection_src += 1
+                            if "falseBody" in statement and statement["falseBody"]:
+                                self.selection_src += 1
+                        elif statement["nodeType"] in {"WhileStatement", "DoWhileStatement", "ForStatement"}:
+                            self.reputation_src += 1
+                        else:
+                            self.sequence_src += 1
+
         return
 
     def get_structure_bin(self):

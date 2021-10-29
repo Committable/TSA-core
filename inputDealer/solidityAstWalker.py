@@ -90,10 +90,10 @@ class AstWalker:
     def _walk_with_attrs_legacy(self, node, attributes, nodes):
         if self._check_attributes_legacy(node, attributes):
             nodes.append(node)
-        else:
-            if "children" in node and node["children"]:
-                for child in node["children"]:
-                    self._walk_with_attrs_legacy(child, attributes, nodes)
+
+        if "children" in node and node["children"]:
+            for child in node["children"]:
+                self._walk_with_attrs_legacy(child, attributes, nodes)
 
     def _walk_with_list_of_attrs_legacy(self, node, list_of_attributes, nodes):
         if self._check_list_of_attributes_legacy(node, list_of_attributes):
@@ -106,23 +106,18 @@ class AstWalker:
     def _walk_with_attrs(self, node, attributes, nodes):
         if self._check_attributes(node, attributes):
             nodes.append(node)
-        else:
-            if "nodes" in node and node["nodes"]:
-                for node in node["nodes"]:
-                    self._walk_with_attrs(node, attributes, nodes)
-            if "body" in node and node["body"]:
-                for node in node["body"]:
-                    self._walk_with_attrs(node, attributes, nodes)
-            if "statements" in node and node["statements"]:
-                for node in node["statements"]:
-                    self._walk_with_attrs(node, attributes, nodes)
-            if "trueBody" in node and node["trueBody"]:
-                for node in node["trueBody"]:
-                    self._walk_with_attrs(node, attributes, nodes)
-            if "falseBody" in node and node["falseBody"]:
-                for node in node["falseBody"]:
-                    self._walk_with_attrs(node, attributes, nodes)
-
+        if "nodes" in node and node["nodes"]:
+            for n in node["nodes"]:
+                self._walk_with_attrs(n, attributes, nodes)
+        if "body" in node and node["body"]:
+            self._walk_with_attrs(node["body"], attributes, nodes)
+        if "statements" in node and node["statements"]:
+            for statement in node["statements"]:
+                self._walk_with_attrs(statement, attributes, nodes)
+        if "trueBody" in node and node["trueBody"]:
+            self._walk_with_attrs(node["trueBody"], attributes, nodes)
+        if "falseBody" in node and node["falseBody"]:
+            self._walk_with_attrs(node["falseBody"], attributes, nodes)
 
     def _walk_with_list_of_attrs(self, node, list_of_attributes, nodes):
         if self._check_list_of_attributes(node, list_of_attributes):
