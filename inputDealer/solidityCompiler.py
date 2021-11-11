@@ -14,6 +14,118 @@ import global_params
 logger = logging.getLogger(__name__)
 
 
+class AllowedVersion: # left [<=|<] allow_version [<=|<]
+    def __init__(self):
+        self.unique = ""
+        self.right = ""
+        self.left = ""
+        self.right_equal = False
+        self.left_equal = False
+
+    def set_right(self, right, equal):
+        self.right = right
+        self.right_equal = equal
+
+    def set_unique(self, version):
+        self.unique = version
+
+    def set_left(self, left, equal):
+        self.left = left
+        self.left_equal = equal
+
+    def _is_bigger(self, version1, version2):
+        parts1 = version1.split(".")
+        parts2 = version2.split(".")
+        length = len(parts1) if len(parts1) <= len(parts2) else len(parts2)
+        for x in range(0, length):
+            if int(parts1[x]) > int(parts2[x]):
+                return True
+            elif int(parts1[x]) < int(parts2[x]):
+                return False
+        return len(parts1) > len(parts2)
+
+    def _is_smaller(self, version1, version2):
+        parts1 = version1.split(".")
+        parts2 = version2.split(".")
+        length = len(parts1) if len(parts1) <= len(parts2) else len(parts2)
+        for x in range(0, length):
+            if int(parts1[x]) < int(parts2[x]):
+                return True
+            elif int(parts1[x]) > int(parts2[x]):
+                return False
+        return len(parts1) > len(parts2)
+
+    def is_allow(self, version):
+        if self.unique:
+            return version == self.unique
+        if version == self.right and self.right_equal:
+            return True
+        elif version == self.left and self.left_equal:
+            return True
+        elif self._is_bigger(version, self.left) and self._is_smaller(version, self.right):
+            return True
+        else:
+            return False
+
+    def get_version(self):
+        versions = list(solcx.get_installable_solc_versions())
+        current = "0.4.11"
+        for x in versions:
+            if self.is_allow(str(x)) and self._is_bigger(str(x), current):
+                current = str(x)
+                break
+
+        return current
+
+    def merge(self, other_version):
+        if other_version.unique and self.unique:
+            if self._is_bigger(other_version.unique, self.unique):
+                return other_version
+            else:
+                return self
+        elif other_version.unique and not self.unique:
+            return self
+        elif not other_version.unique and self.unique:
+            return self
+        else:
+            version = AllowedVersion()
+            if other_version.right and self.right:
+                if other_version.right == self.right:
+                    version.set_right(other_version.right, other_version.right_equal and self.right_equal)
+                elif self._is_bigger(other_version.right, self.right):
+                    version.set_right(self.right, self.right_equal)
+                else:
+                    version.set_right(other_version.right, other_version.right_equal)
+            elif other_version.right:
+                version.set_right(other_version.right, other_version.right_equal)
+            elif self.right:
+                version.set_right(self.right, self.right_equal)
+
+            if other_version.left and self.left:
+                if other_version.left == self.left:
+                    version.set_left(other_version.left, other_version.left_equal and self.left_equal)
+                elif self._is_bigger(self.left, other_version.left):
+                    version.set_left(self.left, self.left_equal)
+                else:
+                    version.set_left(other_version.left, other_version.left_equal)
+            elif other_version.left:
+                version.set_left(other_version.left, other_version.left_equal)
+            elif self.left:
+                version.set_left(self.left, self.left_equal)
+
+            if version.right and version.left:
+                if version._is_bigger(version.left, version.right):
+                    return AllowedVersion()
+                elif version.right == version.left and not (version.right_equal and version.left_equal):
+                    return AllowedVersion()
+
+            return version
+
+
+
+
+
+
 class SolidityCompiler:
     def __init__(self, source, joker, root_path, allow_paths, remap, compilation_err):
         self.combined_json = {"contracts": {}, "sources": {}}  # compile result of json type
@@ -79,11 +191,10 @@ class SolidityCompiler:
         raise Exception("cannot compile target file: %s", self.source+os.sep+self.joker)
 
     def _compile_with_solcx(self):
-        version = self._get_solc_version(os.path.join(self.source, self.joker))
-        if version != "":
+        allowed_version = self._get_solc_version(os.path.join(self.source, self.joker))
+        if allowed_version:
+            version = allowed_version.get_version()
             logger.info("get solc version: %s", version)
-            if self._compare_version("0.4.11", version):
-                version = "0.4.11"
             solcx.install_solc(version)
             data_dict = solcx.compile_files([self.source + os.sep + self.joker],
                                             output_values=["abi", "bin", "bin-runtime", "ast",
@@ -387,38 +498,80 @@ class SolidityCompiler:
         self.parse_files.append(file)
         import_files = []
         with open(file, 'r') as inputfile:
-            version = ""
+            version = AllowedVersion()
             lines = inputfile.readlines()
             i = 0
             for line in lines:
-                match_obj = re.match(r'pragma solidity ([=|>|<|\^]*)(\d*\.\d*\.\d*)(.*)\n', line)
-                i += 1
+                match_obj = re.match(r'pragma solidity (=)(\d*\.\d*\.\d*)(.*)\n', line)
                 if match_obj:
-                    version = match_obj.group(2)
+                    version.set_unique(match_obj.group(2))
                     break
-                line = inputfile.readline()
+                match_obj = re.match(r'pragma solidity (\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_unique(match_obj.group(2))
+                    break
+                match_obj = re.match(r'pragma solidity (\^)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_left(match_obj.group(2), True)
+                    parts = match_obj.group(2).split(".")
+                    right = parts[0] + "." + str(int(parts[1])+1) + ".0"
+                    version.set_right(right, False)
+                    break
+                match_obj = re.match(r'pragma solidity (>=)(\d*\.\d*\.\d*)(.*)(<=)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_left(match_obj.group(2), True)
+                    version.set_right(match_obj.group(5), True)
+                    break
+                match_obj = re.match(r'pragma solidity (>)(\d*\.\d*\.\d*)(.*) (<=)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_left(match_obj.group(2), False)
+                    version.set_right(match_obj.group(5), True)
+                    break
+                match_obj = re.match(r'pragma solidity (>=)(\d*\.\d*\.\d*)(.*) (<)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_left(match_obj.group(2), True)
+                    version.set_right(match_obj.group(5), False)
+                    break
+                match_obj = re.match(r'pragma solidity (>)(\d*\.\d*\.\d*)(.*) (<)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_left(match_obj.group(2), False)
+                    version.set_right(match_obj.group(5), False)
+                    break
+                match_obj = re.match(r'pragma solidity (<=)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_right(match_obj.group(2), True)
+                    break
+                match_obj = re.match(r'pragma solidity (>)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_left(match_obj.group(2), False)
+                    break
+                match_obj = re.match(r'pragma solidity (<)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_right(match_obj.group(2), False)
+                    break
+                match_obj = re.match(r'pragma solidity (>=)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_left(match_obj.group(2), True)
+                    break
+                match_obj = re.match(r'pragma solidity ([=|>|<|\^]*)(\d*\.\d*\.\d*)(.*)\n', line)
+                if match_obj:
+                    version.set_unique(match_obj.group(2), True)
+                    break
+                i += 1
+            wrong_times = 0
             for line in lines[i:]:
                 match_obj = re.match(r'import ["|\'](.*)["|\'];\n', line)
                 if match_obj:
                     import_files.append(match_obj.group(1))
                 else:
                     if line != "\n":
-                        break
+                        wrong_times += 1
+                        if wrong_times >= 3:
+                            break
         current_dir = os.path.dirname(file)
         for x in import_files:
             other_version = self._get_solc_version(os.path.abspath(os.path.join(current_dir, x)))
-            if not self._compare_version(version, other_version):
-                version = other_version
+            if version:
+                version.merge(other_version)
 
         return version
-
-    def _compare_version(self, version1, version2):
-        parts1 = version1.split(".")
-        parts2 = version2.split(".")
-        length = len(parts1) if len(parts1) <= len(parts2) else len(parts2)
-        for x in range(0, length):
-            if int(parts1[x]) > int(parts2[x]):
-                return True
-            elif int(parts1[x]) < int(parts2[x]):
-                return False
-        return len(parts1) >= len(parts2)

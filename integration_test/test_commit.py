@@ -7,6 +7,8 @@ from xlutils.copy import copy
 import logging, coloredlogs
 
 import signal
+import random
+
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d]: %(message)s',
@@ -80,14 +82,16 @@ def write_excel_xls_append(path, value):
 last_analyse_commit = ""
 last_commit = ""
 
-for i in range(0, sh1.nrows):
-    if tried >= 1000:
+for j in range(0, sh1.nrows):
+    i = random.randint(0, sh1.nrows-1)
+    if tried >= 100:
         write_excel_xls(result_path + "_tc_result_" + str(total) + ".xlsx", "sheet1", result)
         write_excel_xls_append(result_path + "_tc_result_" + str(total) + ".xlsx", [[tried, success, failed]])
         success = 0
         failed = 0
         tried = 0
         result = [["commit", "file", "status", "reason"]]
+        break
     tried += 1
     status = "success"
     reason = ""

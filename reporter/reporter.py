@@ -176,10 +176,10 @@ class Reporter:
         for x in self.cfg_graphs:
             for n in list(self.cfg_graphs[x].nodes):
                 node = self.cfg_graphs[x].nodes[n]
-                pos = node["src"].split(":")
-                begin = int(pos[0])
-                end = begin + int(pos[1])
-                g.add_node(n, label=node["label"]+"\n"+self.source[begin:end], color=node['color'])
+                # pos = node["src"].split(":")
+                # begin = int(pos[0])
+                # end = begin + int(pos[1])
+                g.add_node(n, label=node["label"], color=node['color'])
             for edge in list(self.cfg_graphs[x].edges):
                 s = edge[0]
                 t = edge[1]
