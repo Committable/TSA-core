@@ -1,4 +1,5 @@
 import logging
+import traceback
 
 from runtime.evmRuntime import EvmRuntime
 from interpreter.evmInterpreter import EVMInterpreter
@@ -85,6 +86,7 @@ def analyze_solidity_code():
             return_code = interpreter.sym_exec()
         except Exception as err:
             logger.error("fail to symbolic execute for %s, err: %s", inp["contract"], str(err))
+            traceback.print_exc()
             return 105
         logger.info("end analysing contract %s: %s", inp["contract"], str(interpreter.total_no_of_paths))
 

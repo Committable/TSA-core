@@ -145,12 +145,14 @@ class EvmRuntime:
                 self.end_ins_dict[current_block] = inst_pc
                 is_new_block = True
             elif tok_string == "JUMPDEST":
-                if last_tok_string and (last_tok_string not in EvmRuntime.terminal_opcode) and (last_tok_string not in EvmRuntime.jump_opcode): #last instruction don't indicate a new block
+                if last_tok_string and (last_tok_string not in EvmRuntime.terminal_opcode) and\
+                        (last_tok_string not in EvmRuntime.jump_opcode):  # last instruction don't indicate a new block
                     self.end_ins_dict[current_block] = last_inst_pc
                     self.jump_type[current_block] = "falls_to"
                     current_block = inst_pc
 
         # last instruction don't indicate a block termination
+        # TODO: why we need this and how does this happen?
         if current_block not in self.end_ins_dict and inst_pc:
             self.end_ins_dict[current_block] = inst_pc
             self.jump_type[current_block] = "terminal"

@@ -192,6 +192,9 @@ class SolidityCompiler:
 
     def _compile_with_solcx(self):
         allowed_version = self._get_solc_version(os.path.join(self.source, self.joker))
+        if not allowed_version:
+            allowed_version = AllowedVersion()
+            allowed_version.set_unique("0.8.0")
         if allowed_version:
             version = allowed_version.get_version()
             logger.info("get solc version: %s", version)
@@ -494,7 +497,7 @@ class SolidityCompiler:
 
     def _get_solc_version(self, file):
         if file in self.parse_files:
-            return "0.0.0"
+            return None
         self.parse_files.append(file)
         import_files = []
         with open(file, 'r') as inputfile:
@@ -571,7 +574,7 @@ class SolidityCompiler:
         current_dir = os.path.dirname(file)
         for x in import_files:
             other_version = self._get_solc_version(os.path.abspath(os.path.join(current_dir, x)))
-            if version:
+            if version and other_version:
                 version.merge(other_version)
 
         return version

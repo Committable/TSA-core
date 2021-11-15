@@ -48,14 +48,14 @@ def custom_deepcopy(input):
 
 
 def isReal(value):
-    return isinstance(value, six.integer_types) or isinstance(value, float)
+    return not is_expr(value)
 
 
 def isSymbolic(value):
-    return not (isinstance(value, six.integer_types) or isinstance(value, float))
+    return is_expr(value)
 
 
-# simplify a expression if possible and convert a z3 type to int if possible
+# simplify a expression if possible
 def convertResult(value):
     value = simplify(value) if is_expr(value) else value
     try:
@@ -70,6 +70,7 @@ def isBitVec(value):
 
 def isDecisiable(value):
     return not (isinstance(value, six.integer_types) or isinstance(value, float) or isinstance(value, z3.BitVecNumRef) or isinstance(value, z3.FPNumRef))
+
 
 def isAllReal(*args):
     for element in args:

@@ -129,6 +129,7 @@ class EVMInterpreter:
         memory_inf = psutil.virtual_memory()
         log.debug("Before instructions free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
         # Execute every instruction, one at a time
+        # TODO： this exception should not be catched, because it must be a bug
         try:
             for instr in block_ins:
                 memory_inf = psutil.virtual_memory()
@@ -145,8 +146,7 @@ class EVMInterpreter:
         except Exception as error:
             self.total_no_of_paths["exception"] += 1
             self.gen.gen_path_id()
-            # log.debug("This path results in an exception: %s, Terminating this path ...", str(error))
-            log.critical("This path results in an exception: %s, Terminating this path ...", str(error))
+            log.error("This path results in an exception: %s, Terminating this path ...", str(error))
             traceback.print_exc()
             return
 
@@ -165,7 +165,7 @@ class EVMInterpreter:
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
             # TODO: how to deal with symbolic jump targets and more than one jump targets for unconditoinal jump
             # now we only deal with unconditional jump with only one real target
-            successor = self.runtime.vertices[block].get_jump_targets()[-1]
+            successor = self.runtime.vertices[block].get_jump_target()
             params.global_state["pc"] = successor
             self._sym_exec_block(params, successor, block)
 
@@ -811,16 +811,14 @@ class EVMInterpreter:
                 if value is None:
                     new_var_name = self.gen.gen_storage_var(position)
                     value = BitVec(new_var_name, 256)
-                    node = StateNode(new_var_name, value, position)
-                    # add to graph
-                    if is_expr(position) and not is_const(position):
-                        p_node = addExpressionNode(self.graph, position, self.gen.get_path_id())
-                        self.graph.addBranchEdge([(p_node, node)], "flowEdge", self.gen.get_path_id())
-                    elif is_expr(position) and is_const(position):
-                        p_node = self.graph.getVarNode(position)
-                        self.graph.addBranchEdge([(p_node, node)], "flowEdge", self.gen.get_path_id())
-                    self.graph.addVarNode(value, node)
-                    self.graph.addStateNode(position, node)
+                    node = self.graph.get_state_node(position)
+                    if node is None:
+                        node = StateNode(new_var_name, value, position)
+                        self.graph.add_state_node(position, node)
+                        # add to graph
+                        self.graph.add_var_node(value, node)
+                        p_node = self.graph.add_expression_node(position, self.gen.get_path_id())
+                        self.graph.add_branch_edge([(p_node, node)], "flowEdge_address", self.gen.get_path_id())
 
                     global_state["Ia"][position] = value
                 stack.insert(0, value)
@@ -836,33 +834,21 @@ class EVMInterpreter:
                 global_state["Ia"][stored_address] = stored_value
 
                 # add to graph
-                node = self.graph.getStateNode(stored_address)
-                if node is None:
-                    new_var_name = self.gen.gen_storage_var(stored_address)
-                    value = BitVec(new_var_name, 256)
-                    node = StateNode(new_var_name, value, stored_address)
-                    self.graph.addVarNode(value, node)
-                    self.graph.addStateNode(stored_address, node)
-                    if is_expr(stored_address) and not is_const(stored_address):
-                        p_node = addExpressionNode(self.graph, stored_address, self.gen.get_path_id())
-                        self.graph.addBranchEdge([(p_node, node)], "flowEdge", self.gen.get_path_id())
-                    elif is_expr(stored_address) and not is_const(stored_address):
-                        p_node = self.graph.getVarNode(stored_address)
-                        self.graph.addBranchEdge([(p_node, node)], "flowEdge", self.gen.get_path_id())
-
-                e_node = addExpressionNode(self.graph, stored_value, self.gen.get_path_id())
-                SStore_node = StateOPNode(opcode, [stored_value, stored_address], global_state["pc"]-1,
+                node = StateOPNode(opcode, [stored_value, stored_address], global_state["pc"] - 1,
                                           path_conditions_and_vars["path_condition"], self.gen.get_path_id())
-                self.graph.addNode(SStore_node)
+                self.graph.add_node(node)
+
+                p_node = self.graph.add_expression_node(stored_address, self.gen.get_path_id())
+                self.graph.add_branch_edge([(p_node, node)], "flowEdge", self.gen.get_path_id())
+
+                e_node = self.graph.add_expression_node(stored_value, self.gen.get_path_id())
 
                 control_edges = []
-                pushEdgesToNode(path_conditions_and_vars["path_condition_node"], SStore_node, control_edges)
-                self.graph.addBranchEdge(control_edges, "controlEdge", self.gen.get_path_id())
-                self.graph.addBranchEdge([(e_node, SStore_node), (SStore_node, node)], "flowEdge", self.gen.get_path_id())
+                pushEdgesToNode(path_conditions_and_vars["path_condition_node"], node, control_edges)
+                self.graph.add_branch_edge(control_edges, "controlEdge", self.gen.get_path_id())
+                self.graph.add_branch_edge([(e_node, node)], "flowEdge", self.gen.get_path_id())
 
-                self.graph.ssgAddNode(SStore_node, self.gen.get_path_id())
-
-
+                # self.graph.ssgAddNode(SStore_node, self.gen.get_path_id())
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "JUMP":
@@ -1339,7 +1325,6 @@ class EVMInterpreter:
         a_len = len(stack)
         if (a_len - b_len) != (opcode_by_name(opcode).push - opcode_by_name(opcode).pop):
             raise Exception("Stack push and pop unmatch")
-
 
 
     def _init_global_state(self, path_conditions_and_vars, global_state):

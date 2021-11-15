@@ -42,21 +42,23 @@ zeorReturnStatusNode = ReturnStatusNode("0", 0)
 
 e_mapping_overflow_var_expr = {}
 
-def addExpressionNode(graph, expr, path_id): # is_expr(expr) == True and is_const(expr)==False
-    expr = to_symbolic(expr)
-    e_node = graph.getExprNode(expr)
-    if e_node is None:
-        e_node = ExpressionNode(str(expr), expr)
 
-        graph.addExprNode(expr, e_node)
-        flow_edges = []
-        for var in get_vars(expr):
-            node = graph.getVarNode(var)
-            flow_edges.append((node, e_node))
-        graph.addBranchEdge(flow_edges, "flowEdge", path_id)
-        return e_node
-    else:
-        return e_node
+# def addExpressionNode(graph, expr, path_id): # is_expr(expr) == True and is_const(expr)==False
+#     expr = to_symbolic(expr)
+#     e_node = graph.getExprNode(expr)
+#     if e_node is None:
+#         e_node = ExpressionNode(str(expr), expr)
+#
+#         graph.addExprNode(expr, e_node)
+#         flow_edges = []
+#         for var in get_vars(expr):
+#             node = graph.getVarNode(var)
+#             flow_edges.append((node, e_node))
+#         graph.addBranchEdge(flow_edges, "flowEdge", path_id)
+#         return e_node
+#     else:
+#         return e_node
+
 
 def addConstrainNode(graph, expr, path_id):
     e_node = graph.getConstrainNode(expr)
