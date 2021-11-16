@@ -60,19 +60,19 @@ e_mapping_overflow_var_expr = {}
 #         return e_node
 
 
-def addConstrainNode(graph, expr, path_id):
-    e_node = graph.getConstrainNode(expr)
-    if e_node is None:
-        e_node = ConstrainNode(str(expr), expr)
-        graph.addConstrainNode(expr, e_node)
-        flow_edges = []
-        for var in get_vars(to_symbolic(expr)):
-            node = graph.getVarNode(var)
-            flow_edges.append((node, e_node))
-        graph.addBranchEdge(flow_edges, "flowEdge", path_id)
-        return e_node
-    else:
-        return e_node
+# def addConstrainNode(graph, expr, path_id):
+#     e_node = graph.getConstrainNode(expr)
+#     if e_node is None:
+#         e_node = ConstrainNode(str(expr), expr)
+#         graph.addConstrainNode(expr, e_node)
+#         flow_edges = []
+#         for var in get_vars(to_symbolic(expr)):
+#             node = graph.getVarNode(var)
+#             flow_edges.append((node, e_node))
+#         graph.addBranchEdge(flow_edges, "flowEdge", path_id)
+#         return e_node
+#     else:
+#         return e_node
 
 
 def getSubstitudeExpr(expr, mapping_overflow_var_expr):
@@ -90,20 +90,20 @@ def getSubstitudeExpr(expr, mapping_overflow_var_expr):
     return convertResult(result)
 
 
-def addAddressNode(graph, expr, path_id):
-    expr = to_symbolic(expr)
-    a_node = graph.getAddressNode(expr)
-    if a_node is None:
-        a_node = AddressNode(str(expr), expr)
-        flow_edges = []
-        for var in get_vars(expr):
-            node = graph.getVarNode(var)
-            flow_edges.append((node, a_node))
-        graph.addAddressNode(expr, a_node)
-        graph.addBranchEdge(flow_edges, "flowEdge", path_id)
-        return a_node
-    else:
-        return a_node
+# def addAddressNode(graph, expr, path_id):
+#     expr = to_symbolic(expr)
+#     a_node = graph.getAddressNode(expr)
+#     if a_node is None:
+#         a_node = AddressNode(str(expr), expr)
+#         flow_edges = []
+#         for var in get_vars(expr):
+#             node = graph.getVarNode(var)
+#             flow_edges.append((node, a_node))
+#         graph.addAddressNode(expr, a_node)
+#         graph.addBranchEdge(flow_edges, "flowEdge", path_id)
+#         return a_node
+#     else:
+#         return a_node
 
 def update_graph_computed(graph, opcode, computed, path_conditions_and_vars, pc, param, path_id):
     flow_edges = []

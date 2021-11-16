@@ -83,6 +83,7 @@ def to_unsigned(number):
         return number + 2**256
     return number
 
+
 def to_symbolic(number, bits=256):
     if isReal(number):
         return BitVecVal(number, bits)
