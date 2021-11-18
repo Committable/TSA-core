@@ -119,7 +119,7 @@ class Reporter:
 
         for n in list(graph.nodes):
             graph.nodes[n]["color"] = "black"
-            graph.nodes[n]["label"] = str(n).split("_")[0]
+            graph.nodes[n]["label"] = str(n)
             node_map[str(n)] = str(i)
             graph_json["nodes"].append({"id": str(n),
                                         "name": str(n).split("_")[0],
@@ -130,13 +130,13 @@ class Reporter:
             e = edge[0]
             x = edge[1]
 
-            if graph.edges[(e, x)]["label"] == "flowEdge_address":
+            if graph.edges[(e, x)]["label"] == "control_flow" and graph.edges[(e, x)]["boolFlag"]:
                 graph.edges[(e, x)]["color"] = 'green'
-            elif graph.edges[(e, x)]["label"] == "flowEdge_value":
+            elif graph.edges[(e, x)]["label"] == "control_flow" and not graph.edges[(e, x)]["boolFlag"]:
                 graph.edges[(e, x)]["color"] = 'blue'
-            elif graph.edges[(e, x)]["label"] == "flowEdge":
+            elif graph.edges[(e, x)]["label"] == "value_flow":
                 graph.edges[(e, x)]["color"] = 'black'
-            elif graph.edges[(e, x)]["label"] == "constraint":
+            elif graph.edges[(e, x)]["label"] == "constraint_flow":
                 graph.edges[(e, x)]["color"] = 'red'
 
             edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
@@ -332,10 +332,12 @@ class Reporter:
                 s = edge[0]
                 t = edge[1]
                 label = self.ssg_graphs[x].edges[(s, t)]['label']
-                if label in {"flowEdge", "flowEdge_value", "flowEdge_address"}:
+                if label in {"value_flow"}:
                     self.data_flow += 1
-                elif label in {"constraint"}:
+                elif label in {"control_flow"}:
                     self.control_flow += 1
+                elif label in {"constraint_flow"}:
+                    pass
                 else:
                     raise Exception("no such type edge: %s", label)
 

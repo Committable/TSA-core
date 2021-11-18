@@ -15,7 +15,6 @@ import global_params
 from graphBuilder.XGraph import *
 from interpreter.symbolicVarGenerator import *
 from uinttest.global_test_params import PICKLE_PATH
-from solver.symbolicVar import subexpression, SSolver
 from interpreter.opcodes import opcode_by_name
 from utils import custom_deepcopy, convert_result, to_symbolic, is_all_real, ceil32
 
@@ -51,15 +50,10 @@ class EVMInterpreter:
         self.total_visited_pc = {}  # visited pc and its times
         self.total_visited_edges = {}  # visited edges and its times
 
-        # (key, value), key is the start address and the size is always 256 bits
-        self.input_dict = {}
-        # (key, value), key is the start address and the size is always 8 bits
-        self.evm_dict = {}
-        # (address: {(start: value)})
-        self.ext_code_dict = {}
-
         self.call_data_size = None
         self.evm = None
+
+        self.call_conditions = []
 
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
@@ -75,12 +69,13 @@ class EVMInterpreter:
         visited = params.visited
         global_state = params.global_state
 
-        assert (self.graph.get_current_constraint_node() == params.path_conditions_and_vars["path_condition_node"][-1],
-                "wrong constraint node")
+        assert self.graph.get_current_constraint_node() == params.path_conditions_and_vars["path_condition_node"][-1], \
+            "wrong constraint node"
 
         if block < 0 or block not in self.runtime.vertices:
             self.total_no_of_paths["exception"] += 1
             log.info("Unknown jump address %d. Terminating this path ...", block)
+            self.call_conditions = []
             return
 
         log.debug("Reach block address %d \n", block)
@@ -110,6 +105,7 @@ class EVMInterpreter:
             self.total_no_of_paths["normal"] += 1
             self.gen.gen_path_id()
             log.debug("Overcome a number of loop limit. Terminating this path ...")
+            self.call_conditions = []
             return
 
         # TODO: gas_used cannot be calculated accurately because of miu, now we keep the less used gas by instructions
@@ -118,6 +114,7 @@ class EVMInterpreter:
             self.total_no_of_paths["normal"] += 1
             self.gen.gen_path_id()
             log.debug("Run out of gas. Terminating this path ... ")
+            self.call_conditions = []
             return
 
         block_ins = self.runtime.vertices[block].get_instructions()
@@ -143,6 +140,7 @@ class EVMInterpreter:
             self.gen.gen_path_id()
             log.error("This path results in an exception: %s, Terminating this path ...", str(error))
             traceback.print_exc()
+            self.call_conditions = []
             return
 
         log.debug("After instructions free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
@@ -157,7 +155,7 @@ class EVMInterpreter:
             log.debug("TERMINATING A PATH ...")
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
-            # TODO: how to deal with symbolic jump targets and more than one jump targets for unconditoinal jump
+            # TODO: how to deal with symbolic jump targets and more than one jump targets for unconditional jump
             # now we only deal with unconditional jump with only one real target
             successor = self.runtime.vertices[block].get_jump_target()
             if successor is None:
@@ -211,6 +209,7 @@ class EVMInterpreter:
         execution_time = end_time - start_time
         log.debug("Block: " + str(block) + " symbolic execution time: %.8s s" % execution_time)
 
+        self.call_conditions = []
         return
 
     # TODO: 1.slot precision; 2.memory model; 3.sha3; 4.system contracts call; 5.evm instructions expansion;
@@ -375,7 +374,7 @@ class EVMInterpreter:
                 raise ValueError('STACK underflow')
         elif opcode == "SIGNEXTEND":
             if len(stack) > 1:
-                # todo: reveiw this process
+                # todo: review this process
                 global_state["pc"] = global_state["pc"] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
@@ -526,7 +525,7 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 s0 = stack.pop(0)
                 s1 = stack.pop(0)
-                if is_all_real(s0, s1):
+                if is_all_real(s0, s1) and s0+s1 < len(memory):
                     data = [x for x in memory[s0: s0 + s1]]
                     value = to_symbolic(data[0], 8)
                     for x in data[1:]:
@@ -614,6 +613,7 @@ class EVMInterpreter:
                 memory_start = stack.pop(0)
                 input_start = stack.pop(0)
                 size = stack.pop(0)
+                log.error("unhandled instruction CALLDATACOPY")
                 # Todo: implement this instruction
             else:
                 raise ValueError('STACK underflow')
@@ -627,6 +627,7 @@ class EVMInterpreter:
                 code_start = stack.pop(0)
                 size = stack.pop(0)  # in bytes
                 # Todo: implement this instruction
+                log.error("unhandled instruction CODECOPY")
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "RETURNDATACOPY":
@@ -636,6 +637,7 @@ class EVMInterpreter:
                 return_start = stack.pop(0)
                 size = stack.pop(0)  # in bytes
                 # Todo: implement this instruction
+                log.error("unhandled instruction RETURNDATACOPY")
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "RETURNDATASIZE":
@@ -670,6 +672,7 @@ class EVMInterpreter:
                 code_from = stack.pop(0)
                 no_bytes = stack.pop(0)
                 # TODO: implement this instruction
+                log.error("unhandled instruction EXTCODECOPY")
             else:
                 raise ValueError('STACK underflow')
         #
@@ -729,7 +732,7 @@ class EVMInterpreter:
                 stored_address = stack.pop(0)
                 stored_value = stack.pop(0)
 
-                self.write_memory(stored_address, stored_address + 31, stored_value, params)
+                self.write_memory(stored_address, stored_value, params)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "MSTORE8":
@@ -738,7 +741,7 @@ class EVMInterpreter:
                 stored_address = stack.pop(0)
                 stored_value = stack.pop(0)
 
-                self.write_memory(stored_address, stored_address, stored_value, params)
+                self.write_memory(stored_address, stored_value, params, size=0)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SLOAD":
@@ -747,10 +750,10 @@ class EVMInterpreter:
                 position = stack.pop(0)
 
                 value = None
-                for key in global_state["Ia"]:
+                for key in global_state["storage"]:
                     try:
                         if int(str(simplify(to_symbolic(key-position)))) == 0:
-                            value = global_state["Ia"][key]
+                            value = global_state["storage"][key]
                             break
                     except:
                         pass
@@ -765,7 +768,7 @@ class EVMInterpreter:
                         self.graph.add_branch_edge([(self.graph.get_current_constraint_node(), node)],
                                                    "constraint_flow")
 
-                    global_state["Ia"][position] = value
+                    global_state["storage"][position] = value
                 stack.insert(0, value)
             else:
                 raise ValueError('STACK underflow')
@@ -776,7 +779,7 @@ class EVMInterpreter:
                 stored_address = stack.pop(0)
                 stored_value = stack.pop(0)
 
-                global_state["Ia"][stored_address] = stored_value
+                global_state["storage"][stored_address] = stored_value
                 # add to graph
                 node = SStoreNode(opcode, global_state["pc"] - 1, [[], []])
                 self.graph.add_sstore_node(node, [stored_address, stored_value], self.gen.get_path_id())
@@ -818,7 +821,11 @@ class EVMInterpreter:
                         else:
                             branch_expression = BoolVal(True)
                     else:
-                        branch_expression = simplify(to_symbolic(flag != 0))
+                        branch_expression = to_symbolic(flag != 0)
+                        for x in self.call_conditions:
+                            branch_expression = And(branch_expression, x)
+
+                    branch_expression = simplify(branch_expression)
 
                     self.runtime.vertices[block].set_branch_expression(branch_expression)
             else:
@@ -948,10 +955,7 @@ class EVMInterpreter:
 
                 # add enough_fund condition to path_conditions
                 is_enough_fund = And((transfer_amount <= balance_ia), old_balance >= 0)
-                path_conditions_and_vars["path_condition"].append(is_enough_fund)
-                self.graph.add_constraint_node(is_enough_fund,
-                                               name="call_balance"+str(global_state["pc"])+"_"+self.gen.get_path_id(),
-                                               flag=True)
+                self.call_conditions.append(is_enough_fund)
 
                 # get return status
                 new_var_name = self.gen.gen_return_status(calls[-1])
@@ -1011,11 +1015,7 @@ class EVMInterpreter:
 
                 # add enough_fund condition to path_conditions
                 is_enough_fund = And((transfer_amount <= balance_ia), old_balance >= 0)
-                path_conditions_and_vars["path_condition"].append(is_enough_fund)
-                self.graph.add_constraint_node(is_enough_fund,
-                                               name="call_balance" + str(
-                                                   global_state["pc"]) + "_" + self.gen.get_path_id(),
-                                               flag=True)
+                self.call_conditions.append(is_enough_fund)
 
                 # get return status
                 new_var_name = self.gen.gen_return_status(calls[-1])
@@ -1085,7 +1085,7 @@ class EVMInterpreter:
                         break
                 except:
                     pass
-            assert(transfer_amount is not None, "transfer amount can not be None")
+            assert transfer_amount is not None, "transfer amount can not be None"
             # get the balance of recipient and update recipient's balance
             balance_recipent = None
             for key in global_state["balance"]:
@@ -1240,7 +1240,11 @@ class EVMInterpreter:
         constraint2 = (init_ia >= BitVecVal(0, 256))
         path_conditions_and_vars["path_condition"].append(constraint2)
 
-        self.graph.add_constraint_node(And(constraint0, constraint1, constraint2), name="init", flag=True)
+        path_conditions_and_vars["path_condition_node"].append(self.graph.add_constraint_node(And(constraint0,
+                                                                                                  constraint1,
+                                                                                                  constraint2),
+                                                                                              name="init",
+                                                                                              flag=True))
 
         # update the balances of the "caller" and "callee", global_state["balance"] is {}, indexed by address(real or
         # symbolic
@@ -1260,7 +1264,7 @@ class EVMInterpreter:
     def write_memory(start, value, params, size=31):
         if is_expr(size):
             raise Exception("write memory size should not be symbolic")
-        if is_expr(start):
+        if not is_expr(start):
             end = start + 31
             memory = params.memory
             old_size = len(memory) // 32
@@ -1282,17 +1286,23 @@ class EVMInterpreter:
     def load_memory(self, start, params):
         if not is_expr(start):
             data = []  # [mem_0, mem_1, ..., mem_31]
-            for i in range(0, 32):
-                if start+i >= len(params.memory):
-                    log.error("unexpected memory index: index %d larger than memory size %d",
-                              start + i, len(params.memory))
-                    return 0
-                value = to_symbolic(params.memory[start+i], 8)
-                data.append(value)
+            if start + 31 >= len(params.memory):
+                new_var_name = self.gen.gen_mem_var(params.global_state["pc"] - 1)
+                new_var = BitVec(new_var_name, 256)
+                node = MemoryNode(new_var, new_var, start)
+                self.graph.cache_var_node(new_var, node)
+                log.error("unexpected memory index: index %d larger than memory size %d",
+                          start + 31, len(params.memory))
 
-            result = to_symbolic(data[0])
-            for i in range(1, 32):  # stack = Concat(mem_0, mem_1, ..., mem_31)
-                result = Concat(result, to_symbolic(data[i]))
+                return new_var
+            else:
+                for i in range(0, 32):
+                    value = to_symbolic(params.memory[start+i], 8)
+                    data.append(value)
+
+                result = to_symbolic(data[0])
+                for i in range(1, 32):  # stack = Concat(mem_0, mem_1, ..., mem_31)
+                    result = Concat(result, to_symbolic(data[i]))
         else:
             result = None
 
@@ -1315,7 +1325,7 @@ class EVMInterpreter:
                     if result.sort() == BitVecSort(8):
                         result = simplify(Concat(Extract(255, 8, BitVecVal(0, 256)), result))
         if is_expr(result):
-            assert(result.sort() == BitVecSort(256), "load memory is not BitVecSort(256)")
+            assert result.sort() == BitVecSort(256), "load memory is not BitVecSort(256)"
 
         return convert_result(result)
 

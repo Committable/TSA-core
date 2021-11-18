@@ -37,7 +37,7 @@ def custom_deepcopy(input_dict):
         if isinstance(input_dict[key], list):
             output[key] = list(input_dict[key])
         elif isinstance(input_dict[key], dict):
-            output[key] = custom_deepcopy(input[key])
+            output[key] = custom_deepcopy(input_dict[key])
         else:
             output[key] = input_dict[key]
     return output
@@ -120,3 +120,18 @@ def ceil32(x):
 
 def from_bool_to_bit_vec(value):
     return simplify(If(value, BitVecVal(1, 32), BitVecVal(0, 32)))
+
+def isSymbolic():
+    pass
+
+def isBitVec():
+    pass
+
+def isDecisiable():
+    pass
+
+def isAllReal():
+    pass
+
+def from_bool_to_BitVec():
+    pass

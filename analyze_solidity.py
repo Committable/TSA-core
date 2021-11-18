@@ -93,7 +93,7 @@ def analyze_solidity_code():
         # add cfg
         report.add_cfg(inp["contract"], env)
         # add ssg
-        ssg_graph = interpreter.graph.ssg
+        ssg_graph = interpreter.graph.graph
         report.add_ssg(inp["contract"], ssg_graph)
 
     report.dump_cfg()
