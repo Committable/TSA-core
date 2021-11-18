@@ -1,23 +1,16 @@
 import shlex
 import subprocess
-import json
-import mmap
 import os
-import errno
-import signal
-import csv
 import re
-import difflib
 import six
-import logging
-from z3 import *
-from solver.symbolicVar import *
+from z3 import is_expr, BitVecVal, simplify, BitVecNumRef, FPNumRef, BitVecRef, sat, unsat, If
 
 
 def run_command(cmd):
     FNULL = open(os.devnull, 'w')
     solc_p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=FNULL)
     return solc_p.communicate()[0].decode('utf-8', 'strict')
+
 
 def run_command_with_err(cmd):
     FNULL = open(os.devnull, 'w')
@@ -27,65 +20,65 @@ def run_command_with_err(cmd):
     err = err.decode('utf-8', 'strict')
     return out, err
 
+
 def compare_versions(version1, version2):
     def normalize(v):
-        return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
+        return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
+
     version1 = normalize(version1)
     version2 = normalize(version2)
 
     return (version1 > version2) - (version1 < version2)
 
-def custom_deepcopy(input):
+
+def custom_deepcopy(input_dict):
     output = {}
-    for key in input:
-        if isinstance(input[key], list):
-            output[key] = list(input[key])
-        elif isinstance(input[key], dict):
+    for key in input_dict:
+        if isinstance(input_dict[key], list):
+            output[key] = list(input_dict[key])
+        elif isinstance(input_dict[key], dict):
             output[key] = custom_deepcopy(input[key])
         else:
-            output[key] = input[key]
+            output[key] = input_dict[key]
     return output
 
 
-def isReal(value):
-    return not is_expr(value)
-
-
-def isSymbolic(value):
-    return is_expr(value)
-
-
 # simplify a expression if possible
-def convertResult(value):
+def convert_result(value):
     value = simplify(value) if is_expr(value) else value
     try:
         value = int(str(value))
-    except Exception:
+    except:
         pass
     return value
 
 
-def isBitVec(value):
-    return isinstance(value, z3.BitVec) or isinstance(value, z3.BitVecNumRef)
-
-def isDecisiable(value):
-    return not (isinstance(value, six.integer_types) or isinstance(value, float) or isinstance(value, z3.BitVecNumRef) or isinstance(value, z3.FPNumRef))
+def is_bit_vec(value):
+    return isinstance(value, BitVecRef) or isinstance(value, BitVecNumRef)
 
 
-def isAllReal(*args):
+def is_decidable(value):
+    return not (isinstance(value, six.integer_types)
+                or isinstance(value, float)
+                or isinstance(value, BitVecNumRef)
+                or isinstance(value, FPNumRef))
+
+
+def is_all_real(*args):
     for element in args:
-        if isSymbolic(element):
+        if is_expr(element):
             return False
     return True
 
+
 def to_unsigned(number):
     if number < 0:
-        return number + 2**256
+        return number + 2 ** 256
     return number
 
 
 def to_symbolic(number, bits=256):
-    if isReal(number):
+    if not is_expr(number):
         return BitVecVal(number, bits)
     return number
 
@@ -102,7 +95,6 @@ def check_sat(solver):
         return False
 
 
-
 # if it's unsat return True, else(i.e sat\unknown\timeoutError) False
 def check_unsat(solver):
     if solver.getHasTimeOut():
@@ -116,13 +108,15 @@ def check_unsat(solver):
 
 
 def to_signed(number):
-    if number >= 2**255:
-        return (2**256 - number) * (-1)
+    if number >= 2 ** 255:
+        return (2 ** 256 - number) * (-1)
     else:
         return number
+
 
 def ceil32(x):
     return x if x % 32 == 0 else x + 32 - (x % 32)
 
-def from_bool_to_BitVec(value):
+
+def from_bool_to_bit_vec(value):
     return simplify(If(value, BitVecVal(1, 32), BitVecVal(0, 32)))

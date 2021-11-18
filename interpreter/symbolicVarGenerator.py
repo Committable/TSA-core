@@ -2,13 +2,13 @@ class Generator:
     def __init__(self):
         self.countstack = 0
         self.countdata = 0
-        self.count = 0
         self.path = 0
 
         self.overflow_name_count = {}
 
-    def gen_address(self, pc):
-        return "address_" + str(pc)
+    @staticmethod
+    def gen_contract_address(pc):
+        return "contractAddress_" + str(pc)
 
     def gen_overflow_var(self, opcode, pc, path_id):
         if (opcode, pc, path_id) not in self.overflow_name_count:
@@ -16,14 +16,13 @@ class Generator:
         self.overflow_name_count[(opcode, pc, path_id)] += 1
         return "overflow_" + str(opcode) + "_" + str(pc) + "_" + str(path_id) +"_" + str(self.overflow_name_count[(opcode, pc, path_id)])
 
-    def gen_balance_of(self, address):
+    @staticmethod
+    def gen_balance_of(address):
         return "init_" + str(address)
 
-    def gen_return_status(self, pc, path_id):
-        return "return_status_" + str(pc) + "_" + str(path_id)
-
-    def gen_return_data_size(self, call_pc, path_id):
-        return "Rd_size_" + str(call_pc) + "_" + str(path_id)
+    @staticmethod
+    def gen_return_data_size(call_pc):
+        return "returnSize_" + str(call_pc)
 
     def gen_evm_data(self, start, end):
         return "evm_" + str(start) + "_" + str(end)
@@ -31,64 +30,82 @@ class Generator:
     def gen_ext_code_data(self, address, start, end):
         return "bytecode_" + str(address) + "_" + str(start) + "_" + str(end)
 
-    def gen_code_size_var(self, address):
-        return "code_size_" + str(address)
+    @staticmethod
+    def gen_code_size_var(address):
+        return "codeSize_" + str(address)
 
     def gen_return_data(self, pc, start, end, path_id):
-        return "Rd_" + str(pc) + "_" + str(start) + "_" + str(end) + "_" + str(path_id)
+        return "return_" + str(pc) + "_" + str(start) + "_" + str(end) + "_" + str(path_id)
 
-    def gen_data_var(self, start, end):
-        return "Id_" + str(start) + "_" + str(end)
+    @staticmethod
+    def gen_data_var(start, end):
+        return "inputData_" + str(start) + "_" + str(end)
 
-    def gen_data_size(self):
-        return "Id_size"
+    @staticmethod
+    def gen_data_size():
+        return "inputSize"
 
-    def gen_mem_var(self, address, pc, path_id):
-        return "mem_" + str(address) + "_" + str(pc) + "_" + str(path_id)
 
-    def gen_storage_var(self, position):
+
+    @staticmethod
+    def gen_storage_var(position):
         return "storage_" + str(position)
 
-    def gen_exp_var(self, v0, v1):
-        return "exp(" + str(v0) + ", " + str(v1) + ")"
+    @staticmethod
+    def gen_exp_var(v0, v1):
+        return "exp_(" + str(v0) + ", " + str(v1) + ")"
 
-    def gen_sha3_var(self, value):
-        return "sha3("+str(value)+")"
+    @staticmethod
+    def gen_sha3_var(value):
+        return "sha3_("+str(value)+")"
 
-    def gen_gas_var(self, pc):
-        self.count += 1
-        return "gas_" + str(self.count) + "_" + str(pc)
+    @staticmethod
+    def gen_gas_price_var():
+        return "gasPrice"
 
-    def gen_gas_price_var(self):
-        return "Ip"
+    @staticmethod
+    def gen_origin_var():
+        return "origin"
 
-    def gen_origin_var(self):
-        return "Io"
+    @staticmethod
+    def gen_blockhash(number):
+        return "blockhash_"+str(number)
 
-    def gen_blockhash(self, number):
-        return "IH_blockhash_"+str(number)
+    @staticmethod
+    def gen_coin_base():
+        return "coinbase"
 
-    def gen_coin_base(self):
-        return "IH_c"
+    @staticmethod
+    def gen_difficult():
+        return "difficulty"
 
-    def gen_difficult(self):
-        return "IH_d"
+    @staticmethod
+    def gen_gas_limit():
+        return "gasLimit"
 
-    def gen_gas_limit(self):
-        return "IH_l"
+    @staticmethod
+    def gen_number():
+        return "blockNumber"
 
-    def gen_number(self):
-        return "IH_i"
-
-    def gen_timestamp(self):
-        return "IH_s"
+    @staticmethod
+    def gen_timestamp():
+        return "timestamp"
 
     def gen_path_id(self):
         self.path += 1
-        return "path_"+str(self.path)
+        return str(self.path)
 
     def get_path_id(self):
-        return "path_"+str(self.path+1)
+        return str(self.path)
+
+    def gen_mem_var(self, pc):
+        return "mem_" + str(pc) + "_" + self.get_path_id()
+
+    def gen_gas_var(self, pc):
+        return "gas_" + str(pc) + "_" + self.get_path_id()
+
+    def gen_return_status(self, pc):
+        return "returnStatus_" + str(pc) + "_" + self.get_path_id()
 
     # for wasm
     def gen_import_global_var(self, module, name):

@@ -27,7 +27,7 @@ SRC_DIR = ""
 SRC_FILE = ""
 
 IS_BEFORE = True
-# diffenence for this file
+# difference for this file
 DIFFS = []
 
 # source file type
