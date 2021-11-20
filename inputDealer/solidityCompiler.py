@@ -201,7 +201,7 @@ class SolidityCompiler:
             logger.info("get solc version: %s", version)
             solcx.install_solc(version)
             data_dict = solcx.compile_files([self.source + os.sep + self.joker],
-                                            output_values=["abi", "bin", "bin-runtime", "ast",
+                                            output_values=["abi", "bin", "bin-runtime", "ast", "hashes",
                                                            "asm", "opcodes", "srcmap-runtime"],
                                             solc_version=version,
                                             allow_empty=True,
@@ -231,6 +231,7 @@ class SolidityCompiler:
                                     "object": data_dict[key]["bin"]
                                 },
                             'legacyAssembly': data_dict[key]["asm"] if "asm" in data_dict[key] else "",
+                            "methodIdentifiers": data_dict[key]["hashes"]
                         }
                 }
 

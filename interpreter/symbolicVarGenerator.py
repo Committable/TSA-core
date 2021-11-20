@@ -98,11 +98,13 @@ class Generator:
     def get_path_id(self):
         return str(self.path)
 
-    def gen_mem_var(self, pc):
-        return "mem_" + str(pc) + "_" + self.get_path_id()
+    @staticmethod
+    def gen_mem_var(pc):
+        return "mem_" + str(pc)
 
-    def gen_gas_var(self, pc):
-        return "gas_" + str(pc) + "_" + self.get_path_id()
+    @staticmethod
+    def gen_gas_var(pc):
+        return "gas_" + str(pc)
 
     def gen_return_status(self, pc):
         return "returnStatus_" + str(pc) + "_" + self.get_path_id()

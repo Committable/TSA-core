@@ -3,6 +3,8 @@ import traceback
 import pickle
 import psutil
 import time
+import re
+import copy
 import six
 
 from collections import namedtuple
@@ -42,11 +44,23 @@ class EVMInterpreter:
         self.gen = Generator()
 
         self.runtime = runtime
+        self.sig_to_func = runtime.source_map.sig_to_func
 
-        self.graph = XGraph(cname)
+        self.graph = XGraph("all")
+        self.graphs = {}
+        self.tmp_graph = None
+
         self.path_conditions = []
 
-        self.total_no_of_paths = {"normal": 0, "exception": 0}  # number of paths, terminated by normal or exception
+
+        # number of paths, terminated by normal or exception
+        self.total_no_of_paths = {"normal": 0, "exception": 0}
+        self.paths = []
+
+        self.current_path = []
+        # impossible paths
+        self.impossible_paths = []
+
         self.total_visited_pc = {}  # visited pc and its times
         self.total_visited_edges = {}  # visited edges and its times
 
@@ -54,6 +68,24 @@ class EVMInterpreter:
         self.evm = None
 
         self.call_conditions = []
+
+    def in_function(self, block):
+        if block in self.runtime.start_block_to_func_sig:
+            func_sig = self.runtime.start_block_to_func_sig[block]
+            if self.sig_to_func is not None:
+                for key in self.sig_to_func:
+                    if eval("0x"+key) == eval("0x"+func_sig):
+                        current_func_name = self.sig_to_func[key]
+                        break
+                pattern = r'(\w[\w\d_]*)\((.*)\)$'
+                match = re.match(pattern, current_func_name)
+                if match:
+                    current_func_name = list(match.groups())[0]
+            else:
+                current_func_name = func_sig
+            return current_func_name
+        else:
+            return None
 
     def sym_exec(self):
         path_conditions_and_vars = {"path_condition": [], "path_condition_node": []}
@@ -66,21 +98,37 @@ class EVMInterpreter:
     def _sym_exec_block(self, params, block, pre_block):
         start_time = time.time()
 
+        self.current_path.append(block)
+
+        function_name = self.in_function(block)
+        if function_name is not None:
+            log.info("in function %s", function_name)
+            self.tmp_graph = copy.deepcopy(self.graph)
+            self.graphs[function_name] = copy.deepcopy(self.graph)
+            self.graph = self.graphs[function_name]
+
         visited = params.visited
         global_state = params.global_state
 
-        assert self.graph.get_current_constraint_node() == params.path_conditions_and_vars["path_condition_node"][-1], \
+        assert str(self.graph.get_current_constraint_node().get_value()) == \
+               str(params.path_conditions_and_vars["path_condition_node"][-1].get_value()), \
             "wrong constraint node"
 
         if block < 0 or block not in self.runtime.vertices:
             self.total_no_of_paths["exception"] += 1
             log.info("Unknown jump address %d. Terminating this path ...", block)
             self.call_conditions = []
+
+            if function_name is not None:
+                self.graph = self.tmp_graph
+
+            self.paths.append(copy.deepcopy(self.current_path))
+            self.current_path.pop()
             return
 
         log.debug("Reach block address %d \n", block)
 
-        current_edge = Edge(pre_block, block)
+        current_edge = (pre_block, block)
 
         # update visited edges for current path
         if current_edge in visited:
@@ -95,17 +143,23 @@ class EVMInterpreter:
         else:
             self.total_visited_edges.update({current_edge: 1})
 
-        log.debug("visiting edge: "+str(current_edge.v1) + "->" + str(current_edge.v2) +
-                  " ;path times: " + str(visited[current_edge]) +
-                  " ;total times: " + str(self.total_visited_edges[current_edge]))
+        # log.debug("visiting edge: "+str(current_edge[0]) + "->" + str(current_edge[1]) +
+        #           " ;path times: " + str(visited[current_edge]) +
+        #           " ;total times: " + str(self.total_visited_edges[current_edge]))
 
-        # TODO: how to implement better loop dectection?
-        if (visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional") \
-                or self.total_visited_edges[current_edge] > 5:
+        # TODO: how to implement better loop dectection? This may cost too much time
+        # or self.total_visited_edges[current_edge] > 5:
+        if (visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional"):
             self.total_no_of_paths["normal"] += 1
             self.gen.gen_path_id()
             log.debug("Overcome a number of loop limit. Terminating this path ...")
             self.call_conditions = []
+
+            if function_name is not None:
+                self.graph = self.tmp_graph
+
+            self.paths.append(copy.deepcopy(self.current_path))
+            self.current_path.pop()
             return
 
         # TODO: gas_used cannot be calculated accurately because of miu, now we keep the less used gas by instructions
@@ -115,6 +169,12 @@ class EVMInterpreter:
             self.gen.gen_path_id()
             log.debug("Run out of gas. Terminating this path ... ")
             self.call_conditions = []
+
+            if function_name is not None:
+                self.graph = self.tmp_graph
+
+            self.paths.append(copy.deepcopy(self.current_path))
+            self.current_path.pop()
             return
 
         block_ins = self.runtime.vertices[block].get_instructions()
@@ -141,6 +201,12 @@ class EVMInterpreter:
             log.error("This path results in an exception: %s, Terminating this path ...", str(error))
             traceback.print_exc()
             self.call_conditions = []
+
+            if function_name is not None:
+                self.graph = self.tmp_graph
+
+            self.paths.append(copy.deepcopy(self.current_path))
+            self.current_path.pop()
             return
 
         log.debug("After instructions free memory: %d M" % int(memory_inf.free / (1024 * 1024)))
@@ -153,6 +219,9 @@ class EVMInterpreter:
             self.total_no_of_paths["normal"] += 1
             self.gen.gen_path_id()
             log.debug("TERMINATING A PATH ...")
+            self.paths.append(copy.deepcopy(self.current_path))
+            self.current_path.pop()
+            return
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
             # TODO: how to deal with symbolic jump targets and more than one jump targets for unconditional jump
@@ -178,31 +247,51 @@ class EVMInterpreter:
             if branch_expression is not None:
                 # branch_expression_node = self.runtime.vertices[block].get_branch_expression_node()
                 str_expr = str(branch_expression)
-                log.debug("Branch expression: " + str_expr)
+                # log.debug("Branch expression: " + str_expr)
+                selector = None
                 if str_expr != "False":
-                    branch_expression_node = self.graph.add_constraint_node(branch_expression, str(branch_expression),
-                                                                            True)
-                    self.runtime.vertices[block].set_branch_node_expression(branch_expression_node)
                     left_branch = self.runtime.vertices[block].get_jump_targets()[-1]
+                    selector = self.in_function(left_branch)
+                    if selector is not None:
+                        branch_expression_node = self.graph.add_constraint_node(branch_expression,
+                                                                                pc=block,
+                                                                                name="*" + selector,
+                                                                                flag=True)
+                    else:
+                        branch_expression_node = self.graph.add_constraint_node(branch_expression,
+                                                                                pc=block,
+                                                                                flag=True)
+                    self.runtime.vertices[block].set_branch_node_expression(branch_expression_node)
+
                     new_params = params.copy()
                     new_params.global_state["pc"] = left_branch
                     new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
                     new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
                     self._sym_exec_block(new_params, left_branch, block)
                     self.graph.out_constraint()
+                else:
+                    self.impossible_paths.append((block, self.runtime.vertices[block].get_jump_targets()[-1]))
 
                 negated_branch_expression = simplify(Not(branch_expression))
-                log.debug("Negated branch expression: " + str(negated_branch_expression))
+                # log.debug("Negated branch expression: " + str(negated_branch_expression))
                 if str_expr != "True":
-                    negated_branch_expression_node = self.graph.add_constraint_node(negated_branch_expression,
-                                                                                    str(negated_branch_expression),
-                                                                                    False)
+                    if selector is not None:
+                        negated_branch_expression_node = self.graph.add_constraint_node(negated_branch_expression,
+                                                                                        pc=block,
+                                                                                        name=selector,
+                                                                                        flag=False)
+                    else:
+                        negated_branch_expression_node = self.graph.add_constraint_node(negated_branch_expression,
+                                                                                        pc=block,
+                                                                                        flag=False)
                     self.runtime.vertices[block].set_negated_branch_node_expression(negated_branch_expression_node)
                     right_branch = self.runtime.vertices[block].get_falls_to()
                     params.global_state["pc"] = right_branch
                     params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
                     params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
                     self._sym_exec_block(params, right_branch, block)
+                else:
+                    self.impossible_paths.append((block, self.runtime.vertices[block].get_falls_to()))
         else:
             raise Exception('Unknown Jump-Type')
         end_time = time.time()
@@ -210,6 +299,11 @@ class EVMInterpreter:
         log.debug("Block: " + str(block) + " symbolic execution time: %.8s s" % execution_time)
 
         self.call_conditions = []
+
+        if function_name is not None:
+            self.graph = self.tmp_graph
+
+        self.current_path.pop()
         return
 
     # TODO: 1.slot precision; 2.memory model; 3.sha3; 4.system contracts call; 5.evm instructions expansion;
@@ -237,9 +331,17 @@ class EVMInterpreter:
         instr_parts = str.split(instr, ' ')
         opcode = instr_parts[1]
 
+        visited_pc = instr_parts[0]
+
+        if visited_pc in self.total_visited_pc:
+            self.total_visited_pc[visited_pc] += 1
+        else:
+            self.total_visited_pc[visited_pc] = 1
+
         log.debug("==============================")
-        log.debug("EXECUTING: " + instr + "LENG_MEM:" + str(len(memory)))
-        log.debug("STACK: " + str(stack))
+        log.debug("EXECUTING: " + instr)
+        # log.debug("LENG_MEM:" + str(len(memory)))
+        # log.debug("STACK: " + str(stack))
         #
         #  0s: Stop and Arithmetic Operations
         #
@@ -1067,9 +1169,9 @@ class EVMInterpreter:
             if len(stack) > 1:
                 stack.pop(0)
                 stack.pop(0)
-
-                node = TerminalNode(opcode, global_state["pc"])
-                self.graph.add_terminal_node(node)
+                if opcode == "REVERT":
+                    node = TerminalNode(opcode, global_state["pc"])
+                    self.graph.add_terminal_node(node)
             else:
                 raise ValueError('STACK underflow')
         elif opcode == "SUICIDE":
@@ -1243,6 +1345,7 @@ class EVMInterpreter:
         path_conditions_and_vars["path_condition_node"].append(self.graph.add_constraint_node(And(constraint0,
                                                                                                   constraint1,
                                                                                                   constraint2),
+                                                                                              pc=0,
                                                                                               name="init",
                                                                                               flag=True))
 

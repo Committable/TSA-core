@@ -88,24 +88,26 @@ def analyze_solidity_code():
             logger.error("fail to symbolic execute for %s, err: %s", inp["contract"], str(err))
             traceback.print_exc()
             return 105
-        logger.info("end analysing contract %s: %s", inp["contract"], str(interpreter.total_no_of_paths))
-
         # add cfg
         report.add_cfg(inp["contract"], env)
         # add ssg
-        ssg_graph = interpreter.graph.graph
-        report.add_ssg(inp["contract"], ssg_graph)
+        ssg_graph = interpreter.graphs
+        report.add_ssg_new(inp["contract"], ssg_graph)
+
+        report.print_coverage_info(inp["contract"], env, interpreter)
+        logger.info("End analysing contract %s", inp["contract"])
+
 
     report.dump_cfg()
     report.print_cfg_graph()
     report.dump_cfg_edge_list()
 
     report.dump_ssg()
-    report.print_ssg_graph()
+    report.print_ssg_graph_new()
     report.dump_ssg_edge_list()
 
     report.get_structure_bin()
-    report.get_sementic()
+    report.get_sementic_new()
     report.dump_meta_commit()
 
     return exit_code

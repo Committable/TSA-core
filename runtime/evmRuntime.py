@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import six
 
 from graphviz import Digraph
 
@@ -27,6 +28,7 @@ class EvmRuntime:
         self.source_file = source_file  # complete path of solidity file
         self.input_type = input_type  # input file defined in file global_params.py and assigned in cmd
         self.evm = evm  # runtime evm bytes of the contract
+        self.start_block_to_func_sig = {}
 
     def build_cfg(self):
         if self.input_type == global_params.SOLIDITY:
@@ -93,8 +95,26 @@ class EvmRuntime:
         with open(self.disasm_file, 'w') as disasm_file:
             disasm_file.write("".join(file_contents))
 
-    def _collect_vertices(self, file_contents):
+    def get_start_block_to_func_sig(self):
+        state = 0
+        func_sig = None
+        for pc, instr in six.iteritems(self.instructions):
+            instr = " ".join(instr.split(" ")[1:])
+            if state == 0 and instr.startswith('PUSH4'):
+                state += 1
+                func_sig = instr.split(' ')[1][2:]
+            elif state == 1 and instr.startswith('EQ'):
+                state += 1
+            elif state == 2 and instr.startswith('PUSH'):
+                state = 0
+                pc = instr.split(' ')[1]
+                pc = int(pc, 16)
+                self.start_block_to_func_sig[pc] = func_sig
+            else:
+                state = 0
+        return self.start_block_to_func_sig
 
+    def _collect_vertices(self, file_contents):
         if self.source_map and self.source_map.positions:
             idx = 0
             positions = self.source_map.positions
@@ -160,6 +180,8 @@ class EvmRuntime:
         for key in self.end_ins_dict:
             if key not in self.jump_type:
                 self.jump_type[key] = "falls_to"
+
+        self.get_start_block_to_func_sig()
 
     def _construct_bb(self):
         self.vertices = {}
