@@ -204,7 +204,7 @@ class EvmRuntime:
                         if self.source_map.instr_positions[i]["f"] != -1:
                             t_start = self.source_map.instr_positions[i]["s"]
                             t_end = self.source_map.instr_positions[i]["s"] + self.source_map.instr_positions[i]["l"]
-                            i_lines = self.source_map.source.get_lines_from_position(t_start, t_end)
+                            i_lines = self.source_map.get_lines_from_pc(i)
                             changed = changed or walker.is_changed(i_lines)
                             for x in i_lines:
                                 lines.add(x)

@@ -46,7 +46,7 @@ class EVMInterpreter:
         self.runtime = runtime
         self.sig_to_func = runtime.source_map.sig_to_func
 
-        self.graph = XGraph("all")
+        self.graph = XGraph("all", self.runtime.source_map)
         self.graphs = {}
         self.tmp_graph = None
 
@@ -68,6 +68,8 @@ class EVMInterpreter:
         self.evm = None
 
         self.call_conditions = []
+
+        self.current_function = ""
 
     def in_function(self, block):
         if block in self.runtime.start_block_to_func_sig:
@@ -103,9 +105,11 @@ class EVMInterpreter:
         function_name = self.in_function(block)
         if function_name is not None:
             log.info("in function %s", function_name)
-            self.tmp_graph = copy.deepcopy(self.graph)
-            self.graphs[function_name] = copy.deepcopy(self.graph)
-            self.graph = self.graphs[function_name]
+            # self.tmp_graph = copy.deepcopy(self.graph)
+            # self.graphs[function_name] = copy.deepcopy(self.graph)
+            # self.graph = self.graphs[function_name]
+            self.graph.reset_graph(function_name)
+            self.current_function = function_name
 
         visited = params.visited
         global_state = params.global_state
@@ -120,7 +124,10 @@ class EVMInterpreter:
             self.call_conditions = []
 
             if function_name is not None:
-                self.graph = self.tmp_graph
+                # self.graph = self.tmp_graph
+                self.graphs[function_name] = self.graph.get_graph()
+                self.graph.reset_graph("")
+                self.current_function = ""
 
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
@@ -156,7 +163,10 @@ class EVMInterpreter:
             self.call_conditions = []
 
             if function_name is not None:
-                self.graph = self.tmp_graph
+                # self.graph = self.tmp_graph
+                self.graphs[function_name] = self.graph.get_graph()
+                self.graph.reset_graph("")
+                self.current_function = ""
 
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
@@ -171,10 +181,13 @@ class EVMInterpreter:
             self.call_conditions = []
 
             if function_name is not None:
-                self.graph = self.tmp_graph
+                # self.graph = self.tmp_graph
+                self.graphs[function_name] = self.graph.get_graph()
+                self.graph.reset_graph("")
 
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
+            self.current_function = ""
             return
 
         block_ins = self.runtime.vertices[block].get_instructions()
@@ -203,7 +216,10 @@ class EVMInterpreter:
             self.call_conditions = []
 
             if function_name is not None:
-                self.graph = self.tmp_graph
+                # self.graph = self.tmp_graph
+                self.graphs[function_name] = self.graph.get_graph()
+                self.graph.reset_graph("")
+                self.current_function = ""
 
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
@@ -221,6 +237,13 @@ class EVMInterpreter:
             log.debug("TERMINATING A PATH ...")
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
+
+            if function_name is not None:
+                # self.graph = self.tmp_graph
+                self.graphs[function_name] = self.graph.get_graph()
+                self.graph.reset_graph("")
+                self.current_function = ""
+
             return
 
         elif self.runtime.jump_type[block] == "unconditional":  # executing "JUMP"
@@ -254,12 +277,12 @@ class EVMInterpreter:
                     selector = self.in_function(left_branch)
                     if selector is not None:
                         branch_expression_node = self.graph.add_constraint_node(branch_expression,
-                                                                                pc=block,
+                                                                                pc=self.runtime.vertices[block].end,
                                                                                 name="*" + selector,
                                                                                 flag=True)
                     else:
                         branch_expression_node = self.graph.add_constraint_node(branch_expression,
-                                                                                pc=block,
+                                                                                pc=self.runtime.vertices[block].end,
                                                                                 flag=True)
                     self.runtime.vertices[block].set_branch_node_expression(branch_expression_node)
 
@@ -277,12 +300,12 @@ class EVMInterpreter:
                 if str_expr != "True":
                     if selector is not None:
                         negated_branch_expression_node = self.graph.add_constraint_node(negated_branch_expression,
-                                                                                        pc=block,
+                                                                                        pc=self.runtime.vertices[block].end,
                                                                                         name=selector,
                                                                                         flag=False)
                     else:
                         negated_branch_expression_node = self.graph.add_constraint_node(negated_branch_expression,
-                                                                                        pc=block,
+                                                                                        pc=self.runtime.vertices[block].end,
                                                                                         flag=False)
                     self.runtime.vertices[block].set_negated_branch_node_expression(negated_branch_expression_node)
                     right_branch = self.runtime.vertices[block].get_falls_to()
@@ -290,6 +313,7 @@ class EVMInterpreter:
                     params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
                     params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
                     self._sym_exec_block(params, right_branch, block)
+                    self.graph.out_constraint()
                 else:
                     self.impossible_paths.append((block, self.runtime.vertices[block].get_falls_to()))
         else:
@@ -301,7 +325,10 @@ class EVMInterpreter:
         self.call_conditions = []
 
         if function_name is not None:
-            self.graph = self.tmp_graph
+            # self.graph = self.tmp_graph
+            self.graphs[function_name] = self.graph.get_graph()
+            self.graph.reset_graph("")
+            self.current_function = ""
 
         self.current_path.pop()
         return
@@ -468,7 +495,7 @@ class EVMInterpreter:
                     new_var_name = self.gen.gen_exp_var(base, exponent)
                     computed = BitVec(new_var_name, 256)
                     # add to graph
-                    node = ExpNode(new_var_name, computed)
+                    node = ExpNode(new_var_name, computed, base, exponent)
                     self.graph.cache_var_node(computed, node)
 
                 stack.insert(0, computed)
@@ -636,7 +663,7 @@ class EVMInterpreter:
                     value = simplify(value)
                     new_var_name = self.gen.gen_sha3_var(value)
                     computed = BitVec(new_var_name, 256)
-                    node = ShaNode(new_var_name, computed, value)
+                    node = ShaNode(new_var_name, computed, global_state["pc"]-1, value)
                     self.graph.cache_var_node(computed, node)
                 else:
                     # Todo:push into the stack a fresh symbolic variable, how to deal with symbolic address and size
@@ -647,7 +674,7 @@ class EVMInterpreter:
                     new_var = BitVec(new_var_name, 256)
                     computed = new_var
                     # add to node
-                    node = ShaNode(new_var_name, computed)
+                    node = ShaNode(new_var_name, computed, global_state["pc"]-1)
                     self.graph.cache_var_node(computed, node)
 
                 stack.insert(0, computed)
@@ -698,7 +725,7 @@ class EVMInterpreter:
                 global_state["pc"] = global_state["pc"] + 1
                 start = stack.pop(0)
 
-                new_var_name = self.gen.gen_data_var(start, convert_result(start + 31))
+                new_var_name = self.gen.gen_data_var(start, convert_result(start + 31), self.current_function)
                 value = BitVec(new_var_name, 256)
                 node = InputDataNode(new_var_name, value, start, convert_result(start+31))
                 self.graph.cache_var_node(value, node)
@@ -865,7 +892,7 @@ class EVMInterpreter:
                     value = BitVec(new_var_name, 256)
                     node = self.graph.get_state_node(position)
                     if node is None:
-                        node = StateNode(new_var_name, value, position)
+                        node = StateNode(new_var_name, value, position, global_state["pc"]-1)
                         node = self.graph.add_state_node(position, node)
                         self.graph.add_branch_edge([(self.graph.get_current_constraint_node(), node)],
                                                    "constraint_flow")

@@ -158,7 +158,7 @@ class Reporter:
 
         graph_jsons = {}
         for key in graphs:
-            graph = graphs[key].graph
+            graph = graphs[key]
 
             graph_json = {}
             graph_json["nodes"] = []
@@ -291,16 +291,17 @@ class Reporter:
             for func in self.ssg_graphs[contract]:
                 g = nx.DiGraph()
 
-                for n in list(self.ssg_graphs[contract][func].graph.nodes):
-                    node = self.ssg_graphs[contract][func].graph.nodes[n]
+                for n in list(self.ssg_graphs[contract][func].nodes):
+                    node = self.ssg_graphs[contract][func].nodes[n]
                     g.add_node(n, label=node["label"], color=node['color'])
 
-                for edge in list(self.ssg_graphs[contract][func].graph.edges):
+                for edge in list(self.ssg_graphs[contract][func].edges):
                     s = edge[0]
                     t = edge[1]
                     g.add_edge(s, t,
-                               label=self.ssg_graphs[contract][func].graph.edges[(s, t)]['label'],
-                               color=self.ssg_graphs[contract][func].graph.edges[(s, t)]['color']
+                               # label=self.ssg_graphs[contract][func].edges[(s, t)]['label'],
+                               label="",
+                               color=self.ssg_graphs[contract][func].edges[(s, t)]['color']
                                )
 
                 g1 = nx.nx_agraph.to_agraph(g)
@@ -422,10 +423,10 @@ class Reporter:
     def get_sementic_new(self):
         for contract in self.ssg_graphs:
             for func in self.ssg_graphs[contract]:
-                for edge in list(self.ssg_graphs[contract][func].graph.edges):
+                for edge in list(self.ssg_graphs[contract][func].edges):
                     s = edge[0]
                     t = edge[1]
-                    label = self.ssg_graphs[contract][func].graph.edges[(s, t)]['label']
+                    label = self.ssg_graphs[contract][func].edges[(s, t)]['label']
                     if label in {"value_flow"}:
                         self.data_flow += 1
                     elif label in {"control_flow"}:

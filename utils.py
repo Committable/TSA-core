@@ -3,7 +3,7 @@ import subprocess
 import os
 import re
 import six
-from z3 import is_expr, BitVecVal, simplify, BitVecNumRef, FPNumRef, BitVecRef, sat, unsat, If
+from z3 import is_expr, BitVecVal, simplify, BitVecNumRef, FPNumRef, BitVecRef, sat, unsat, If, is_const
 
 
 def run_command(cmd):
@@ -47,7 +47,8 @@ def custom_deepcopy(input_dict):
 def convert_result(value):
     value = simplify(value) if is_expr(value) else value
     try:
-        value = int(str(value))
+        if is_const(value):
+            value = int(str(value))
     except:
         pass
     return value

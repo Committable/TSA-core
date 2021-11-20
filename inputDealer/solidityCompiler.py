@@ -123,10 +123,6 @@ class AllowedVersion: # left [<=|<] allow_version [<=|<]
             return version
 
 
-
-
-
-
 class SolidityCompiler:
     def __init__(self, source, joker, root_path, allow_paths, remap, compilation_err):
         self.combined_json = {"contracts": {}, "sources": {}}  # compile result of json type
@@ -232,7 +228,7 @@ class SolidityCompiler:
                                 },
                             'legacyAssembly': data_dict[key]["asm"] if "asm" in data_dict[key] else "",
                             "methodIdentifiers": data_dict[key]["hashes"]
-                        }
+                        },
                 }
 
                 if "children" in data_dict[key]["ast"]:

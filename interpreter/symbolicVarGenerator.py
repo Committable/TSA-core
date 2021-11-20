@@ -38,8 +38,8 @@ class Generator:
         return "return_" + str(pc) + "_" + str(start) + "_" + str(end) + "_" + str(path_id)
 
     @staticmethod
-    def gen_data_var(start, end):
-        return "inputData_" + str(start) + "_" + str(end)
+    def gen_data_var(start, end, function):
+        return "inputData_" + str(start) + "_" + str(end) + "_" + function
 
     @staticmethod
     def gen_data_size():

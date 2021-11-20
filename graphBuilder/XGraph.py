@@ -74,7 +74,7 @@ class SStoreNode(InstructionNode):
         super().__init__(instruction_name, arguments, global_pc)
 
     def __str__(self):
-        return ("StateOPNode_" + self.name + "_" + str(self.pc)).replace("\n", "")
+        return (self.name + "_" + str(self.pc)).replace("\n", "")
 
 
 class TerminalNode(InstructionNode):
@@ -82,7 +82,7 @@ class TerminalNode(InstructionNode):
         super().__init__(instruction_name, [], global_pc)
 
     def __str__(self):
-        return ("TerminalNode_" + self.name + "_" + str(self.pc)).replace("\n", "")
+        return self.name
 
 
 class ArithNode(InstructionNode):
@@ -118,7 +118,7 @@ class ExpressionNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("ExpressionNode_" + str(self.count)).replace("\n", "")
+        return ("EXPR_" + str(self.count)).replace("\n", "")
 
 
 class ConstraintNode(VariableNode):
@@ -143,21 +143,32 @@ class ConstraintNode(VariableNode):
         self.false_child = child
 
     def __str__(self):
-        if self.name:
-            return ("ConstraintNode_" + str(self.name)).replace("\n", "")
-        if self.flag:
-            return ("ConstraintNode_*" + str(self.pc)).replace("\n", "")
+        if XGraph.sourcemap is None or len(XGraph.sourcemap.get_lines_from_pc(self.pc)) != 1:
+            if self.name:
+                return (str(self.name)).replace("\n", "")
+            if self.flag:
+                return ("*BRANCH_" + str(self.pc)).replace("\n", "")
+            else:
+                return ("BRANCH_" + str(self.pc)).replace("\n", "")
         else:
-            return ("ConstraintNode_" + str(self.pc)).replace("\n", "")
+            #return XGraph.sourcemap.source.get_content_from_line(XGraph.sourcemap.get_lines_from_pc(self.pc)[0])
+            if self.flag:
+                return "*" + XGraph.sourcemap.get_contents_from_pc(self.pc).replace("\n", "")
+            else:
+                return XGraph.sourcemap.get_contents_from_pc(self.pc).replace("\n", "")
 
 
 class StateNode(VariableNode):
-    def __init__(self, name, value, position):
+    def __init__(self, name, value, position, pc):
         super().__init__(name, value)
         self.position = position
+        self.pc = pc
 
     def __str__(self):
-        return ("StateNode_" + str(self.position)).replace("\n", "")
+        if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+            return ("STATE_" + XGraph.sourcemap.get_contents_from_pc(self.pc)).replace("\n", "")
+        else:
+            return ("STATE_" + str(self.pc)).replace("\n", "")
 
 
 class InputDataNode(VariableNode):
@@ -167,7 +178,10 @@ class InputDataNode(VariableNode):
         self.end = end
 
     def __str__(self):
-        return ("InputDataNode_" + str(self.count)).replace("\n", "")
+        if is_expr(self.start) or is_expr(self.end):
+            return "Input_" + str(self.count)
+        else:
+            return "Input_" + str(self.start) + "_" + str(self.end)
 
 
 class InputDataSizeNode(VariableNode):
@@ -280,17 +294,20 @@ class GasNode(VariableNode):
 
 
 class ShaNode(VariableNode):
-
-    def __init__(self, name, value, param=None):
+    def __init__(self, name, value, pc, param=None):
         super().__init__(name, value)
         self.param = param
+        self.pc = pc
 
     # param may be None
     def get_param(self):
         return self.param
 
     def __str__(self):
-        return ("ShaNode_"+str(self.count)).replace("\n", "")
+        if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+            return ("SHA_" + XGraph.sourcemap.get_contents_from_pc(self.pc)).replace("\n", "")
+        else:
+            return ("SHA_"+str(self.pc)).replace("\n", "")
 
 
 class MemoryNode(VariableNode):  # 32 bytes
@@ -377,7 +394,7 @@ class SenderNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("SenderNode_" + str(self.count)).replace("\n", "")
+        return "msg.sender"
 
 
 class ReceiverNode(VariableNode):
@@ -389,7 +406,11 @@ class ReceiverNode(VariableNode):
 
 
 class XGraph:
-    def __init__(self, cname=""):
+    sourcemap = None
+
+    def __init__(self, cname="", sourcemap=None):
+        if sourcemap is not None:
+            XGraph.sourcemap = sourcemap
         self.graph = nx.DiGraph(name=cname)
 
         self.count = 0
@@ -442,6 +463,12 @@ class XGraph:
 
         # current constraint node
         self.current_constraint_node = None
+
+    def reset_graph(self, function_name):
+        self.graph = nx.DiGraph(name=function_name)
+
+    def get_graph(self):
+        return self.graph
 
     def add_expression_node(self, expr):  # is_expr(expr) == True and is_const(expr)==False
         if not is_expr(expr):

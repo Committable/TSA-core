@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 class Source:
     def __init__(self, filename):
+        self.index = 0
         self.filename = filename
         self.content = self._load_content()  # the all file content in string type
         self.line_break_positions = self._load_line_break_positions()  # the position of all "\n"
@@ -22,6 +23,19 @@ class Source:
 
     def get_content(self):
         return self.content
+
+    def set_index(self, index):
+        self.index = index
+
+    def get_content_from_line(self, line):
+        if line < 1 or line > len(self.line_break_positions):
+            return ""
+        end = self.line_break_positions[line-1]
+        if line == 1:
+            start = 0
+        else:
+            start = self.line_break_positions[line-2]+1
+        return self.content[start:end]
 
     def _load_line_break_positions(self):
         return [i for i, letter in enumerate(self.content) if letter == '\n']
@@ -82,6 +96,22 @@ class SourceMap:
 
         return
 
+    def get_lines_from_pc(self, pc):
+        if pc not in self.instr_positions:
+            return []
+        position = self.instr_positions[pc]
+        if position["f"] != self.source.index:
+            return []
+        return self.source.get_lines_from_position(position["s"], position["s"]+position["l"])
+
+    def get_contents_from_pc(self, pc):
+        if pc not in self.instr_positions:
+            return ""
+        position = self.instr_positions[pc]
+        if position["f"] != self.source.index:
+            return ""
+        return self.source.get_content()[position["s"]:position["s"]+position["l"]]
+
     def _get_var_names(self):
         return self.ast_helper.extract_state_variable_names(self.parent_file+":"+self.cname)
 
@@ -138,6 +168,11 @@ class SourceMap:
             if not self.source_map:
                 return None
             source_map_position = self.source_map.split(";")
+
+            # get index of the sourcemap, and it is the "f" of first element
+            if len(source_map_position[0].split(":")) >= 3:
+                self.source.index = int(source_map_position[0].split(":")[2])
+
             new_positions = []
             p = {"s": -1, "l": -1, "f": -1, "j": "-", "m": 0}
             for x in source_map_position:
