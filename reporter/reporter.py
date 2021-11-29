@@ -174,9 +174,9 @@ class Reporter:
                 graph.nodes[n]["label"] = str(n)
                 node_map[str(n)] = str(i)
                 graph_json[graph_key]["nodes"].append({"id": str(n),
-                                            "name": str(n).split("_")[0],
-                                            "pos": str(pos[n]),
-                                            "lines": []})
+                                                       "name": str(n).split("_")[0],
+                                                       "pos": str(pos[n]),
+                                                       "lines": n.lines})
                 i += 1
             for edge in list(graph.edges):
                 e = edge[0]

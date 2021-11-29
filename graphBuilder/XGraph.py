@@ -8,11 +8,15 @@ from utils import to_symbolic
 class Node:
     count = 0
     
-    def __init__(self, name, from_nodes=None, to_nodes=None):
+    def __init__(self, name, from_nodes=None, to_nodes=None, lines=None):
         self.count = Node.count
         self.name = name
         self.fromNodes = from_nodes
         self.toNodes = to_nodes
+        if lines is None:
+            self.lines = XGraph.current_lines
+        else:
+            self.lines = lines
         Node.count += 1
 
     def get_from_nodes(self, graph):
@@ -34,6 +38,8 @@ class InstructionNode(Node):
         super().__init__(instruction_name)
         self.arguments = arguments  # arguments: [[node1,node1], [node2,node3]]
         self.pc = global_pc
+        if XGraph.sourcemap is not None and len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+            self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
 
     def get_pc(self):
         return self.pc
@@ -129,6 +135,8 @@ class ConstraintNode(VariableNode):
         self.false_child = None
         self.pc = pc
         self.flag = flag
+        if XGraph.sourcemap is not None and len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+            self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
 
     def set_parent(self, parent):
         self.parent = parent
@@ -163,6 +171,8 @@ class StateNode(VariableNode):
         super().__init__(name, value)
         self.position = position
         self.pc = pc
+        if XGraph.sourcemap is not None and len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+            self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
@@ -305,6 +315,7 @@ class ShaNode(VariableNode):
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+            self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
             return ("SHA_" + XGraph.sourcemap.get_contents_from_pc(self.pc)).replace("\n", "")
         else:
             return ("SHA_"+str(self.pc)).replace("\n", "")
@@ -419,6 +430,7 @@ class ReceiverNode(VariableNode):
 
 class XGraph:
     sourcemap = None
+    current_lines = []
 
     def __init__(self, cname="", sourcemap=None):
         if sourcemap is not None:
@@ -475,6 +487,8 @@ class XGraph:
 
         # current constraint node
         self.current_constraint_node = None
+
+
 
     def reset_graph(self, function_name):
         self.graph = nx.DiGraph(name=function_name)

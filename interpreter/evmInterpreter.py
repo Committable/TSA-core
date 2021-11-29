@@ -110,6 +110,8 @@ class EVMInterpreter:
             # self.graph = self.graphs[function_name]
             self.graph.reset_graph(function_name)
             self.current_function = function_name
+            if self.runtime.source_map is not None:
+                XGraph.current_lines = self.runtime.source_map.get_lines_from_pc(block)
 
         visited = params.visited
         global_state = params.global_state
@@ -128,6 +130,7 @@ class EVMInterpreter:
                 self.graphs[function_name] = self.graph.get_graph()
                 self.graph.reset_graph("")
                 self.current_function = ""
+                XGraph.current_lines = []
 
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
@@ -168,6 +171,7 @@ class EVMInterpreter:
                 self.graphs[function_name] = self.graph.get_graph()
                 self.graph.reset_graph("")
                 self.current_function = ""
+                XGraph.current_lines = []
 
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
@@ -189,6 +193,7 @@ class EVMInterpreter:
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
             self.current_function = ""
+            XGraph.current_lines = []
             return
 
         block_ins = self.runtime.vertices[block].get_instructions()
@@ -221,6 +226,7 @@ class EVMInterpreter:
                 self.graphs[function_name] = self.graph.get_graph()
                 self.graph.reset_graph("")
                 self.current_function = ""
+                XGraph.current_lines = []
 
             self.paths.append(copy.deepcopy(self.current_path))
             self.current_path.pop()
@@ -244,6 +250,7 @@ class EVMInterpreter:
                 self.graphs[function_name] = self.graph.get_graph()
                 self.graph.reset_graph("")
                 self.current_function = ""
+                XGraph.current_lines = []
 
             return
 
@@ -330,6 +337,7 @@ class EVMInterpreter:
             self.graphs[function_name] = self.graph.get_graph()
             self.graph.reset_graph("")
             self.current_function = ""
+            XGraph.current_lines = []
 
         self.current_path.pop()
         return
