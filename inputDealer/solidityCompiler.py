@@ -33,37 +33,42 @@ class AllowedVersion: # left [<=|<] allow_version [<=|<]
         self.left = left
         self.left_equal = equal
 
-    def _is_bigger(self, version1, version2):
-        parts1 = version1.split(".")
-        parts2 = version2.split(".")
-        length = len(parts1) if len(parts1) <= len(parts2) else len(parts2)
-        for x in range(0, length):
-            if int(parts1[x]) > int(parts2[x]):
-                return True
-            elif int(parts1[x]) < int(parts2[x]):
-                return False
-        return len(parts1) > len(parts2)
+    @staticmethod
+    def _is_bigger(version1, version2):
+        try:
+            parts1 = version1.split(".")
+            parts2 = version2.split(".")
+            length = len(parts1) if len(parts1) <= len(parts2) else len(parts2)
+            for x in range(0, length):
+                if int(parts1[x]) > int(parts2[x]):
+                    return True
+                elif int(parts1[x]) < int(parts2[x]):
+                    return False
+            return len(parts1) > len(parts2)
+        except:
+            return False
 
-    def _is_smaller(self, version1, version2):
-        parts1 = version1.split(".")
-        parts2 = version2.split(".")
-        length = len(parts1) if len(parts1) <= len(parts2) else len(parts2)
-        for x in range(0, length):
-            if int(parts1[x]) < int(parts2[x]):
-                return True
-            elif int(parts1[x]) > int(parts2[x]):
-                return False
-        return len(parts1) > len(parts2)
+    @staticmethod
+    def _is_smaller(version1, version2):
+        try:
+            parts1 = version1.split(".")
+            parts2 = version2.split(".")
+            length = len(parts1) if len(parts1) <= len(parts2) else len(parts2)
+            for x in range(0, length):
+                if int(parts1[x]) < int(parts2[x]):
+                    return True
+                elif int(parts1[x]) > int(parts2[x]):
+                    return False
+            return len(parts1) > len(parts2)
+        except:
+            return False
 
     def is_allow(self, version):
         if self.unique:
             return version == self.unique
-        if version == self.right and self.right_equal:
-            return True
-        elif version == self.left and self.left_equal:
-            return True
-        elif self._is_bigger(version, self.left) and self._is_smaller(version, self.right):
-            return True
+        elif self.left == "" or self._is_bigger(version, self.left):
+            if self.right == "" or self._is_smaller(version, self.right):
+                return True
         else:
             return False
 
@@ -80,16 +85,23 @@ class AllowedVersion: # left [<=|<] allow_version [<=|<]
 
     def merge(self, other_version):
         if other_version.unique and self.unique:
-            if self._is_bigger(other_version.unique, self.unique):
+            if other_version.unique == self.unique:
+                return self
+            else:
+                return None
+        elif other_version.unique and not self.unique:
+            if self.is_allow(other_version.unique):
                 return other_version
             else:
-                return self
-        elif other_version.unique and not self.unique:
-            return self
+                return None
         elif not other_version.unique and self.unique:
-            return self
+            if other_version.is_allow(self.unique):
+                return self
+            else:
+                return None
         else:
             version = AllowedVersion()
+
             if other_version.right and self.right:
                 if other_version.right == self.right:
                     version.set_right(other_version.right, other_version.right_equal and self.right_equal)
@@ -116,11 +128,27 @@ class AllowedVersion: # left [<=|<] allow_version [<=|<]
 
             if version.right and version.left:
                 if version._is_bigger(version.left, version.right):
-                    return AllowedVersion()
+                    return None
                 elif version.right == version.left and not (version.right_equal and version.left_equal):
-                    return AllowedVersion()
+                    return None
 
             return version
+
+    def __str__(self):
+        if self.unique:
+            return "version==" + self.unique
+        expr = "version"
+        if self.left:
+            if self.left_equal:
+                expr = self.left + "<=" + expr
+            else:
+                expr = self.left + "<=" + expr
+        if self.right:
+            if self.right_equal:
+                expr = expr + "<=" + self.right
+            else:
+                expr = expr + "<" + self.right
+        return expr
 
 
 class SolidityCompiler:
@@ -189,7 +217,7 @@ class SolidityCompiler:
 
     def _compile_with_solcx(self):
         allowed_version = self._get_solc_version(os.path.join(self.source, self.joker))
-        if not allowed_version:
+        if allowed_version is None:
             allowed_version = AllowedVersion()
             allowed_version.set_unique("0.8.0")
         if allowed_version:
@@ -569,10 +597,14 @@ class SolidityCompiler:
                         wrong_times += 1
                         if wrong_times >= 3:
                             break
+            logger.info(lines[i])
+            logger.info(version)
         current_dir = os.path.dirname(file)
         for x in import_files:
             other_version = self._get_solc_version(os.path.abspath(os.path.join(current_dir, x)))
             if version and other_version:
-                version.merge(other_version)
+                version = version.merge(other_version)
+                if version is None:
+                    return None
 
         return version

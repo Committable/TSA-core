@@ -156,13 +156,15 @@ class Reporter:
         edgelist = []
         node_map = {}
 
-        graph_jsons = {}
+        graph_json = {}
+
         for key in graphs:
             graph = graphs[key]
+            graph_key = contract_name + ":" + key
+            graph_json[graph_key] = {}
+            graph_json[graph_key]["nodes"] = []
+            graph_json[graph_key]["edges"] = []
 
-            graph_json = {}
-            graph_json["nodes"] = []
-            graph_json["edges"] = []
             i = 0
 
             pos = nx.drawing.nx_agraph.graphviz_layout(graph, prog='dot', args='-Grankdir=LR')
@@ -171,7 +173,7 @@ class Reporter:
                 graph.nodes[n]["color"] = "black"
                 graph.nodes[n]["label"] = str(n)
                 node_map[str(n)] = str(i)
-                graph_json["nodes"].append({"id": str(n),
+                graph_json[graph_key]["nodes"].append({"id": str(n),
                                             "name": str(n).split("_")[0],
                                             "pos": str(pos[n]),
                                             "lines": []})
@@ -181,21 +183,23 @@ class Reporter:
                 x = edge[1]
 
                 if graph.edges[(e, x)]["label"] == "control_flow" and graph.edges[(e, x)]["boolFlag"]:
-                    graph.edges[(e, x)]["color"] = 'green'
-                elif graph.edges[(e, x)]["label"] == "control_flow" and not graph.edges[(e, x)]["boolFlag"]:
-                    graph.edges[(e, x)]["color"] = 'blue'
-                elif graph.edges[(e, x)]["label"] == "value_flow":
                     graph.edges[(e, x)]["color"] = 'black'
+                    graph.edges[(e, x)]["style"] = 'dashed'
+                elif graph.edges[(e, x)]["label"] == "control_flow" and not graph.edges[(e, x)]["boolFlag"]:
+                    graph.edges[(e, x)]["color"] = 'black'
+                    graph.edges[(e, x)]["style"] = 'dashed'
+                elif graph.edges[(e, x)]["label"] == "value_flow":
+                    graph.edges[(e, x)]["color"] = 'green'
+                    graph.edges[(e, x)]["style"] = 'dotted'
                 elif graph.edges[(e, x)]["label"] == "constraint_flow":
                     graph.edges[(e, x)]["color"] = 'red'
+                    graph.edges[(e, x)]["style"] = 'dotted'
 
                 edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
-                graph_json["edges"].append(
+                graph_json[graph_key]["edges"].append(
                     {"source": str(e), "target": str(x), "type": graph.edges[(e, x)]["label"]})
 
-            graph_jsons[key] = graph_json
-
-        self.ssgs[contract_name] = graph_jsons
+        self.ssgs = graph_json
         self.ssg_graphs[contract_name] = graphs
         self.ssg_edge_lists[contract_name] = edgelist
 
@@ -246,7 +250,7 @@ class Reporter:
         g1.graph_attr['splines'] = 'polyline'
         g1.graph_attr['ratio'] = 'fill'
         g1.layout(prog="dot")
-        g1.draw(path=global_params.DEST_PATH + os.sep + "cfg.pdf", format='pdf')
+        g1.draw(path=global_params.DEST_PATH + os.sep + "cfg.png", format='png')
         return
 
     def dump_cfg_edge_list(self):
@@ -287,30 +291,32 @@ class Reporter:
         return
 
     def print_ssg_graph_new(self):
+        g = nx.DiGraph()
         for contract in self.ssg_graphs:
             for func in self.ssg_graphs[contract]:
-                g = nx.DiGraph()
-
                 for n in list(self.ssg_graphs[contract][func].nodes):
                     node = self.ssg_graphs[contract][func].nodes[n]
-                    g.add_node(n, label=node["label"], color=node['color'])
+                    if not g.has_node(node):
+                        g.add_node(n, label=node["label"], color=node['color'])
 
                 for edge in list(self.ssg_graphs[contract][func].edges):
                     s = edge[0]
                     t = edge[1]
-                    g.add_edge(s, t,
-                               # label=self.ssg_graphs[contract][func].edges[(s, t)]['label'],
-                               label="",
-                               color=self.ssg_graphs[contract][func].edges[(s, t)]['color']
-                               )
+                    if not g.has_edge(s, t):
+                        g.add_edge(s, t,
+                                   # label=self.ssg_graphs[contract][func].edges[(s, t)]['label'],
+                                   label="",
+                                   style=self.ssg_graphs[contract][func].edges[(s, t)]['style'],
+                                   color=self.ssg_graphs[contract][func].edges[(s, t)]['color'],
+                                   )
 
-                g1 = nx.nx_agraph.to_agraph(g)
-                g1.graph_attr["rankdir"] = 'LR'
-                g1.graph_attr['overlap'] = 'scale'
-                g1.graph_attr['splines'] = 'polyline'
-                g1.graph_attr['ratio'] = 'fill'
-                g1.layout(prog="dot")
-                g1.draw(path=global_params.DEST_PATH + os.sep + str(contract) + ":" + str(func) + "ssg.png", format='png')
+            g1 = nx.nx_agraph.to_agraph(g)
+            g1.graph_attr["rankdir"] = 'LR'
+            g1.graph_attr['overlap'] = 'scale'
+            g1.graph_attr['splines'] = 'polyline'
+            g1.graph_attr['ratio'] = 'fill'
+            g1.layout(prog="dot")
+            g1.draw(path=global_params.DEST_PATH + os.sep + "ssg.png", format='png')
         return
 
     def dump_ssg_edge_list(self):
@@ -481,18 +487,36 @@ class Reporter:
         for sink in sink_nodes:
             for source in source_nodes:
                 for path in nx.all_simple_paths(cfg, source=source, target=sink):
+                    tmp_path = []
                     flag = True
-                    for i in range(1, len(path)):
-                        edge = (int(path[i - 1].split(contract_name+":")[1]), int(path[i].split(contract_name+":")[1]))
-                        if edge in interpreter.impossible_paths:
-                            flag = False
-                            break
+                    # for i in range(1, len(path)):
+                    #     edge = (int(path[i - 1].split(contract_name+":")[1]), int(path[i].split(contract_name+":")[1]))
+                    #     if edge in interpreter.impossible_paths:
+                    #         flag = False
+                    #         break
+                    for i in range(0, len(path)):
+                        tmp_path.append(int(path[i].split(contract_name+":")[1]))
+
                     if flag:
                         new_path = []
                         for x in path:
                             new_path.append(int(x.split(contract_name+":")[1]))
                         paths.append(new_path)
                         path_number += 1
+
+        n_s = []
+        logger.info("In network not in symbolic:")
+        for x in paths:
+            if x not in interpreter.paths:
+                n_s.append(x)
+                # print(x)
+
+        s_n = []
+        logger.info("In symbolic not in network:")
+        for x in interpreter.paths:
+            if x not in paths:
+                s_n.append(x)
+                # print(x)
 
         edge_number = cfg.number_of_edges()
 
@@ -503,14 +527,52 @@ class Reporter:
             if (s, t) not in interpreter.total_visited_edges:
                 not_visited_edges.append((s, t))
 
-        logger.info("Coverage Info:")
-        logger.info("   Visited path: %s", str(interpreter.total_no_of_paths))
-        logger.info("   Total path: %d", path_number)
-        logger.info("   Visited edge: %d", len(interpreter.total_visited_edges))
-        logger.info("   Total edge: %d", edge_number)
-        logger.info("   Visited pc: %d", len(interpreter.total_visited_pc))
-        logger.info("   Total pc: %d", len(env.instructions))
+        logger.info("Coverage Info: In networkx not symbolic:" + str(len(n_s)))
+        logger.info("Coverage Info: In symbolic not networkx:" + str(len(s_n)))
+        logger.info("Coverage Info: Visited path: %s", str(interpreter.total_no_of_paths))
+        logger.info("Coverage Info: Total path: %d", path_number)
+        logger.info("Coverage Info: Visited edge: %d", len(interpreter.total_visited_edges))
+        logger.info("Coverage Info: Total edge: %d", edge_number)
+        logger.info("Coverage Info: Visited pc: %d", len(interpreter.total_visited_pc))
+        logger.info("Coverage Info: Total pc: %d", len(env.instructions))
 
         # logger.info("Not visited edges:")
         # for edge in not_visited_edges:
         #     logger.info("   %s", str(edge))
+
+        # g = nx.DiGraph()
+        # for x in self.cfg_graphs:
+        #     for n in list(self.cfg_graphs[x].nodes):
+        #         node = self.cfg_graphs[x].nodes[n]
+        #         # pos = node["src"].split(":")
+        #         # begin = int(pos[0])
+        #         # end = begin + int(pos[1])
+        #         g.add_node(n, label=node["label"], color=node['color'])
+        #     for edge in list(self.cfg_graphs[x].edges):
+        #         s = edge[0]
+        #         t = edge[1]
+        #         s_n = int(edge[0].split(contract_name+":")[1])
+        #         s_t = int(edge[1].split(contract_name + ":")[1])
+        #         label = ""
+        #         if (s_n, s_t) in interpreter.impossible_paths:
+        #             label = "impossible"
+        #         if (s_n, s_t) in not_visited_edges:
+        #             g.add_edge(s, t,
+        #                        label=label + "| not visited",
+        #                        color="black"
+        #                        )
+        #         else:
+        #             g.add_edge(s, t,
+        #                        label=label,
+        #                        color="green"
+        #                        )
+
+
+        # g1 = nx.nx_agraph.to_agraph(g)
+        # g1.graph_attr["rankdir"] = 'TB'
+        # g1.graph_attr['overlap'] = 'scale'
+        # g1.graph_attr['splines'] = 'polyline'
+        # g1.graph_attr['ratio'] = 'fill'
+        # g1.layout(prog="dot")
+        # g1.draw(path=global_params.DEST_PATH + os.sep + contract_name + "_cfg.pdf", format='pdf')
+        return

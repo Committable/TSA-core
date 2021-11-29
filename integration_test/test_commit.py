@@ -82,8 +82,8 @@ def write_excel_xls_append(path, value):
 last_analyse_commit = ""
 last_commit = ""
 
-for j in range(0, sh1.nrows):
-    i = random.randint(0, sh1.nrows-1)
+for j in range(139, sh1.nrows):
+    i = j
     if tried >= 100:
         write_excel_xls(result_path + "_tc_result_" + str(total) + ".xlsx", "sheet1", result)
         write_excel_xls_append(result_path + "_tc_result_" + str(total) + ".xlsx", [[tried, success, failed]])
@@ -91,7 +91,6 @@ for j in range(0, sh1.nrows):
         failed = 0
         tried = 0
         result = [["commit", "file", "status", "reason"]]
-        break
     tried += 1
     status = "success"
     reason = ""
@@ -122,50 +121,52 @@ for j in range(0, sh1.nrows):
             reason = "Checkout fail::" + str(err)
             logger.error("git reset error: %s", str(err))
 
-    if status != "fail":
-        try:
-            logger.info("git logging ...")
-            log_cmd = subprocess.Popen(["git", "log"], cwd=local_repository_path, stdout=subprocess.PIPE)
-            stdout, stderr = log_cmd.communicate()
-            if log_cmd.returncode != 0:
-                status = "fail"
-                reason = "diff fail::" + str(stderr)
-                logger.error("git log error: %s", str(stderr))
-            lines = str(stdout, 'utf-8').split('\n')
-            first = True
-            for line in lines:
-                tmp = re.match(r'commit (\S{40})(.*)', line)
-                if tmp:
-                    if not first:
-                        last_commit = tmp.group(1)
-                        break
-                    else:
-                        first = False
-
-            diff_cmd = subprocess.Popen(["git", "diff", last_commit, commit_id, file], cwd=local_repository_path,
-                                        stdout=subprocess.PIPE)
-            stdout, stderr = diff_cmd.communicate()
-            if diff_cmd.returncode != 0:
-                status = "fail"
-                reason = "diff fail::" + str(stderr)
-            if not os.path.exists(result_path + os.sep + "diff"):
-                os.makedirs(result_path + os.sep + "diff")
-
-            lines = str(stdout, 'utf-8').split("\n")
-            start_line = 0
-            for i in range(0, len(lines)):
-                m = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", lines[i])
-                if m:
-                    start_line = i
-                    break
-
-            with open(result_path + os.sep + "diff" + os.sep + file.split("/")[-1], 'w') as outputfile:
-                outputfile.write("\n".join(lines[i:]))
-
-        except Exception as err:
-            status = "fail"
-            reason = "diff fail::" + str(err)
-            logger.error("git log error: %s", str(err))
+    # if status != "fail":
+    #     try:
+    #         logger.info("git logging ...")
+    #         log_cmd = subprocess.Popen(["git", "log"], cwd=local_repository_path, stdout=subprocess.PIPE)
+    #         stdout, stderr = log_cmd.communicate()
+    #         if log_cmd.returncode != 0:
+    #             # status = "fail"
+    #             # reason = "diff fail::" + str(stderr)
+    #             # logger.error("git log error: %s", str(stderr))
+    #             raise Exception
+    #         lines = str(stdout, 'utf-8').split('\n')
+    #         first = True
+    #         for line in lines:
+    #             tmp = re.match(r'commit (\S{40})(.*)', line)
+    #             if tmp:
+    #                 if not first:
+    #                     last_commit = tmp.group(1)
+    #                     break
+    #                 else:
+    #                     first = False
+    #
+    #         diff_cmd = subprocess.Popen(["git", "diff", last_commit, commit_id, file], cwd=local_repository_path,
+    #                                     stdout=subprocess.PIPE)
+    #         stdout, stderr = diff_cmd.communicate()
+    #         if diff_cmd.returncode != 0:
+    #             # status = "fail"
+    #             # reason = "diff fail::" + str(stderr)
+    #             raise Exception
+    #         if not os.path.exists(result_path + os.sep + "diff"):
+    #             os.makedirs(result_path + os.sep + "diff")
+    #
+    #         lines = str(stdout, 'utf-8').split("\n")
+    #         start_line = 0
+    #         for i in range(0, len(lines)):
+    #             m = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", lines[i])
+    #             if m:
+    #                 start_line = i
+    #                 break
+    #
+    #         with open(result_path + os.sep + "diff" + os.sep + file.split("/")[-1], 'w') as outputfile:
+    #             outputfile.write("\n".join(lines[i:]))
+    #
+    #     except Exception as err:
+    #         # status = "fail"
+    #         # reason = "diff fail::" + str(err)
+    #         logger.error("git log error: %s", str(err))
 
     logger.info("detecting build type...")
     build_type = "unknown"
@@ -188,24 +189,24 @@ for j in range(0, sh1.nrows):
     except Exception as err:
         logging.error("detect build type fail %s", str(err))
 
-    if status != "fail" and last_analyse_commit != commit_id:
-        logger.info("yarn installing...")
-        install_cmd = subprocess.Popen("yarn",
-                                       shell=True, cwd=local_repository_path,
-                                       stderr=subprocess.PIPE,
-                                       stdout=subprocess.PIPE)
-        try:
-            stdout, stderr = install_cmd.communicate(timeout=300)
-
-            if install_cmd.returncode != 0:
-                logger.error("out: %s", str(stderr))
-        except subprocess.TimeoutExpired:
-            install_cmd.kill()
-            install_cmd.terminate()
-            os.killpg(install_cmd.pid, signal.SIGTERM)
-            logger.error("yarn timeout")
-        except Exception as err:
-            logger.error(str(err))
+    # if status != "fail" and last_analyse_commit != commit_id:
+    #     logger.info("yarn installing...")
+    #     install_cmd = subprocess.Popen("yarn",
+    #                                    shell=True, cwd=local_repository_path,
+    #                                    stderr=subprocess.PIPE,
+    #                                    stdout=subprocess.PIPE)
+    #     try:
+    #         stdout, stderr = install_cmd.communicate(timeout=300)
+    #
+    #         if install_cmd.returncode != 0:
+    #             logger.error("out: %s", str(stderr))
+    #     except subprocess.TimeoutExpired:
+    #         install_cmd.kill()
+    #         install_cmd.terminate()
+    #         os.killpg(install_cmd.pid, signal.SIGTERM)
+    #         logger.error("yarn timeout")
+    #     except Exception as err:
+    #         logger.error(str(err))
 
     if status != "fail":
         try:
@@ -223,9 +224,9 @@ for j in range(0, sh1.nrows):
                                            "-p",
                                            "ethereum",
                                            "-o",
-                                           output_path,
-                                           "-diff",
-                                           result_path + os.sep + "diff" + os.sep + file.split("/")[-1]
+                                           output_path
+                                           # "-diff",
+                                           # result_path + os.sep + "diff" + os.sep + file.split("/")[-1]
                                            ],
                                           stderr=subprocess.PIPE,
                                           stdout=subprocess.PIPE)
@@ -245,6 +246,7 @@ for j in range(0, sh1.nrows):
         failed += 1
     else:
         success += 1
+    reason = ""
     result.append([commit_id, file, status, reason, build_type])
     last_analyse_commit = commit_id
     logger.info("end test commit: %s, file: %s, status: %s, total: %s", commit_id, file, status, str(total))

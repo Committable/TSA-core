@@ -31,6 +31,8 @@ def analyze_solidity_code():
         report.dump_ssg_edge_list()
         report.print_ssg_graph()
 
+        report.dump_meta_commit()
+
         return 101
 
     # 1. prepare input
@@ -84,6 +86,9 @@ def analyze_solidity_code():
         interpreter = EVMInterpreter(env, inp["contract"])
         try:
             return_code = interpreter.sym_exec()
+            if len(interpreter.graphs) == 0:
+                interpreter.graphs["all"] = interpreter.graph.get_graph()
+            pass
         except Exception as err:
             logger.error("fail to symbolic execute for %s, err: %s", inp["contract"], str(err))
             traceback.print_exc()
@@ -93,10 +98,8 @@ def analyze_solidity_code():
         # add ssg
         ssg_graph = interpreter.graphs
         report.add_ssg_new(inp["contract"], ssg_graph)
-
-        report.print_coverage_info(inp["contract"], env, interpreter)
+        # report.print_coverage_info(inp["contract"], env, interpreter)
         logger.info("End analysing contract %s", inp["contract"])
-
 
     report.dump_cfg()
     report.print_cfg_graph()

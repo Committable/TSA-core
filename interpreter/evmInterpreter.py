@@ -156,7 +156,8 @@ class EVMInterpreter:
 
         # TODO: how to implement better loop dectection? This may cost too much time
         # or self.total_visited_edges[current_edge] > 5:
-        if (visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional"):
+        # if self.current_path.count(block) > 2:
+        if visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional" or self.total_visited_edges[current_edge] > 5:
             self.total_no_of_paths["normal"] += 1
             self.gen.gen_path_id()
             log.debug("Overcome a number of loop limit. Terminating this path ...")
@@ -802,6 +803,19 @@ class EVMInterpreter:
                 no_bytes = stack.pop(0)
                 # TODO: implement this instruction
                 log.error("unhandled instruction EXTCODECOPY")
+            else:
+                raise ValueError('STACK underflow')
+        elif opcode == "EXTCODEHASH":
+            if len(stack) > 0:
+                global_state["pc"] = global_state["pc"] + 1
+                address = stack.pop(0)
+
+                new_var_name = self.gen.gen_code_size_var(address)
+                new_var = BitVec(new_var_name, 256)
+                node = ExtcodeHashNode(new_var_name, new_var, address)
+                self.graph.cache_var_node(new_var, node)
+
+                stack.insert(0, new_var)
             else:
                 raise ValueError('STACK underflow')
         #

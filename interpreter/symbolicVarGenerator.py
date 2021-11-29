@@ -34,6 +34,10 @@ class Generator:
     def gen_code_size_var(address):
         return "codeSize_" + str(address)
 
+    @staticmethod
+    def gen_code_size_var(address):
+        return "codeHash_" + str(address)
+
     def gen_return_data(self, pc, start, end, path_id):
         return "return_" + str(pc) + "_" + str(start) + "_" + str(end) + "_" + str(path_id)
 

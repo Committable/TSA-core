@@ -334,6 +334,18 @@ class ExtcodeSizeNode(VariableNode):
         return ("ExtcodeSizeNode_" + str(self.count)).replace("\n", "")
 
 
+class ExtcodeHashNode(VariableNode):
+    def __init__(self, name, value, address):
+        super().__init__(name, value)
+        self.address = address
+
+    def get_address(self):
+        return self.address
+
+    def __str__(self):
+        return ("ExtcodeHashNode_" + str(self.count)).replace("\n", "")
+
+
 class DepositValueNode(VariableNode):
     def __init__(self, name, value):
         super().__init__(name, value)
@@ -503,12 +515,12 @@ class XGraph:
             name = ""
         assert(is_expr(constraint))
 
-        self.constraint_count += 1
-
-        e_node = ConstraintNode(pc, name, constraint, flag)
-        e_node.set_parent(self.current_constraint_node)
-        self.graph.add_node(e_node)
-        self.mapping_constraint_node[str(constraint) + "_" + str(self.constraint_count)] = e_node
+        e_node = self.get_constraint_node(pc)
+        if e_node is None:
+            e_node = ConstraintNode(pc, name, constraint, flag)
+            e_node.set_parent(self.current_constraint_node)
+            self.graph.add_node(e_node)
+            self.mapping_constraint_node[pc] = e_node
         flow_edges = []
         # if not is_const(constraint):
         #     for var in get_vars(constraint):
@@ -526,6 +538,12 @@ class XGraph:
             self.add_branch_edge([(self.current_constraint_node, e_node)], "control_flow", bool_flag=flag)
         self.current_constraint_node = e_node
         return e_node
+
+    def get_constraint_node(self, pc):
+        if pc in self.mapping_constraint_node:
+            return self.mapping_constraint_node[pc]
+        else:
+            return None
 
     def out_constraint(self):
         self.current_constraint_node = self.current_constraint_node.get_parent()
@@ -565,7 +583,7 @@ class XGraph:
         for i in range(0, len(parameters)):
             node.add_arguments(self, parameters[i], i, path_id)
 
-        self.add_var_node(return_node)
+        self.add_var_node(return_node.get_value(), return_node)
         self.add_branch_edge([(node, return_node)], "value_flow", path_id)
 
         return node
@@ -622,7 +640,7 @@ class XGraph:
 
     def cache_var_node(self, var, node):
         if var in self.mapping_var_node:
-            return self.mapping_var_node
+            return self.mapping_var_node[var]
         self.mapping_var_node[var] = node
         return node
 
