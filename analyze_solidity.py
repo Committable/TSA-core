@@ -21,15 +21,15 @@ def analyze_solidity_code():
         report.set_ast({"nodes": [], "edges": []})
         report.dump_ast()
         report.dump_ast_edge_list()
-        report.print_ast_graph()
+        # report.print_ast_graph()
 
         report.dump_cfg()
         report.dump_cfg_edge_list()
-        report.print_cfg_graph()
+        # report.print_cfg_graph()
 
         report.dump_ssg()
         report.dump_ssg_edge_list()
-        report.print_ssg_graph()
+        # report.print_ssg_graph()
 
         report.dump_meta_commit()
 
@@ -65,7 +65,7 @@ def analyze_solidity_code():
     report.set_ast(ast_json)
 
     report.dump_ast()
-    report.print_ast_graph()
+    # report.print_ast_graph()
     report.dump_ast_edge_list()
 
     #  There may be over one contracts in the solidity file and one contract correspones to one graph each
@@ -102,11 +102,11 @@ def analyze_solidity_code():
         logger.info("End analysing contract %s", inp["contract"])
 
     report.dump_cfg()
-    report.print_cfg_graph()
+    # report.print_cfg_graph()
     report.dump_cfg_edge_list()
 
     report.dump_ssg()
-    report.print_ssg_graph_new()
+    # report.print_ssg_graph_new()
     report.dump_ssg_edge_list()
 
     report.get_structure_bin()
