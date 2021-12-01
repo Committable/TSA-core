@@ -40,6 +40,9 @@ class Reporter:
         self.data_flow = 0
         self.control_flow = 0
 
+        self.coverage = {}
+        self.information = {}
+
     def set_ast(self, ast):
         ast["source"] = self.source
         self.ast = ast
@@ -489,11 +492,6 @@ class Reporter:
                 for path in nx.all_simple_paths(cfg, source=source, target=sink):
                     tmp_path = []
                     flag = True
-                    # for i in range(1, len(path)):
-                    #     edge = (int(path[i - 1].split(contract_name+":")[1]), int(path[i].split(contract_name+":")[1]))
-                    #     if edge in interpreter.impossible_paths:
-                    #         flag = False
-                    #         break
                     for i in range(0, len(path)):
                         tmp_path.append(int(path[i].split(contract_name+":")[1]))
 
@@ -536,43 +534,55 @@ class Reporter:
         logger.info("Coverage Info: Visited pc: %d", len(interpreter.total_visited_pc))
         logger.info("Coverage Info: Total pc: %d", len(env.instructions))
 
+        self.coverage[contract_name] = {"visited_paths": interpreter.total_no_of_paths,
+                                        "total_paths": path_number,
+                                        "visited_edges": len(interpreter.total_visited_edges),
+                                        "total_edges": edge_number,
+                                        "visited_pcs": len(interpreter.total_visited_pc),
+                                        "total_pcs": len(env.instructions)
+                                        }
+
+        self.information["impossible_edges"] = interpreter.impossible_paths
+        self.information["not_visited_edges"] = not_visited_edges
+
         # logger.info("Not visited edges:")
         # for edge in not_visited_edges:
         #     logger.info("   %s", str(edge))
 
-        # g = nx.DiGraph()
-        # for x in self.cfg_graphs:
-        #     for n in list(self.cfg_graphs[x].nodes):
-        #         node = self.cfg_graphs[x].nodes[n]
-        #         # pos = node["src"].split(":")
-        #         # begin = int(pos[0])
-        #         # end = begin + int(pos[1])
-        #         g.add_node(n, label=node["label"], color=node['color'])
-        #     for edge in list(self.cfg_graphs[x].edges):
-        #         s = edge[0]
-        #         t = edge[1]
-        #         s_n = int(edge[0].split(contract_name+":")[1])
-        #         s_t = int(edge[1].split(contract_name + ":")[1])
-        #         label = ""
-        #         if (s_n, s_t) in interpreter.impossible_paths:
-        #             label = "impossible"
-        #         if (s_n, s_t) in not_visited_edges:
-        #             g.add_edge(s, t,
-        #                        label=label + "| not visited",
-        #                        color="black"
-        #                        )
-        #         else:
-        #             g.add_edge(s, t,
-        #                        label=label,
-        #                        color="green"
-        #                        )
+        if global_params.PRINT_GRAPH:
+            g = nx.DiGraph()
+            for x in self.cfg_graphs:
+                for n in list(self.cfg_graphs[x].nodes):
+                    node = self.cfg_graphs[x].nodes[n]
+                    # pos = node["src"].split(":")
+                    # begin = int(pos[0])
+                    # end = begin + int(pos[1])
+                    g.add_node(n, label=node["label"], color=node['color'])
+                for edge in list(self.cfg_graphs[x].edges):
+                    s = edge[0]
+                    t = edge[1]
+                    s_n = int(edge[0].split(contract_name+":")[1])
+                    s_t = int(edge[1].split(contract_name + ":")[1])
+                    label = ""
+                    if (s_n, s_t) in interpreter.impossible_paths:
+                        label = "impossible"
+                    if (s_n, s_t) in not_visited_edges:
+                        g.add_edge(s, t,
+                                   label=label + "| not visited",
+                                   color="black"
+                                   )
+                    else:
+                        g.add_edge(s, t,
+                                   label=label,
+                                   color="green"
+                                   )
 
 
-        # g1 = nx.nx_agraph.to_agraph(g)
-        # g1.graph_attr["rankdir"] = 'TB'
-        # g1.graph_attr['overlap'] = 'scale'
-        # g1.graph_attr['splines'] = 'polyline'
-        # g1.graph_attr['ratio'] = 'fill'
-        # g1.layout(prog="dot")
-        # g1.draw(path=global_params.DEST_PATH + os.sep + contract_name + "_cfg.pdf", format='pdf')
+            g1 = nx.nx_agraph.to_agraph(g)
+            g1.graph_attr["rankdir"] = 'TB'
+            g1.graph_attr['overlap'] = 'scale'
+            g1.graph_attr['splines'] = 'polyline'
+            g1.graph_attr['ratio'] = 'fill'
+            g1.layout(prog="dot")
+            g1.draw(path=global_params.DEST_PATH + os.sep + contract_name + "_cfg.pdf", format='pdf')
         return

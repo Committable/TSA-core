@@ -44,7 +44,6 @@ class EvmDisassembler:
             disasm_out = disasm_p.communicate()[0].decode('utf-8', 'strict')
         except:
             logger.critical("Disassembly failed.")
-            exit(1)
 
         with open(disasm_file, 'w') as of:
             of.write(disasm_out)

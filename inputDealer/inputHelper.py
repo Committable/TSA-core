@@ -51,16 +51,15 @@ class InputHelper:
         inputs = []
 
         if self.input_type == global_params.SOLIDITY:
+            if not os.path.exists(self.source) or not os.path.exists(os.path.join(self.source, self.joker)):
+                return inputs
+
             compiler = SolidityCompiler(self.source, self.joker,
                                         self.root_path, self.allow_paths, self.remap,
                                         self.compilation_err)
 
-            try:
-                compiler.get_compiled_contracts_as_json()
-            except Exception as err:
-                compiler.rm_compiled_files()
-                raise Exception("Complied Fail: %s", str(err))
-            compiler.rm_compiled_files()
+            compiler.get_compiled_contracts_as_json()
+
             # self.joker may not in build result if not code in solidity file
             if self.joker not in compiler.combined_json["contracts"]:
                 if self.joker in compiler.combined_json["sources"]:

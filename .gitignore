@@ -9,3 +9,7 @@ __pycache__
 *build*
 *.evm
 *.disasm
+*cache*
+*output*
+*artifacts*
+*node_modules*

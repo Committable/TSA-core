@@ -70,9 +70,16 @@ def main():
 
     parser.add_argument("-o", "--output", help="file path for results", type=str)
 
+    parser.add_argument("-ne", "--non-exit", help="not exit", action="store_true")
+
+    parser.add_argument("-pg", "--print-graph", help="print graphs", action="store_true")
+
     parser.add_argument("-db", "--debug", help="display debug information", action="store_true")
 
     args = parser.parse_args()
+
+    if args.print_graph:
+        global_params.PRINT_GRAPH = True
 
     if args.platform:
         global_params.PLATFORM = args.platform
@@ -148,7 +155,8 @@ def main():
     elif args.solidity:
         exit_code = analyze_solidity_code()
 
-    exit(exit_code)
+    if not args.non_exit:
+        exit(exit_code)
 
 
 def cmd_exists(cmd):

@@ -7,33 +7,13 @@ from inputDealer.soliditySourceMap import SourceMap
 from inputDealer.inputHelper import InputHelper
 from reporter.print_graph import *
 from reporter.reporter import Reporter
+import global_params
 
 logger = logging.getLogger(__name__)
 
 
 def analyze_solidity_code():
     exit_code = 100
-    # 0. file not exist means file not created in this commit and it's a normal condition
-    source_dir = global_params.SRC_DIR
-    file_path = global_params.SRC_DIR + os.sep + global_params.SRC_FILE
-    if not os.path.exists(source_dir) or not os.path.exists(file_path):
-        report = Reporter("")
-        report.set_ast({"nodes": [], "edges": []})
-        report.dump_ast()
-        report.dump_ast_edge_list()
-        # report.print_ast_graph()
-
-        report.dump_cfg()
-        report.dump_cfg_edge_list()
-        # report.print_cfg_graph()
-
-        report.dump_ssg()
-        report.dump_ssg_edge_list()
-        # report.print_ssg_graph()
-
-        report.dump_meta_commit()
-
-        return 101
 
     # 1. prepare input
     helper = InputHelper(global_params.SOLIDITY,
@@ -44,13 +24,13 @@ def analyze_solidity_code():
         inputs = helper.get_solidity_inputs()
     except Exception as err:
         logger.exception(err)
-        #logger.error(str(err))
         return 103
 
     if global_params.SRC_FILE in SourceMap.sources:
         report = Reporter(SourceMap.sources[global_params.SRC_FILE].get_content())
     else:
         report = Reporter("")
+    global_params.REPORT = report
 
     if not global_params.IS_BEFORE:
         report.new_lines = len(global_params.DIFFS)
@@ -65,7 +45,6 @@ def analyze_solidity_code():
     report.set_ast(ast_json)
 
     report.dump_ast()
-    # report.print_ast_graph()
     report.dump_ast_edge_list()
 
     #  There may be over one contracts in the solidity file and one contract correspones to one graph each
@@ -98,19 +77,22 @@ def analyze_solidity_code():
         # add ssg
         ssg_graph = interpreter.graphs
         report.add_ssg_new(inp["contract"], ssg_graph)
-        # report.print_coverage_info(inp["contract"], env, interpreter)
+        report.print_coverage_info(inp["contract"], env, interpreter)
         logger.info("End analysing contract %s", inp["contract"])
 
     report.dump_cfg()
-    # report.print_cfg_graph()
     report.dump_cfg_edge_list()
 
     report.dump_ssg()
-    # report.print_ssg_graph_new()
     report.dump_ssg_edge_list()
 
     report.get_structure_bin()
     report.get_sementic_new()
     report.dump_meta_commit()
+
+    if global_params.PRINT_GRAPH:
+        report.print_ast_graph()
+        report.print_cfg_graph()
+        report.print_ssg_graph_new()
 
     return exit_code

@@ -15,6 +15,9 @@ PLATFORM = ""
 # show compilation
 COMPILATION_ERR = False
 
+# print visited cfg
+PRINT_GRAPH = False
+
 # DIR for temp files
 TMP_DIR = "./tmp"
 
@@ -36,3 +39,5 @@ WASM_BYTECODE = 1
 SOLIDITY = 2
 CPP = 3
 GO = 4
+
+REPORT = None
