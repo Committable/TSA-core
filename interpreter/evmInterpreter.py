@@ -102,6 +102,7 @@ class EVMInterpreter:
 
         self.current_path.append(block)
 
+
         function_name = self.in_function(block)
         if function_name is not None:
             log.info("in function %s", function_name)
@@ -109,6 +110,7 @@ class EVMInterpreter:
             # self.graphs[function_name] = copy.deepcopy(self.graph)
             # self.graph = self.graphs[function_name]
             self.graph.reset_graph(function_name)
+            self.graph.graph.add_node(self.graph.current_constraint_node)
             self.current_function = function_name
             if self.runtime.source_map is not None:
                 XGraph.current_lines = self.runtime.source_map.get_lines_from_pc(block)

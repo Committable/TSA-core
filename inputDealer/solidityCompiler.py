@@ -280,8 +280,8 @@ class SolidityCompiler:
 
     def _detect_built_in_compilation_type(self):
         try:
-            if os.path.exists(os.path.join(self.source,
-                                           "hardhat.config.js")):
+            if os.path.exists(os.path.join(self.source, "hardhat.config.js")) or \
+                    os.path.exists(os.path.join(self.source, "hardhat.config.ts")):
                 self.type = "hardhat"
             elif os.path.exists(os.path.join(self.source,
                                              ".waffle.json")):
@@ -372,6 +372,9 @@ class SolidityCompiler:
             if os.path.exists(os.path.join(self.source, "hardhat.config.js")):
                 os.rename(os.path.join(self.source, "hardhat.config.js"),
                           os.path.join(self.source, ".tmp.hardhat.config.js"))
+            if os.path.exists(os.path.join(self.source, "hardhat.config.ts")):
+                os.rename(os.path.join(self.source, "hardhat.config.ts"),
+                          os.path.join(self.source, ".tmp.hardhat.config.ts"))
         except:
             pass
 
@@ -407,6 +410,10 @@ class SolidityCompiler:
                 if os.path.exists(os.path.join(self.source, ".tmp.hardhat.config.js")):
                     os.rename(os.path.join(self.source, ".tmp.hardhat.config.js"),
                               os.path.join(self.source, "hardhat.config.js"))
+
+                if os.path.exists(os.path.join(self.source, ".tmp.hardhat.config.ts")):
+                    os.rename(os.path.join(self.source, ".tmp.hardhat.config.ts"),
+                              os.path.join(self.source, "hardhat.config.ts"))
             except:
                 pass
             raise Exception("npx waffle compile fail: timeout")
@@ -416,6 +423,9 @@ class SolidityCompiler:
             if os.path.exists(os.path.join(self.source, ".tmp.hardhat.config.js")):
                 os.rename(os.path.join(self.source, ".tmp.hardhat.config.js"),
                           os.path.join(self.source, "hardhat.config.js"))
+            if os.path.exists(os.path.join(self.source, ".tmp.hardhat.config.ts")):
+                os.rename(os.path.join(self.source, ".tmp.hardhat.config.ts"),
+                          os.path.join(self.source, "hardhat.config.ts"))
         except:
             pass
 

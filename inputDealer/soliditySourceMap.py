@@ -59,7 +59,6 @@ class SourceMap:
 
     def __init__(self, cname="", input_type="", parent_file="", sources=None):
         if input_type == global_params.SOLIDITY:
-
             if not SourceMap.ast_helper:
                 SourceMap.ast_helper = AstHelper(input_type, sources["sources"])
 

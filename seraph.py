@@ -35,7 +35,6 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    global args
     parser = argparse.ArgumentParser(prog="seraph")
     group0 = parser.add_mutually_exclusive_group(required=True)
     group0.add_argument("-evm", "--evm", help="read evm bytecode in source file.", action="store_true")

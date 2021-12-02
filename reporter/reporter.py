@@ -6,6 +6,7 @@ import logging
 import networkx as nx
 
 from inputDealer.solidityAstWalker import AstWalker
+from graphBuilder.XGraph import ConstraintNode
 
 logger = logging.getLogger(__name__)
 
@@ -173,6 +174,10 @@ class Reporter:
             pos = nx.drawing.nx_agraph.graphviz_layout(graph, prog='dot', args='-Grankdir=LR')
 
             for n in list(graph.nodes):
+                if type(n) == ConstraintNode:
+                    graph.nodes[n]["shape"] = "diamond"
+                else:
+                    graph.nodes[n]["shape"] = "ellipse"
                 graph.nodes[n]["color"] = "black"
                 graph.nodes[n]["label"] = str(n)
                 node_map[str(n)] = str(i)
@@ -186,16 +191,16 @@ class Reporter:
                 x = edge[1]
 
                 if graph.edges[(e, x)]["label"] == "control_flow" and graph.edges[(e, x)]["boolFlag"]:
-                    graph.edges[(e, x)]["color"] = 'black'
+                    graph.edges[(e, x)]["color"] = 'green'
                     graph.edges[(e, x)]["style"] = 'dashed'
                 elif graph.edges[(e, x)]["label"] == "control_flow" and not graph.edges[(e, x)]["boolFlag"]:
-                    graph.edges[(e, x)]["color"] = 'black'
+                    graph.edges[(e, x)]["color"] = 'red'
                     graph.edges[(e, x)]["style"] = 'dashed'
                 elif graph.edges[(e, x)]["label"] == "value_flow":
-                    graph.edges[(e, x)]["color"] = 'green'
-                    graph.edges[(e, x)]["style"] = 'dotted'
+                    graph.edges[(e, x)]["color"] = 'blue'
+                    graph.edges[(e, x)]["style"] = 'solid'
                 elif graph.edges[(e, x)]["label"] == "constraint_flow":
-                    graph.edges[(e, x)]["color"] = 'red'
+                    graph.edges[(e, x)]["color"] = 'black'
                     graph.edges[(e, x)]["style"] = 'dotted'
 
                 edgelist.append(node_map[str(e)] + " " + node_map[str(x)] + "\n")
@@ -294,13 +299,14 @@ class Reporter:
         return
 
     def print_ssg_graph_new(self):
-        g = nx.DiGraph()
         for contract in self.ssg_graphs:
             for func in self.ssg_graphs[contract]:
+                g = nx.DiGraph()
+
                 for n in list(self.ssg_graphs[contract][func].nodes):
                     node = self.ssg_graphs[contract][func].nodes[n]
                     if not g.has_node(node):
-                        g.add_node(n, label=node["label"], color=node['color'])
+                        g.add_node(n, label=node["label"], color=node['color'], shape=node["shape"])
 
                 for edge in list(self.ssg_graphs[contract][func].edges):
                     s = edge[0]
@@ -308,18 +314,18 @@ class Reporter:
                     if not g.has_edge(s, t):
                         g.add_edge(s, t,
                                    # label=self.ssg_graphs[contract][func].edges[(s, t)]['label'],
-                                   label="",
+                                   label=self.ssg_graphs[contract][func].edges[(s, t)]["info"],
                                    style=self.ssg_graphs[contract][func].edges[(s, t)]['style'],
                                    color=self.ssg_graphs[contract][func].edges[(s, t)]['color'],
                                    )
 
-            g1 = nx.nx_agraph.to_agraph(g)
-            g1.graph_attr["rankdir"] = 'LR'
-            g1.graph_attr['overlap'] = 'scale'
-            g1.graph_attr['splines'] = 'polyline'
-            g1.graph_attr['ratio'] = 'fill'
-            g1.layout(prog="dot")
-            g1.draw(path=global_params.DEST_PATH + os.sep + "ssg.png", format='png')
+                g1 = nx.nx_agraph.to_agraph(g)
+                g1.graph_attr["rankdir"] = 'LR'
+                g1.graph_attr['overlap'] = 'scale'
+                g1.graph_attr['splines'] = 'polyline'
+                g1.graph_attr['ratio'] = 'fill'
+                g1.layout(prog="dot")
+                g1.draw(path=global_params.DEST_PATH + os.sep + contract + "_" + func + "_ssg.png", format='png')
         return
 
     def dump_ssg_edge_list(self):

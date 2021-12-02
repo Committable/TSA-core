@@ -14,7 +14,7 @@ output_path = os.path.join(current_path, "output/ERC20")
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
-sys.argv = ["", "-s", source_dir, "-j", source_file, "-sol", "-p", "ethereum", "-o", output_path, "-ne"]
+sys.argv = ["", "-s", source_dir, "-j", source_file, "-sol", "-p", "ethereum", "-o", output_path, "-ne", "-pg"]
 
 seraph.main()
 
