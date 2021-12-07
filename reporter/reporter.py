@@ -37,6 +37,7 @@ class Reporter:
 
         self.reputation_src = 0
         self.reputation_bin = 0
+        self.loops_bin = {}
 
         self.data_flow = 0
         self.control_flow = 0
@@ -408,7 +409,15 @@ class Reporter:
         cycles = []
         for x in self.cfg_graphs:
             cycles.extend(nx.simple_cycles(self.cfg_graphs[x]))
-        self.reputation_bin = len(cycles)
+        for cycle in cycles:
+            if cycle[0] in self.loops_bin:
+                if cycle[-1] not in self.loops_bin[cycle[0]]:
+                    self.reputation_bin += 1
+                    self.loops_bin[cycle[0]].add(cycle[-1])
+            else:
+                self.reputation_bin += 1
+                self.loops_bin[cycle[0]] = set()
+                self.loops_bin[cycle[0]].add(cycle[-1])
 
         for x in self.cfg_graphs:
             for edge in list(self.cfg_graphs[x].edges):
@@ -493,20 +502,21 @@ class Reporter:
         # source_nodes = [node for node, indegree in list(cfg.in_degree(cfg.nodes())) if indegree == 0]
         source_nodes = [contract_name+":0"]
         paths = []
-        for sink in sink_nodes:
-            for source in source_nodes:
-                for path in nx.all_simple_paths(cfg, source=source, target=sink):
-                    tmp_path = []
-                    flag = True
-                    for i in range(0, len(path)):
-                        tmp_path.append(int(path[i].split(contract_name+":")[1]))
-
-                    if flag:
-                        new_path = []
-                        for x in path:
-                            new_path.append(int(x.split(contract_name+":")[1]))
-                        paths.append(new_path)
-                        path_number += 1
+        # todo: source exausted
+        # for sink in sink_nodes:
+        #     for source in source_nodes:
+        #         for path in nx.all_simple_paths(cfg, source=source, target=sink):
+        #             tmp_path = []
+        #             flag = True
+        #             for i in range(0, len(path)):
+        #                 tmp_path.append(int(path[i].split(contract_name+":")[1]))
+        #
+        #             if flag:
+        #                 new_path = []
+        #                 for x in path:
+        #                     new_path.append(int(x.split(contract_name+":")[1]))
+        #                 paths.append(new_path)
+        #                 path_number += 1
 
         n_s = []
         logger.info("In network not in symbolic:")

@@ -120,7 +120,8 @@ class EVMInterpreter:
 
         assert str(self.graph.get_current_constraint_node().get_value()) == \
                str(params.path_conditions_and_vars["path_condition_node"][-1].get_value()), \
-            "wrong constraint node"
+            "wrong constraint node\n" + "first: " + str(self.graph.get_current_constraint_node().get_value()) + "\n" + \
+            str(params.path_conditions_and_vars["path_condition_node"][-1].get_value())
 
         if block < 0 or block not in self.runtime.vertices:
             self.total_no_of_paths["exception"] += 1
