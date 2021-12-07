@@ -222,25 +222,48 @@ class SolidityCompiler:
         # 2. compile
         solcx.install_solc(version)
         if allowed_version.is_bigger(version, "0.4.25"):
-            data_dict = solcx.compile_files([self.source + os.sep + self.joker],
-                                            output_values=["abi", "bin", "bin-runtime", "ast",
-                                                           "hashes", "opcodes", "srcmap-runtime"],
-                                            allow_empty=True,
-                                            allow_paths=self.source,
-                                            solc_version=version,
-                                            )
+            try:
+                data_dict = solcx.compile_files([self.source + os.sep + self.joker],
+                                                output_values=["abi", "bin", "bin-runtime", "ast",
+                                                               "hashes", "opcodes", "srcmap-runtime"],
+                                                allow_empty=True,
+                                                allow_paths=self.source,
+                                                solc_version=version,
+                                                base_path=self.source
+                                                )
+            except:
+                data_dict = solcx.compile_files([self.source + os.sep + self.joker],
+                                                output_values=["abi", "bin", "bin-runtime", "ast",
+                                                               "hashes", "opcodes", "srcmap-runtime"],
+                                                allow_empty=True,
+                                                allow_paths=self.source,
+                                                solc_version=version,
+                                                )
         else:
-            data_dict = solcx.compile_files([self.source + os.sep + self.joker],
-                                            output_values=["abi", "bin", "bin-runtime", "ast",
-                                                           "opcodes", "srcmap-runtime"],
-                                            allow_empty=True,
-                                            allow_paths=self.source,
-                                            solc_version=version,
-                                            )
+            try:
+                data_dict = solcx.compile_files([self.source + os.sep + self.joker],
+                                                output_values=["abi", "bin", "bin-runtime", "ast",
+                                                               "opcodes", "srcmap-runtime"],
+                                                allow_empty=True,
+                                                allow_paths=self.source,
+                                                solc_version=version,
+                                                base_path=self.source
+                                                )
+            except:
+                data_dict = solcx.compile_files([self.source + os.sep + self.joker],
+                                                output_values=["abi", "bin", "bin-runtime", "ast",
+                                                               "hashes", "opcodes", "srcmap-runtime"],
+                                                allow_empty=True,
+                                                allow_paths=self.source,
+                                                solc_version=version,
+                                                )
 
         # 3. convert json result format
         for key in data_dict:
-            file = key.split(":")[0].replace(global_params.SRC_DIR+os.sep, "")
+            if key[0] == os.sep:  # absolute path
+                file = key.split(":")[0].replace(global_params.SRC_DIR+os.sep, "")
+            else:
+                file = key.split(":")[0]
             cname = key.split(":")[-1]
 
             if file not in self.combined_json["contracts"]:

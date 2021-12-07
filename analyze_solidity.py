@@ -35,8 +35,9 @@ def analyze_solidity_code():
     if not global_params.IS_BEFORE:
         report.new_lines = len(global_params.DIFFS)
 
-    report.get_structure_src(SourceMap.ast_helper.get_ast(global_params.SRC_FILE),
-                             SourceMap.ast_helper.get_source(global_params.SRC_FILE))
+    if SourceMap.ast_helper is not None:
+        report.get_structure_src(SourceMap.ast_helper.get_ast(global_params.SRC_FILE),
+                                 SourceMap.ast_helper.get_source(global_params.SRC_FILE))
     # 2. get ast graph
     if SourceMap.ast_helper:
         ast_json = SourceMap.ast_helper.get_ast_report(global_params.SRC_FILE)

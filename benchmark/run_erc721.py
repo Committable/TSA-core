@@ -7,8 +7,8 @@ import global_params
 
 report = None
 current_path = os.getcwd()
-source_dir = current_path
-source_file = "openzeppelin-contracts/token/ERC721/ERC721.sol"
+source_dir = os.path.join(current_path, "openzeppelin-contracts")
+source_file = "contracts/token/ERC721/ERC721.sol"
 output_path = os.path.join(current_path, "output/ERC721")
 
 if not os.path.exists(output_path):
