@@ -88,6 +88,14 @@ class Generator:
         return "gasLimit"
 
     @staticmethod
+    def gen_chain_id():
+        return "chainId"
+
+    @staticmethod
+    def gen_base_fee():
+        return "baseFee"
+
+    @staticmethod
     def gen_number():
         return "blockNumber"
 

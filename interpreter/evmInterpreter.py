@@ -698,7 +698,7 @@ class EVMInterpreter:
         elif opcode == "ADDRESS":  # get address of currently executing account
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["receiverAddress"])
-        elif opcode == "BALANCE" or opcode == "SELFBALANCE":
+        elif opcode == "BALANCE":
             if len(stack) > 0:
                 global_state["pc"] = global_state["pc"] + 1
                 address = stack.pop(0)
@@ -861,6 +861,33 @@ class EVMInterpreter:
         elif opcode == "GASLIMIT":  # information from block header
             global_state["pc"] = global_state["pc"] + 1
             stack.insert(0, global_state["currentGasLimit"])
+        elif opcode == "CHAINID":  # information from block header
+            global_state["pc"] = global_state["pc"] + 1
+            stack.insert(0, global_state["chainId"])
+        elif opcode == "SELFBALANCE":
+            global_state["pc"] = global_state["pc"] + 1
+            # get balance of address
+            new_var = None
+            address = global_state["receiverAddress"]
+            for x in global_state["balance"]:
+                try:
+                    if int(str(simplify(to_symbolic(x - address)))) == 0:
+                        new_var = global_state["balance"][x]
+                        break
+                except:
+                    pass
+
+            if new_var is None:
+                new_var_name = self.gen.gen_balance_of(address)
+                new_var = BitVec(new_var_name, 256)
+                global_state["balance"][address] = new_var
+                b_node = BalanceNode(new_var_name, new_var, address)
+                self.graph.cache_var_node(new_var, b_node)
+
+            stack.insert(0, new_var)
+        elif opcode == "BASEFEE":
+            global_state["pc"] = global_state["pc"] + 1
+            stack.insert(0, global_state["baseFee"])
         #
         #  50s: Stack, Memory, Storage, and Flow Information
         #
@@ -1368,6 +1395,16 @@ class EVMInterpreter:
         gl_node = GasLimitNode(new_var_name, current_gas_limit)
         self.graph.cache_var_node(current_gas_limit, gl_node)
 
+        new_var_name = self.gen.gen_chain_id()
+        current_chain_id = BitVec(new_var_name, 256)
+        ci_node = ChainIdNode(new_var_name, current_chain_id)
+        self.graph.cache_var_node(current_chain_id, ci_node)
+
+        new_var_name = self.gen.gen_base_fee()
+        current_base_fee = BitVec(new_var_name, 256)
+        bf_node = BaseFeeNode(new_var_name, current_base_fee)
+        self.graph.cache_var_node(current_base_fee, bf_node)
+
         new_var_name = self.gen.gen_timestamp()
         current_timestamp = BitVec(new_var_name, 256)
         ts_node = TimeStampNode(new_var_name, current_timestamp)
@@ -1386,6 +1423,8 @@ class EVMInterpreter:
         global_state["currentNumber"] = current_number
         global_state["currentDifficulty"] = current_difficulty
         global_state["currentGasLimit"] = current_gas_limit
+        global_state["chainId"] = current_chain_id
+        global_state["baseFee"] = current_base_fee
 
         constraint0 = (deposited_value >= BitVecVal(0, 256))
         path_conditions_and_vars["path_condition"].append(constraint0)

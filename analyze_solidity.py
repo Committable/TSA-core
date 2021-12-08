@@ -39,10 +39,10 @@ def analyze_solidity_code():
         report.get_structure_src(SourceMap.ast_helper.get_ast(global_params.SRC_FILE),
                                  SourceMap.ast_helper.get_source(global_params.SRC_FILE))
     # 2. get ast graph
-    if SourceMap.ast_helper:
+    if SourceMap.ast_helper is not None:
         ast_json = SourceMap.ast_helper.get_ast_report(global_params.SRC_FILE)
     else:
-        ast_json = {"nodes": [], "edges": []}
+        ast_json = {}
     report.set_ast(ast_json)
 
     report.dump_ast()
@@ -50,7 +50,7 @@ def analyze_solidity_code():
 
     #  There may be over one contracts in the solidity file and one contract correspones to one graph each
     for inp in inputs:
-        logger.info("begin analysing contract: %s:", inp['contract'])
+        logger.info("Begin analysing contract: %s:", inp['contract'])
         # cfg = nx.DiGraph()
         env = EvmRuntime(platform=global_params.PLATFORM,
                          disasm_file=inp['disasm_file'],

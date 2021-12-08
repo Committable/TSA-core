@@ -55,12 +55,15 @@ class Source:
 
 class SourceMap:
     sources = {}
-    ast_helper = None  # AstHelper for all
+    ast_helper = None  # AstHelper for current contract
 
     def __init__(self, cname="", input_type="", parent_file="", sources=None):
         if input_type == global_params.SOLIDITY:
             if not SourceMap.ast_helper:
                 SourceMap.ast_helper = AstHelper(input_type, sources["sources"])
+            else:
+                if parent_file in sources["sources"]:
+                    SourceMap.ast_helper.set_ast(parent_file, sources["sources"][parent_file][global_params.AST])
 
             self.parent_file = parent_file
             self.cname = cname

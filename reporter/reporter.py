@@ -35,8 +35,8 @@ class Reporter:
         self.selection_src = 0
         self.selection_bin = 0
 
-        self.reputation_src = 0
-        self.reputation_bin = 0
+        self.repetation_src = 0
+        self.repetation_bin = 0
         self.loops_bin = {}
 
         self.data_flow = 0
@@ -379,7 +379,7 @@ class Reporter:
                         if "children" in statement:
                             self.selection_src += len(statement["children"]) - 1
                     elif statement["name"] in {"WhileStatement", "DoWhileStatement", "ForStatement"}:
-                        self.reputation_src += 1
+                        self.repetation_src += 1
                     else:
                         self.sequence_src += 1
         elif global_params.AST == "ast":
@@ -399,7 +399,7 @@ class Reporter:
                             if "falseBody" in statement and statement["falseBody"]:
                                 self.selection_src += 1
                         elif statement["nodeType"] in {"WhileStatement", "DoWhileStatement", "ForStatement"}:
-                            self.reputation_src += 1
+                            self.repetation_src += 1
                         else:
                             self.sequence_src += 1
 
@@ -412,10 +412,10 @@ class Reporter:
         for cycle in cycles:
             if cycle[0] in self.loops_bin:
                 if cycle[-1] not in self.loops_bin[cycle[0]]:
-                    self.reputation_bin += 1
+                    self.repetation_bin += 1
                     self.loops_bin[cycle[0]].add(cycle[-1])
             else:
-                self.reputation_bin += 1
+                self.repetation_bin += 1
                 self.loops_bin[cycle[0]] = set()
                 self.loops_bin[cycle[0]].add(cycle[-1])
 
@@ -485,8 +485,8 @@ class Reporter:
         meta_commit["selection_src"] = self.selection_src
         meta_commit["selection_bin"] = self.selection_bin
 
-        meta_commit["reputation_src"] = self.reputation_src
-        meta_commit["reputation_bin"] = self.reputation_bin
+        meta_commit["reputation_src"] = self.repetation_src
+        meta_commit["reputation_bin"] = self.repetation_bin
 
         meta_commit["data_flow"] = self.data_flow
         meta_commit["control_flow"] = self.control_flow
@@ -502,7 +502,7 @@ class Reporter:
         # source_nodes = [node for node, indegree in list(cfg.in_degree(cfg.nodes())) if indegree == 0]
         source_nodes = [contract_name+":0"]
         paths = []
-        # todo: source exausted
+        # todo: resource exhausted
         # for sink in sink_nodes:
         #     for source in source_nodes:
         #         for path in nx.all_simple_paths(cfg, source=source, target=sink):
@@ -568,37 +568,41 @@ class Reporter:
         if global_params.PRINT_GRAPH:
             g = nx.DiGraph()
             for x in self.cfg_graphs:
-                for n in list(self.cfg_graphs[x].nodes):
-                    node = self.cfg_graphs[x].nodes[n]
-                    # pos = node["src"].split(":")
-                    # begin = int(pos[0])
-                    # end = begin + int(pos[1])
-                    g.add_node(n, label=node["label"], color=node['color'])
-                for edge in list(self.cfg_graphs[x].edges):
-                    s = edge[0]
-                    t = edge[1]
-                    s_n = int(edge[0].split(contract_name+":")[1])
-                    s_t = int(edge[1].split(contract_name + ":")[1])
-                    label = ""
-                    if (s_n, s_t) in interpreter.impossible_paths:
-                        label = "impossible"
-                    if (s_n, s_t) in not_visited_edges:
-                        g.add_edge(s, t,
-                                   label=label + "| not visited",
-                                   color="black"
-                                   )
-                    else:
-                        g.add_edge(s, t,
-                                   label=label,
-                                   color="green"
-                                   )
+                if x == contract_name:
+                    for n in list(self.cfg_graphs[x].nodes):
+                        node = self.cfg_graphs[x].nodes[n]
+                        # pos = node["src"].split(":")
+                        # begin = int(pos[0])
+                        # end = begin + int(pos[1])
+                        g.add_node(n, label=node["label"], color=node['color'])
+                    for edge in list(self.cfg_graphs[x].edges):
+                        s = edge[0]
+                        t = edge[1]
+                        try:
+                            s_n = int(edge[0].split(contract_name+":")[1])
+                            s_t = int(edge[1].split(contract_name + ":")[1])
+                        except:
+                            print("here")
+                        label = ""
+                        if (s_n, s_t) in interpreter.impossible_paths:
+                            label = "impossible"
+                        if (s_n, s_t) in not_visited_edges:
+                            g.add_edge(s, t,
+                                       label=label + "| not visited",
+                                       color="black"
+                                       )
+                        else:
+                            g.add_edge(s, t,
+                                       label=label,
+                                       color="green"
+                                       )
 
 
-            g1 = nx.nx_agraph.to_agraph(g)
-            g1.graph_attr["rankdir"] = 'TB'
-            g1.graph_attr['overlap'] = 'scale'
-            g1.graph_attr['splines'] = 'polyline'
-            g1.graph_attr['ratio'] = 'fill'
-            g1.layout(prog="dot")
-            g1.draw(path=global_params.DEST_PATH + os.sep + contract_name + "_cfg.pdf", format='pdf')
-        return
+                g1 = nx.nx_agraph.to_agraph(g)
+                g1.graph_attr["rankdir"] = 'TB'
+                g1.graph_attr['overlap'] = 'scale'
+                g1.graph_attr['splines'] = 'polyline'
+                g1.graph_attr['ratio'] = 'fill'
+                g1.layout(prog="dot")
+                g1.draw(path=global_params.DEST_PATH + os.sep + contract_name + "_cfg.pdf", format='pdf')
+                return

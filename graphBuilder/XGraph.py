@@ -229,7 +229,7 @@ class InputDataSizeNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("InputDataSizeNode_" + str(self.count)).replace("\n", "")
+        return ("InputDataSize_" + str(self.count)).replace("\n", "")
 
 
 class ExpNode(VariableNode):
@@ -245,7 +245,7 @@ class ExpNode(VariableNode):
         return self.exponent
 
     def __str__(self):
-        return ("ExpNode_" + str(self.count)).replace("\n", "")
+        return ("Exp_" + str(self.count)).replace("\n", "")
 
 
 class GasPriceNode(VariableNode):
@@ -253,7 +253,7 @@ class GasPriceNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("GasPriceNode_" + str(self.count)).replace("\n", "")
+        return "GasPrice"
 
 
 class OriginNode(VariableNode):
@@ -261,7 +261,7 @@ class OriginNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("OriginNode_" + str(self.count)).replace("\n", "")
+        return "Origin"
 
 
 class CoinbaseNode(VariableNode):
@@ -277,7 +277,7 @@ class DifficultyNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("DifficultyNode_" + str(self.count)).replace("\n", "")
+        return "Difficulty"
 
 
 class GasLimitNode(VariableNode):
@@ -285,7 +285,23 @@ class GasLimitNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("GasLimitNode_" + str(self.count)).replace("\n", "")
+        return "GasLimit"
+
+
+class ChainIdNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "ChainId"
+
+
+class BaseFeeNode(VariableNode):
+    def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def __str__(self):
+        return "BaseFee"
 
 
 class BlockNumberNode(VariableNode):
@@ -293,7 +309,7 @@ class BlockNumberNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("BlockNumberNode_" + str(self.count)).replace("\n", "")
+        return "BlockNumber"
 
 
 class TimeStampNode(VariableNode):
@@ -301,7 +317,7 @@ class TimeStampNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("TimeStampNode_" + str(self.count)).replace("\n", "")
+        return "TimeStamp"
 
 
 class AddressNode(VariableNode):
@@ -326,7 +342,7 @@ class BlockhashNode(VariableNode):
         return self.blockNumber
 
     def __str__(self):
-        return ("BlockhashNode_" + str(self.count)).replace("\n", "")
+        return ("Blockhash_" + str(self.count)).replace("\n", "")
 
 
 class GasNode(VariableNode):
@@ -334,7 +350,7 @@ class GasNode(VariableNode):
         super().__init__(name, value)
 
     def __str__(self):
-        return ("GasNode_" + str(self.count)).replace("\n", "")
+        return ("Gas_" + str(self.count)).replace("\n", "")
 
 
 class ShaNode(VariableNode):

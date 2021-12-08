@@ -144,7 +144,6 @@ KECCAK256 = OpCode("KECCAK256", 0x20, 2, 1)
 # Environmental Information
 ADDRESS = OpCode("ADDRESS", 0x30, 0, 1)
 BALANCE = OpCode("BALANCE", 0x31, 1, 1)
-SELFBALANCE = OpCode("SELFBALANCE", 0x47, 1, 1)
 ORIGIN = OpCode("ORIGIN", 0x32, 0, 1)
 CALLER = OpCode("CALLER", 0x33, 0, 1)
 CALLVALUE = OpCode("CALLVALUE", 0x34, 0, 1)
@@ -165,6 +164,10 @@ TIMESTAMP = OpCode("TIMESTAMP", 0x42, 0, 1)
 NUMBER = OpCode("NUMBER", 0x43, 0, 1)
 DIFFICULTY = OpCode("DIFFICULTY", 0x44, 0, 1)
 GASLIMIT = OpCode("GASLIMIT", 0x45, 0, 1)
+CHAINID = OpCode("CHAINID", 0x46, 0, 1)
+SELFBALANCE = OpCode("SELFBALANCE", 0x47, 0, 1)
+BASEFEE = OpCode("BASEFEE", 0x48, 1, 1)
+
 
 # Stack, Memory, Storage, Flow
 POP = OpCode("POP", 0x50, 1, 0)
@@ -174,9 +177,7 @@ MSTORE8 = OpCode("MSTORE8", 0x53, 2, 0)
 SLOAD = OpCode("SLOAD", 0x54, 1, 1)
 SSTORE = OpCode("SSTORE", 0x55, 2, 0)
 JUMP = OpCode("JUMP", 0x56, 1, 0)
-JUMPI = OpCode(
-
-    "JUMPI", 0x57, 2, 0)
+JUMPI = OpCode("JUMPI", 0x57, 2, 0)
 PC = OpCode("PC", 0x58, 0, 1)
 MSIZE = OpCode("MSIZE", 0x59, 0, 1)
 GAS = OpCode("GAS", 0x5a, 0, 1)
@@ -262,7 +263,8 @@ CALL = OpCode("CALL", 0xf1, 7, 1)
 CALLCODE = OpCode("CALLCODE", 0xf2, 7, 1)
 RETURN = OpCode("RETURN", 0xf3, 2, 0)
 DELEGATECALL = OpCode("DELEGATECALL", 0xf4, 6, 1)
-CREATE2 = OpCode("CREATE2", 0xfb, 4, 1)
+CREATE2 = OpCode("CREATE2", 0xf5, 4, 1)
+
 INVALID = OpCode("INVALID", 0xfe, 0, 0)
 SELFDESTRUCT = OpCode("SELFDESTRUCT", 0xff, 1, 0)
 

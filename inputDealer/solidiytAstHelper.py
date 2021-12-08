@@ -3,18 +3,22 @@ from inputDealer.solidityAstWalker import AstWalker
 
 
 class AstHelper:
-    def __init__(self, input_type, sources=None):
+    def __init__(self, input_type, asts=None):
         if input_type == global_params.SOLIDITY:
             self.input_type = input_type  # input type of file
             self.asts = {}
-            if sources:
-                for x in sources:
-                    self.asts[x] = sources[x][global_params.AST]
+            if asts:
+                for x in asts:
+                    self.asts[x] = asts[x][global_params.AST]
             self.sources = {}  # Source class of file
         else:
             raise Exception("There is no such type of input")
 
         self.contracts = self.extract_contract_definitions()
+
+    def set_ast(self, key, ast):
+        if key not in self.asts:
+            self.asts[key] = ast
 
     def set_source(self, key, source):
         if key not in self.sources:
@@ -37,11 +41,11 @@ class AstHelper:
         if filename in self.asts:
             root = self.asts[filename]
         else:
-            return {"nodes": [], "edges": []}
+            return {}
         if filename in self.sources:
             return walker.walk_to_json(self.sources[filename], root, 0)
         else:
-            return {"nodes": [], "edges": []}
+            return {}
 
     def extract_contract_definitions(self):
         ret = {

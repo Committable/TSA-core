@@ -15,7 +15,6 @@ class AstWalker:
             else:
                 self._walk_with_list_of_attrs(node, attributes, nodes)
 
-
     def walk_to_json(self, source, node, depth):
         json_result = {}
         if node:
