@@ -102,10 +102,12 @@ class EVMInterpreter:
 
         self.current_path.append(block)
 
-
         function_name = self.in_function(block)
         if function_name is not None:
             log.info("in function %s", function_name)
+
+            if function_name == "withdrawToken":
+                print("here")
             # self.tmp_graph = copy.deepcopy(self.graph)
             # self.graphs[function_name] = copy.deepcopy(self.graph)
             # self.graph = self.graphs[function_name]
@@ -163,7 +165,7 @@ class EVMInterpreter:
         # TODO: how to implement better loop dectection? This may cost too much time
         # or self.total_visited_edges[current_edge] > 5:
         # if self.current_path.count(block) > 2:
-        if visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional" or self.total_visited_edges[current_edge] > 5:
+        if visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional":
             self.total_no_of_paths["normal"] += 1
             self.gen.gen_path_id()
             log.debug("Overcome a number of loop limit. Terminating this path ...")
@@ -301,7 +303,11 @@ class EVMInterpreter:
                     new_params.global_state["pc"] = left_branch
                     new_params.path_conditions_and_vars["path_condition"].append(branch_expression)
                     new_params.path_conditions_and_vars["path_condition_node"].append(branch_expression_node)
+                    tmp_before = self.graph.current_constraint_node
                     self._sym_exec_block(new_params, left_branch, block)
+                    tmp_after = self.graph.current_constraint_node
+                    if tmp_before != tmp_after:
+                        print("here")
                     self.graph.out_constraint()
                 else:
                     self.impossible_paths.append((block, self.runtime.vertices[block].get_jump_targets()[-1]))
@@ -323,7 +329,11 @@ class EVMInterpreter:
                     params.global_state["pc"] = right_branch
                     params.path_conditions_and_vars["path_condition"].append(negated_branch_expression)
                     params.path_conditions_and_vars["path_condition_node"].append(negated_branch_expression_node)
+                    tmp_before = self.graph.current_constraint_node
                     self._sym_exec_block(params, right_branch, block)
+                    tmp_after = self.graph.current_constraint_node
+                    if tmp_before != tmp_after:
+                        print("here")
                     self.graph.out_constraint()
                 else:
                     self.impossible_paths.append((block, self.runtime.vertices[block].get_falls_to()))
@@ -1079,7 +1089,7 @@ class EVMInterpreter:
         #
         #  f0s: System Operations
         #
-        elif opcode == "CREATE" or opcode == "CREATE2":  # Todo: the different of create and create2
+        elif opcode == "CREATE":  # Todo: the different of create and create2
             if len(stack) > 2:
                 global_state["pc"] += 1
                 stack.pop(0)
@@ -1242,6 +1252,22 @@ class EVMInterpreter:
                                                   start_data_output, size_data_output],
                                                  return_node,
                                                  self.gen.get_path_id())
+            else:
+                raise ValueError('STACK underflow')
+        elif opcode == "CREATE2":
+            if len(stack) > 3:
+                global_state["pc"] += 1
+                stack.pop(0)
+                stack.pop(0)
+                stack.pop(0)
+                stack.pop(0)
+
+                new_var_name = self.gen.gen_contract_address(global_state["pc"]-1)
+                new_var = BitVec(new_var_name, 256)
+                node = AddressNode(new_var_name, new_var)
+                self.graph.cache_var_node(new_var, node)
+
+                stack.insert(0, new_var)
             else:
                 raise ValueError('STACK underflow')
         elif opcode in ("RETURN", "REVERT"):

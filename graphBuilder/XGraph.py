@@ -159,7 +159,7 @@ class ExpressionNode(VariableNode):
 class ConstraintNode(VariableNode):
     def __init__(self, pc, name, value, flag=True, parent=None, true_child=None, false_child=None):
         super().__init__(name, value)
-        self.parent = None
+        self.parent = []
         self.true_child = None
         self.false_child = None
         self.pc = pc
@@ -168,10 +168,10 @@ class ConstraintNode(VariableNode):
             self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
 
     def set_parent(self, parent):
-        self.parent = parent
+        self.parent.append(parent)
 
     def get_parent(self):
-        return self.parent
+        return self.parent.pop()
 
     def set_true_child(self, child):
         self.true_child = child
@@ -583,12 +583,12 @@ class XGraph:
             name = ""
         assert(is_expr(constraint))
 
-        e_node = self.get_constraint_node(pc)
+        e_node = self.get_constraint_node(str(pc) + str(flag))
         if e_node is None:
             e_node = ConstraintNode(pc, name, constraint, flag)
-            e_node.set_parent(self.current_constraint_node)
             self.graph.add_node(e_node)
-            self.mapping_constraint_node[pc] = e_node
+            self.mapping_constraint_node[str(pc) + str(flag)] = e_node
+        e_node.set_parent(self.current_constraint_node)
         flow_edges = []
         # if not is_const(constraint):
         #     for var in get_vars(constraint):
@@ -607,9 +607,9 @@ class XGraph:
         self.current_constraint_node = e_node
         return e_node
 
-    def get_constraint_node(self, pc):
-        if pc in self.mapping_constraint_node:
-            return self.mapping_constraint_node[pc]
+    def get_constraint_node(self, key):
+        if key in self.mapping_constraint_node:
+            return self.mapping_constraint_node[key]
         else:
             return None
 
