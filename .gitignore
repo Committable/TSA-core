@@ -3,6 +3,7 @@
 *.pdf
 __pycache__
 *.gv
+*.xlsx
 *.png
 *tmp*
 .idea/

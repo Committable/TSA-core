@@ -164,7 +164,8 @@ class EVMInterpreter:
         # TODO: how to implement better loop dectection? This may cost too much time
         # or self.total_visited_edges[current_edge] > 5:
         # if self.current_path.count(block) > 2:
-        if visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional":
+        if visited[current_edge] > interpreter.params.LOOP_LIMIT and self.runtime.jump_type[block] == "conditional" \
+                or self.total_visited_edges[current_edge] > 5:
             log.info("Overcome a number of loop limit. Terminating this path ...")
 
             self.total_no_of_paths["loopLimit"] += 1
