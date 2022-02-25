@@ -227,16 +227,18 @@ class SolidityCompiler:
                                                 output_values=["abi", "bin", "bin-runtime", "ast",
                                                                "hashes", "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
-                                                allow_paths=self.source,
+                                                allow_paths=[self.source, global_params.INCLUDE_PATH],
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
                                                 solc_version=version,
-                                                base_path=self.source
+                                                base_path=self.source,
                                                 )
             except:
                 data_dict = solcx.compile_files([self.source + os.sep + self.joker],
                                                 output_values=["abi", "bin", "bin-runtime", "ast",
                                                                "hashes", "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
-                                                allow_paths=self.source,
+                                                allow_paths=[self.source, global_params.INCLUDE_PATH],
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
                                                 solc_version=version,
                                                 )
         else:
@@ -245,7 +247,8 @@ class SolidityCompiler:
                                                 output_values=["abi", "bin", "bin-runtime", "ast",
                                                                "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
-                                                allow_paths=self.source,
+                                                allow_paths=[self.source, global_params.INCLUDE_PATH],
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
                                                 solc_version=version,
                                                 base_path=self.source
                                                 )
@@ -254,7 +257,8 @@ class SolidityCompiler:
                                                 output_values=["abi", "bin", "bin-runtime", "ast",
                                                                "hashes", "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
-                                                allow_paths=self.source,
+                                                allow_paths=[self.source, global_params.INCLUDE_PATH],
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
                                                 solc_version=version,
                                                 )
 
@@ -596,6 +600,9 @@ class SolidityCompiler:
             return None
         self.parse_files.append(file)
         import_files = []
+
+        if not os.path.exists(file):
+            return None
         with open(file, 'r') as inputfile:
             version = AllowedVersion()
             lines = inputfile.readlines()

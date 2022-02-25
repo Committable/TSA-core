@@ -69,6 +69,8 @@ def main():
 
     parser.add_argument("-o", "--output", help="file path for results", type=str)
 
+    parser.add_argument("-include", "--include-path", help="file path for results", type=str)
+
     parser.add_argument("-ne", "--non-exit", help="not exit", action="store_true")
 
     parser.add_argument("-pg", "--print-graph", help="print graphs", action="store_true")
@@ -91,6 +93,9 @@ def main():
 
     if args.global_timeout:
         global_params.GLOBAL_TIMEOUT = args.global_timeout
+
+    if args.include_path:
+        global_params.INCLUDE_PATH = args.include_path
 
     # time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 

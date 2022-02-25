@@ -18,6 +18,9 @@ COMPILATION_ERR = False
 # print visited cfg
 PRINT_GRAPH = False
 
+# include path for solcx
+INCLUDE_PATH = "."
+
 # DIR for temp files
 TMP_DIR = "./tmp"
 
