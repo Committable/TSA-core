@@ -204,7 +204,7 @@ def get_diff(diff_file, is_before):
         return 1
     except Exception as err:
         logger.error(str(err))
-        return 1
+        return 0
 
 
 def has_dependencies_installed(evm=False, emcc=False, golang=False, solc=False):
