@@ -227,7 +227,8 @@ class SolidityCompiler:
                                                                "hashes", "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
                                                 allow_paths=[self.source, global_params.INCLUDE_PATH],
-                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                # import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH},
                                                 solc_version=version,
                                                 base_path=self.source,
                                                 )
@@ -237,7 +238,8 @@ class SolidityCompiler:
                                                                "hashes", "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
                                                 allow_paths=[self.source, global_params.INCLUDE_PATH],
-                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                # import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH},
                                                 solc_version=version,
                                                 )
         else:
@@ -247,7 +249,8 @@ class SolidityCompiler:
                                                                "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
                                                 allow_paths=[self.source, global_params.INCLUDE_PATH],
-                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                # import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH},
                                                 solc_version=version,
                                                 base_path=self.source
                                                 )
@@ -257,7 +260,8 @@ class SolidityCompiler:
                                                                "hashes", "opcodes", "srcmap-runtime"],
                                                 allow_empty=True,
                                                 allow_paths=[self.source, global_params.INCLUDE_PATH],
-                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                # import_remappings={"@openzeppelin": global_params.INCLUDE_PATH+os.sep+"@openzeppelin"},
+                                                import_remappings={"@openzeppelin": global_params.INCLUDE_PATH},
                                                 solc_version=version,
                                                 )
 
