@@ -218,7 +218,6 @@ class SolidityCompiler:
 
         version = allowed_version.get_version()
         logger.info("get solc version: %s", version)
-
         # 2. compile
         solcx.install_solc(version)
         if allowed_version.is_bigger(version, "0.4.25"):
