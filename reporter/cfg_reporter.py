@@ -1,0 +1,187 @@
+import os
+import json
+import log
+
+import networkx as nx
+
+from abstracts.cfg.cfg_abstract import CfgAbstract
+
+
+class CfgReporter:
+    def __init__(self, output_path):
+        self.output_path = output_path
+        # one contract one cfg_json, but there may be more than on contract for a solidity source file,
+        # {"contractName":value}
+        self.cfg_json = {}
+        self.cfg_graphs = {}
+        self.cfg_edge_lists = {}
+
+        self.cfg_abstract = {}
+
+        self.coverage = {}
+        self.information = {}
+
+        self.cfg_json_path = ""
+        self.cfg_edge_lists_path = ""
+        self.cfg_abstract_path = ""
+
+    def set_contract_cfg(self, contract_name, env):
+        # 1. construct cfg graph
+        cfg = nx.DiGraph(name=contract_name)
+
+        for key in env.vertices:
+            basic_block = env.vertices[key]
+            label = str(basic_block.start) + "_" + str(basic_block.end)
+            cfg.add_node(contract_name + ":" + str(key),
+                         instructions=basic_block.instructions,
+                         label=label,
+                         type=basic_block.get_block_type(),
+                         changed=basic_block.changed,
+                         src=basic_block.position,
+                         lines=basic_block.lines,
+                         color="red" if basic_block.changed else "black")
+        for key in env.edges:
+            for target in env.edges[key]:
+                edge_type = env.jump_type[target]
+                color = "black"
+                if edge_type == "falls_to":
+                    color = 'black'
+                elif edge_type == "unconditional":
+                    color = 'blue'
+                elif edge_type == "conditional":
+                    color = 'green'
+                elif edge_type == "terminal":
+                    color = 'red'
+                cfg.add_edge(contract_name + ":" + str(key), contract_name + ":" + str(target),
+                             type=env.jump_type[target],
+                             color=color)
+
+        c_cfg_json = {"nodes": [], "edges": []}
+
+        pos = nx.drawing.nx_agraph.graphviz_layout(cfg, prog='dot', args='-Grankdir=TB')
+
+        for key in env.vertices:
+            basic_block = env.vertices[key]
+            label = str(basic_block.start) + "_" + str(basic_block.end)
+            c_cfg_json["nodes"].append({"id":   str(key),
+                                        "name": label,
+                                        "type": basic_block.get_block_type(),
+                                        "pos":  str(pos[contract_name + ":" + str(key)]),
+                                        "changed": basic_block.changed,
+                                        "src": basic_block.position,
+                                        "instructions": basic_block.instructions
+                                        })
+        edge_list = []
+        for key in env.edges:
+            for target in env.edges[key]:
+                edge_list.append(str(key) + " " + str(target) + "\n")
+                c_cfg_json["edges"].append({"source": str(key), "target": str(target), "type": env.jump_type[target]})
+
+        self.cfg_json[contract_name] = c_cfg_json
+        self.cfg_graphs[contract_name] = cfg
+        self.cfg_edge_lists[contract_name] = edge_list
+
+    def construct_cfg_abstract(self, context):
+        cfg_abstract_instance = CfgAbstract()
+        cfg_abstract_instance.register_cfg_abstracts(context)
+        self.cfg_abstract = cfg_abstract_instance.get_cfg_abstract_json(self.cfg_graphs)
+
+    def dump_cfg_json(self):
+        self.cfg_json_path = os.path.join(self.output_path, "cfg.json")
+        with open(self.cfg_json_path, 'w') as output_file:
+            json.dump(self.cfg_json, output_file)
+
+    def print_contract_cfg_graph(self):
+        for x in self.cfg_graphs:
+            contract_name = x
+            g = nx.DiGraph()
+            for n in list(self.cfg_graphs[x].nodes):
+                node = self.cfg_graphs[x].nodes[n]
+                g.add_node(n, label=node["label"], color=node['color'])
+            for edge in list(self.cfg_graphs[x].edges):
+                s = edge[0]
+                t = edge[1]
+
+                g.add_edge(s, t,
+                           color="green"
+                           )
+
+
+            g1 = nx.nx_agraph.to_agraph(g)
+            g1.graph_attr["rankdir"] = 'TB'
+            g1.graph_attr['overlap'] = 'scale'
+            g1.graph_attr['splines'] = 'polyline'
+            g1.graph_attr['ratio'] = 'fill'
+            g1.layout(prog="dot")
+            g1.draw(path=self.output_path + os.sep + contract_name + "_cfg.pdf", format='pdf')
+        return
+
+    def print_cfg_graph(self):
+        g = nx.DiGraph()
+        for x in self.cfg_graphs:
+            for n in list(self.cfg_graphs[x].nodes):
+                node = self.cfg_graphs[x].nodes[n]
+                g.add_node(n, label=node["label"], color=node['color'])
+            for edge in list(self.cfg_graphs[x].edges):
+                s = edge[0]
+                t = edge[1]
+                g.add_edge(s, t,
+                           label=self.cfg_graphs[x].edges[(s, t)]['type'],
+                           color=self.cfg_graphs[x].edges[(s, t)]['color']
+                           )
+
+        g1 = nx.nx_agraph.to_agraph(g)
+        g1.graph_attr["rankdir"] = 'TB'
+        g1.graph_attr['overlap'] = 'scale'
+        g1.graph_attr['splines'] = 'polyline'
+        g1.graph_attr['ratio'] = 'fill'
+        g1.layout(prog="dot")
+        g1.draw(path=os.path.join(self.output_path, "cfg.png"), format='png')
+        return
+
+    def dump_cfg_edge_list(self):
+        complete = []
+        for x in self.cfg_edge_lists:
+            for i in self.cfg_edge_lists[x]:
+                complete.append(i)
+
+        self.cfg_edge_lists_path = os.path.join(self.output_path, "cfg_edgelist")
+        with open(self.cfg_edge_lists_path, 'w') as edgelist_file:
+            edgelist_file.write("".join(complete))
+
+    def dump_cfg_abstract(self):
+        self.cfg_abstract_path = os.path.join(self.output_path, "cfg_abstract.json")
+        with open(self.cfg_abstract_path, 'w') as output_file:
+            json.dump(self.cfg_abstract, output_file)
+
+    def set_coverage_info(self, contract_name, env, interpreter):
+        cfg = self.cfg_graphs[contract_name]
+        edge_number = cfg.number_of_edges()
+
+        # not_visited_edges = []
+        # for edge in list(cfg.edges):
+        #     s = int(edge[0].split(contract_name+":")[1])
+        #     t = int(edge[1].split(contract_name+":")[1])
+        #     if (s, t) not in interpreter.total_visited_edges:
+        #         not_visited_edges.append((s, t))
+
+        log.mylogger.info("Coverage Info: Visited path: %s", str(interpreter.total_no_of_paths))
+        log.mylogger.info("Coverage Info: Visited edge: %d", len(interpreter.total_visited_edges) - 1)
+        log.mylogger.info("Coverage Info: Total edge: %d", edge_number)
+        log.mylogger.info("Coverage Info: Visited pc: %d", len(interpreter.total_visited_pc))
+        log.mylogger.info("Coverage Info: Total pc: %d", len(env.instructions))
+
+        self.coverage[contract_name] = {"visited_paths": interpreter.total_no_of_paths,
+                                        "visited_edges": len(interpreter.total_visited_edges)-1,  # subtract (0,0)
+                                        "total_edges": edge_number,
+                                        "visited_pcs": len(interpreter.total_visited_pc),
+                                        "total_pcs": len(env.instructions)
+                                        }
+
+        # self.information[contract_name] = {"impossible_edges": interpreter.impossible_paths,
+        #                                    "not_visited_edges": not_visited_edges}
+
+        # log.mylogger.info("Not visited edges:")
+        # for edge in not_visited_edges:
+        #     log.mylogger.info("   %s", str(edge))
+

@@ -1,0 +1,10 @@
+{
+  "repos": [],
+  "projects": [],
+  "files": [
+    {
+      "project_dir": "/home/liyue/transparentCenter/AnalysisService/service_test/test/repos/5f7eda1f988b5afc4645224694526b0bac18d6b4",
+      "src_file": "./contracts/token/ERC777/ERC777.sol"
+    }
+  ]
+}

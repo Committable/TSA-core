@@ -1,46 +1,25 @@
-UNIT_TEST = 0
+from enum import Enum
 
-# timeout for z3 solver for every computation (in ms)
-TIMEOUT = 1000
 
-# timeout to run symbolic execution (in secs)
-GLOBAL_TIMEOUT = 2000
+class LanguageType(Enum):
+    SOLIDITY = 1
+    EVM = 2
+
+
+# timeout to run analyse result (in secs)
+SYM_TIMEOUT = 20000
 
 # output dir
-DEST_PATH = "./output"
+DEST_PATH = "./tmp"
 
-# specify platform for analysis
-PLATFORM = ""
+# input dir
+INPUT_PATH = "./tmp"
 
 # show compilation
 COMPILATION_ERR = False
 
-# print visited cfg
-PRINT_GRAPH = False
+# run in debug mod, which show more logs
+DEBUG_MOD = False
 
-# include path for solcx
-INCLUDE_PATH = "."
-
-# DIR for temp files
-TMP_DIR = "./tmp"
-
-AST = "legacyAST"
-
-# Source dir of analysied program
-SRC_DIR = ""
-
-# file for analysis
-SRC_FILE = ""
-
-IS_BEFORE = True
-# difference for this file
-DIFFS = []
-
-# source file type
-EVM_BYTECODE = 0
-WASM_BYTECODE = 1
-SOLIDITY = 2
-CPP = 3
-GO = 4
-
-REPORT = None
+# big int over 2^256, for not int
+BIG_INT_256 = pow(2, 256)
