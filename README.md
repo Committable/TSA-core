@@ -7,7 +7,7 @@ A Modeling Tool for solidity source files in a git repository, producing graphs 
 [![License: GPL v3][license-badge]][license-badge-url]
 [![Build Status](https://travis-ci.org/melonproject/oyente.svg?branch=master)](https://travis-ci.org/melonproject/oyente)
 
-*This repository is currently maintained by yangzq ([@yxliang01](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/Seraph/issues).*
+*This repository is currently maintained by yangzq12 ([@yangzq12](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/Seraph/issues).*
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ A container with required dependencies configured can be found [here](https://hu
 To open the container, install docker and run:
 
 ```
-docker pull luongnguyen/oyente && docker run -i -t luongnguyen/oyente
+docker pull committable/tc-seraph && docker run -i -t committable/tc-seraph
 ```
 
 To evaluate the greeter contract inside the container, run:
@@ -35,11 +35,9 @@ To run the web interface, execute
 ## Custom Docker image build
 
 ```
-docker build -t oyente .
-docker run -it -p 3000:3000 -e "OYENTE=/oyente/oyente" oyente:latest
+docker build -t seraph .
+docker run -it -p 50051:50051 seraph:latest
 ```
-
-Open a web browser to `http://localhost:3000` for the graphical interface.
 
 ## Installation
 
@@ -50,94 +48,36 @@ python -m virtualenv env
 source env/bin/activate
 ```
 
-Install Oyente via pip:
+Install Seraph via pip:
 
 ```
-$ pip2 install oyente
+$ pip3 install seraph
 ```
-Dependencies:
 
-The following require a Linux system to fufill. macOS instructions forthcoming.
-
-[solc](https://github.com/melonproject/oyente#solc)
-[evm](https://github.com/melonproject/oyente#evm-from-go-ethereum)
-
-## Full installation
+## Build 
 
 ### Install the following dependencies
-#### solc
+#### python3
 ```
-$ sudo add-apt-repository ppa:ethereum/ethereum
-$ sudo apt-get update
-$ sudo apt-get install solc
+$ sudo apt-get install python3 pip3
 ```
 
-#### evm from [go-ethereum](https://github.com/ethereum/go-ethereum)
-
-1. https://geth.ethereum.org/downloads/ or
-2. By from PPA if your using Ubuntu
+#### module requirements
 ```
-$ sudo apt-get install software-properties-common
-$ sudo add-apt-repository -y ppa:ethereum/ethereum
-$ sudo apt-get update
-$ sudo apt-get install ethereum
+$ pip3 install -r rquiretments.txt
 ```
 
-#### [z3](https://github.com/Z3Prover/z3/releases) Theorem Prover version 4.5.0.
-
-Download the [source code of version z3-4.5.0](https://github.com/Z3Prover/z3/releases/tag/z3-4.5.0)
-
-Install z3 using Python bindings
+### Integration test
 
 ```
-$ python scripts/mk_make.py --python
-$ cd build
-$ make
-$ sudo make install
-```
-
-#### [Requests](https://github.com/kennethreitz/requests/) library
-
-```
-pip install requests
-```
-
-#### [web3](https://github.com/pipermerriam/web3.py) library
-
-```
-pip install web3
-```
-
-### Evaluating Ethereum Contracts
-
-```
-#evaluate a local solidity contract
-python oyente.py -s <contract filename>
-
-#evaluate a local solidity with option -a to verify assertions in the contract
-python oyente.py -a -s <contract filename>
-
-#evaluate a local evm contract
-python oyente.py -s <contract filename> -b
-
-#evaluate a remote contract
-python oyente.py -ru https://gist.githubusercontent.com/loiluu/d0eb34d473e421df12b38c12a7423a61/raw/2415b3fb782f5d286777e0bcebc57812ce3786da/puzzle.sol
 
 ```
 
 And that's it! Run ```python oyente.py --help``` for a list of options.
 
-## Paper
-
-The accompanying paper explaining the bugs detected by the tool can be found [here](https://www.comp.nus.edu.sg/~prateeks/papers/Oyente.pdf).
 
 ## Miscellaneous Utilities
 
-A collection of the utilities that were developed for the paper are in `misc_utils`. Use them at your own risk - they have mostly been disposable.
-
-1. `generate-graphs.py` - Contains a number of functions to get statistics from contracts.
-2. `get_source.py` - The *get_contract_code* function can be used to retrieve contract source from [EtherScan](https://etherscan.io)
-3. `transaction_scrape.py` - Contains functions to retrieve up-to-date transaction information for a particular contract.
 
 ## Benchmarks
 
@@ -152,7 +92,7 @@ Some analytics regarding the number of contracts tested, number of contracts ana
 
 ## Contributing
 
-Checkout out our [contribution guide](https://github.com/melonproject/oyente/blob/master/CONTRIBUTING.md) and the code structure [here](https://github.com/melonproject/oyente/blob/master/code.md).
+Checkout out our [contribution guide](https://github.com/Committable/Seraph/blob/master/CONTRIBUTING.md) and the code structure [here](https://github.com/Committable/Seraph/blob/master/code.md).
 
 
 [gitter-badge]: https://img.shields.io/gitter/room/melonproject/oyente.js.svg?style=flat-square
