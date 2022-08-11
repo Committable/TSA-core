@@ -61,23 +61,22 @@ class SoliditySourceCodeAnalysisService(solidity_analyzer_pb2_grpc.SoliditySourc
             return source_code_analyzer_pb2.SourceCodeAnalysisResponse(status=500,
                                                                        message="analysis sol after file fail")
         # merge before's and after's abstarct
-        ast_abstract_path = ""
-        # try:
-        #     output_path = generate_output_dir(request_id, "")
-        #     ast_abstract = {}
-        #     for index in report_a.ast_abstract:
-        #         if not context_before.err and not context_after.err:
-        #             ast_abstract[index] = report_a.ast_abstract[index] - report_b.ast_abstract[index]
-        #         else:
-        #             ast_abstract[index] = 0
-        #     ast_abstract_path = os.path.join(output_path, "ast_abstract.json")
-        #     with open(ast_abstract_path, 'w') as output_file:
-        #         json.dump(ast_abstract, output_file)
-        # except Exception as err:
-        #     traceback.print_exc()
-        #     log.mylogger.error("merge ast abstract err: %s", str(err))
-        #     return source_code_analyzer_pb2.SourceCodeAnalysisResponse(status=500,
-        #                                                                message="merge ast abstract file fail")
+        try:
+            output_path = generate_output_dir(request_id, "")
+            ast_abstract = {}
+            for index in report_a.ast_abstract:
+                if not context_before.err and not context_after.err:
+                    ast_abstract[index] = report_a.ast_abstract[index] - report_b.ast_abstract[index]
+                else:
+                    ast_abstract[index] = 0
+            ast_abstract_path = os.path.join(output_path, "ast_abstract.json")
+            with open(ast_abstract_path, 'w') as output_file:
+                json.dump(ast_abstract, output_file)
+        except Exception as err:
+            traceback.print_exc()
+            log.mylogger.error("merge ast abstract err: %s", str(err))
+            return source_code_analyzer_pb2.SourceCodeAnalysisResponse(status=500,
+                                                                       message="merge ast abstract file fail")
 
         log.mylogger.info("success analyzing request: %s, result in %s ", request_id, output_path)
         return source_code_analyzer_pb2.SourceCodeAnalysisResponse(status=200,

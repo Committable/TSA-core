@@ -109,46 +109,45 @@ def analyze_evm_from_solidity(output_path, src_path, project_path, context, comp
 
 def analyze_solidity_code(output_path, src_path, project_path, context, compilation_cfg={}):
     # 1. prepare input
-    # helper = InputHelper(global_params.LanguageType.SOLIDITY,
-    #                      project_dir=project_path,
-    #                      src_file=src_path,
-    #                      root_path=context.root_path,
-    #                      remaps=context.remaps,
-    #                      allow_paths=context.allow_paths,
-    #                      include_paths=context.include_paths,
-    #                      compiler_version="",
-    #                      compilation_err=global_params.COMPILATION_ERR)
+    helper = InputHelper(global_params.LanguageType.SOLIDITY,
+                         project_dir=project_path,
+                         src_file=src_path,
+                         root_path=context.root_path,
+                         remaps=context.remaps,
+                         allow_paths=context.allow_paths,
+                         include_paths=context.include_paths,
+                         compiler_version="",
+                         compilation_err=global_params.COMPILATION_ERR)
     # 2. compile
-    # flag = True
-    # try:
-    #     inputs, flag = helper.get_solidity_inputs(compilation_cfg)
-    # except Exception as err:
-    #     context.set_err()
-    #     traceback.print_exc()
-    #     log.mylogger.error("fail to compile for {0}, err: {0}".format(src_path, str(err)))
-    # if not flag:
-    #     context.set_err()
-    #     log.mylogger.error("fail to compile for {0}".format(src_path))
-    #
-    # log.mylogger.info("get compilation outputs for file: %s", src_path)
+    flag = True
+    try:
+        inputs, flag = helper.get_solidity_inputs(compilation_cfg)
+    except Exception as err:
+        context.set_err()
+        traceback.print_exc()
+        log.mylogger.error("fail to compile for {0}, err: {0}".format(src_path, str(err)))
+    if not flag:
+        context.set_err()
+        log.mylogger.error("fail to compile for {0}".format(src_path))
+
+    log.mylogger.info("get compilation outputs for file: %s", src_path)
 
     # 3. get report
-    # ast_report = AstReporter(helper.source.get_content(), output_path)
-    ast_report = AstReporter("", output_path)
-    # ast_report.set_ast_json(helper.ast_helper.get_ast_json(os.path.abspath(os.path.join(project_path,src_path)),
-    #                                                        helper.source,
-    #                                                        context))
-    # ast_report.set_ast_abstract(
-    #     helper.ast_helper.get_ast_abstract(os.path.abspath(os.path.join(project_path,
-    #                                                                     src_path)),
-    #                                        helper.source,
-    #                                        context))
-    # log.mylogger.info("success get ast report: %s", src_path)
-    # ast_report.dump_ast_json()
-    # ast_report.dump_ast_edge_list()
-    # if global_params.DEBUG_MOD:
-    #     ast_report.print_ast_graph()
-    # ast_report.dump_ast_abstract()
-    # log.mylogger.info("success dump ast report: %s, to %s", src_path, output_path)
+    ast_report = AstReporter(helper.source.get_content(), output_path)
+    ast_report.set_ast_json(helper.ast_helper.get_ast_json(os.path.abspath(os.path.join(project_path,src_path)),
+                                                           helper.source,
+                                                           context))
+    ast_report.set_ast_abstract(
+        helper.ast_helper.get_ast_abstract(os.path.abspath(os.path.join(project_path,
+                                                                        src_path)),
+                                           helper.source,
+                                           context))
+    log.mylogger.info("success get ast report: %s", src_path)
+    ast_report.dump_ast_json()
+    ast_report.dump_ast_edge_list()
+    if global_params.DEBUG_MOD:
+        ast_report.print_ast_graph()
+    ast_report.dump_ast_abstract()
+    log.mylogger.info("success dump ast report: %s, to %s", src_path, output_path)
 
     return ast_report

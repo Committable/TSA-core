@@ -142,14 +142,16 @@ source env/bin/activate
 
 Install the following dependencies
 
-#### python3
+#### python3 & graphviz
 ```
-$ sudo apt-get install python3 pip3
+$ sudo apt-get update
+$ sudo apt-get install python3.6
+$ sudo apt-get install graphviz-dev
 ```
 
-#### module requirements
+#### python module requirements
 ```
-$ pip3 install -r rquiretments.txt
+$ pip3 install -r requiretments.txt
 ```
 
 ### Integration test
