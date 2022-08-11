@@ -88,6 +88,8 @@ service EVMEngine{
 }
 ```
 
+<p id="1"></p>
+
 ## Quick Start
 
 Containers of solidity-service and evm-service can be fined [here](https://hub.docker.com/u/dockeryangzq12). If you experience any issue with this image, please try to build a new docker image by pulling this codebase before open an issue.
@@ -170,15 +172,10 @@ And that's it!
 
 
 ## Benchmarks
+we selected commits from [Dapp-Learning](https://github.com/Dapp-Learning-DAO/Dapp-Learning) and [openzeppelin-contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) repository as the benchmark.
 
-Note: This is an improved version of the tool used for the paper. Benchmarks are not for direct comparison.
+To run the benchmarks, it is best to use the docker container and service_test as shown in [Quick Start](#1)
 
-To run the benchmarks, it is best to use the docker container as it includes the blockchain snapshot necessary.
-In the container, run `batch_run.py` after activating the virtualenv. Results are in `results.json` once the benchmark completes.
-
-The benchmarks take a long time and a *lot* of RAM in any but the largest of clusters, beware.
-
-Some analytics regarding the number of contracts tested, number of contracts analysed etc. is collected when running this benchmark.
 
 ## Contributing
 

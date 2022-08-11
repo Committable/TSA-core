@@ -3,7 +3,7 @@
   "projects": [],
   "files": [
     {
-      "project_dir": "/home/liyue/transparentCenter/AnalysisService/seraph/test_cases/featured",
+      "project_dir": "./test_cases/featured",
       "src_file": "./call.sol"
     }
   ]
