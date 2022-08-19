@@ -4,6 +4,7 @@ import re
 import subprocess
 import solcx
 import signal
+import traceback
 
 from pyevmasm import disassemble_hex
 from errors.compilation_fail import CompilationFailError
@@ -227,7 +228,7 @@ class AllowedVersion:  # left [<=|<] allow_version [<=|<] right
 
     def __str__(self):
         if self.unique:
-            return "version==" + self.unique
+            return "version==" + str(self.unique)
         expr = "version"
         if self.left:
             if self.left_equal:
@@ -286,6 +287,7 @@ class SolidityCompiler:
         if not os.path.exists(os.path.join(self.project_dir, "node_modules")):
             if "prepare" in compilation_cfg:
                 for command in compilation_cfg["prepare"]:
+                    path = os.environ['PATH']
                     child = subprocess.Popen(command, cwd=self.project_dir, shell=True, stdout=subprocess.PIPE,
                                              stderr=subprocess.PIPE)
                     try:
@@ -312,6 +314,7 @@ class SolidityCompiler:
                         return
                 except Exception as err:
                     # log.mylogger.error("Compile with solcx version %s fail", str(v))
+                    traceback.print_exc()
                     continue
             log.mylogger.error("Can not compile with solcx")
             raise CompilationFailError("Can not compile with solcx")
@@ -363,7 +366,7 @@ class SolidityCompiler:
                         'deployedBytecode':
                             {
                                 'opcodes': "",
-                                "object": data_dict[key]["bin-runtime"],
+                                "object": self.convert_external_library_space_holder(data_dict[key]["bin-runtime"]),
                                 "sourceMap": data_dict[key]["srcmap-runtime"]
                             },
                         "bytecode":
@@ -400,6 +403,10 @@ class SolidityCompiler:
                         x["evm"]["bytecode"]['opcodes'] = disassemble_hex(bytecode_object).replace("\n", " ")
 
     @staticmethod
+    def convert_external_library_space_holder(bytecode):
+        return bytecode.replace("__$", "abc").replace("$__", "cba")
+
+    @staticmethod
     def get_compiler_version_from_pragma(file):
         with open(file, 'r', encoding="utf-8") as input_file:
             version = AllowedVersion()
@@ -411,7 +418,7 @@ class SolidityCompiler:
                     break
                 match_obj = re.match(r'pragma solidity (\d*\.\d*\.\d*)(.*)\n', line)
                 if match_obj:
-                    version.set_unique(match_obj.group(2))
+                    version.set_unique(match_obj.group(1))
                     break
                 match_obj = re.match(r'pragma solidity (\^)(\d*\.\d*\.\d*)(.*)\n', line)
                 if match_obj:
