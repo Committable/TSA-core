@@ -2,6 +2,7 @@ from abstracts import index
 
 
 class SequenceBin(index.Index):
+
     def __init__(self, cfg_graphs):
         self.cfg_graphs = cfg_graphs
 
@@ -12,7 +13,7 @@ class SequenceBin(index.Index):
                 s = edge[0]
                 t = edge[1]
                 label = self.cfg_graphs[x].edges[(s, t)]['type']
-                if label != "conditional":
+                if label != 'conditional':
                     sequence_bin += 1
 
         return sequence_bin

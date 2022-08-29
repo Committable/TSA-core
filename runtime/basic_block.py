@@ -2,7 +2,12 @@ import six
 
 
 class BasicBlock:
-    def __init__(self, start_address, end_address=None, start_inst= None, end_inst = None):
+
+    def __init__(self,
+                 start_address,
+                 end_address=None,
+                 start_inst=None,
+                 end_inst=None):
         self.start = start_address
         self.start_inst = start_inst
 
@@ -11,12 +16,14 @@ class BasicBlock:
 
         self.instructions = []  # each instruction is a string
 
-        self.jump_from = []  # all blocks from which can jump to or fall to this block
+        self.jump_from = [
+        ]  # all blocks from which can jump to or fall to this block
 
         self.falls_to = None  # the block this block can falls to
 
-        # all true targets for conditional jump or targets for un-condition jump, we don't use set() because the top of
-        # jump_targets is the aimed pc currently
+        # all true targets for conditional jump or targets for un-condition
+        # jump, we don't use set() because the top of jump_targets is the
+        # aimed pc currently
         self.jump_targets = []
 
         self.type = None
@@ -26,7 +33,7 @@ class BasicBlock:
         self.negated_branch_expression_node = None
         self.branch_id = []
 
-        self.position = ""
+        self.position = ''
         self.changed = False
         self.lines = []
 
@@ -52,13 +59,15 @@ class BasicBlock:
         return self.type
 
     def set_falls_to(self, address):
-        self.falls_to = address  # target for fall through and false branch for conditional jump
+        # target for fall through and false branch for conditional jump
+        self.falls_to = address
 
     def get_falls_to(self):
         return self.falls_to
 
     def set_jump_targets(self, address):
-        for x in self.jump_targets:  # top element is the most recently setted jump target
+        # top element is the most recently setted jump target
+        for x in self.jump_targets:
             if x == address:
                 self.jump_targets.remove(x)
 
@@ -106,9 +115,9 @@ class BasicBlock:
         self.changed = changed
 
     def display(self):
-        six.print_("================")
-        six.print_("start address: %d" % self.start)
-        six.print_("end address: %d" % self.end)
-        six.print_("end statement type: " + self.type)
+        six.print_('================')
+        six.print_('start address: %d', self.start)
+        six.print_('end address: %d', self.end)
+        six.print_('end statement type: %s', self.type)
         for instr in self.instructions:
             six.print_(instr)

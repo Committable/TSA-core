@@ -1,9 +1,9 @@
 from abstracts import index
-
-from inputDealer.solidity_ast_walker import AstWalker
+from input_dealer import solidity_ast_walker
 
 
 class SequenceSrc(index.Index):
+
     def __init__(self, ast, ast_type, source):
         self.ast = ast
         self.source = source
@@ -16,7 +16,7 @@ class SequenceSrc(index.Index):
         sequence_src = 0
 
         if self.ast_type == "legacyAST":
-            walker = AstWalker(ast_type="legacyAST")
+            walker = solidity_ast_walker.AstWalker(ast_type="legacyAST")
             nodes = []
             walker.walk(self.ast, {"name": "FunctionDefinition"}, nodes)
             sequence_src += len(nodes)
@@ -27,9 +27,10 @@ class SequenceSrc(index.Index):
             walker.walk(self.ast, {"name": "Block"}, nodes)
             for block in nodes:
                 for statement in block["children"]:
+                    del statement  # Unused, reserve for name hint
                     sequence_src += 1
         elif self.ast_type == "ast":
-            walker = AstWalker(ast_type="ast")
+            walker = solidity_ast_walker.AstWalker(ast_type="ast")
             nodes = []
             walker.walk(self.ast, {"nodeType": "FunctionDefinition"}, nodes)
             sequence_src += len(nodes)

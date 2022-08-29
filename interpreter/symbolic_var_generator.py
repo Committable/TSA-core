@@ -1,6 +1,8 @@
 class Generator:
+
     def __init__(self):
         self.path = 0
+
     # todo: str() of symbolic expression is time-consuming
 
     @staticmethod
@@ -28,11 +30,12 @@ class Generator:
         return "codeSize_" + str(address)
 
     @staticmethod
-    def gen_code_size_var(address):
+    def gen_code_hash_var(address):
         return "codeHash_" + str(address)
 
     def gen_return_data(self, pc, start, end, path_id):
-        return "return_" + str(pc) + "_" + str(start) + "_" + str(end) + "_" + str(path_id)
+        return "return_" + str(pc) + "_" + str(start) + "_" + str(
+            end) + "_" + str(path_id)
 
     @staticmethod
     def gen_data_var(start, end, function):
@@ -52,7 +55,7 @@ class Generator:
 
     @staticmethod
     def gen_sha3_var(value):
-        return "sha3_("+str(value)+")"
+        return "sha3_(" + str(value) + ")"
 
     @staticmethod
     def gen_gas_price_var():
@@ -64,7 +67,7 @@ class Generator:
 
     @staticmethod
     def gen_blockhash(number):
-        return "blockhash_"+str(number)
+        return "blockhash_" + str(number)
 
     @staticmethod
     def gen_coin_base():
@@ -112,5 +115,3 @@ class Generator:
     @staticmethod
     def gen_return_status(pc):
         return "returnStatus_" + str(pc)
-
-

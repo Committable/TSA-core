@@ -1,4 +1,4 @@
-from z3 import BitVecVal
+import z3
 
 # timeout for z3 (in ms)
 Z3_TIMEOUT = 3000
@@ -13,6 +13,4 @@ MAX_MEMORY_SIZE = 1024 * 1024
 
 UNSIGNED_BOUND_NUMBER = 2**256 - 1
 
-CONSTANT_ONES_159 = BitVecVal((1 << 160) - 1, 256)
-
-
+CONSTANT_ONES_159 = z3.BitVecVal((1 << 160) - 1, 256)

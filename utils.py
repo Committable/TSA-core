@@ -1,9 +1,11 @@
+import os
 import re
 import yaml
+
 import global_params
 import log
 
-from z3 import *
+from z3 import is_expr, BitVecVal, simplify, is_const, unknown
 
 
 def get_project_name(project_dir):
@@ -15,7 +17,7 @@ def remove_prefix(text, prefix):
 
 
 def change_to_relative(path):
-    if path == "":
+    if path == '':
         return path
     if path[0] == os.sep:
         return path[1:]
@@ -23,7 +25,7 @@ def change_to_relative(path):
 
 
 def get_config(config_path):
-    with open(config_path, 'r') as stream:
+    with open(config_path, 'r', encoding='utf8') as stream:
         parsed_yaml = yaml.safe_load(stream)
         return parsed_yaml
 
@@ -35,8 +37,9 @@ def generate_output_dir(first, second):
 
 
 def compare_versions(version1, version2):
+
     def normalize(v):
-        return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
+        return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split('.')]
 
     version1 = normalize(version1)
     version2 = normalize(version2)
@@ -119,7 +122,7 @@ def check_sat(solver):
     try:
         ret = solver.check()
     except:
-        log.mylogger.warning("z3 get unknown result")
+        log.mylogger.warning('z3 get unknown result')
         return unknown
     return ret
 
@@ -128,10 +131,10 @@ def turn_hex_str_to_decimal_arr(hex_string):
     result = []
     length = len(hex_string)
     for i in range(0, length, 2):
-        if i+1 < length:
-            s = hex_string[i:i+2]
+        if i + 1 < length:
+            s = hex_string[i:i + 2]
         else:
-            s = hex_string[i:i+1] + "0"
+            s = hex_string[i:i + 1] + '0'
         result.append(int(s, 16))
     return result
 
@@ -146,35 +149,37 @@ def get_diff(diff_file, is_before):
             for i in range(0, len(differences)):
                 line = differences[i]
 
-                n = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", line)
+                n = re.match(r'([\'|"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)',
+                             line)
                 if n:
                     start_line = int(n.group(2))
                     line_num = 0
                     start = True
                     continue
                 if start:
-                    m = re.match(r"\s*(['|\"]?)(\+|-|\s)(.*)", line)
-                    if m and m.group(2) == "-":
+                    m = re.match(r'\s*([\'|"]?)(\+|-|\s)(.*)', line)
+                    if m and m.group(2) == '-':
                         diff.append(start_line + line_num)
-                    if m and m.group(2) != "+":
+                    if m and m.group(2) != '+':
                         line_num += 1
         elif differences is not None:
             start = False
             for i in range(0, len(differences)):
                 line = differences[i]
 
-                n = re.match(r"(['|\"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)", line)
+                n = re.match(r'([\'|"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)',
+                             line)
                 if n:
                     start_line = int(n.group(4))
                     line_num = 0
                     start = True
                     continue
                 if start:
-                    m = re.match(r"\s*(['|\"]?)(\+|-|\s)(.*)", line)
-                    if m and m.group(2) == "+":
+                    m = re.match(r'\s*([\'|"]?)(\+|-|\s)(.*)', line)
+                    if m and m.group(2) == '+':
                         diff.append(start_line + line_num)
-                    if m and m.group(2) != "-":
+                    if m and m.group(2) != '-':
                         line_num += 1
     except Exception as err:
-        log.mylogger.error("get diff fail: "+str(err))
+        log.mylogger.error('get diff fail: %s', str(err))
     return diff

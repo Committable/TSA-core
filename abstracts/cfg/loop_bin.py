@@ -1,9 +1,10 @@
-from abstracts import index
-
 import networkx as nx
+
+from abstracts import index
 
 
 class LoopBin(index.Index):
+
     def __init__(self, cfg_graphs):
         self.cfg_graphs = cfg_graphs
 

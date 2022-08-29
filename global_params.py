@@ -1,7 +1,7 @@
-from enum import Enum
+import enum
 
 
-class LanguageType(Enum):
+class LanguageType(enum.Enum):
     SOLIDITY = 1
     EVM = 2
 
