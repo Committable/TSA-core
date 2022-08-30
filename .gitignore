@@ -8,6 +8,7 @@ __pycache__
 *tmp*
 .idea/
 *build*
+!graph_builder
 *.evm
 *.disasm
 *cache*
