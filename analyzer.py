@@ -19,6 +19,10 @@ def analyze_evm_from_solidity(output_path,
                               project_path,
                               context,
                               compilation_cfg=None):
+    # 0. make output dirs
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
     # 1. prepare input
     if compilation_cfg is None:
         compilation_cfg = {}

@@ -14,22 +14,25 @@ def get_logger(name=''):
         '[%(thread)d]: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S')
     root_time = time.time() * 1000000
+    if not os.path.exists(global_params.DEST_PATH):
+        os.makedirs(global_params.DEST_PATH)
     fh = logging.FileHandler(
         os.path.join(global_params.DEST_PATH, f'{name}_{int(root_time)}.log'))
+
     fh.setFormatter(formatter)
 
-    ch = logging.StreamHandler()
-    ch.setFormatter(formatter)
+    # ch = logging.StreamHandler()
+    # ch.setFormatter(formatter)
 
     if global_params.DEBUG_MOD:
         fh.setLevel(logging.DEBUG)
-        ch.setLevel(logging.DEBUG)
+        # ch.setLevel(logging.DEBUG)
     else:
         fh.setLevel(logging.INFO)
-        ch.setLevel(logging.INFO)
+        # ch.setLevel(logging.INFO)
 
     logger.addHandler(fh)
-    logger.addHandler(ch)
+    # logger.addHandler(ch)
     return logger
 
 

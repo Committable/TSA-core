@@ -8,7 +8,23 @@ compilation:
     prepare:
       - "npm install @openzeppelin/contracts"
     compilation_base:
-      remap:
+      remaps:
+        "@openzeppelin": ./node_modules/@openzeppelin
+      allow_paths:
+        - node_module/@openzeppelin
+  avalanche-bridge-resources:
+    prepare:
+      - "npm install @openzeppelin/contracts"
+    compilation_base:
+      remaps:
+        "@openzeppelin": ./node_modules/@openzeppelin
+      allow_paths:
+        - node_module/@openzeppelin
+  chainlink:
+    prepare:
+      - "npm install @openzeppelin/contracts"
+    compilation_base:
+      remaps:
         "@openzeppelin": ./node_modules/@openzeppelin
       allow_paths:
         - node_module/@openzeppelin
