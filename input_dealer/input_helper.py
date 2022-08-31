@@ -33,13 +33,13 @@ class InputHelper:
             }
         else:
             log.mylogger.error('input type not supported')
-            raise Exception('input type not supported')
+            raise NotImplementedError('input type not supported')
 
         for (attr, default) in six.iteritems(attr_defaults):
             val = kwargs.get(attr, default)
             if val is None:
                 log.mylogger.error('\'%s\' attribute can\'t be none', attr)
-                raise Exception(f'\'{attr}\' attribute can\'t be none')
+                raise AssertionError(f'\'{attr}\' attribute can\'t be none')
             else:
                 setattr(self, attr, val)
 
@@ -55,7 +55,7 @@ class InputHelper:
                 self.compiler_version, self.compilation_err)
             try:
                 compiler.get_compiled_contracts_as_json(compilation_cfg)
-            except errors.CompilationError:
+            except errors.CompileError:
                 # TODO(Yang): we still analyze if there's a compilation err,
                 #  and the compilation result is default nil
                 compilation_flag = False
@@ -110,5 +110,5 @@ class InputHelper:
                                          absolute_src_path)
         else:
             log.mylogger.error('Unknown file type')
-            raise Exception(f'Unknown file type {self.input_type}')
+            raise NotImplementedError(f'Unknown file type {self.input_type}')
         return inputs, compilation_flag

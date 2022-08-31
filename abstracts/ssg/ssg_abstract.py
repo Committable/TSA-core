@@ -5,12 +5,12 @@ class SsgAbstract:
 
     def register_index(self, index_name):
         self.indexes[index_name] = getattr(
-            __import__("abstracts.ssg." + index_name).ssg, index_name)
+            __import__(f'abstracts.ssg.{index_name}').ssg, index_name)
 
     def get_ssg_abstract_json(self, ssg_graphs):
         abstract = {}
         for name, index in self.indexes.items():
-            func = getattr(index.get_index_class(ssg_graphs), "get_index")
+            func = getattr(index.get_index_class(ssg_graphs), 'get_index')
             abstract[name] = func()
 
         return abstract

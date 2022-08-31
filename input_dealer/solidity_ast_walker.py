@@ -51,7 +51,7 @@ class AstWalker:
                 json_result['children'] = []
                 json_result['ischanged'] = changed
                 if source.is_in_source(int(position[2])):
-                    json_result['src'] = position[0] + ':' + position[1]
+                    json_result['src'] = f'{position[0]}:{position[1]}'
                 else:
                     json_result['src'] = ''
 
@@ -74,7 +74,7 @@ class AstWalker:
                 json_result['children'] = []
                 json_result['ischanged'] = changed
                 if source.is_in_source(int(position[2])):
-                    json_result['src'] = position[0] + ':' + position[1]
+                    json_result['src'] = f'{position[0]}:{position[1]}'
                 else:
                     json_result['src'] = ''
                 for x in node:
@@ -162,9 +162,8 @@ class AstWalker:
     def _check_attributes(self, node, attributes):
         for name in attributes:
             if name == 'attributes':
-                if 'attributes' not in node or \
-                        not self._check_attributes(node['attributes'],
-                                                   attributes['attributes']):
+                if ('attributes' not in node or not self._check_attributes(
+                        node['attributes'], attributes['attributes'])):
                     return False
             else:
                 # if name not in node or node[name] != attributes[name]:

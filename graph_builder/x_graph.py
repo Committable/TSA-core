@@ -34,7 +34,7 @@ class Node:
         return self.to_nodes
 
     def __str__(self):
-        return ('Node_' + self.name).replace('\n', '')
+        return f'Node_{self.name}'.replace('\n', '')
 
 
 class InstructionNode(Node):
@@ -90,7 +90,7 @@ class InstructionNode(Node):
         return self.labels[i]
 
     def __str__(self):
-        return 'InstructionNode_' + self.name + '_' + str(self.pc)
+        return f'InstructionNode_{self.name}_{self.pc}'
 
 
 class MessageCallNode(InstructionNode):
@@ -120,10 +120,11 @@ class MessageCallNode(InstructionNode):
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
-            return (self.name + '::' +
-                    XGraph.sourcemap.get_contents_from_pc(self.pc)).replace(
-                        '\n', '')
-        return (self.name + '::' + str(self.pc)).replace('\n', '')
+            return (
+                f'{self.name}::'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
+        return f'{self.name}::{self.pc}'.replace('\n', '')
 
 
 class SStoreNode(InstructionNode):
@@ -135,11 +136,12 @@ class SStoreNode(InstructionNode):
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
-            return ('Write::' +
-                    XGraph.sourcemap.get_contents_from_pc(self.pc)).replace(
-                        '\n', '')
+            return (
+                f'Write::'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
         else:
-            return 'Write::' + str(self.pc)
+            return f'Write::{self.pc}'
 
 
 class TerminalNode(InstructionNode):
@@ -157,7 +159,7 @@ class ArithNode(InstructionNode):
         super().__init__(operation, operands, global_pc)
 
     def __str__(self):
-        return ('ArithNode_' + self.name + '_' + str(self.pc)).replace('\n', '')
+        return f'ArithNode_{self.name}_{self.pc}'.replace('\n', '')
 
 
 class VariableNode(Node):
@@ -170,7 +172,7 @@ class VariableNode(Node):
         return self.value
 
     def __str__(self):
-        return 'var_' + str(self.count)
+        return f'var_{self.count}'
 
 
 class ConstNode(VariableNode):
@@ -182,7 +184,7 @@ class ConstNode(VariableNode):
 class ExpressionNode(VariableNode):
 
     def __str__(self):
-        return 'EXPR_' + str(self.count)
+        return f'EXPR_{self.count}'
 
 
 class ConstraintNode(VariableNode):
@@ -211,7 +213,7 @@ class ConstraintNode(VariableNode):
         if self.name:
             return self.name
         if XGraph.sourcemap is None or len(self.lines) != 1:
-            return 'BRANCH_' + str(self.pc)
+            return f'BRANCH_{self.pc}'
         else:
             return XGraph.sourcemap.get_contents_from_pc(self.pc).replace(
                 '\n', '')
@@ -232,11 +234,12 @@ class StateNode(VariableNode):
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
-            return ('State::' +
-                    XGraph.sourcemap.get_contents_from_pc(self.pc)).replace(
-                        '\n', '')
+            return (
+                f'State::'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
         else:
-            return 'State::' + str(self.pc)
+            return f'State::{self.pc}'
 
 
 class InputDataNode(VariableNode):
@@ -248,9 +251,9 @@ class InputDataNode(VariableNode):
 
     def __str__(self):
         if z3.is_expr(self.start) or z3.is_expr(self.end):
-            return 'input_' + str(self.count)
+            return f'input_{self.count}'
         else:
-            return 'input_' + str(self.start) + '_' + str(self.end)
+            return f'input_{self.start}_{self.end}'
 
 
 class InputDataSizeNode(VariableNode):
@@ -273,7 +276,7 @@ class ExpNode(VariableNode):
         return self.exponent
 
     def __str__(self):
-        return 'exp_' + str(self.count)
+        return f'exp_{self.count}'
 
 
 class GasPriceNode(VariableNode):
@@ -335,12 +338,12 @@ class AddressNode(VariableNode):
     def __str__(self):
         label = 'symbolic_value'
         try:
-            label = '0x' + str(
+            label = '0x{}'.format(
                 format(int(str(z3.simplify(utils.to_symbolic(self.value)))),
                        '040x'))
         except:  # pylint: disable=bare-except
             pass
-        return 'Address(' + label + ')'.replace('\n', '')
+        return f'Address({label})'.replace('\n', '')
 
 
 class BlockhashNode(VariableNode):
@@ -353,13 +356,13 @@ class BlockhashNode(VariableNode):
         return self.block_number
 
     def __str__(self):
-        return ('Blockhash_' + str(self.count)).replace('\n', '')
+        return f'Blockhash_{self.count}'.replace('\n', '')
 
 
 class GasNode(VariableNode):
 
     def __str__(self):
-        return ('Gas_' + str(self.count)).replace('\n', '')
+        return f'Gas_{self.count}'.replace('\n', '')
 
 
 class ShaNode(VariableNode):
@@ -376,11 +379,12 @@ class ShaNode(VariableNode):
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
             self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
-            return ('SHA_' +
-                    XGraph.sourcemap.get_contents_from_pc(self.pc)).replace(
-                        '\n', '')
+            return (
+                f'SHA_'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
         else:
-            return ('SHA_' + str(self.pc)).replace('\n', '')
+            return f'SHA_{self.pc}'.replace('\n', '')
 
 
 class MemoryNode(VariableNode):  # 32 bytes
@@ -393,7 +397,7 @@ class MemoryNode(VariableNode):  # 32 bytes
         return self.position
 
     def __str__(self):
-        return ('MemoryNode_' + str(self.count)).replace('\n', '')
+        return f'MemoryNode_{self.count}'.replace('\n', '')
 
 
 class ExtcodeSizeNode(VariableNode):
@@ -406,7 +410,7 @@ class ExtcodeSizeNode(VariableNode):
         return self.address
 
     def __str__(self):
-        return ('ExtcodeSizeNode_' + str(self.count)).replace('\n', '')
+        return f'ExtcodeSizeNode_{self.count}'.replace('\n', '')
 
 
 class ExtcodeHashNode(VariableNode):
@@ -419,7 +423,7 @@ class ExtcodeHashNode(VariableNode):
         return self.address
 
     def __str__(self):
-        return ('ExtcodeHashNode_' + str(self.count)).replace('\n', '')
+        return f'ExtcodeHashNode_{self.count}'.replace('\n', '')
 
 
 class DepositValueNode(VariableNode):
@@ -438,13 +442,13 @@ class BalanceNode(VariableNode):
         return self.address
 
     def __str__(self):
-        return ('balance_' + str(self.count)).replace('\n', '')
+        return f'balance_{self.count}'.replace('\n', '')
 
 
 class ReturnDataNode(VariableNode):
 
     def __str__(self):
-        return ('ReturnDataNode_' + str(self.count)).replace('\n', '')
+        return f'ReturnDataNode_{self.count}'.replace('\n', '')
 
 
 class ReturnStatusNode(VariableNode):
@@ -454,13 +458,13 @@ class ReturnStatusNode(VariableNode):
         self.pc = pc
 
     def __str__(self):
-        return 'ReturnStatus_' + str(self.pc)
+        return f'ReturnStatus_{self.pc}'
 
 
 class ReturnDataSizeNode(VariableNode):
 
     def __str__(self):
-        return ('ReturnDataSizeNode_' + str(self.count)).replace('\n', '')
+        return f'ReturnDataSizeNode_{self.count}'.replace('\n', '')
 
 
 class CodeNode(VariableNode):
@@ -470,7 +474,7 @@ class CodeNode(VariableNode):
         self.address = address
 
     def __str__(self):
-        return ('CodeNode_' + str(self.count)).replace('\n', '')
+        return f'CodeNode_{self.count}'.replace('\n', '')
 
 
 class SenderNode(VariableNode):
@@ -486,7 +490,7 @@ class ReceiverNode(VariableNode):
 
 
 class XGraph:
-    sourcemap = None
+    sourcemap = None  # TODO(Chao): Use object attribute instead?
 
     def __init__(self, cname, sourcemap=None):
         XGraph.sourcemap = sourcemap

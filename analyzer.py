@@ -29,7 +29,7 @@ def analyze_evm_from_solidity(output_path,
         root_path=context.root_path,
         remaps=context.remaps,
         allow_paths=context.
-        allow_paths,  # todo: allow paths is overlapped by include paths?
+        allow_paths,  # TODO(Yang): allow paths is overlapped by include paths?
         include_paths=context.include_paths,
         compiler_version='',
         compilation_err=global_params.COMPILATION_ERR)
@@ -37,7 +37,7 @@ def analyze_evm_from_solidity(output_path,
     flag = True  # represent the compilation error caused by source file
     try:
         inputs, flag = helper.get_solidity_inputs(compilation_cfg)
-    except Exception as err:
+    except Exception as err:  # pylint: disable=broad-except
         context.set_err()
         traceback.print_exc()
         log.mylogger.error('fail to compile for %s, err: %s', src_path,
@@ -142,7 +142,7 @@ def analyze_solidity_code(output_path,
     try:
         inputs, flag = helper.get_solidity_inputs(compilation_cfg)
         del inputs  # Unused, reserve for name hint
-    except Exception as err:
+    except Exception as err:  # pylint: disable=broad-except
         context.set_err()
         traceback.print_exc()
         log.mylogger.error('fail to compile for %s, err: %s', src_path,

@@ -10,10 +10,10 @@ class LanguageType(enum.Enum):
 SYM_TIMEOUT = 20000
 
 # output dir
-DEST_PATH = "./tmp"
+DEST_PATH = './tmp'
 
 # input dir
-INPUT_PATH = "./tmp"
+INPUT_PATH = './tmp'
 
 # show compilation
 COMPILATION_ERR = False

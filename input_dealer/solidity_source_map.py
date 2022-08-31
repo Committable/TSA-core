@@ -99,7 +99,7 @@ class SourceMap:
             self.callee_src_pairs = self._get_callee_src_pairs()
             self.func_name_to_params = self._get_func_name_to_params()
         else:
-            raise Exception('There is no such type of input')
+            raise NotImplementedError('There is no such type of input')
 
     def get_lines_from_pc(self, pc):
         if pc not in self.instr_positions:
@@ -123,12 +123,12 @@ class SourceMap:
                                          position['l']]
 
     def _get_var_names(self):
-        return self.ast_helper.extract_state_variable_names(self.parent_file +
-                                                            ':' + self.cname)
+        return self.ast_helper.extract_state_variable_names(
+            f'{self.parent_file}:{self.cname}')
 
     def _get_func_call_names(self):
         func_call_srcs = self.ast_helper.extract_func_call_srcs(
-            self.parent_file + ':' + self.cname)
+            f'{self.parent_file}:{self.cname}')
         func_call_names = []
         for src in func_call_srcs:
             src = src.split(':')
@@ -138,12 +138,12 @@ class SourceMap:
         return func_call_names
 
     def _get_callee_src_pairs(self):
-        return self.ast_helper.get_callee_src_pairs(self.parent_file + ':' +
-                                                    self.cname)
+        return self.ast_helper.get_callee_src_pairs(
+            f'{self.parent_file}:{self.cname}')
 
     def _get_func_name_to_params(self):
         func_name_to_params = self.ast_helper.get_func_name_to_params(
-            self.parent_file + ':' + self.cname)
+            f'{self.parent_file}:{self.cname}')
         if func_name_to_params:
             for func_name in func_name_to_params:
                 calldataload_position = 0
@@ -194,11 +194,11 @@ class SourceMap:
                         if length == 5 and n_p[4] != '':
                             p['m'] = int(n_p[4])
                         if length > 5:
-                            raise Exception(
+                            raise AssertionError(
                                 f'source map error for contract {self.cname}, '
                                 f'file: {self.parent_file}')
                         positions.append(p.copy())
                 return positions
         else:
-            raise Exception(f'There is no such type of input: '
-                            f'{self.input_type}')
+            raise NotImplementedError(f'There is no such type of input: '
+                                      f'{self.input_type}')

@@ -55,8 +55,8 @@ class OpCode:
 
     def is_arithmetic(self):
         """Predicate: opcode result can be calculated from its inputs alone."""
-        return (ADD.code <= self.code <= SIGNEXTEND.code) or \
-               (LT.code <= self.code <= SAR.code)
+        return ((ADD.code <= self.code <= SIGNEXTEND.code) or
+                (LT.code <= self.code <= SAR.code))
 
     def is_memory(self):
         """Predicate: opcode operates on memory"""
@@ -84,8 +84,8 @@ class OpCode:
 
     def is_exception(self):
         """Predicate: opcode causes the EVM to throw an exception."""
-        return (self.code in (THROW.code, THROWI.code, REVERT.code)) \
-               or self.is_invalid()
+        return (self.code in (THROW.code, THROWI.code, REVERT.code) or
+                self.is_invalid())
 
     def halts(self):
         """Predicate: opcode causes the EVM to halt."""
@@ -333,5 +333,5 @@ def missing_opcode(val):
       ValueError: if there is an opcode defined with the given value.
     """
     if val in BYTECODES:
-        raise ValueError('Opcode {} exists.')
+        raise ValueError(f'Opcode "0x{val:02X}" exists.')
     return OpCode('MISSING', val, 0, 0)

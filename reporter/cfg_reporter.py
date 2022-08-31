@@ -32,8 +32,8 @@ class CfgReporter:
 
         for key in env.vertices:
             basic_block = env.vertices[key]
-            label = str(basic_block.start) + '_' + str(basic_block.end)
-            cfg.add_node(contract_name + ':' + str(key),
+            label = f'{basic_block.start}_{basic_block.end}'
+            cfg.add_node(f'{contract_name}:{key}',
                          instructions=basic_block.instructions,
                          label=label,
                          type=basic_block.get_block_type(),
@@ -53,8 +53,8 @@ class CfgReporter:
                     color = 'green'
                 elif edge_type == 'terminal':
                     color = 'red'
-                cfg.add_edge(contract_name + ':' + str(key),
-                             contract_name + ':' + str(target),
+                cfg.add_edge(f'{contract_name}:{key}',
+                             f'{contract_name}:{target}',
                              type=env.jump_type[target],
                              color=color)
 
@@ -66,12 +66,12 @@ class CfgReporter:
 
         for key in env.vertices:
             basic_block = env.vertices[key]
-            label = str(basic_block.start) + '_' + str(basic_block.end)
+            label = f'{basic_block.start}_{basic_block.end}'
             c_cfg_json['nodes'].append({
                 'id': str(key),
                 'name': label,
                 'type': basic_block.get_block_type(),
-                'pos': str(pos[contract_name + ':' + str(key)]),
+                'pos': str(pos[f'{contract_name}:{key}']),
                 'changed': basic_block.changed,
                 'src': basic_block.position,
                 'instructions': basic_block.instructions
@@ -79,7 +79,7 @@ class CfgReporter:
         edge_list = []
         for key in env.edges:
             for target in env.edges[key]:
-                edge_list.append(str(key) + ' ' + str(target) + '\n')
+                edge_list.append(f'{key} {target}\n')
                 c_cfg_json['edges'].append({
                     'source': str(key),
                     'target': str(target),
@@ -120,7 +120,8 @@ class CfgReporter:
             g1.graph_attr['splines'] = 'polyline'
             g1.graph_attr['ratio'] = 'fill'
             g1.layout(prog='dot')
-            g1.draw(path=self.output_path + os.sep + contract_name + '_cfg.pdf',
+            g1.draw(path=os.path.join(self.output_path,
+                                      f'{contract_name}_cfg.pdf'),
                     format='pdf')
 
     def print_cfg_graph(self):
@@ -186,8 +187,8 @@ class CfgReporter:
 
         self.coverage[contract_name] = {
             'visited_paths': interpreter.total_no_of_paths,
-            'visited_edges': len(interpreter.total_visited_edges) -
-                             1,  # subtract (0,0)
+            # subtract (0,0)
+            'visited_edges': len(interpreter.total_visited_edges) - 1,
             'total_edges': edge_number,
             'visited_pcs': len(interpreter.total_visited_pc),
             'total_pcs': len(env.instructions)

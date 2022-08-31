@@ -64,7 +64,7 @@ class AstReporter:
     def _add_ast_edge_list(self, node, edge_list):
         if 'children' in node:
             for child in node['children']:
-                edge_list.append(node['id'] + ' ' + child['id'] + '\n')
+                edge_list.append(f'{node["id"]} {child["id"]}\n')
                 self._add_ast_edge_list(child, edge_list)
 
     def _get_ast_graph(self, current, graph):

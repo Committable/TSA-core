@@ -15,8 +15,7 @@ def get_logger(name=''):
         datefmt='%Y-%m-%d %H:%M:%S')
     root_time = time.time() * 1000000
     fh = logging.FileHandler(
-        os.path.join(global_params.DEST_PATH,
-                     name + '_' + str(int(root_time)) + '.log'))
+        os.path.join(global_params.DEST_PATH, f'{name}_{int(root_time)}.log'))
     fh.setFormatter(formatter)
 
     ch = logging.StreamHandler()

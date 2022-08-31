@@ -1,4 +1,4 @@
-class CompilationError(RuntimeError):
+class CompileError(RuntimeError):
     pass
 
 

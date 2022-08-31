@@ -56,7 +56,7 @@ def main():
     global_params.DEST_PATH = './tmp'
     for file in load_test_files('./test_cases/test_cases.json'):
         file_output_path = utils.generate_output_dir(
-            str(int(time.time() * 1000000)), '')
+            str(int(time.time() * 10**6)), '')
         total += 1
         log.mylogger.info(
             '-----------------start analysis: %s------------------',
@@ -74,7 +74,7 @@ def main():
             else:
                 analyzer.analyze_solidity_code(file_output_path, src_file,
                                                project_dir, ctx)
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             fail += 1
             failed['files'].append(

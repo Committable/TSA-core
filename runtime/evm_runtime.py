@@ -72,7 +72,7 @@ class EvmRuntime:
             pass
         else:
             log.mylogger.error('Unknown file type %s', self.input_type)
-            raise Exception(f'Unknown file type {self.input_type}')
+            raise NotImplementedError(f'Unknown file type {self.input_type}')
 
     # the algorithm is tricky and may fail if compiler modify the feature
     def get_start_block_to_func_sig(self):
@@ -187,9 +187,8 @@ class EvmRuntime:
                         if self.source_map.in_src_file(
                                 self.source_map.instr_positions[i]['f']):
                             t_start = self.source_map.instr_positions[i]['s']
-                            t_end = self.source_map.instr_positions[i][
-                                        's'] + \
-                                    self.source_map.instr_positions[i]['l']
+                            t_end = (self.source_map.instr_positions[i]['s'] +
+                                     self.source_map.instr_positions[i]['l'])
                             i_lines = self.source_map.get_lines_from_pc(i)
                             changed = changed or utils.intersect(
                                 self.context.diff, i_lines)
@@ -200,7 +199,7 @@ class EvmRuntime:
                             if t_end > end:
                                 end = t_end
             if start != sys.maxsize and end != 0 and start <= end:
-                block.set_position(str(start) + ':' + str(end - start))
+                block.set_position(f'{start}:{end - start}')
             else:
                 block.set_position('')
             block.set_lines(list(lines))
@@ -214,8 +213,8 @@ class EvmRuntime:
         key_list = sorted(self.jump_type.keys())
         length = len(key_list)
         for i, key in enumerate(key_list):
-            if self.jump_type[key] != 'terminal' and self.jump_type[
-                    key] != 'unconditional' and i + 1 < length:
+            if (self.jump_type[key] != 'terminal' and
+                    self.jump_type[key] != 'unconditional' and i + 1 < length):
                 target = key_list[i + 1]
                 self.edges[key].append(target)
                 self.vertices[target].set_jump_from(key)
@@ -227,8 +226,8 @@ class EvmRuntime:
                 if len(instrs) > 1 and 'PUSH' in instrs[-2]:
                     target = int(instrs[-2].split(' ')[2], 16)
                     if target not in self.vertices:
-                        raise Exception(f'unrecognized target address '
-                                        f'{target:d}')
+                        raise ValueError(f'unrecognized target address '
+                                         f'{target:d}')
                     self.edges[key].append(target)
 
                     self.vertices[target].set_jump_from(key)
@@ -242,13 +241,15 @@ class EvmRuntime:
         g.attr(splines='polyline')
         g.attr(ratio='fill')
 
+        # TODO(Chao): Avoid using str append (+) in loop,
+        #  instead use str join for str list
         for block in self.vertices.values():
             start = block.get_start_address()
             end = block.get_end_address()
-            label = str(start) + '-' + str(end) + '\n'
+            label = f'{start}-{end}\n'
             if start != end:
-                label = label + self.instructions[
-                    start] + '\n...\n' + self.instructions[end]
+                label = (f'{label}{self.instructions[start]}\n...\n'
+                         f'{self.instructions[end]}')
             else:
                 label = label + self.instructions[start]
 
@@ -273,7 +274,7 @@ class EvmRuntime:
             elif block_type == 'terminal':
                 g.node(name=start, label=label, color='red')
 
-        g.render(file_name + '_cfg',
+        g.render(f'{file_name}_cfg',
                  format='png',
                  directory=global_params.DEST_PATH,
                  view=True)
@@ -281,13 +282,15 @@ class EvmRuntime:
     def print_visited_cfg(self, visited_edges):
         g = graphviz.Digraph(name='ControlFlowGraph', format='pdf')
 
+        # TODO(Chao): Avoid using str append (+) in loop,
+        #  instead use str join for str list
         for block in self.vertices.values():
             start = block.get_start_address()
             end = block.get_end_address()
-            label = str(start) + '-' + str(end) + '\n'
+            label = f'{start}-{end}\n'
             if start != end:
-                label = label + self.instructions[
-                    start] + '\n...\n' + self.instructions[end]
+                label = (f'{label}{self.instructions[start]}\n...\n'
+                         f'{self.instructions[end]}')
             else:
                 label = label + self.instructions[start]
             # label = ''
@@ -353,5 +356,5 @@ class EvmRuntime:
 
         g.render(os.path.join(
             global_params.DEST_PATH,
-            'cfg' + self.src_file.split('/')[-1].split('.')[0] + '.gv'),
+            f'cfg{self.src_file.split("/")[-1].split(".")[0]}.gv'),
                  view=False)

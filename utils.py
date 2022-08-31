@@ -64,7 +64,7 @@ def to_symbolic(number, bits=256):
 def to_real(value):
     try:
         return int(str(simplify(value)))
-    except:
+    except:  # pylint: disable=bare-except
         return None
 
 
@@ -95,7 +95,7 @@ def convert_result(value):
     try:
         if is_const(value):
             value = int(str(value))
-    except:
+    except:  # pylint: disable=bare-except
         pass
     return value
 
@@ -109,7 +109,7 @@ def convert_result_to_int(value):
         if is_const(value):
             value = int(str(value))
             return value
-    except:
+    except:  # pylint: disable=bare-except
         pass
     return global_params.BIG_INT_256
 
@@ -121,7 +121,7 @@ def ceil32(x):
 def check_sat(solver):
     try:
         ret = solver.check()
-    except:
+    except:  # pylint: disable=bare-except
         log.mylogger.warning('z3 get unknown result')
         return unknown
     return ret
@@ -134,13 +134,14 @@ def turn_hex_str_to_decimal_arr(hex_string):
         if i + 1 < length:
             s = hex_string[i:i + 2]
         else:
-            s = hex_string[i:i + 1] + '0'
+            s = f'{hex_string[i:i + 1]}0'
         result.append(int(s, 16))
     return result
 
 
 def get_diff(diff_file, is_before):
     diff = []
+    # TODO(Chao): Make try/except block small
     try:
         with open(diff_file, 'r', encoding='utf-8') as input_file:
             differences = input_file.readlines()
@@ -180,6 +181,6 @@ def get_diff(diff_file, is_before):
                         diff.append(start_line + line_num)
                     if m and m.group(2) != '-':
                         line_num += 1
-    except Exception as err:
+    except Exception as err:  # pylint: disable=broad-except
         log.mylogger.error('get diff fail: %s', str(err))
     return diff

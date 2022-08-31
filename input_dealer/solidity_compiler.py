@@ -17,7 +17,7 @@ class Version:  # 'a.b.c'
         parts_str = version_str.split('.')
         if len(parts_str) != 3:
             log.mylogger.error('%s cannot parsed to Version', version_str)
-            raise Exception(f'{version_str} cannot parsed to Version')
+            raise ValueError(f'{version_str} cannot parsed to Version')
 
         try:
             self.major = int(parts_str[0])
@@ -242,14 +242,14 @@ class AllowedVersion:  # left [<=|<] allow_version [<=|<] right
         expr = 'version'
         if self.left:
             if self.left_equal:
-                expr = str(self.left) + '<=' + expr
+                expr = f'{self.left}<={expr}'
             else:
-                expr = str(self.left) + '<=' + expr
+                expr = f'{self.left}<{expr}'
         if self.right:
             if self.right_equal:
-                expr = expr + '<=' + str(self.right)
+                expr = f'{expr}<={self.right}'
             else:
-                expr = expr + '<' + str(self.right)
+                expr = f'{expr}<{self.right}'
         return expr
 
 
@@ -323,6 +323,7 @@ class SolidityCompiler:
                             child.kill()
                             child.terminate()
                             os.killpg(child.pid, signal.SIGTERM)
+                            # TODO(Chao): source not in self?
                             os.remove(
                                 os.path.join(self.source, '.waffle_bak.json'))
                             log.mylogger.error(
@@ -344,13 +345,12 @@ class SolidityCompiler:
                     if self._compile_with_solcx(v):
                         self._convert_opcodes()
                         return
-                except Exception:
-                    # log.mylogger.error(
-                    #     'Compile with solcx version %s fail',
-                    #     str(v))
+                except Exception:  # pylint: disable=broad-except
+                    log.mylogger.warning('Compile with solcx version %s fail',
+                                         str(v))
                     continue
             log.mylogger.error('Can not compile with solcx')
-            raise errors.CompilationError('Can not compile with solcx')
+            raise errors.CompileError('Can not compile with solcx')
 
         return
 
@@ -465,7 +465,7 @@ class SolidityCompiler:
                 if match_obj:
                     version.set_left(match_obj.group(2), True)
                     parts = match_obj.group(2).split('.')
-                    right = parts[0] + '.' + str(int(parts[1]) + 1) + '.0'
+                    right = f'{parts[0]}.{int(parts[1]) + 1}.0'
                     version.set_right(right, False)
                     break
                 match_obj = re.match(

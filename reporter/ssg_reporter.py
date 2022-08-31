@@ -31,7 +31,7 @@ class SsgReporter:
         graphs = xgraph.graphs
         for key in graphs:
             graph = graphs[key]
-            graph_key = contract_name + ':' + key
+            graph_key = f'{contract_name}:{key}'
             self.ssg_json[graph_key] = {'nodes': [], 'edges': []}
             self.ssg_graphs[graph_key] = graph
 
@@ -76,11 +76,11 @@ class SsgReporter:
                     if graph.edges[(e, x)]['label']:
                         graph.edges[(e, x)]['label'] = label
                     else:
-                        graph.edges[(e, x)]['label'] = graph.edges[
-                            (e, x)]['label'] + ' | ' + label
+                        graph.edges[(e, x)]['label'] = (
+                            f'{graph.edges[(e, x)]["label"]} | '
+                            f'{label}')
 
-                edge_list.append(node_map[str(e)] + ' ' + node_map[str(x)] +
-                                 '\n')
+                edge_list.append(f'{node_map[str(e)]} {node_map[str(x)]}\n')
                 self.ssg_json[graph_key]['edges'].append({
                     'source': str(e),
                     'target': str(x),
@@ -114,7 +114,7 @@ class SsgReporter:
         g1.graph_attr['splines'] = 'polyline'
         g1.graph_attr['ratio'] = 'fill'
         g1.layout(prog='dot')
-        g1.draw(path=self.output_path + os.sep + 'ssg.png', format='png')
+        g1.draw(path=os.path.join(self.output_path, 'ssg.png'), format='png')
 
     def print_function_ssg_graph(self):
         for func, ssg in self.ssg_graphs.items():
@@ -148,7 +148,7 @@ class SsgReporter:
             g1.graph_attr['splines'] = 'polyline'
             g1.graph_attr['ratio'] = 'fill'
             g1.layout(prog='dot')
-            g1.draw(path=os.path.join(self.output_path, func + '_ssg.png'),
+            g1.draw(path=os.path.join(self.output_path, f'{func}_ssg.png'),
                     format='png')
 
     def dump_ssg_edge_list(self):
@@ -156,7 +156,8 @@ class SsgReporter:
         for edge_list in self.ssg_edge_lists.values():
             for i in edge_list:
                 complete.append(i)
-        self.ssg_edge_lists_path = self.output_path + os.sep + 'ssg_edgelist'
+        self.ssg_edge_lists_path = os.path.join(self.output_path,
+                                                'ssg_edgelist')
         with open(self.ssg_edge_lists_path, 'w',
                   encoding='utf8') as output_file:
             output_file.write(''.join(complete))

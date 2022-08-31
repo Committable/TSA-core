@@ -61,7 +61,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
             try:
                 cfg_b, ssg_b = analyzer.analyze_evm_from_solidity(
                     output_path, src_path, project_path, context_before)
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 context_before.set_err()
                 log.mylogger.error(
@@ -87,7 +87,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
             try:
                 cfg_a, ssg_a = analyzer.analyze_evm_from_solidity(
                     output_path, src_path, project_path, context_after)
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 context_after.set_err()
                 log.mylogger.error(
@@ -112,7 +112,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
                 with open(cfg_abstract_path, 'w',
                           encoding='utf8') as output_file:
                     json.dump(cfg_abstract, output_file)
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 log.mylogger.error('fail merge cfg abstract, err: %s', str(err))
                 return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
@@ -134,7 +134,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
                 with open(ssg_abstract_path, 'w',
                           encoding='utf8') as output_file:
                     json.dump(ssg_abstract, output_file)
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 log.mylogger.error('fail merge ssg abstract, err: %s', str(err))
                 return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(

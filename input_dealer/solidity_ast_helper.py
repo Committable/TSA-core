@@ -20,12 +20,13 @@ class AstHelper:
                     self.ast_type = 'ast'
                 else:
                     log.mylogger.error('unknown ast type for %s', x)
-                    raise Exception(f'unknown ast type for {x}')
+                    raise NotImplementedError(f'unknown ast type for {x}')
             # sources is nil when source file is not compilable or not exist
             if len(sources) == 0:
                 self.ast_type = 'unknown'
         else:
-            raise Exception('There is no such type of input for AstHelper')
+            raise NotImplementedError(
+                'There is no such type of input for AstHelper')
 
         self.contracts = self.extract_contract_definitions()
 
@@ -65,8 +66,8 @@ class AstHelper:
                 for node in nodes:
                     ret['contractsById'][node['id']] = node
                     ret['sourcesByContract'][node['id']] = k
-                    ret['contractsByName'][k + ':' +
-                                           node['attributes']['name']] = node
+                    ret['contractsByName'][
+                        f'{k}:{node["attributes"]["name"]}'] = node
             return ret
         else:
             return None
@@ -88,7 +89,7 @@ class AstHelper:
                 name = self.contracts['contractsById'][contract]['attributes'][
                     'name']
                 source = self.contracts['sourcesByContract'][contract]
-                full_name = source + ':' + name
+                full_name = f'{source}:{name}'
                 ret[full_name] = self.extract_state_definitions(full_name)
             return ret
         else:
@@ -184,7 +185,7 @@ class AstHelper:
             name = self.contracts['contractsById'][contract]['attributes'][
                 'name']
             source = self.contracts['sourcesByContract'][contract]
-            full_name = source + ':' + name
+            full_name = f'{source}:{name}'
             ret[full_name] = self.extract_func_call_definitions(full_name)
         return ret
 

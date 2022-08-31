@@ -17,26 +17,26 @@ class LoopSrc(index.Index):
 
         repetition_src = 0
 
-        if self.ast_type == "legacyAST":
-            walker = solidity_ast_walker.AstWalker(ast_type="legacyAST")
+        if self.ast_type == 'legacyAST':
+            walker = solidity_ast_walker.AstWalker(ast_type='legacyAST')
             nodes = []
-            walker.walk(self.ast, {"name": "Block"}, nodes)
+            walker.walk(self.ast, {'name': 'Block'}, nodes)
             for block in nodes:
-                for statement in block["children"]:
-                    if statement["name"] in {
-                            "WhileStatement", "DoWhileStatement", "ForStatement"
+                for statement in block['children']:
+                    if statement['name'] in {
+                            'WhileStatement', 'DoWhileStatement', 'ForStatement'
                     }:
                         repetition_src += 1
-        elif self.ast_type == "ast":
-            walker = solidity_ast_walker.AstWalker(ast_type="ast")
+        elif self.ast_type == 'ast':
+            walker = solidity_ast_walker.AstWalker(ast_type='ast')
             nodes = []
-            walker.walk(self.ast, {"nodeType": "Block"}, nodes)
+            walker.walk(self.ast, {'nodeType': 'Block'}, nodes)
             for node in nodes:
-                if "statements" in node:
-                    for statement in node["statements"]:
-                        if statement["nodeType"] in {
-                                "WhileStatement", "DoWhileStatement",
-                                "ForStatement"
+                if 'statements' in node:
+                    for statement in node['statements']:
+                        if statement['nodeType'] in {
+                                'WhileStatement', 'DoWhileStatement',
+                                'ForStatement'
                         }:
                             repetition_src += 1
 

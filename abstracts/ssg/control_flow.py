@@ -23,7 +23,7 @@ class ControlFlow(index.Index):
                 elif edge_type in {'constraint_flow'}:
                     pass
                 else:
-                    raise Exception(f'no such type edge: {edge_type}')
+                    raise NotImplementedError(f'no such type edge: {edge_type}')
         return control_flow
 
 

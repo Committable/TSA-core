@@ -5,16 +5,16 @@ class AstAbstract:
 
     def register_index(self, index_name):
         self.indexes[index_name] = getattr(
-            __import__("abstracts.ast." + index_name).ast, index_name)
+            __import__(f'abstracts.ast.{index_name}').ast, index_name)
 
     def get_ast_abstract_json(self,
                               ast=None,
-                              ast_type="legacyAST",
+                              ast_type='legacyAST',
                               source=None):
         abstract = {}
         for name, index in self.indexes.items():
             func = getattr(index.get_index_class(ast, ast_type, source),
-                           "get_index")
+                           'get_index')
             abstract[name] = func()
 
         return abstract

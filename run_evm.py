@@ -55,7 +55,7 @@ def main():
     global_params.DEST_PATH = './tmp'
     for file in load_test_files('./test_cases/test_fail.json'):
         file_output_path = utils.generate_output_dir(
-            str(int(time.time() * 1000000)), '')
+            str(int(time.time() * 10**6)), '')
 
         total += 1
         log.mylogger.info(
@@ -68,7 +68,7 @@ def main():
         try:
             analyzer.analyze_evm_from_solidity(file_output_path, ctx.src_file,
                                                ctx.project_dir, ctx)
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             fail += 1
             failed['files'].append(

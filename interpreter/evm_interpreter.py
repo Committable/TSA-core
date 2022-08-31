@@ -71,6 +71,7 @@ class EVMInterpreter:
             if self.runtime.source_map.sig_to_func is not None:
                 current_func_name = None
                 for key in self.runtime.source_map.sig_to_func:
+                    # TODO(Chao): Remove eval?
                     if eval('0x' + key) == eval('0x' + func_sig):
                         current_func_name = self.runtime.source_map.sig_to_func[
                             key]
@@ -104,7 +105,7 @@ class EVMInterpreter:
             log.mylogger.error('system timeout for %s', self.cname)
             self.context.set_timeout()
             self.context.set_err()
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             self.context.set_err()
             log.mylogger.error(
@@ -320,7 +321,7 @@ class EVMInterpreter:
                             new_params.path_conditions_and_vars,
                             self.runtime.vertices[block].end,
                             self.gen.get_path_id(),
-                            selector + '()',
+                            f'{selector}()',
                         )
                     else:
                         self.x_graph.add_constraint_node(
@@ -358,7 +359,7 @@ class EVMInterpreter:
                                      start_time, block)
                 return
         else:
-            raise Exception('unknown Jump-Type')
+            raise NotImplementedError('unknown Jump-Type')
 
         end_time = time.time()
         execution_time = end_time - start_time
@@ -471,8 +472,7 @@ class EVMInterpreter:
                     path_conditions_and_vars['branch_flag'].append(True)
                     self.x_graph.add_constraint_node(
                         path_conditions_and_vars, global_state['pc'] - 1,
-                        self.gen.get_path_id(),
-                        'DIV_' + str(global_state['pc'] - 1))
+                        self.gen.get_path_id(), f'DIV_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
                         raise ValueError('divided by zero')
@@ -494,7 +494,7 @@ class EVMInterpreter:
                     self.x_graph.add_constraint_node(
                         path_conditions_and_vars, global_state['pc'] - 1,
                         self.gen.get_path_id(),
-                        'SDIV_' + str(global_state['pc'] - 1))
+                        f'SDIV_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
                         raise ValueError('divided by zero')
@@ -516,8 +516,7 @@ class EVMInterpreter:
                     path_conditions_and_vars['branch_flag'].append(True)
                     self.x_graph.add_constraint_node(
                         path_conditions_and_vars, global_state['pc'] - 1,
-                        self.gen.get_path_id(),
-                        'MOD_' + str(global_state['pc'] - 1))
+                        self.gen.get_path_id(), f'MOD_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
                         raise ValueError('modified by zero')
@@ -540,7 +539,7 @@ class EVMInterpreter:
                     self.x_graph.add_constraint_node(
                         path_conditions_and_vars, global_state['pc'] - 1,
                         self.gen.get_path_id(),
-                        'SMOD_' + str(global_state['pc'] - 1))
+                        f'SMOD_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
                         raise ValueError('modified by zero')
@@ -567,7 +566,7 @@ class EVMInterpreter:
                     self.x_graph.add_constraint_node(
                         path_conditions_and_vars, global_state['pc'] - 1,
                         self.gen.get_path_id(),
-                        'ADDMOD_' + str(global_state['pc'] - 1))
+                        f'ADDMOD_{global_state["pc"] - 1}')
                 else:
                     if third == 0:
                         raise ValueError('modified by zero')
@@ -591,7 +590,7 @@ class EVMInterpreter:
                     self.x_graph.add_constraint_node(
                         path_conditions_and_vars, global_state['pc'] - 1,
                         self.gen.get_path_id(),
-                        'MULMOD_' + str(global_state['pc'] - 1))
+                        f'MULMOD_{global_state["pc"] - 1}')
                 else:
                     if third == 0:
                         raise ValueError('modified by zero')
@@ -825,14 +824,15 @@ class EVMInterpreter:
                 # get balance of address
                 new_var = None
 
-                # todo: we do not consider balance that dealed twice in a path
+                # TODO(Yang): we do not consider balance that
+                #  dealed twice in a path
                 for x in global_state['balance']:
                     try:
                         if int(str(z3.simplify(
                                 utils.to_symbolic(x - address)))) == 0:
                             new_var = global_state['balance'][x]
                             break
-                    except:
+                    except:  # pylint: disable=bare-except
                         pass
 
                 if new_var is None:
@@ -1014,7 +1014,7 @@ class EVMInterpreter:
                                                              address)))) == 0:
                         new_var = global_state['balance'][x]
                         break
-                except:
+                except:  # pylint: disable=bare-except
                     pass
 
             if new_var is None:
@@ -1282,7 +1282,7 @@ class EVMInterpreter:
                 self.x_graph.add_constraint_node(
                     params.path_conditions_and_vars, global_state['pc'] - 1,
                     self.gen.get_path_id(),
-                    'fund_call_' + str(global_state['pc'] - 1))
+                    f'fund_call_{global_state["pc"] - 1}')
                 # get return status
                 new_var_name = self.gen.gen_return_status(calls[-1])
                 new_var = z3.BitVec(new_var_name, 256)
@@ -1341,7 +1341,7 @@ class EVMInterpreter:
                 self.x_graph.add_constraint_node(
                     params.path_conditions_and_vars, global_state['pc'] - 1,
                     self.gen.get_path_id(),
-                    'fund_callcode_' + str(global_state['pc'] - 1))
+                    f'fund_callcode_{global_state["pc"] - 1}')
 
                 # get return status
                 new_var_name = self.gen.gen_return_status(calls[-1])
@@ -1481,11 +1481,11 @@ class EVMInterpreter:
             else:
                 raise ValueError('STACK underflow')
         else:
-            raise Exception('UNKNOWN INSTRUCTION: ' + opcode)
+            raise NotImplementedError('UNKNOWN INSTRUCTION: ' + opcode)
         a_len = len(stack)
         if (a_len - b_len) != (opcodes.opcode_by_name(opcode).push -
                                opcodes.opcode_by_name(opcode).pop):
-            raise Exception('Stack push and pop un-match')
+            raise AssertionError('Stack push and pop un-match')
         end_time = time.time()
         execution_time = end_time - start_time
         log.mylogger.debug('End executing: %s symbolic execution time: %.6f s',

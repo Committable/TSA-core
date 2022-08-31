@@ -52,7 +52,7 @@ class SoliditySourceCodeAnalysisService(
             report_b = analyzer.analyze_solidity_code(output_path, src_path,
                                                       project_path,
                                                       context_before)
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             log.mylogger.error(
                 'fail analyzing sol source file before for %s, err: %s',
@@ -76,7 +76,7 @@ class SoliditySourceCodeAnalysisService(
             report_a = analyzer.analyze_solidity_code(output_path, src_path,
                                                       project_path,
                                                       context_after)
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             log.mylogger.error(
                 'fail analyzing sol source file after for %s, err: %s',
@@ -96,7 +96,7 @@ class SoliditySourceCodeAnalysisService(
             ast_abstract_path = os.path.join(output_path, 'ast_abstract.json')
             with open(ast_abstract_path, 'w', encoding='utf8') as output_file:
                 json.dump(ast_abstract, output_file)
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             log.mylogger.error('merge ast abstract err: %s', str(err))
             return pb.source_code_analyzer_pb2.SourceCodeAnalysisResponse(
@@ -145,7 +145,7 @@ def has_dependencies_installed(evm=False, emcc=False, golang=False, solc=False):
             log.mylogger.debug(
                 'You are using an untested version of z3. '
                 '%s is the officially tested version', tested_z3_version)
-    except:
+    except:  # pylint: disable=bare-except
         log.mylogger.critical('Z3 is not available. Please install z3 from '
                               'https://github.com/Z3Prover/z3.')
         return False
