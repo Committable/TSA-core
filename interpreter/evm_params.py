@@ -1,0 +1,18 @@
+from z3 import BitVecVal
+
+# timeout for z3 (in ms)
+Z3_TIMEOUT = 3000
+
+LOOP_LIMIT = 2
+
+GAS_LIMIT = 200000
+
+DEPTH_LIMIT = 10
+
+MAX_MEMORY_SIZE = 1024 * 1024
+
+UNSIGNED_BOUND_NUMBER = 2**256 - 1
+
+CONSTANT_ONES_159 = BitVecVal((1 << 160) - 1, 256)
+
+

@@ -1,0 +1,39 @@
+c_cpp_service:
+  address: localhost:50051
+  enabled: true
+  timeout: 300
+rust_service:
+  address: localhost:50052
+  enabled: true
+  timeout: 300
+go_service:
+  address: localhost:50053
+  enabled: true
+  timeout: 300
+solidity_service:
+  address: localhost:50054
+  enabled: true
+  timeout: 300
+evm_service:
+  address: localhost:50055
+  enabled: true
+  timeout: 300
+llvm_service:
+  address: localhost:50056
+  enabled: true
+  timeout: 300
+md_service:
+  address: localhost:50057
+  enabled: true
+  timeout: 300
+handler_service:
+  address: localhost:50051
+  enabled: true
+  timeout: 300
+dest_path: /home/liyue/transparentCenter/AnalysisService/service_test/test/result
+input_path: /home/liyue/transparentCenter/AnalysisService/service_test/test/repos
+repo_url: "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
+# repo_url: "https://github.com/Dapp-Learning-DAO/Dapp-Learning.git"
+# repo_url: "https://github.com/ethereum/go-ethereum.git"
+# repo_url: "https://github.com/aolin118/demo-solidity.git"
+listen_address: 0.0.0.0:50051
