@@ -16,6 +16,9 @@ import os
 
 
 def analyze_evm_from_solidity(output_path, src_path, project_path, context, compilation_cfg={}):
+    # 0. make output dirs
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
     # 1. prepare input
     helper = InputHelper(global_params.LanguageType.SOLIDITY,
                          project_dir=project_path,
