@@ -1,7 +1,8 @@
-from abc import ABCMeta, abstractmethod
+import abc
 
 
-class Index(metaclass=ABCMeta):
-    @abstractmethod
+class Index(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
     def get_index(self):
         pass

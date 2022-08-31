@@ -1,7 +1,7 @@
-from enum import Enum
+import enum
 
 
-class LanguageType(Enum):
+class LanguageType(enum.Enum):
     SOLIDITY = 1
     EVM = 2
 
@@ -10,10 +10,10 @@ class LanguageType(Enum):
 SYM_TIMEOUT = 20000
 
 # output dir
-DEST_PATH = "./tmp"
+DEST_PATH = './tmp'
 
 # input dir
-INPUT_PATH = "./tmp"
+INPUT_PATH = './tmp'
 
 # show compilation
 COMPILATION_ERR = False

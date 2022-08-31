@@ -1,14 +1,14 @@
-import log
 import networkx as nx
+import z3
+from z3 import z3util
 
-from z3 import is_expr, is_const, simplify
-from z3.z3util import get_vars
-from utils import to_symbolic, convert_result_to_int
+import log
+import utils
 
 
 class Node:
     count = 0
-    
+
     def __init__(self, name, from_nodes=None, to_nodes=None):
         if to_nodes is None:
             to_nodes = set()
@@ -16,41 +16,62 @@ class Node:
             from_nodes = set()
         self.count = Node.count  # the node number of this node
         self.name = name
-        self.fromNodes = from_nodes
-        self.toNodes = to_nodes
+        self.from_nodes = from_nodes
+        self.to_nodes = to_nodes
 
         Node.count += 1
 
     def get_from_nodes(self):
-        return self.fromNodes
+        return self.from_nodes
 
     def add_from_node(self, node):
-        self.fromNodes.add(node)
+        self.from_nodes.add(node)
 
     def add_to_node(self, node):
-        self.toNodes.add(node)
+        self.to_nodes.add(node)
 
     def get_to_nodes(self):
-        return self.toNodes
+        return self.to_nodes
 
     def __str__(self):
-        return ("Node_" + self.name).replace("\n", "")
+        return f'Node_{self.name}'.replace('\n', '')
 
 
-# instruction node for instructions like SSTORE, CALL, STATICCALL...
-# instruction_name: opcode
-# arguments: for nodes of arguments in different paths
-#   e.g. for sstore: [[node1,node1], [node2,node3]], (node1, node2) be the address and value of one path
-#   and (node1, node3) be the address and value of another path
-# labels: the label of different arguments, e.g. for sstroe, {0:"address", 1:"value), means first argument is "address",
-#   second argument is "value"
 class InstructionNode(Node):
+    """Node for instructions like SSTORE, CALL, STATICCALL, etc..
+
+    Attributes:
+        arguments: for nodes of arguments in different paths, e.g.
+            for SSTORE: [[node1,node1], [node2,node3]], (node1, node2)
+            be the address and value of one path.
+        labels: the label of different arguments, e.g. for SSTORE,
+            {0:'address', 1:'value), means first argument is 'address',
+            second argument is 'value'.
+        pc: global program counter for the instruction.
+    """
+
     def __init__(self, instruction_name, arguments, global_pc, labels=None):
+        """Init instruction node.
+
+        Args:
+            instruction_name: opcode name.
+            arguments: for nodes of arguments in different paths, e.g.
+                for SSTORE: [[node1,node1], [node2,node3]], (node1, node2)
+                be the address and value of one path.
+            global_pc: global program counter for the instruction.
+            labels: the label of different arguments, e.g. for SSTORE,
+                {0:'address', 1:'value), means first argument is 'address',
+                second argument is 'value'.
+
+        Returns:
+        Raises:
+        """
         super().__init__(instruction_name)
         self.arguments = arguments
         self.labels = labels
         self.pc = global_pc
-        if XGraph.sourcemap is not None and len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+        if XGraph.sourcemap is not None and len(
+                XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
             self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
 
     def get_pc(self):
@@ -69,39 +90,62 @@ class InstructionNode(Node):
         return self.labels[i]
 
     def __str__(self):
-        return "InstructionNode_" + self.name + "_" + str(self.pc)
+        return f'InstructionNode_{self.name}_{self.pc}'
 
 
 class MessageCallNode(InstructionNode):
+
     def __init__(self, instruction_name, arguments, global_pc):
         super().__init__(instruction_name, arguments, global_pc)
-        if self.name in ("DELEGATECALL", "STATICCALL"):
-            labels = {0: "gas", 1: "recipient", 2: "start_input", 3: "size_input", 4: "start_output", 5: "size_output"}
+        if self.name in ('DELEGATECALL', 'STATICCALL'):
+            labels = {
+                0: 'gas',
+                1: 'recipient',
+                2: 'start_input',
+                3: 'size_input',
+                4: 'start_output',
+                5: 'size_output'
+            }
         else:
-            labels = {0: "gas", 1: "recipient", 2: "transfer", 3: "start_input",
-                      4: "size_input", 5: "start_output", 6: "size_output"}
+            labels = {
+                0: 'gas',
+                1: 'recipient',
+                2: 'transfer',
+                3: 'start_input',
+                4: 'size_input',
+                5: 'start_output',
+                6: 'size_output'
+            }
         self.set_labels(labels)
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
-            return (self.name + "::" + XGraph.sourcemap.get_contents_from_pc(self.pc)).replace("\n", "")
-        return (self.name + "::" + str(self.pc)).replace("\n", "")
+            return (
+                f'{self.name}::'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
+        return f'{self.name}::{self.pc}'.replace('\n', '')
 
 
 class SStoreNode(InstructionNode):
+
     def __init__(self, instruction_name, global_pc, arguments):
         super().__init__(instruction_name, arguments, global_pc)
-        labels = {0: "address", 1: "value"}
+        labels = {0: 'address', 1: 'value'}
         self.set_labels(labels)
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
-            return ("Write::" + XGraph.sourcemap.get_contents_from_pc(self.pc)).replace("\n", "")
+            return (
+                f'Write::'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
         else:
-            return "Write::" + str(self.pc)
+            return f'Write::{self.pc}'
 
 
 class TerminalNode(InstructionNode):
+
     def __init__(self, instruction_name, global_pc):
         super().__init__(instruction_name, [], global_pc)
 
@@ -110,14 +154,16 @@ class TerminalNode(InstructionNode):
 
 
 class ArithNode(InstructionNode):
+
     def __init__(self, operation, operands, global_pc):
         super().__init__(operation, operands, global_pc)
 
     def __str__(self):
-        return ("ArithNode_" + self.name + "_" + str(self.pc)).replace("\n", "")
+        return f'ArithNode_{self.name}_{self.pc}'.replace('\n', '')
 
 
 class VariableNode(Node):
+
     def __init__(self, name, value):
         super().__init__(name)
         self.value = value
@@ -126,30 +172,30 @@ class VariableNode(Node):
         return self.value
 
     def __str__(self):
-        return "var_" + str(self.count)
+        return f'var_{self.count}'
 
 
 class ConstNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return str(self.value).replace("\n", "")
+        return str(self.value).replace('\n', '')
 
 
 class ExpressionNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "EXPR_" + str(self.count)
+        return f'EXPR_{self.count}'
 
 
 class ConstraintNode(VariableNode):
-    def __init__(self, value, pc, path, name=""):
+
+    def __init__(self, value, pc, path, name=''):
         super().__init__(name, value)
         self.pc = pc
-        # len(paths) == len(values) and value of index i means the constraint expression of path of index i
+
+        # len(paths) == len(values) and value of index i means
+        # the constraint expression of path of index i
+
         self.values = [value]
         self.paths = [path]
         self.name = name
@@ -166,18 +212,21 @@ class ConstraintNode(VariableNode):
     def __str__(self):
         if self.name:
             return self.name
-        if XGraph.sourcemap is None or len(self.lines) != 1:
-            return "BRANCH_" + str(self.pc)
+        if XGraph.sourcemap is None or len(self.lines) != 1 or XGraph.sourcemap.get_contents_from_pc(self.pc) == "":
+            return f'BRANCH_{self.pc}'
         else:
-            return XGraph.sourcemap.get_contents_from_pc(self.pc).replace("\n", "")
+            return XGraph.sourcemap.get_contents_from_pc(self.pc).replace(
+                '\n', '')
 
 
 class StateNode(VariableNode):
+
     def __init__(self, name, value, position, pc):
         super().__init__(name, value)
         self.position = position
         self.pc = pc
-        if XGraph.sourcemap is not None and len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
+        if XGraph.sourcemap is not None and len(
+                XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
             self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
 
     def get_position(self):
@@ -185,34 +234,36 @@ class StateNode(VariableNode):
 
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
-            return ("State::" + XGraph.sourcemap.get_contents_from_pc(self.pc)).replace("\n", "")
+            return (
+                f'State::'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
         else:
-            return "State::" + str(self.pc)
+            return f'State::{self.pc}'
 
 
 class InputDataNode(VariableNode):
+
     def __init__(self, name, value, start, end):  # include start, exclude end
         super().__init__(name, value)
         self.start = start
         self.end = end
 
     def __str__(self):
-        if is_expr(self.start) or is_expr(self.end):
-            return "input_" + str(self.count)
+        if z3.is_expr(self.start) or z3.is_expr(self.end):
+            return f'input_{self.count}'
         else:
-            return "input_" + str(self.start) + "_" + str(self.end)
+            return f'input_{self.start}_{self.end}'
 
 
 class InputDataSizeNode(VariableNode):
 
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
     def __str__(self):
-        return "inputSize"
+        return 'inputSize'
 
 
 class ExpNode(VariableNode):
+
     def __init__(self, name, value, base, exponent):
         super().__init__(name, value)
         self.base = base
@@ -225,115 +276,97 @@ class ExpNode(VariableNode):
         return self.exponent
 
     def __str__(self):
-        return "exp_" + str(self.count)
+        return f'exp_{self.count}'
 
 
 class GasPriceNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "gasPrice"
+        return 'gasPrice'
 
 
 class OriginNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "origin"
+        return 'origin'
 
 
 class CoinbaseNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "coinbase"
+        return 'coinbase'
 
 
 class DifficultyNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "difficulty"
+        return 'difficulty'
 
 
 class GasLimitNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "gasLimit"
+        return 'gasLimit'
 
 
 class ChainIdNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "chainId"
+        return 'chainId'
 
 
 class BaseFeeNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "baseFee"
+        return 'baseFee'
 
 
 class BlockNumberNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "blockNum"
+        return 'blockNum'
 
 
 class TimeStampNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "timeStamp"
+        return 'timeStamp'
 
 
 class AddressNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        label = "symbolic_value"
+        label = 'symbolic_value'
         try:
-            label = "0x" + str(format(int(str(simplify(to_symbolic(self.value)))), '040x'))
-        except:
+            label = '0x{}'.format(
+                format(int(str(z3.simplify(utils.to_symbolic(self.value)))),
+                       '040x'))
+        except:  # pylint: disable=bare-except
             pass
-        return "Address(" + label + ")".replace("\n", "")
+        return f'Address({label})'.replace('\n', '')
 
 
 class BlockhashNode(VariableNode):
+
     def __init__(self, name, value, block_number):
         super().__init__(name, value)
-        self.blockNumber = block_number
+        self.block_number = block_number
 
     def get_block_number(self):
-        return self.blockNumber
+        return self.block_number
 
     def __str__(self):
-        return ("Blockhash_" + str(self.count)).replace("\n", "")
+        return f'Blockhash_{self.count}'.replace('\n', '')
 
 
 class GasNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return ("Gas_" + str(self.count)).replace("\n", "")
+        return f'Gas_{self.count}'.replace('\n', '')
 
 
 class ShaNode(VariableNode):
+
     def __init__(self, name, value, pc, param=None):
         super().__init__(name, value)
         self.param = param
@@ -346,12 +379,16 @@ class ShaNode(VariableNode):
     def __str__(self):
         if len(XGraph.sourcemap.get_lines_from_pc(self.pc)) == 1:
             self.lines = XGraph.sourcemap.get_lines_from_pc(self.pc)
-            return ("SHA_" + XGraph.sourcemap.get_contents_from_pc(self.pc)).replace("\n", "")
+            return (
+                f'SHA_'
+                f'{XGraph.sourcemap.get_contents_from_pc(self.pc)}').replace(
+                    '\n', '')
         else:
-            return ("SHA_"+str(self.pc)).replace("\n", "")
+            return f'SHA_{self.pc}'.replace('\n', '')
 
 
 class MemoryNode(VariableNode):  # 32 bytes
+
     def __init__(self, name, value, position):
         super().__init__(name, value)
         self.position = position  # start offset of the memory symbolic variable
@@ -360,10 +397,11 @@ class MemoryNode(VariableNode):  # 32 bytes
         return self.position
 
     def __str__(self):
-        return ("MemoryNode_" + str(self.count)).replace("\n", "")
+        return f'MemoryNode_{self.count}'.replace('\n', '')
 
 
 class ExtcodeSizeNode(VariableNode):
+
     def __init__(self, name, value, address):
         super().__init__(name, value)
         self.address = address
@@ -372,10 +410,11 @@ class ExtcodeSizeNode(VariableNode):
         return self.address
 
     def __str__(self):
-        return ("ExtcodeSizeNode_" + str(self.count)).replace("\n", "")
+        return f'ExtcodeSizeNode_{self.count}'.replace('\n', '')
 
 
 class ExtcodeHashNode(VariableNode):
+
     def __init__(self, name, value, address):
         super().__init__(name, value)
         self.address = address
@@ -384,18 +423,17 @@ class ExtcodeHashNode(VariableNode):
         return self.address
 
     def __str__(self):
-        return ("ExtcodeHashNode_" + str(self.count)).replace("\n", "")
+        return f'ExtcodeHashNode_{self.count}'.replace('\n', '')
 
 
 class DepositValueNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "Iv"
+        return 'Iv'
 
 
 class BalanceNode(VariableNode):
+
     def __init__(self, name, value, address):
         super().__init__(name, value)
         self.address = address
@@ -404,33 +442,29 @@ class BalanceNode(VariableNode):
         return self.address
 
     def __str__(self):
-        return ("balance_" + str(self.count)).replace("\n", "")
+        return f'balance_{self.count}'.replace('\n', '')
 
 
 class ReturnDataNode(VariableNode):
 
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
     def __str__(self):
-        return ("ReturnDataNode_" + str(self.count)).replace("\n", "")
+        return f'ReturnDataNode_{self.count}'.replace('\n', '')
 
 
 class ReturnStatusNode(VariableNode):
+
     def __init__(self, name, value, pc):
         super().__init__(name, value)
         self.pc = pc
 
     def __str__(self):
-        return "ReturnStatus_" + str(self.pc)
+        return f'ReturnStatus_{self.pc}'
 
 
 class ReturnDataSizeNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return ("ReturnDataSizeNode_" + str(self.count)).replace("\n", "")
+        return f'ReturnDataSizeNode_{self.count}'.replace('\n', '')
 
 
 class CodeNode(VariableNode):
@@ -440,43 +474,39 @@ class CodeNode(VariableNode):
         self.address = address
 
     def __str__(self):
-        return ("CodeNode_" + str(self.count)).replace("\n", "")
+        return f'CodeNode_{self.count}'.replace('\n', '')
 
 
 class SenderNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "msg.sender"
+        return 'msg.sender'
 
 
 class ReceiverNode(VariableNode):
-    def __init__(self, name, value):
-        super().__init__(name, value)
 
     def __str__(self):
-        return "msg.receiver"
+        return 'msg.receiver'
 
 
 class XGraph:
-    sourcemap = None
+    sourcemap = None  # TODO(Chao): Use object attribute instead?
 
     def __init__(self, cname, sourcemap=None):
         XGraph.sourcemap = sourcemap
 
         # @global is the default func
-        self.graphs = {"@global": nx.DiGraph(name=cname)}
-        self.current_function = "@global"
+        self.graphs = {'@global': nx.DiGraph(name=cname)}
+        self.current_function = '@global'
 
         # nodes in graph
-        self.arith_nodes = set()  # only for {"add", "sub", "mul", "exp"}
+        self.arith_nodes = set()  # only for {'add', 'sub', 'mul', 'exp'}
         self.input_data_nodes = set()  # for {calldataload, calldatacopy}
-        self.terminal_nodes = set()  # for "revert"
+        self.terminal_nodes = set()  # for 'revert'
         self.sender_node = None  # for msg.sender
         self.receiver_node = None  # for receiver
         self.deposit_value_node = None  # Iv
-        self.origin_node = None  # for "origin"
+        self.origin_node = None  # for 'origin'
         self.coin_base_node = None
         self.difficulty_node = None
         self.gas_limit_node = None
@@ -505,8 +535,10 @@ class XGraph:
         # constraint tree root
         self.constraint_root = None
 
+        # TODO(Chao): Move to method docstring
         # nodes may not in graph, but cached
-        # (Var, VariableNode), mapping symbolic variable or real int to variableNodes or constNodes
+        # (Var, VariableNode), mapping symbolic variable or real int to
+        # variableNodes or constNodes
         self.mapping_var_node = {}
 
     # add and initial a DiGraph for a function
@@ -520,28 +552,30 @@ class XGraph:
         else:
             return None
 
-    # add a variable node to mapping_var_node indexed by var(symbolic or const) without adding to graph
+    # add a variable node to mapping_var_node indexed by var(symbolic or const)
+    # without adding to graph
     def cache_var_node(self, var, node):
         if var in self.mapping_var_node:
             return self.mapping_var_node[var]
         self.mapping_var_node[var] = node
         return node
 
-    # add a const or variable node of var value and add it to graph
-    # if cached in mapping_var_node, add the node
-    # if not cached in mapping_var_node, create a new node
+    # add a const or variable node of var value and add it to graph:
+    # if cached in mapping_var_node, add the node;
+    # if not cached in mapping_var_node, create a new node.
     def add_var(self, var):
         if var in self.mapping_var_node:
             self._add_node(self.mapping_var_node[var])
             return self.mapping_var_node[var]
         else:
-            if is_expr(var):
+            if z3.is_expr(var):
                 node = VariableNode(str(var), var)
             else:
                 node = ConstNode(str(var), var)
             return self.add_var_node(var, node)
 
-    # add a const or variable node to graph, if cached in mapping_var_node, add the old node
+    # add a const or variable node to graph,
+    # if cached in mapping_var_node, add the old node
     def add_var_node(self, var, node):
         node = self.cache_var_node(var, node)
         self._add_node(node)
@@ -555,28 +589,42 @@ class XGraph:
     def add_branch_edge(self, edge_list, edge_type, path=None, label=None):
         graph = self.graphs[self.current_function]
         for edge in edge_list:
-            if graph.has_edge(edge[0], edge[1]) and graph[edge[0]][edge[1]]["type"] == edge_type:
+            if graph.has_edge(
+                    edge[0],
+                    edge[1]) and graph[edge[0]][edge[1]]['type'] == edge_type:
                 if path and label:
-                    graph[edge[0]][edge[1]]["paths"].append(path)
-                    graph[edge[0]][edge[1]]["labels"].append(label)
-            elif graph.has_edge(edge[0], edge[1]) and graph[edge[0]][edge[1]]["type"] != edge_type:
-                log.mylogger.error("(%s, %s) are both %s and %s", str(edge[0]), str(edge[1]),
-                                   graph[edge[0]][edge[1]]["type"], edge_type)
+                    graph[edge[0]][edge[1]]['paths'].append(path)
+                    graph[edge[0]][edge[1]]['labels'].append(label)
+            elif graph.has_edge(
+                    edge[0],
+                    edge[1]) and graph[edge[0]][edge[1]]['type'] != edge_type:
+                log.mylogger.error('(%s, %s) are both %s and %s', str(edge[0]),
+                                   str(edge[1]),
+                                   graph[edge[0]][edge[1]]['type'], edge_type)
             else:
                 if path and label:
-                    graph.add_edge(edge[0], edge[1], type=edge_type, paths=[path], labels=[label])
+                    graph.add_edge(edge[0],
+                                   edge[1],
+                                   type=edge_type,
+                                   paths=[path],
+                                   labels=[label])
                 else:
-                    graph.add_edge(edge[0], edge[1], type=edge_type, paths=[], labels=[])
+                    graph.add_edge(edge[0],
+                                   edge[1],
+                                   type=edge_type,
+                                   paths=[],
+                                   labels=[])
 
-    # add an expression node of expr value to graph, if cached in mapping_expr_node, add the old node
+    # add an expression node of expr value to graph,
+    # if cached in mapping_expr_node, add the old node
     def add_expression_node(self, expr):
-        if not is_expr(expr) or is_const(expr):  # be a const or a variable, e.g. 0 or BitVecVal("a", 256)
+        # be a const or a variable, e.g. 0 or BitVecVal('a', 256)
+        if not z3.is_expr(expr) or z3.is_const(expr):
             return self.add_var(expr)
         graph = self.graphs[self.current_function]
         # search expr in mapping_expr_node, and add it to graph
-        for key in self.mapping_expr_node:
-            if convert_result_to_int(key - expr) == 0:
-                e_node = self.mapping_expr_node[key]
+        for key, e_node in self.mapping_expr_node.items():
+            if utils.convert_result_to_int(key - expr) == 0:
                 if not graph.has_node(e_node):
                     graph.add_node(e_node)
                     flow_edges = []
@@ -584,26 +632,27 @@ class XGraph:
                         flow_edges.append((n, e_node))
                         if not graph.has_node(n):
                             graph.add_node(n)
-                    self.add_branch_edge(flow_edges, "value_flow")
+                    self.add_branch_edge(flow_edges, 'value_flow')
                 return e_node
-        # expr not in mapping_expr_node, create it and add it to mapping_expr_node and graph
+        # expr not in mapping_expr_node, create it and add it to
+        # mapping_expr_node and graph
         e_node = ExpressionNode(str(expr), expr)
         self.mapping_expr_node[expr] = e_node
         graph.add_node(e_node)
 
         flow_edges = []
-        for var in get_vars(expr):
+        for var in z3util.get_vars(expr):
             node = self.add_var(var)
             e_node.add_from_node(node)
             flow_edges.append((node, e_node))
-        self.add_branch_edge(flow_edges, "value_flow")
+        self.add_branch_edge(flow_edges, 'value_flow')
         return e_node
 
     # add a constraint node of constraint
-    def add_constraint_node(self, path_conditions, pc, path, name=""):
-        constraint = path_conditions["path_condition"][-1]
-        constraint_nodes = path_conditions["path_condition_node"]
-        branch_flags = path_conditions["branch_flag"]
+    def add_constraint_node(self, path_conditions, pc, path, name=''):
+        constraint = path_conditions['path_condition'][-1]
+        constraint_nodes = path_conditions['path_condition_node']
+        branch_flags = path_conditions['branch_flag']
 
         e_node = self.get_constraint_node(pc)
         if e_node is None:
@@ -614,7 +663,7 @@ class XGraph:
             #     for var in get_vars(constraint):
             #         node = self.get_var_node(var)
             #         flow_edges.append((node, e_node))
-            # self.add_branch_edge(flow_edges, "value_flow", None)
+            # self.add_branch_edge(flow_edges, 'value_flow', None)
             self.mapping_constraint_node[pc] = e_node
         else:
             e_node.add_constraint(constraint, path)
@@ -624,9 +673,10 @@ class XGraph:
         if len(constraint_nodes) > 0:
             if not graph.has_node(constraint_nodes[-1]):
                 graph.add_node(constraint_nodes[-1])
-            self.add_branch_edge([(constraint_nodes[-1], e_node)], "control_flow", path, str(branch_flags[-2]))
+            self.add_branch_edge([(constraint_nodes[-1], e_node)],
+                                 'control_flow', path, str(branch_flags[-2]))
 
-        path_conditions["path_condition_node"].append(e_node)
+        path_conditions['path_condition_node'].append(e_node)
         return e_node
 
     def get_constraint_node(self, key):
@@ -635,11 +685,12 @@ class XGraph:
         else:
             return None
 
-    def add_message_call_node(self, name, pc, parameters, return_node, path_id, path_conditions):
+    def add_message_call_node(self, name, pc, parameters, return_node, path_id,
+                              path_conditions):
         if pc in self.mapping_pc_message_call_node:
             node = self.mapping_pc_message_call_node[pc]
         else:
-            if name in ("DELEGATECALL", "STATICCALL"):
+            if name in ('DELEGATECALL', 'STATICCALL'):
                 node = MessageCallNode(name, [[], [], [], [], [], []], pc)
             else:
                 node = MessageCallNode(name, [[], [], [], [], [], [], []], pc)
@@ -650,17 +701,19 @@ class XGraph:
             else:
                 p_node = self.add_expression_node(parameters[i])
             node.add_arguments(p_node, i)
-            self.add_branch_edge([(p_node, node)], "value_flow", path_id, node.get_label(i))
+            self.add_branch_edge([(p_node, node)], 'value_flow', path_id,
+                                 node.get_label(i))
 
         self.add_var_node(return_node.get_value(), return_node)
-        self.add_branch_edge([(node, return_node)], "value_flow")
+        self.add_branch_edge([(node, return_node)], 'value_flow')
 
         # add constraints for this instruction
-        constraint_nodes = path_conditions["path_condition_node"]
+        constraint_nodes = path_conditions['path_condition_node']
         if len(constraint_nodes) > 0:
             c_node = constraint_nodes[-1]
-            flag = path_conditions["branch_flag"][-1]
-            self.add_branch_edge([(c_node, node)], "constraint_flow", path_id, str(flag))
+            flag = path_conditions['branch_flag'][-1]
+            self.add_branch_edge([(c_node, node)], 'constraint_flow', path_id,
+                                 str(flag))
 
         return node
 
@@ -670,20 +723,20 @@ class XGraph:
         else:
             self.mapping_pc_terminal_node[node.get_pc()] = node
         # add constraints for this instruction
-        constraint_nodes = path_conditions["path_condition_node"]
+        constraint_nodes = path_conditions['path_condition_node']
         if len(constraint_nodes) > 0:
             c_node = constraint_nodes[-1]
-            flag = path_conditions["branch_flag"][-1]
-            self.add_branch_edge([(c_node, node)], "constraint_flow", path_id, str(flag))
+            flag = path_conditions['branch_flag'][-1]
+            self.add_branch_edge([(c_node, node)], 'constraint_flow', path_id,
+                                 str(flag))
 
     # add address node of expr to graph
     def add_address_node(self, expr):
         graph = self.graphs[self.current_function]
 
         # get address node from mapping address node
-        for key in self.mapping_address_node:
-            if convert_result_to_int(key - expr) == 0:
-                a_node = self.mapping_address_node[key]
+        for key, a_node in self.mapping_address_node.items():
+            if utils.convert_result_to_int(key - expr) == 0:
                 if not graph.has_node(a_node):
                     graph.add_node(a_node)
                 flow_edge = []
@@ -691,7 +744,7 @@ class XGraph:
                     flow_edge.append((n, a_node))
                     if not graph.has_node(n):
                         graph.add_node(n)
-                self.add_branch_edge(flow_edge, "value_flow")
+                self.add_branch_edge(flow_edge, 'value_flow')
                 return a_node
 
         # create a new address node
@@ -699,19 +752,20 @@ class XGraph:
         self.mapping_address_node[expr] = a_node
         graph.add_node(a_node)
         flow_edges = []
-        if not is_expr(expr):
+        if not z3.is_expr(expr):
             node = self.add_var(expr)
             flow_edges.append((node, a_node))
             a_node.add_from_node(node)
         else:
-            for var in get_vars(expr):
+            for var in z3util.get_vars(expr):
                 node = self.add_var(var)
                 flow_edges.append((node, a_node))
                 a_node.add_from_node(node)
-        self.add_branch_edge(flow_edges, "value_flow")
+        self.add_branch_edge(flow_edges, 'value_flow')
         return a_node
 
-    # add sstore node to graph, if not exist in mapping_pc_state_op_node, create a new SStoreNode
+    # add sstore node to graph, if not exist in mapping_pc_state_op_node,
+    # create a new SStoreNode
     # opcode: the opcode of sstore instruction
     # pc: the pc of the sstore instruction
     # arguments: the arguments of the sstore instruction in this path
@@ -721,20 +775,24 @@ class XGraph:
             node = self.mapping_pc_state_op_node[pc]
         else:
             node = SStoreNode(opcode, pc, [[], []])
-        # add new arguments nodes of the sstore node for this path to sstore node and arguments edges to graph
+        # add new arguments nodes of the sstore node for this path to
+        # sstore node and arguments edges to graph
         for i in range(0, len(arguments)):
             p_node = self.add_expression_node(arguments[i])
             node.add_arguments(p_node, i)
             if node.labels is not None:
-                self.add_branch_edge([(p_node, node)], "value_flow", path_id, node.labels[i])
+                self.add_branch_edge([(p_node, node)], 'value_flow', path_id,
+                                     node.labels[i])
             else:
-                self.add_branch_edge([(p_node, node)], "value_flow", path_id, str(i))
+                self.add_branch_edge([(p_node, node)], 'value_flow', path_id,
+                                     str(i))
         # add constraints for this instruction
-        constraint_nodes = path_conditions["path_condition_node"]
+        constraint_nodes = path_conditions['path_condition_node']
         if len(constraint_nodes) > 0:
             c_node = constraint_nodes[-1]
-            flag = path_conditions["branch_flag"][-1]
-            self.add_branch_edge([(c_node, node)], "constraint_flow", path_id, str(flag))
+            flag = path_conditions['branch_flag'][-1]
+            self.add_branch_edge([(c_node, node)], 'constraint_flow', path_id,
+                                 str(flag))
         return node
 
     # add node and other necessary nodes and edges to graph
@@ -744,70 +802,73 @@ class XGraph:
             return
         graph.add_node(node)
 
-        if type(node) == InputDataNode:  # Todo: add start and end node to input_data_node
+        # Todo(Yang): add start and end node to input_data_node
+        if isinstance(node, InputDataNode):
             self.input_data_nodes.add(node)
-        elif type(node) == ArithNode:
+        elif isinstance(node, ArithNode):
             self.arith_nodes.add(node)
-        elif type(node) == TerminalNode:
+        elif isinstance(node, TerminalNode):
             self.terminal_nodes.add(node)
-        elif type(node) == SenderNode:  #
+        elif isinstance(node, SenderNode):  #
             self.sender_node = node
-        elif type(node) == ReceiverNode:  #
+        elif isinstance(node, ReceiverNode):  #
             self.receiver_node = node
-        elif type(node) == ReturnStatusNode:
+        elif isinstance(node, ReturnStatusNode):
             self.return_status_nodes.add(node)
-        elif type(node) == DepositValueNode:  #
+        elif isinstance(node, DepositValueNode):  #
             self.deposit_value_node = node
-        elif type(node) == BalanceNode:
+        elif isinstance(node, BalanceNode):
             # add value_flow from address_node to balance_node
             address_node = self.add_address_node(node.get_address())
-            self.add_branch_edge([(address_node, node)], "value_flow", -1, "address")
+            self.add_branch_edge([(address_node, node)], 'value_flow', -1,
+                                 'address')
             self.mapping_address_balance_node[node.get_address()] = node
-        elif type(node) == OriginNode:  #
+        elif isinstance(node, OriginNode):  #
             self.origin_node = node
-        elif type(node) == CoinbaseNode:  #
+        elif isinstance(node, CoinbaseNode):  #
             self.coin_base_node = node
-        elif type(node) == BlockNumberNode:  #
+        elif isinstance(node, BlockNumberNode):  #
             self.block_number_nodes.add(node)
-        elif type(node) == DifficultyNode:  #
+        elif isinstance(node, DifficultyNode):  #
             self.difficulty_node = node
-        elif type(node) == GasLimitNode:  #
+        elif isinstance(node, GasLimitNode):  #
             self.gas_limit_node = node
-        elif type(node) == TimeStampNode:
+        elif isinstance(node, TimeStampNode):
             self.time_stamp_node = node
-        elif type(node) == ExpNode:
+        elif isinstance(node, ExpNode):
             # add value from base_node and exponent_node to exp_node
             base_expr_node = self.add_expression_node(node.get_base())
-            self.add_branch_edge([(base_expr_node, node)], "value_flow", -1, "base")
+            self.add_branch_edge([(base_expr_node, node)], 'value_flow', -1,
+                                 'base')
             exponent_expr_node = self.add_expression_node(node.get_exponent())
-            self.add_branch_edge([(exponent_expr_node, node)], "value_flow", -1, "exp")
+            self.add_branch_edge([(exponent_expr_node, node)], 'value_flow', -1,
+                                 'exp')
             self.exp_nodes.add(node)
-        elif type(node) == ShaNode:
+        elif isinstance(node, ShaNode):
             # add value from var_node in param to sha_node
             param = node.get_param()
             if param is not None:
-                if not is_const(param):
-                    for var in get_vars(param):
+                if not z3.is_const(param):
+                    for var in z3util.get_vars(param):
                         var_node = self.add_var(var)
-                        self.add_branch_edge([(var_node, node)], "value_flow")
+                        self.add_branch_edge([(var_node, node)], 'value_flow')
                 else:
                     var_node = self.add_var(param)
-                    self.add_branch_edge([(var_node, node)], "value_flow")
+                    self.add_branch_edge([(var_node, node)], 'value_flow')
             self.sha_nodes.add(node)
-        elif type(node) == ExtcodeSizeNode:
+        elif isinstance(node, ExtcodeSizeNode):
             # add value_flow from address_node to ext_code_size_node
             address_node = self.add_address_node(node.get_address())
-            self.add_branch_edge([(address_node, node)], "value_flow")
-        elif type(node) == BlockhashNode:
-            block_number_node = self.add_expression_node(node.get_block_number())
-            self.add_branch_edge([(block_number_node, node)], "value_flow")
+            self.add_branch_edge([(address_node, node)], 'value_flow')
+        elif isinstance(node, BlockhashNode):
+            block_number_node = self.add_expression_node(
+                node.get_block_number())
+            self.add_branch_edge([(block_number_node, node)], 'value_flow')
             self.blockhash_nodes.add(node)
-        elif type(node) == MemoryNode:
+        elif isinstance(node, MemoryNode):
             position_node = self.add_expression_node(node.get_position())
-            self.add_branch_edge([(position_node, node)], "value_flow")
-        elif type(node) == StateNode:
+            self.add_branch_edge([(position_node, node)], 'value_flow')
+        elif isinstance(node, StateNode):
             position_node = self.add_expression_node(node.get_position())
-            self.add_branch_edge([(position_node, node)], "value_flow", -1, "position")
-
-
-
+            self.add_branch_edge([(position_node, node)], 'value_flow', -1,
+                                 'position')

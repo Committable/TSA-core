@@ -2,6 +2,7 @@ from abstracts import index
 
 
 class DataFlow(index.Index):
+
     def __init__(self, ssg_graphs):
         self.ssg_graphs = ssg_graphs
 
@@ -12,17 +13,17 @@ class DataFlow(index.Index):
             for edge in list(self.ssg_graphs[func].edges):
                 s = edge[0]
                 t = edge[1]
-                type = self.ssg_graphs[func].edges[(s, t)]['type']
-                if type in {"value_flow"}:
+                edge_type = self.ssg_graphs[func].edges[(s, t)]['type']
+                if edge_type in {'value_flow'}:
                     if (str(s), str(t)) not in flows:
                         data_flow += 1
                         flows.add((str(s), str(t)))
-                elif type in {"control_flow"}:
+                elif edge_type in {'control_flow'}:
                     pass
-                elif type in {"constraint_flow"}:
+                elif edge_type in {'constraint_flow'}:
                     pass
                 else:
-                    raise Exception("no such type edge: %s", type)
+                    raise NotImplementedError(f'no such type edge: {edge_type}')
         return data_flow
 
 

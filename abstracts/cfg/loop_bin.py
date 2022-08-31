@@ -1,9 +1,10 @@
-from abstracts import index
-
 import networkx as nx
+
+from abstracts import index
 
 
 class LoopBin(index.Index):
+
     def __init__(self, cfg_graphs):
         self.cfg_graphs = cfg_graphs
 
@@ -13,16 +14,16 @@ class LoopBin(index.Index):
         loop_bin = 0
         for x in self.cfg_graphs:
             cycles.extend(nx.simple_cycles(self.cfg_graphs[x]))
-        for cycle in cycles:
-            if cycle[0] in loops:
-                if cycle[-1] not in loops[cycle[0]]:
-                    loop_bin += 1
-                    loops[cycle[0]].add(cycle[-1])
-            else:
-                loop_bin += 1
-                loops[cycle[0]] = set()
-                loops[cycle[0]].add(cycle[-1])
-        return loop_bin
+        # for cycle in cycles:
+        #     if cycle[0] in loops:
+        #         if cycle[-1] not in loops[cycle[0]]:
+        #             loop_bin += 1
+        #             loops[cycle[0]].add(cycle[-1])
+        #     else:
+        #         loop_bin += 1
+        #         loops[cycle[0]] = set()
+        #         loops[cycle[0]].add(cycle[-1])
+        return len(cycles)
 
 
 def get_index_class(cfg_graphs):

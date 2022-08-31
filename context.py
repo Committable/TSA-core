@@ -1,5 +1,7 @@
 class Context:
-    def __init__(self, start, project_dir, src_file, diff, platform, request_id):
+
+    def __init__(self, start, project_dir, src_file, diff, platform,
+                 request_id):
         self.start = start  # start time
         self.request_id = request_id  # request id
 
@@ -21,16 +23,11 @@ class Context:
         self.allow_paths = []
 
         # default index for abstracts
-        self.ast_abstracts = ["sequence_src",
-                              "selection_src",
-                              "loop_src"]
+        self.ast_abstracts = ["sequence_src", "selection_src", "loop_src"]
 
-        self.cfg_abstracts = ["sequence_bin",
-                              "selection_bin",
-                              "loop_bin"]
+        self.cfg_abstracts = ["sequence_bin", "selection_bin", "loop_bin"]
 
-        self.ssg_abstracts = ["data_flow",
-                              "control_flow"]
+        self.ssg_abstracts = ["data_flow", "control_flow"]
 
         # if analysis cause an error
         self.err = False
