@@ -272,7 +272,7 @@ CREATE2 = OpCode('CREATE2', 0xf5, 4, 1)
 INVALID = OpCode('INVALID', 0xfe, 0, 0)
 SELFDESTRUCT = OpCode('SELFDESTRUCT', 0xff, 1, 0)
 
-# New Byzantinium OpCodes for block.number >= BYZANTIUM_FORK_BLKNUM
+# New Byzantine OpCodes for block.number >= BYZANTIUM_FORK_BLKNUM
 REVERT = OpCode('REVERT', 0xfd, 2, 0)
 RETURNDATASIZE = OpCode('RETURNDATASIZE', 0x3d, 0, 1)
 RETURNDATACOPY = OpCode('RETURNDATACOPY', 0x3e, 3, 0)

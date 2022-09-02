@@ -1420,7 +1420,7 @@ class EVMInterpreter:
             else:
                 raise ValueError('STACK underflow')
         elif opcode in ('SELFDESTRUCT', 'SUICIDE'):
-            # todo: add selfdestruct and suicide instruction to graph
+            # TODO(Yang): add selfdestruct and suicide instruction to graph
             global_state['pc'] = global_state['pc'] + 1
             recipient = stack.pop(0)
             # get transfer_amount and update the new balance

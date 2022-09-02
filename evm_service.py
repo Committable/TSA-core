@@ -96,7 +96,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
                 return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='analysis evm after file error')
 
-            # merge before's and after's cfg abstarct
+            # merge before's and after's cfg abstract
             try:
                 output_path = utils.generate_output_dir(request_id, '')
                 cfg_abstract = {}
@@ -118,7 +118,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
                 return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='merge cfg abstract fail')
 
-            # merge before's and after's ssg abstarct
+            # merge before's and after's ssg abstract
             try:
                 output_path = utils.generate_output_dir(request_id, '')
                 ssg_abstract = {}

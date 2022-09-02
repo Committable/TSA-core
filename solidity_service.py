@@ -83,7 +83,7 @@ class SoliditySourceCodeAnalysisService(
                 output_path, str(err))
             return pb.source_code_analyzer_pb2.SourceCodeAnalysisResponse(
                 status=500, message='analysis sol after file fail')
-        # merge before's and after's abstarct
+        # merge before's and after's abstract
         try:
             output_path = utils.generate_output_dir(request_id, '')
             ast_abstract = {}
@@ -129,8 +129,7 @@ async def serve(address) -> None:
     pb.solidity_analyzer_pb2_grpc.add_SoliditySourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
         SoliditySourceCodeAnalysisService(), server)
     server.add_insecure_port(address)
-    log.mylogger.info('Solidity Analysis Serverice is Listening on %s.',
-                      address)
+    log.mylogger.info('Solidity Analysis Service is Listening on %s.', address)
     await server.start()
     await server.wait_for_termination()
 

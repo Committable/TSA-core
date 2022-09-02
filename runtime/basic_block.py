@@ -19,7 +19,7 @@ class BasicBlock:
         self.jump_from = [
         ]  # all blocks from which can jump to or fall to this block
 
-        self.falls_to = None  # the block this block can falls to
+        self.falls_to = None  # the block this block falls to
 
         # all true targets for conditional jump or targets for un-condition
         # jump, we don't use set() because the top of jump_targets is the
@@ -66,7 +66,7 @@ class BasicBlock:
         return self.falls_to
 
     def set_jump_targets(self, address):
-        # top element is the most recently setted jump target
+        # top element is the most recently set jump target
         for x in self.jump_targets:
             if x == address:
                 self.jump_targets.remove(x)
