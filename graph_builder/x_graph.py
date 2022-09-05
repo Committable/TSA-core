@@ -212,7 +212,9 @@ class ConstraintNode(VariableNode):
     def __str__(self):
         if self.name:
             return self.name
-        if XGraph.sourcemap is None or len(self.lines) != 1 or XGraph.sourcemap.get_contents_from_pc(self.pc) == "":
+        if XGraph.sourcemap is None or len(
+                self.lines) != 1 or XGraph.sourcemap.get_contents_from_pc(
+                    self.pc) == "":
             return f'BRANCH_{self.pc}'
         else:
             return XGraph.sourcemap.get_contents_from_pc(self.pc).replace(
