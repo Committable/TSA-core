@@ -183,4 +183,5 @@ def get_diff(diff_file, is_before):
                         line_num += 1
     except Exception as err:  # pylint: disable=broad-except
         log.mylogger.error('get diff fail: %s', str(err))
+        return []
     return diff

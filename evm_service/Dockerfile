@@ -47,6 +47,6 @@ WORKDIR /root
 RUN  apt-get update \
    && apt-get install graphviz nodejs npm -y --no-install-recommends
 COPY --from=evmbuilder /root/dist/evm_service /root
-COPY --from=evmbuilder /root/evmService/config.yaml /root/
+COPY --from=evmbuilder /root/evm_service/config.yaml /root/
 ENTRYPOINT ["./evm_service"]
 

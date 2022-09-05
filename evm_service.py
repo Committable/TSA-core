@@ -6,7 +6,8 @@ import time
 import traceback
 
 import grpc
-from protos import analyzer as pb
+from protos.analyzer import bytecode_analyzer_pb2
+from protos.analyzer import evm_engine_pb2_grpc
 
 import analyzer
 import context
@@ -26,12 +27,12 @@ log.mylogger = log.get_logger('evm')
 lock = threading.Lock()
 
 
-class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
+class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
 
     def AnalyseByteCode(
-            self, request: pb.bytecode_analyzer_pb2.ByteCodeAnalysisRequest,
+            self, request: bytecode_analyzer_pb2.ByteCodeAnalysisRequest,
             unused_context
-    ) -> pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse:
+    ) -> bytecode_analyzer_pb2.ByteCodeAnalysisResponse:
         request_id = str(int(time.time() * 1000000))
         log.mylogger.info('waiting for request %s, project: %s, file: %s',
                           request_id, request.before_change.repo_path,
@@ -67,7 +68,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
                 log.mylogger.error(
                     'fail analyzing evm bytecode before for %s, err: %s',
                     src_path, str(err))
-                return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
+                return bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='analysis evm before file error')
 
             # 2. after commit, i.e. child
@@ -93,7 +94,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
                 log.mylogger.error(
                     'fail analyzing evm bytecode after for %s, err: %s',
                     output_path, str(err))
-                return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
+                return bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='analysis evm after file error')
 
             # merge before's and after's cfg abstarct
@@ -115,7 +116,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
             except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 log.mylogger.error('fail merge cfg abstract, err: %s', str(err))
-                return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
+                return bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='merge cfg abstract fail')
 
             # merge before's and after's ssg abstarct
@@ -137,12 +138,12 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
             except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 log.mylogger.error('fail merge ssg abstract, err: %s', str(err))
-                return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
+                return bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='merge ssg abstract fail')
 
             log.mylogger.info('success analyzing request %s, result in %s ',
                               request_id, output_path)
-            return pb.bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
+            return bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                 status=200,
                 message='solidity analysis result',
                 cfg_before_path=utils.change_to_relative(
@@ -180,7 +181,7 @@ class EvmEngineService(pb.evm_engine_pb2_grpc.EVMEngineServicer):
 
 async def serve(address) -> None:
     server = grpc.aio.server()
-    pb.evm_engine_pb2_grpc.add_EVMEngineServicer_to_server(
+    evm_engine_pb2_grpc.add_EVMEngineServicer_to_server(
         EvmEngineService(), server)
     server.add_insecure_port(address)
     log.mylogger.info('EVM Engine Service is Listening on %s...', address)

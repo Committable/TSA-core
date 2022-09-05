@@ -1,3 +1,8 @@
+import abstracts.cfg.loop_bin
+import abstracts.cfg.selection_bin
+import abstracts.cfg.sequence_bin
+
+
 class CfgAbstract:
 
     def __init__(self):

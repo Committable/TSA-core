@@ -5,7 +5,8 @@ import time
 import traceback
 
 import grpc
-from protos import analyzer as pb
+from protos.analyzer import solidity_analyzer_pb2_grpc
+from protos.analyzer import source_code_analyzer_pb2
 import z3
 
 import analyzer
@@ -25,12 +26,12 @@ log.mylogger = log.get_logger('solidity')
 
 
 class SoliditySourceCodeAnalysisService(
-        pb.solidity_analyzer_pb2_grpc.SoliditySourceCodeAnalysisServicer):
+        solidity_analyzer_pb2_grpc.SoliditySourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
-        self, request: pb.source_code_analyzer_pb2.SourceCodeAnalysisRequest,
+        self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
         unused_context
-    ) -> pb.source_code_analyzer_pb2.SourceCodeAnalysisResponse:
+    ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         start = time.time()
         request_id = str(int(start * 1000000))
         output_path = utils.generate_output_dir(request_id, 'source_before')
@@ -57,7 +58,7 @@ class SoliditySourceCodeAnalysisService(
             log.mylogger.error(
                 'fail analyzing sol source file before for %s, err: %s',
                 src_path, str(err))
-            return pb.source_code_analyzer_pb2.SourceCodeAnalysisResponse(
+            return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
                 status=500, message='analysis sol before file fail')
 
         output_path = utils.generate_output_dir(request_id, 'source_after')
@@ -81,7 +82,7 @@ class SoliditySourceCodeAnalysisService(
             log.mylogger.error(
                 'fail analyzing sol source file after for %s, err: %s',
                 output_path, str(err))
-            return pb.source_code_analyzer_pb2.SourceCodeAnalysisResponse(
+            return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
                 status=500, message='analysis sol after file fail')
         # merge before's and after's abstarct
         try:
@@ -99,12 +100,12 @@ class SoliditySourceCodeAnalysisService(
         except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             log.mylogger.error('merge ast abstract err: %s', str(err))
-            return pb.source_code_analyzer_pb2.SourceCodeAnalysisResponse(
+            return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
                 status=500, message='merge ast abstract file fail')
 
         log.mylogger.info('success analyzing request: %s, result in %s ',
                           request_id, output_path)
-        return pb.source_code_analyzer_pb2.SourceCodeAnalysisResponse(
+        return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
             status=200,
             message='solidity analysis result',
             ast_before_path=utils.change_to_relative(
@@ -126,7 +127,7 @@ class SoliditySourceCodeAnalysisService(
 
 async def serve(address) -> None:
     server = grpc.aio.server()
-    pb.solidity_analyzer_pb2_grpc.add_SoliditySourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
+    solidity_analyzer_pb2_grpc.add_SoliditySourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
         SoliditySourceCodeAnalysisService(), server)
     server.add_insecure_port(address)
     log.mylogger.info('Solidity Analysis Serverice is Listening on %s.',

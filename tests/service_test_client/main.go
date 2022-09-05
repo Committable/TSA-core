@@ -688,7 +688,7 @@ func main() {
 	for w := 1; w <= 3; w++ {
 		go worker(&wg, w, *fileType, rows, mgr, jobs, results)
 	}
-	for i := 0; i+1 < len(rows); i = i + 2 {
+	for i := 0; i+1 < 199; i = i + 2 {
 		jobs <- i
 	}
 	close(jobs)
@@ -697,7 +697,7 @@ func main() {
 	close(results)
 
 	MetaCommit := make(map[string]int)
-	files, err := GetAllFiles("/home/liyue/transparentCenter/AnalysisService/service_test/test/reports")
+	files, err := GetAllFiles("/home/liyue/transparentCenter/Seraph/tests/service_test_client/workspace/reports")
 	for i, file := range files {
 		fmt.Println(strconv.Itoa(i), ":", file)
 		data, err := ioutil.ReadFile(file)

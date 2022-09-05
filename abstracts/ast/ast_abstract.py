@@ -1,3 +1,8 @@
+import abstracts.ast.selection_src
+import abstracts.ast.loop_src
+import abstracts.ast.sequence_src
+
+
 class AstAbstract:
 
     def __init__(self):
