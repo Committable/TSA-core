@@ -1,0 +1,32 @@
+name: Format and Lint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  format-and-lint:
+    name: Run Python test
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up Python Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install graphviz graphviz-dev -y
+          python -m pip install --upgrade pip
+          python -m pip install yapf pylint
+          python -m pip install pytest pytest-cov
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run Pytest
+        run: |
+          pytest --cov=. --cov-config=.coveragerc tests/test_benchmark/

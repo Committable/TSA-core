@@ -1,0 +1,11 @@
+[run]
+branch = True
+source = .
+omit =
+    */__init__.py
+    */protos/*
+    */tests/*
+
+[report]
+show_missing = False
+

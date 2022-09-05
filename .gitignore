@@ -15,3 +15,7 @@ __pycache__
 *output*
 *artifacts*
 *node_modules*
+
+htmlcov/
+.coverage
+.cache

@@ -1,0 +1,49 @@
+name: Format and Lint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  format-and-lint:
+    name: Run Formatter and Linter
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up Python Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install graphviz graphviz-dev -y
+          python -m pip install --upgrade pip
+          python -m pip install yapf pylint
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run Formatter
+        run: |
+          yapf --style=google --in-place --exclude=protos --recursive .
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          delete-branch: true
+      - name: Check Pull Request Output
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+      - name: Run Linter
+        run: |
+          pylint --rcfile=pylintrc --recursive=y --ignore=protos --exit-zero --output=pylint_output .
+      - name: Upload Lint Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: lint-report
+          path: pylint_output
