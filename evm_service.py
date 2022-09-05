@@ -31,8 +31,7 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
 
     def AnalyseByteCode(
             self, request: bytecode_analyzer_pb2.ByteCodeAnalysisRequest,
-            unused_context
-    ) -> bytecode_analyzer_pb2.ByteCodeAnalysisResponse:
+            unused_context) -> bytecode_analyzer_pb2.ByteCodeAnalysisResponse:
         request_id = str(int(time.time() * 1000000))
         log.mylogger.info('waiting for request %s, project: %s, file: %s',
                           request_id, request.before_change.repo_path,
@@ -181,8 +180,8 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
 
 async def serve(address) -> None:
     server = grpc.aio.server()
-    evm_engine_pb2_grpc.add_EVMEngineServicer_to_server(
-        EvmEngineService(), server)
+    evm_engine_pb2_grpc.add_EVMEngineServicer_to_server(EvmEngineService(),
+                                                        server)
     server.add_insecure_port(address)
     log.mylogger.info('EVM Engine Service is Listening on %s...', address)
 

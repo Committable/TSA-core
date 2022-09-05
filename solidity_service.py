@@ -29,8 +29,8 @@ class SoliditySourceCodeAnalysisService(
         solidity_analyzer_pb2_grpc.SoliditySourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
-        self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
-        unused_context
+            self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
+            unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         start = time.time()
         request_id = str(int(start * 1000000))

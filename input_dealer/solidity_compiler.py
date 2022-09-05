@@ -402,9 +402,13 @@ class SolidityCompiler:
             self.combined_json['contracts'][file][cname] = {
                 'evm': {
                     'deployedBytecode': {
-                        'opcodes': '',
-                        'object': self.convert_external_library_space_holder(data_dict[key]["bin-runtime"]),
-                        'sourceMap': data_dict[key]['srcmap-runtime']
+                        'opcodes':
+                            '',
+                        'object':
+                            self.convert_external_library_space_holder(
+                                data_dict[key]["bin-runtime"]),
+                        'sourceMap':
+                            data_dict[key]['srcmap-runtime']
                     },
                     'bytecode': {
                         'opcodes': data_dict[key]['opcodes'],
