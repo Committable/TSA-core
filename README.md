@@ -1,7 +1,7 @@
 Seraph
 ======
 
-An ***Implementation*** of solidity source file analysis services satisfying self-defined APIs for ***Committable's Analysis Engine Services*** which gets two source files as input and produces their difference of graphs and abstraction of *ast/cfg/ssg*. 
+An Implementation of ***Committable Transparent Center Analysis Service*** for solidity source file which gets two source files as input and produces their differences in form of graphs and abstractions of *ast/cfg/ssg*. 
 
 [![Gitter][gitter-badge]][gitter-url]
 [![License: GPL v3][license-badge]][license-badge-url]
@@ -10,58 +10,58 @@ An ***Implementation*** of solidity source file analysis services satisfying sel
 *This repository is currently maintained by yangzq12 ([@yangzq12](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/Seraph/issues).*
 
 
-## Committable's Analysis Engine Service APIs
+##  APIs for Committable Transparent Center Analysis Service
 
 ### Base Definitions of request and responds in proto:
 1. Source code analysis service:
 ```
 message AnalysisTarget{
-    string repo_path = 1; // absolute path to repo's project root directory
-    string file_path = 2; // absolute path to analyzing source code file
+    string repo_path = 1; // path to repo's project root directory
+    string file_path = 2; // path to analyzing source code file
 }
 
 message SourceCodeAnalysisRequest{
-    AnalysisTarget before_change= 1; // absolute path to analysis target before change
-    AnalysisTarget after_change = 2; // absolute path to analysis target after change
+    AnalysisTarget before_change= 1; // path to analysis target before change
+    AnalysisTarget after_change = 2; // path to analysis target after change
     
-    string diffs_log_path = 3; // absolute path to difference file of the source code files
+    string diffs_log_path = 3; // path to difference file of the source code files
 }
 
 message SourceCodeAnalysisResponse{
-    int32 status = 1;
-    string message = 2;
-    string ast_before_path = 3; //absolute path to ast.json of source code file before change
-    string ast_after_path = 4; 
+    int32 status = 1;  // 200 for success
+    string message = 2; // detailed message for the response
+    string ast_before_path = 3; // path to ast.json of source code file before change
+    string ast_after_path = 4; // path to ast.json of source code file after change
 
-    string ast_abstract_path = 5;
+    string ast_abstract_path = 5; // path to ast_abstract.json
 
-    string ast_edge_lists_before_path = 6;
-    string ast_edge_lists_after_path = 7; 
+    string ast_edge_lists_before_path = 6; // path to ast_edges of source code file before change
+    string ast_edge_lists_after_path = 7; // path to ast_edges of source code file after change
 }
 ```
 2. Bytecode analysis service:
 ```
 message AnalysisTarget{
-    string repo_path = 1; // absolute path to repo's project root directory
-    string file_path = 2; // absolute path to analyzing source code file
+    string repo_path = 1; // path to repo's project root directory
+    string file_path = 2; // path to analyzing source code file
 }
 
 message ByteCodeAnalysisRequest{
-    AnalysisTarget before_change= 1; // absolute path to analysis target before change
-    AnalysisTarget after_change = 2; // absolute path to analysis target after change
+    AnalysisTarget before_change= 1; // path to analysis target before change
+    AnalysisTarget after_change = 2; // path to analysis target after change
     
-    string diffs_log_path = 3; // absolute path to difference file of the source code files
+    string diffs_log_path = 3; // path to difference file of the source code files
 }
 
 message ByteCodeAnalysisResponse{
     int32 status = 1;
     string message = 2;
 
-    string cfg_before_path = 3; //absolute path to cfg.json of source code file before change, "" if not support
-    string cfg_after_path = 4; //absolute path to cfg.json of source code file before change, "" if not support
+    string cfg_before_path = 3; //path to cfg.json of source code file before change, "" if not support
+    string cfg_after_path = 4; //path to cfg.json of source code file before change, "" if not support
 
-    string ssg_before_path = 5; //absolute path to ssg.json of source code file before change, "" if not support
-    string ssg_after_path = 6; //absolute path to ssg.json of source code file before change, "" if not support
+    string ssg_before_path = 5; //path to ssg.json of source code file before change, "" if not support
+    string ssg_after_path = 6; //path to ssg.json of source code file before change, "" if not support
 
     string cfg_abstract_path = 7; 
     string ssg_abstract_path = 8;
@@ -73,7 +73,7 @@ message ByteCodeAnalysisResponse{
     string ssg_edge_lists_after_path = 12;
 }
 ```
-### GRPC Services Definition in proto
+### GRPC Services Definition in proto:
 
 1. solidity service
 ```
@@ -99,20 +99,21 @@ To open the container, install docker and run:
 solidity service
 ```
 docker pull committable/solidity-analysis-docker
-docker run -p 50054:50054 -v /home/liyue/path/to/test/repos:/repos -v /path/to/output/reports:/reports  solidity-analysis-docker
+docker run -p 50054:50054 -v /path/to/test/repos:/repos -v /path/to/output/reports:/reports  solidity-analysis-docker
 ```
 or evm service
 ```
 docker pull committable/evm-analysis-docker
-docker run -p 50055:50055 -v /home/liyue/path/to/test/repos:/repos -v /path/to/output/reports:/reports  evm-analysis-docker
+docker run -p 50055:50055 -v /path/to/test/repos:/repos -v /path/to/output/reports:/reports  evm-analysis-docker
 ```
 
 To evaluate the service inside the container, run:
 
 ```
-cd /service_test
+cd ./test/service_test_client
 go build .
-./service_test -type xlsx -input sol/evm
+./service_test -input openzeppelin_master_commit_source.xlsx -type sol/evm -repos /path/to/test/repos -reports /path/to/output/reports -result /path/to/result
+
 ```
 
 and you are done!
@@ -121,16 +122,16 @@ and you are done!
 
 solidity service
 ```
-docker build -f ./solidityService/Dockerfile --cache-from=soliditybuilder --target soliditybuilder -t soliditybuilder .
+docker build -f ./solidity_service/Dockerfile --cache-from=soliditybuilder --target soliditybuilder -t soliditybuilder .
 
-docker build -f ./solidityService/Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from=soliditybuilder --cache-from=solidity-analysis-docker -t solidity-analysis-docker .
+docker build -f ./solidity_service/Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from=soliditybuilder --cache-from=solidity-analysis-docker -t solidity-analysis-docker .
 ```
 
 or evm service
 ```
-docker build -f ./evmService/Dockerfile --cache-from=evmbuilder --target evmbuilder -t evmbuilder .
+docker build -f ./evm_service/Dockerfile --cache-from=evmbuilder --target evmbuilder -t evmbuilder .
 
-docker build -f ./evmService/Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from=evmbuilder --cache-from=evm-analysis-docker -t evm-analysis-docker .
+docker build -f ./evm_service/Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from=evmbuilder --cache-from=evm-analysis-docker -t evm-analysis-docker .
 ```
 
 ## Build and Test
@@ -182,7 +183,7 @@ To run the benchmarks, it is best to use the docker container and service_test a
 Checkout out our [contribution guide](https://github.com/Committable/Seraph/blob/master/CONTRIBUTING.md) and the code structure [here](https://github.com/Committable/Seraph/blob/master/CODE.md).
 
 
-[gitter-badge]: https://img.shields.io/gitter/room/yangzq11/seraph
+[gitter-badge]: https://img.shields.io/gitter/room/yangzq12/seraph
 [gitter-url]: https://gitter.im/yangzq12/seraph#
 [license-badge]: https://img.shields.io/github/license/yangzq12/openzeppelin
 [license-badge-url]: ./LICENSE
