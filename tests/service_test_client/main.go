@@ -200,8 +200,8 @@ func analyze_evm(mgr *cl.ClientsMgr, beforeChange, afterChange *pb.AnalysisTarge
 	return bytecodeResult, nil
 }
 
-func generateInputDir(first, second string) (string, error) {
-	dirName := filepath.Join(conf.InputPath, first, second)
+func generateReposDir(first, second string) (string, error) {
+	dirName := filepath.Join(conf.ReposPath, first, second)
 	err := os.MkdirAll(dirName, os.ModePerm)
 	return dirName, err
 }
@@ -264,12 +264,12 @@ func handlerUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.AnalysisRe
 		log.Printf("Error: not file of row %d at %s", i, timestamp)
 		return nil, errors.New("mismatch child and parent")
 	}
-	dirChild, err := generateInputDir(childCommitHash, "")
+	dirChild, err := generateReposDir(childCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate child dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	dirParent, err := generateInputDir(parentCommitHash, "")
+	dirParent, err := generateReposDir(parentCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
@@ -301,7 +301,7 @@ func handlerUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.AnalysisRe
 		log.Printf("Error: marshal for %s result fail: %v at %s", childCommitHash, err, timestamp)
 		return nil, err
 	}
-	filePath := filepath.Join(conf.DestPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
+	filePath := filepath.Join(conf.ResultPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
 	err = ioutil.WriteFile(filePath, b, 0777)
 	if err != nil {
 		log.Printf("Error: write result for %s fail: %v at %s", childCommitHash, err, timestamp)
@@ -332,12 +332,12 @@ func goUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCodeAnaly
 		log.Printf("Error: not go file of row %d at %s", i, timestamp)
 		return nil, errors.New("mismatch child and parent")
 	}
-	dirChild, err := generateInputDir(childCommitHash, "")
+	dirChild, err := generateReposDir(childCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate child dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	dirParent, err := generateInputDir(parentCommitHash, "")
+	dirParent, err := generateReposDir(parentCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
@@ -369,7 +369,7 @@ func goUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCodeAnaly
 		log.Printf("Error: marshal for %s result fail: %v at %s", childCommitHash, err, timestamp)
 		return nil, err
 	}
-	filePath := filepath.Join(conf.DestPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
+	filePath := filepath.Join(conf.ResultPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
 	err = ioutil.WriteFile(filePath, b, 0777)
 	if err != nil {
 		log.Printf("Error: write result for %s fail: %v at %s", childCommitHash, err, timestamp)
@@ -400,12 +400,12 @@ func markdownUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 		log.Printf("Error: not markdown file of row %d at %s", i, timestamp)
 		return nil, errors.New("mismatch child and parent")
 	}
-	dirChild, err := generateInputDir(childCommitHash, "")
+	dirChild, err := generateReposDir(childCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate child dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	dirParent, err := generateInputDir(parentCommitHash, "")
+	dirParent, err := generateReposDir(parentCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
@@ -437,7 +437,7 @@ func markdownUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 		log.Printf("Error: marshal for %s result fail: %v at %s", childCommitHash, err, timestamp)
 		return nil, err
 	}
-	filePath := filepath.Join(conf.DestPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
+	filePath := filepath.Join(conf.ResultPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
 	err = ioutil.WriteFile(filePath, b, 0777)
 	if err != nil {
 		log.Printf("Error: write result for %s fail: %v at %s", childCommitHash, err, timestamp)
@@ -468,12 +468,12 @@ func solidityUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 		log.Printf("Error: not solidity file of row %d at %s", i, timestamp)
 		return nil, errors.New("not solidity ")
 	}
-	dirChild, err := generateInputDir(childCommitHash, "")
+	dirChild, err := generateReposDir(childCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate child dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	dirParent, err := generateInputDir(parentCommitHash, "")
+	dirParent, err := generateReposDir(parentCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
@@ -505,7 +505,7 @@ func solidityUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 		log.Printf("Error: marshal for %s result fail: %v at %s", childCommitHash, err, timestamp)
 		return nil, err
 	}
-	filePath := filepath.Join(conf.DestPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
+	filePath := filepath.Join(conf.ResultPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
 	err = ioutil.WriteFile(filePath, b, 0777)
 	if err != nil {
 		log.Printf("Error: write result for %s fail: %v at %s", childCommitHash, err, timestamp)
@@ -536,12 +536,12 @@ func evmUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.ByteCodeAnalys
 		log.Printf("Error: not solidity file of row %d at %s", i, timestamp)
 		return nil, errors.New("not solidity file")
 	}
-	dirChild, err := generateInputDir(childCommitHash, "")
+	dirChild, err := generateReposDir(childCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate child dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	dirParent, err := generateInputDir(parentCommitHash, "")
+	dirParent, err := generateReposDir(parentCommitHash, "")
 	if err != nil {
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
@@ -573,7 +573,7 @@ func evmUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.ByteCodeAnalys
 		log.Printf("Error: marshal for %s result fail: %v at %s", childCommitHash, err, timestamp)
 		return nil, err
 	}
-	filePath := filepath.Join(conf.DestPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
+	filePath := filepath.Join(conf.ResultPath, childCommitHash+strings.TrimSuffix(filepath.Base(childFile), ".sol")+".json")
 	err = ioutil.WriteFile(filePath, b, 0777)
 	if err != nil {
 		log.Printf("Error: write result for %s fail: %v at %s", childCommitHash, err, timestamp)
@@ -583,8 +583,11 @@ func evmUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.ByteCodeAnalys
 	return response, nil
 }
 
-var fileType = flag.String("type", "", "type of tested service")
-var inputType = flag.String("input", "", "input type of tested service")
+var testingType = flag.String("type", "", "type of tested service")
+var inputFile = flag.String("input", "", "input file for testing")
+var reposDir = flag.String("repos", "", "dirs for repos")
+var resultDir = flag.String("result", "", "dirs for result")
+var reportsDir = flag.String("reports", "", "dirs for reports")
 
 func worker(wait *sync.WaitGroup, id int, s string, rows [][]string, mgr *cl.ClientsMgr, jobs <-chan int, results chan<- Response) {
 	for i := range jobs {
@@ -641,44 +644,39 @@ func GetAllFiles(dirPth string) (files []string, err error) {
 
 func main() {
 	flag.Parse()
-	log.Printf("Unitest file type: %s, input type: %s", *fileType, *inputType)
+	log.Printf("Testing file: %s, type: %s", *inputFile, *testingType)
 	mgr := cl.NewClientMgr()
 	result := &Result{Detail: make(map[string]string)}
 	var rows [][]string
-	if *inputType == "xlsx" {
-		f, err := excelize.OpenFile("openzeppelin_master_commit_source.xlsx")
-		//f, err := excelize.OpenFile("dapp-learning.xlsx")
-		// f, err := excelize.OpenFile("go-ethereum.xlsx")
-		// f, err := excelize.OpenFile("demo-solidity.xlsx")
-		if err != nil {
-			log.Printf(err.Error())
-			return
-		}
-		// 获取 Sheet1 上所有单元格
-		rows, err = f.GetRows("Sheet1")
-		if err != nil {
-			log.Printf(err.Error())
-			return
-		}
-	} else {
-		data, err := ioutil.ReadFile("./test/5f7eda1f988b5afc4645224694526b0bac18d6b4.json")
-		if err != nil {
-			return
-		}
-		v := MetaCommit{}
-		//读取的数据为json格式，需要进行解码
-		err = json.Unmarshal(data, &v)
-		if err != nil {
-			return
-		}
-		rows = [][]string{}
-		for i := 0; i < len(v.Basic.Files); i++ {
-			rowChild := []string{v.Basic.Files[i].After.Hash, v.Basic.Files[i].After.Path}
-			rowParent := []string{v.Basic.Files[i].Before.Hash, v.Basic.Files[i].Before.Path}
-			rows = append(rows, rowChild)
-			rows = append(rows, rowParent)
-		}
-	}
+
+
+
+    if *reposDir != "" {
+        conf.ReposPath = *reposDir
+    }
+    if *resultDir != "" {
+        conf.ResultPath = *resultDir
+    }
+    if *reportsDir != "" {
+        conf.ReportsPath = * reportsDir
+    }
+    if *inputFile != "" {
+        f, err := excelize.OpenFile(*inputFile)
+        if err != nil {
+            log.Printf(err.Error())
+            return
+        }
+        // 获取 Sheet1 上所有单元格
+        rows, err = f.GetRows("Sheet1")
+        if err != nil {
+            log.Printf(err.Error())
+            return
+        }
+    }else{
+        log.Printf("has no input")
+        return
+    }
+
 
 	// for i := 0; i < len(rows); i = i + 2 {
 	jobs := make(chan int, 1000)
@@ -686,7 +684,7 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(3)
 	for w := 1; w <= 3; w++ {
-		go worker(&wg, w, *fileType, rows, mgr, jobs, results)
+		go worker(&wg, w, *testingType, rows, mgr, jobs, results)
 	}
 	for i := 0; i+1 < 199; i = i + 2 {
 		jobs <- i
@@ -697,7 +695,7 @@ func main() {
 	close(results)
 
 	MetaCommit := make(map[string]int)
-	files, err := GetAllFiles("/home/liyue/transparentCenter/Seraph/tests/service_test_client/workspace/reports")
+	files, err := GetAllFiles(conf.ReportsPath)
 	for i, file := range files {
 		fmt.Println(strconv.Itoa(i), ":", file)
 		data, err := ioutil.ReadFile(file)
@@ -768,7 +766,7 @@ func main() {
 		log.Printf("Error: marshal result fail: %v", err)
 		return
 	}
-	err = ioutil.WriteFile(filepath.Join(conf.DestPath, "result.json"), b, 0777)
+	err = ioutil.WriteFile(filepath.Join(conf.ResultPath, "result.json"), b, 0777)
 	if err != nil {
 		log.Printf("Error: write result fail: %v", err)
 	}
