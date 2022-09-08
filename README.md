@@ -168,8 +168,6 @@ Or
 
 And that's it!
 
-## Miscellaneous Utilities
-
 
 ## Benchmarks
 we selected commits from [Dapp-Learning](https://github.com/Dapp-Learning-DAO/Dapp-Learning) and [openzeppelin-contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) repository as the benchmark.
