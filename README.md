@@ -179,7 +179,7 @@ To run the benchmarks, it is best to use the docker container and service_test a
 
 ## Contributing
 
-Checkout out our [contribution guide](https://github.com/Committable/Seraph/blob/master/CONTRIBUTING.md) and the code structure [here](https://github.com/Committable/Seraph/blob/master/CODE.md).
+Checkout out our [contribution guide](https://github.com/Committable/Seraph/blob/master/CONTRIBUTING.md).
 
 
 [license-badge]: https://img.shields.io/github/license/Committable/Seraph
