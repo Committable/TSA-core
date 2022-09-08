@@ -4,7 +4,7 @@ Seraph
 An Implementation of ***Committable Transparent Center Analysis Service*** for solidity source file which gets two source files as input and produces their differences in form of graphs and abstractions of *ast/cfg/ssg*. 
 
 [![License: GPL v3][license-badge]][license-badge-url]
-[![Build Status](https://img.shields.io/github/workflow/status/Committable/AnalysisService/Analysis%20Handler%20Docker%20Build-Push)]()
+[![Build Status](https://img.shields.io/github/workflow/status/Committable/Seraph/Pytest)]()
 
 *This repository is currently maintained by yangzq12 ([@yangzq12](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/Seraph/issues).*
 
