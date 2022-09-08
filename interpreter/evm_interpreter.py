@@ -26,7 +26,6 @@ class EVMInterpreter:
         self.gen = symbolic_var_generator.Generator()
 
         # XGraph for the contract, a function -> a XGraph,
-        # if no function detected, the all contract -> a XGraph
         self.x_graph = x_graph.XGraph(cname, self.runtime.source_map)
 
         # global coverage info for the contract
@@ -71,7 +70,7 @@ class EVMInterpreter:
             if self.runtime.source_map.sig_to_func is not None:
                 current_func_name = None
                 for key in self.runtime.source_map.sig_to_func:
-                    # TODO(Chao): Remove eval?
+                    # eval for situations like "0x0abc" == "0xabc"
                     if eval('0x' + key) == eval('0x' + func_sig):
                         current_func_name = self.runtime.source_map.sig_to_func[
                             key]
