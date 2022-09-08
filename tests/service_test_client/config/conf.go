@@ -21,8 +21,9 @@ type Config struct {
 	MdService       ServiceConf `yaml:"md_service"`
 	HandlerService ServiceConf `yaml:"handler_service"`
 
-	DestPath      string `yaml:"dest_path"`
-	InputPath     string `yaml:"input_path"`
+	ResultPath      string `yaml:"result_path"`
+	ReposPath     string `yaml:"repos_path"`
+	ReportsPath   string `yaml:"reports_path"`
 	RepoUrl       string `yaml:"repo_url"`
 	ListenAddress string `yaml:"listen_address"`
 }

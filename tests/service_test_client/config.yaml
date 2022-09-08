@@ -30,8 +30,9 @@ handler_service:
   address: localhost:50051
   enabled: true
   timeout: 300
-dest_path: /home/liyue/transparentCenter/Seraph/tests/service_test_client/workspace/result
-input_path: /home/liyue/transparentCenter/Seraph/tests/service_test_client/workspace/repos
+result_path: /path/to/result
+repos_path: /path/to/repos
+reports_path: /path/to/reports
 repo_url: "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
 # repo_url: "https://github.com/Dapp-Learning-DAO/Dapp-Learning.git"
 # repo_url: "https://github.com/ethereum/go-ethereum.git"
