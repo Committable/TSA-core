@@ -5,7 +5,7 @@ import global_params
 import log
 import os
 import time
-from analyzer import analyze_evm_from_solidity
+from analyzer import analyze_evm_from_solidity, analyze_solidity_code
 from context import Context
 
 global_params.DEST_PATH = "./tmp"
@@ -39,6 +39,18 @@ class FeaturesBenchmark(unittest.TestCase):
         self.assertDictEqual(cfg_reporter.cfg_abstract, expected_cfg)
         self.assertDictEqual(ssg_reporter.ssg_abstract, expected_ssg)
 
+    def _test_sol(self, name, expected_ast):
+        context = Context(self.start, self.project_dir, f"{name}.sol", [], "",
+                          "")
+
+        filename = os.path.join(THIS_DIR, "features", f"{name}.sol")
+        log.mylogger.info(
+            "-----------------start analysis: %s------------------", filename)
+        ast_reporter = analyze_solidity_code(self.workspace, context.src_file,
+                                             context.project_dir, context)
+
+        self.assertDictEqual(ast_reporter.ast_abstract, expected_ast)
+
     def test_assert(self):
         self._test_evm("assert", {
             'sequence_bin': 11,
@@ -47,6 +59,11 @@ class FeaturesBenchmark(unittest.TestCase):
         }, {
             'data_flow': 0,
             'control_flow': 5
+        })
+        self._test_sol("assert", {
+            'sequence_src': 2,
+            'selection_src': 1,
+            'loop_src': 0
         })
 
     def test_event(self):
@@ -58,6 +75,11 @@ class FeaturesBenchmark(unittest.TestCase):
             'data_flow': 0,
             'control_flow': 5
         })
+        self._test_sol("event", {
+            'sequence_src': 6,
+            'selection_src': 0,
+            'loop_src': 0
+        })
 
     def test_list(self):
         self._test_evm("list", {
@@ -67,6 +89,11 @@ class FeaturesBenchmark(unittest.TestCase):
         }, {
             'data_flow': 13,
             'control_flow': 9
+        })
+        self._test_sol("list", {
+            'sequence_src': 2,
+            'selection_src': 0,
+            'loop_src': 0
         })
 
     def test_loop(self):
@@ -78,6 +105,11 @@ class FeaturesBenchmark(unittest.TestCase):
             'data_flow': 19,
             'control_flow': 13
         })
+        self._test_sol("loop", {
+            'sequence_src': 6,
+            'selection_src': 1,
+            'loop_src': 1
+        })
 
     def test_map(self):
         self._test_evm("map", {
@@ -87,6 +119,11 @@ class FeaturesBenchmark(unittest.TestCase):
         }, {
             'data_flow': 6,
             'control_flow': 5
+        })
+        self._test_sol("map", {
+            'sequence_src': 3,
+            'selection_src': 0,
+            'loop_src': 0
         })
 
     def test_memory(self):
@@ -98,6 +135,11 @@ class FeaturesBenchmark(unittest.TestCase):
             'data_flow': 0,
             'control_flow': 6
         })
+        self._test_sol("memory", {
+            'sequence_src': 5,
+            'selection_src': 0,
+            'loop_src': 0
+        })
 
     def test_require(self):
         self._test_evm("require", {
@@ -107,6 +149,11 @@ class FeaturesBenchmark(unittest.TestCase):
         }, {
             'data_flow': 5,
             'control_flow': 7
+        })
+        self._test_sol("require", {
+            'sequence_src': 3,
+            'selection_src': 1,
+            'loop_src': 0
         })
 
     def test_struct(self):
@@ -118,6 +165,11 @@ class FeaturesBenchmark(unittest.TestCase):
             'data_flow': 8,
             'control_flow': 8
         })
+        self._test_sol("struct", {
+            'sequence_src': 3,
+            'selection_src': 1,
+            'loop_src': 0
+        })
 
     def test_tuple(self):
         self._test_evm("tuple", {
@@ -127,6 +179,11 @@ class FeaturesBenchmark(unittest.TestCase):
         }, {
             'data_flow': 0,
             'control_flow': 9
+        })
+        self._test_sol("tuple", {
+            'sequence_src': 21,
+            'selection_src': 2,
+            'loop_src': 2
         })
 
     def test_external(self):
@@ -138,6 +195,11 @@ class FeaturesBenchmark(unittest.TestCase):
             'data_flow': 7,
             'control_flow': 10
         })
+        self._test_sol("external", {
+            'sequence_src': 4,
+            'selection_src': 0,
+            'loop_src': 0
+        })
 
     def test_internal(self):
         self._test_evm("internal", {
@@ -147,6 +209,11 @@ class FeaturesBenchmark(unittest.TestCase):
         }, {
             'data_flow': 0,
             'control_flow': 5
+        })
+        self._test_sol("internal", {
+            'sequence_src': 4,
+            'selection_src': 0,
+            'loop_src': 0
         })
 
 
