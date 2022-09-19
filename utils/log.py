@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-import global_params
+from utils import global_params
 
 
 def get_logger(name=''):
@@ -20,18 +20,18 @@ def get_logger(name=''):
         os.path.join(global_params.DEST_PATH, f'{name}_{int(root_time)}.log'))
     fh.setFormatter(formatter)
 
-    # ch = logging.StreamHandler()
-    # ch.setFormatter(formatter)
+    ch = logging.StreamHandler()
+    ch.setFormatter(formatter)
 
     if global_params.DEBUG_MOD:
         fh.setLevel(logging.DEBUG)
-        # ch.setLevel(logging.DEBUG)
+        ch.setLevel(logging.DEBUG)
     else:
         fh.setLevel(logging.INFO)
-        # ch.setLevel(logging.INFO)
+        ch.setLevel(logging.INFO)
 
     logger.addHandler(fh)
-    # logger.addHandler(ch)
+    logger.addHandler(ch)
     return logger
 
 

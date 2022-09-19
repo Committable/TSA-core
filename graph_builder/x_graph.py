@@ -2,8 +2,7 @@ import networkx as nx
 import z3
 from z3 import z3util
 
-import log
-import utils
+from utils import util, log
 
 
 class Node:
@@ -341,7 +340,7 @@ class AddressNode(VariableNode):
         label = 'symbolic_value'
         try:
             label = '0x{}'.format(
-                format(int(str(z3.simplify(utils.to_symbolic(self.value)))),
+                format(int(str(z3.simplify(util.to_symbolic(self.value)))),
                        '040x'))
         except:  # pylint: disable=bare-except
             pass
@@ -626,7 +625,7 @@ class XGraph:
         graph = self.graphs[self.current_function]
         # search expr in mapping_expr_node, and add it to graph
         for key, e_node in self.mapping_expr_node.items():
-            if utils.convert_result_to_int(key - expr) == 0:
+            if util.convert_result_to_int(key - expr) == 0:
                 if not graph.has_node(e_node):
                     graph.add_node(e_node)
                     flow_edges = []
@@ -738,7 +737,7 @@ class XGraph:
 
         # get address node from mapping address node
         for key, a_node in self.mapping_address_node.items():
-            if utils.convert_result_to_int(key - expr) == 0:
+            if util.convert_result_to_int(key - expr) == 0:
                 if not graph.has_node(a_node):
                     graph.add_node(a_node)
                 flow_edge = []

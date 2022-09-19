@@ -4,10 +4,9 @@ import traceback
 
 import memory_profiler as mem
 
-import global_params
+from utils import global_params, log
 from input_dealer import input_helper
 from interpreter import evm_interpreter
-import log
 from reporter import ast_reporter
 from reporter import cfg_reporter
 from reporter import ssg_reporter

@@ -1,12 +1,9 @@
 import unittest
-import os
-import shutil
-import global_params
-import log
+from utils import global_params, log
 import os
 import time
 from analyzer import analyze_evm_from_solidity, analyze_solidity_code
-from context import Context
+from utils.context import Context
 
 global_params.DEST_PATH = "./tmp"
 

@@ -2,8 +2,8 @@ import os
 import re
 import yaml
 
-import global_params
-import log
+from utils import global_params
+from utils import log
 
 from z3 import is_expr, BitVecVal, simplify, is_const, unknown
 
@@ -100,6 +100,7 @@ def convert_result(value):
     return value
 
 
+# convert result to int, if not success, return BIG_INT_256
 def convert_result_to_int(value):
     if is_expr(value):
         value = simplify(value)

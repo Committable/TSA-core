@@ -1,0 +1,10 @@
+{
+  "repos": [],
+  "projects": [],
+  "files": [
+    {
+      "project_dir": "/home/liyue/transparentCenter/benchmark/v3-core",
+      "src_file": "./contracts/UniswapV3Pool.sol"
+    }
+  ]
+}

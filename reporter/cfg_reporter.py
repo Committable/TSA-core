@@ -4,7 +4,7 @@ import os
 import networkx as nx
 
 from abstracts.cfg import cfg_abstract
-import log
+from utils import log
 
 
 class CfgReporter:

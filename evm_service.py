@@ -10,9 +10,7 @@ from protos.analyzer import bytecode_analyzer_pb2
 from protos.analyzer import evm_engine_pb2_grpc
 
 import analyzer
-import context
-import global_params
-import log
+from utils import global_params, context, log
 import utils
 
 cfg = utils.get_config('./config.yaml')

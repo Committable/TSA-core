@@ -2,8 +2,7 @@ import os
 
 import six
 
-import global_params
-import log
+from utils import global_params, log
 
 
 class Source:

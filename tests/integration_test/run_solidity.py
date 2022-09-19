@@ -4,12 +4,9 @@ import time
 import traceback
 
 import analyzer
-import context
-import global_params
-import log
-import utils
+from utils import util, global_params, context, log
 
-cfg = utils.get_config('solidity_service/config.yaml')
+cfg = util.get_config('solidity_service/config.yaml')
 log.mylogger = log.get_logger()
 
 
@@ -33,8 +30,8 @@ def load_test_files(file_path):
                 del dirs  # Unused, reserve for name hint
                 for f in fs:
                     if os.path.splitext(f)[-1][1:] == 'sol':
-                        file_dir = utils.change_to_relative(
-                            utils.remove_prefix(str(path), project))
+                        file_dir = util.change_to_relative(
+                            util.remove_prefix(str(path), project))
                         result.append({
                             'project_dir': project,
                             'src_file': os.path.join(file_dir, f)
@@ -54,8 +51,8 @@ def main():
     fail = 0
     failed = {'files': [], 'errors': []}
     global_params.DEST_PATH = './tmp'
-    for file in load_test_files('./test_cases/test_cases.json'):
-        file_output_path = utils.generate_output_dir(
+    for file in load_test_files('./tests/integration_test/test_cases/test_file.json'):
+        file_output_path = util.generate_output_dir(
             str(int(time.time() * 10**6)), '')
         total += 1
         log.mylogger.info(
@@ -64,7 +61,7 @@ def main():
                                          file['src_file'])))
         src_file = file['src_file']
         project_dir = file['project_dir']
-        project_name = utils.get_project_name(project_dir)
+        project_name = util.get_project_name(project_dir)
         ctx = context.Context(time.time(), project_dir, src_file, [], '', '')
         try:
             if 'compilation' in cfg and project_name in cfg['compilation']:

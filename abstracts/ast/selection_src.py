@@ -27,10 +27,10 @@ class SelectionSrc(index.Index):
                 for statement in block['children']:
                     if statement['name'] == 'ExpressionStatement':
                         pos = statement['src'].split(':')
-                        if 'require(' in content[int(pos[0]):int(pos[0]) +
+                        if 'require(' in content[max(0, int(pos[0])-5):int(pos[0]) +
                                                  int(pos[1])]:
                             selection_src += 1
-                        if 'assert(' in content[int(pos[0]):int(pos[0]) +
+                        if 'assert(' in content[max(0, int(pos[0])-5):int(pos[0]) +
                                                 int(pos[1])]:
                             selection_src += 1
                     if statement['name'] == 'IfStatement':

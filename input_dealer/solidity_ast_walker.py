@@ -1,7 +1,6 @@
 import re
 
-import log
-import utils
+from utils import util, log
 
 
 class AstWalker:
@@ -43,7 +42,7 @@ class AstWalker:
                 lines = source.get_lines_from_position(
                     int(position[0]),
                     int(position[0]) + int(position[1]))
-                changed = utils.intersect(self.diffs, lines)
+                changed = util.intersect(self.diffs, lines)
 
                 json_result['id'] = node_id
                 json_result['name'] = node['name']
@@ -66,7 +65,7 @@ class AstWalker:
                 lines = source.get_lines_from_position(
                     int(position[0]),
                     int(position[0]) + int(position[1]))
-                changed = utils.intersect(self.diffs, lines)
+                changed = util.intersect(self.diffs, lines)
 
                 json_result['id'] = node_id
                 json_result['name'] = node['nodeType']

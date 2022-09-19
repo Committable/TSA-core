@@ -4,10 +4,8 @@ import sys
 import graphviz
 import six
 
-import global_params
-import log
 from runtime import basic_block
-import utils
+from utils import util, global_params, log
 
 
 class EvmRuntime:
@@ -64,6 +62,8 @@ class EvmRuntime:
                         content.append('INVALID')
                     else:
                         content.append(token)
+            if content:
+                file_contents.append(' '.join(content))
 
             self._collect_vertices(file_contents)
             self._construct_bb()
@@ -183,14 +183,14 @@ class EvmRuntime:
             for i in range(start_address, end_address + 1):
                 if i in self.instructions:
                     block.add_instruction(self.instructions[i])
-                    if self.source_map.instr_positions:
+                    if self.source_map is not None and self.source_map.instr_positions:
                         if self.source_map.in_src_file(
                                 self.source_map.instr_positions[i]['f']):
                             t_start = self.source_map.instr_positions[i]['s']
                             t_end = (self.source_map.instr_positions[i]['s'] +
                                      self.source_map.instr_positions[i]['l'])
                             i_lines = self.source_map.get_lines_from_pc(i)
-                            changed = changed or utils.intersect(
+                            changed = changed or util.intersect(
                                 self.context.diff, i_lines)
                             for x in i_lines:
                                 lines.add(x)

@@ -10,9 +10,7 @@ from protos.analyzer import source_code_analyzer_pb2
 import z3
 
 import analyzer
-import context
-import global_params
-import log
+from utils import global_params, context, log
 import utils
 
 cfg = utils.get_config('./config.yaml')

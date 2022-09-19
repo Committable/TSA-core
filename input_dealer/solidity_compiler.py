@@ -6,8 +6,7 @@ import subprocess
 import pyevmasm
 import solcx
 
-import errors
-import log
+from utils import errors, log
 
 
 class Version:  # 'a.b.c'
@@ -323,9 +322,6 @@ class SolidityCompiler:
                             child.kill()
                             child.terminate()
                             os.killpg(child.pid, signal.SIGTERM)
-                            # TODO(Chao): source not in self?
-                            os.remove(
-                                os.path.join(self.source, '.waffle_bak.json'))
                             log.mylogger.error(
                                 'run compilation prepare command %s timeout',
                                 command)

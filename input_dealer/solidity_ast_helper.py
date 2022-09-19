@@ -1,7 +1,6 @@
 from abstracts.ast import ast_abstract
-import global_params
+from utils import global_params, log
 from input_dealer import solidity_ast_walker
-import log
 
 
 class AstHelper:

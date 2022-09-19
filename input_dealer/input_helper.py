@@ -2,12 +2,10 @@ import os
 
 import six
 
-import errors
-import global_params
+from utils import global_params, errors, log
 from input_dealer import solidity_ast_helper
 from input_dealer import solidity_compiler
 from input_dealer import solidity_source_map
-import log
 
 
 class InputHelper:
