@@ -7,6 +7,7 @@ import six
 import z3
 import math
 
+import utils.util
 from graph_builder import x_graph
 from interpreter import evm_params
 from interpreter import opcodes
@@ -102,12 +103,14 @@ class EVMInterpreter:
             log.mylogger.error('system timeout for %s', self.cname)
             self.context.set_timeout()
             self.context.set_err()
+            return None
         except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             self.context.set_err()
             log.mylogger.error(
                 'cause error when symbolic execute for %s, err: %s', self.cname,
                 str(err))
+            return None
         return params
 
     def _enter_block(self, function_name, block):
@@ -464,6 +467,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
+                flag = False
                 if z3.is_expr(second):
                     path_conditions_and_vars['path_condition'].append(
                         second != 0)
@@ -473,10 +477,11 @@ class EVMInterpreter:
                         self.gen.get_path_id(), f'DIV_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
-                        raise ValueError('divided by zero')
-                computed = z3.UDiv(util.to_symbolic(first), second)
-
-                stack.insert(0, util.convert_result(computed))
+                        flag = True
+                        stack.insert(0, 0)
+                if not flag:
+                    computed = z3.UDiv(util.to_symbolic(first), second)
+                    stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == 'SDIV':
@@ -484,7 +489,7 @@ class EVMInterpreter:
                 global_state['pc'] = global_state['pc'] + 1
                 first = stack.pop(0)
                 second = stack.pop(0)
-
+                flag = False
                 if z3.is_expr(second):
                     path_conditions_and_vars['path_condition'].append(
                         second != 0)
@@ -495,11 +500,13 @@ class EVMInterpreter:
                         f'SDIV_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
-                        raise ValueError('divided by zero')
+                        flag = True
+                        stack.insert(0, 0)
 
-                computed = (first / second) & evm_params.UNSIGNED_BOUND_NUMBER
+                if not flag:
+                    computed = util.to_symbolic(first) / second
 
-                stack.insert(0, util.convert_result(computed))
+                    stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == 'MOD':
@@ -508,6 +515,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
+                flag = False
                 if z3.is_expr(second):
                     path_conditions_and_vars['path_condition'].append(
                         second != 0)
@@ -517,11 +525,12 @@ class EVMInterpreter:
                         self.gen.get_path_id(), f'MOD_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
-                        raise ValueError('modified by zero')
+                        flag = True
+                        stack.insert(0, 0)
 
-                computed = z3.URem(first, util.to_symbolic(second))
-
-                stack.insert(0, util.convert_result(computed))
+                if not flag:
+                    computed = z3.URem(first, util.to_symbolic(second))
+                    stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == 'SMOD':
@@ -530,6 +539,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
+                flag = False
                 if z3.is_expr(second):
                     path_conditions_and_vars['path_condition'].append(
                         second != 0)
@@ -540,14 +550,13 @@ class EVMInterpreter:
                         f'SMOD_{global_state["pc"] - 1}')
                 else:
                     if second == 0:
-                        raise ValueError('modified by zero')
+                        flag = True
+                        stack.insert(0, 0)
 
-                sign = z3.If(first < 0, -1, 1)
-                first = z3.If(first >= 0, first, -first)
-                second = z3.If(second >= 0, second, -second)
-                computed = sign * (first % second)
+                if not flag:
+                    computed = z3.SRem(first, util.to_symbolic(second))
 
-                stack.insert(0, util.convert_result(computed))
+                    stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == 'ADDMOD':
@@ -557,6 +566,7 @@ class EVMInterpreter:
                 second = stack.pop(0)
                 third = stack.pop(0)
 
+                flag = False
                 if z3.is_expr(third):
                     path_conditions_and_vars['path_condition'].append(
                         third != 0)
@@ -567,11 +577,15 @@ class EVMInterpreter:
                         f'ADDMOD_{global_state["pc"] - 1}')
                 else:
                     if third == 0:
-                        raise ValueError('modified by zero')
+                        flag = True
+                        stack.insert(0, 0)
 
-                computed = z3.URem(first + second, util.to_symbolic(third))
-
-                stack.insert(0, util.convert_result(computed))
+                if not flag:
+                    if util.is_all_real(first, second, third):
+                        computed = (first + second) % third
+                    else:
+                        computed = z3.URem(first + second, util.to_symbolic(third))
+                    stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == 'MULMOD':
@@ -581,6 +595,7 @@ class EVMInterpreter:
                 second = stack.pop(0)
                 third = stack.pop(0)
 
+                flag = False
                 if z3.is_expr(third):
                     path_conditions_and_vars['path_condition'].append(
                         third != 0)
@@ -591,11 +606,15 @@ class EVMInterpreter:
                         f'MULMOD_{global_state["pc"] - 1}')
                 else:
                     if third == 0:
-                        raise ValueError('modified by zero')
+                        flag = True
+                        stack.insert(0, 0)
 
-                computed = z3.URem(first * second, util.to_symbolic(third))
-
-                stack.insert(0, util.convert_result(computed))
+                if not flag:
+                    if util.is_all_real(first, second, third):
+                        computed = (first * second) % third
+                    else:
+                        computed = z3.URem(first * second, util.to_symbolic(third))
+                    stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == 'EXP':
@@ -676,7 +695,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = z3.If(first < second, z3.BitVecVal(1, 256),
+                computed = z3.If(util.to_symbolic(first) < second, z3.BitVecVal(1, 256),
                                  z3.BitVecVal(0, 256))
 
                 stack.insert(0, util.convert_result(computed))
@@ -688,7 +707,7 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = z3.If(first > second, z3.BitVecVal(1, 256),
+                computed = z3.If(util.to_symbolic(first) > second, z3.BitVecVal(1, 256),
                                  z3.BitVecVal(0, 256))
 
                 stack.insert(0, util.convert_result(computed))
@@ -755,11 +774,9 @@ class EVMInterpreter:
                 global_state['pc'] = global_state['pc'] + 1
                 first = stack.pop(0)
 
-                # TODO(Yang): should there be like: (~first) &
-                #  UNSIGNED_BOUND_NUMBER
-                computed = (~first)
+                computed = (~first) & evm_params.UNSIGNED_BOUND_NUMBER
 
-                stack.insert(0, computed)
+                stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
         elif opcode == 'BYTE':
@@ -769,7 +786,7 @@ class EVMInterpreter:
                 byte_index = 31 - first
                 second = stack.pop(0)
 
-                computed = z3.LShR(util.to_symbolic(second), (8 * byte_index))
+                computed = z3.LShR(util.to_symbolic(second), (8 * byte_index)) & evm_params.UNSIGNED_BYTE_NUMBER
 
                 stack.insert(0, util.convert_result(computed))
             else:
@@ -1443,7 +1460,6 @@ class EVMInterpreter:
             new_balance = balance_recipient + transfer_amount
             global_state['balance'][recipient] = new_balance
 
-            return
         elif opcode == 'SAR':
             if len(stack) > 1:
                 global_state['pc'] = global_state['pc'] + 1

@@ -309,6 +309,8 @@ def opcode_by_name(name):
     name = name.upper()
     if name not in OPCODES:
         raise LookupError(f'No opcode named "{name}".')
+    if name == "SUICIDE":
+        name = "SELFDESTRUCT"
     return OPCODES[name]
 
 
