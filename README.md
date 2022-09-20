@@ -3,9 +3,8 @@ Seraph
 
 An Implementation of ***Committable Transparent Center Analysis Service*** for solidity source file which gets two source files as input and produces their differences in form of graphs and abstractions of *ast/cfg/ssg*. 
 
-[![Gitter][gitter-badge]][gitter-url]
 [![License: GPL v3][license-badge]][license-badge-url]
-[![Build Status](https://img.shields.io/github/workflow/status/Committable/AnalysisService/Analysis%20Handler%20Docker%20Build-Push)]()
+[![Build Status](https://img.shields.io/github/workflow/status/Committable/Seraph/Pytest)]()
 
 *This repository is currently maintained by yangzq12 ([@yangzq12](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/Seraph/issues).*
 
@@ -169,8 +168,6 @@ Or
 
 And that's it!
 
-## Miscellaneous Utilities
-
 
 ## Benchmarks
 we selected commits from [Dapp-Learning](https://github.com/Dapp-Learning-DAO/Dapp-Learning) and [openzeppelin-contracts](https://github.com/OpenZeppelin/openzeppelin-contracts) repository as the benchmark.
@@ -180,10 +177,8 @@ To run the benchmarks, it is best to use the docker container and service_test a
 
 ## Contributing
 
-Checkout out our [contribution guide](https://github.com/Committable/Seraph/blob/master/CONTRIBUTING.md) and the code structure [here](https://github.com/Committable/Seraph/blob/master/CODE.md).
+Checkout out our [contribution guide](https://github.com/Committable/Seraph/blob/master/CONTRIBUTING.md).
 
 
-[gitter-badge]: https://img.shields.io/gitter/room/yangzq12/seraph
-[gitter-url]: https://gitter.im/yangzq12/seraph#
-[license-badge]: https://img.shields.io/github/license/yangzq12/openzeppelin
+[license-badge]: https://img.shields.io/github/license/Committable/Seraph
 [license-badge-url]: ./LICENSE
