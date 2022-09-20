@@ -51,7 +51,8 @@ def main():
     fail = 0
     failed = {'files': [], 'errors': []}
     global_params.DEST_PATH = './tmp'
-    for file in load_test_files('./tests/integration_test/test_cases/test_file.json'):
+    for file in load_test_files(
+            './tests/integration_test/test_cases/test_file.json'):
         file_output_path = util.generate_output_dir(
             str(int(time.time() * 10**6)), '')
         total += 1
@@ -65,9 +66,9 @@ def main():
         ctx = context.Context(time.time(), project_dir, src_file, [], '', '')
         try:
             if 'compilation' in cfg and project_name in cfg['compilation']:
-                analyzer.analyze_evm_from_solidity(file_output_path, src_file,
-                                                   project_dir, ctx,
-                                                   cfg['compilation'][project_name])
+                analyzer.analyze_evm_from_solidity(
+                    file_output_path, src_file, project_dir, ctx,
+                    cfg['compilation'][project_name])
             else:
                 analyzer.analyze_evm_from_solidity(file_output_path, src_file,
                                                    project_dir, ctx)
