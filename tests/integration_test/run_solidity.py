@@ -51,7 +51,8 @@ def main():
     fail = 0
     failed = {'files': [], 'errors': []}
     global_params.DEST_PATH = './tmp'
-    for file in load_test_files('./tests/integration_test/test_cases/test_file.json'):
+    for file in load_test_files(
+            './tests/integration_test/test_cases/test_file.json'):
         file_output_path = util.generate_output_dir(
             str(int(time.time() * 10**6)), '')
         total += 1
