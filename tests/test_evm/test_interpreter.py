@@ -56,7 +56,7 @@ class TestEvmInterpreter(unittest.TestCase):
                 self.assertEqual(int(hex_memory[x]["value"]), params_memory[int(x, 0)][1], "value not equal")
 
     def _test_opcode(self, name):
-        with open(os.path.join(self.BASE_PATH, name+".json")) as json_file:
+        with open(os.path.join(self.BASE_PATH, name + ".json")) as json_file:
             all_data = json.load(json_file)
         for x in all_data:
             log.mylogger.info("------------------Start Testing %s------------------", x)
@@ -65,10 +65,12 @@ class TestEvmInterpreter(unittest.TestCase):
             data = all_data[x]
             cname = x
             context = ctx.Context(time.time(), "", "", "", "", "")
-            runtime = rt.EvmRuntime(context,
-                                    opcodes=pyevmasm.disassemble_hex(data['exec']['code']).replace('\n', ' '),
-                                    input_type=global_params.LanguageType.SOLIDITY,
-                                    binary=data['exec']['code'][2:])
+            runtime = rt.EvmRuntime(
+                context,
+                opcodes=pyevmasm.disassemble_hex(data['exec']['code']).replace(
+                    '\n', ' '),
+                input_type=global_params.LanguageType.SOLIDITY,
+                binary=data['exec']['code'][2:])
             runtime.build_cfg()
             interpreter = EVMInterpreter(runtime, cname, context)
             params = interpreter.sym_exec()

@@ -7,7 +7,6 @@ import six
 import z3
 import math
 
-import utils.util
 from graph_builder import x_graph
 from interpreter import evm_params
 from interpreter import opcodes
@@ -1026,7 +1025,7 @@ class EVMInterpreter:
             for x in global_state['balance']:
                 try:
                     if int(str(z3.simplify(util.to_symbolic(x -
-                                                             address)))) == 0:
+                                                            address)))) == 0:
                         new_var = global_state['balance'][x]
                         break
                 except:  # pylint: disable=bare-except
@@ -1176,7 +1175,7 @@ class EVMInterpreter:
             global_state['pc'] = global_state['pc'] + 1
         elif opcode == 'MSIZE':
             global_state['pc'] = global_state['pc'] + 1
-            stack.insert(0, util.convert_result(32*global_state['miu']))
+            stack.insert(0, util.convert_result(32 * global_state['miu']))
         elif opcode == 'GAS':
             # Todo: we do not have this precisely. It depends on both the
             #  initial gas and the amount has been depleted
@@ -1271,7 +1270,7 @@ class EVMInterpreter:
                 balance_ia = global_state['balance'][
                     global_state['receiverAddress']]
                 new_balance_ia = util.convert_result(balance_ia -
-                                                      transfer_amount)
+                                                     transfer_amount)
                 global_state['balance'][
                     global_state['receiverAddress']] = new_balance_ia
                 # update the balance of recipient
@@ -1330,7 +1329,7 @@ class EVMInterpreter:
                 balance_ia = global_state['balance'][
                     global_state['receiverAddress']]
                 new_balance_ia = util.convert_result(balance_ia -
-                                                      transfer_amount)
+                                                     transfer_amount)
                 global_state['balance'][
                     global_state['receiverAddress']] = new_balance_ia
                 # update the balance of recipient
@@ -1620,14 +1619,15 @@ class EVMInterpreter:
     # mem for symbolic indexes, map key is start, map value is (end, value)
     @staticmethod
     def write_memory(start, value, params, size=32):
-        new_miu = util.convert_result(start+size)
+        new_miu = util.convert_result(start + size)
         if util.is_all_real(new_miu, params.global_state["miu"]):
-            params.global_state["miu"] = max(math.ceil(new_miu/32.0), params.global_state["miu"])
+            params.global_state["miu"] = max(math.ceil(new_miu / 32.0),
+                                             params.global_state["miu"])
         else:
-            new_miu = util.convert_result(new_miu/32)
-            params.global_state["miu"] = z3.If(new_miu > params.global_state["miu"],
-                                               new_miu,
-                                               params.global_state["miu"])
+            new_miu = util.convert_result(new_miu / 32)
+            params.global_state["miu"] = z3.If(
+                new_miu > params.global_state["miu"], new_miu,
+                params.global_state["miu"])
 
         if util.is_all_real(start, size):
             # [start, end] is filled with new value
@@ -1652,8 +1652,8 @@ class EVMInterpreter:
                                              8 * (old_end - old_start + 1) - 1,
                                              8 * (end + 1 - old_start),
                                              util.to_symbolic(old_value,
-                                                               bits=old_size *
-                                                               8))))
+                                                              bits=old_size *
+                                                              8))))
                         memory.pop(old_start)
                 elif old_start < start:
                     if old_end < start:
@@ -1683,11 +1683,12 @@ class EVMInterpreter:
                                              8 * (old_end - old_start + 1) - 1,
                                              8 * (end + 1 - old_start),
                                              util.to_symbolic(old_value,
-                                                               bits=old_size *
-                                                               8))))
-            memory[start] = (end, util.convert_result(z3.Extract(8*size-1,
-                                                                 0,
-                                                                 util.to_symbolic(value))))
+                                                              bits=old_size *
+                                                              8))))
+            memory[start] = (end,
+                             util.convert_result(
+                                 z3.Extract(8 * size - 1, 0,
+                                            util.to_symbolic(value))))
         else:
             params.mem = {start: (start + size - 1, value)}
 
@@ -1715,8 +1716,7 @@ class EVMInterpreter:
                         util.to_symbolic(value, bits=8 * (end - start + 1)),
                         util.to_symbolic(self.load_memory(
                             end + 1, params, size - (end - start + 1)),
-                                          bits=(size - (end - start + 1)) * 8)
-                        )
+                                         bits=(size - (end - start + 1)) * 8))
             else:
                 flag = False
                 for x in memory:
@@ -1727,13 +1727,11 @@ class EVMInterpreter:
                         if end - start == size - 1:
                             result = z3.Extract(
                                 8 * (end - x + 1) - 1, 8 * (start - x),
-                                util.to_symbolic(value,
-                                                  bits=8 * (end - x + 1)))
+                                util.to_symbolic(value, bits=8 * (end - x + 1)))
                         elif end - start > size - 1:
                             result = z3.Extract(
                                 8 * (start + size - x) - 1, 8 * (start - x),
-                                util.to_symbolic(value,
-                                                  bits=8 * (end - x + 1)))
+                                util.to_symbolic(value, bits=8 * (end - x + 1)))
                         else:
                             result = z3.Concat(
                                 z3.Extract(
@@ -1743,8 +1741,7 @@ class EVMInterpreter:
                                 util.to_symbolic(
                                     self.load_memory(end + 1, params,
                                                      size - (end - start + 1)),
-                                    bits=(size - (end - start + 1)) * 8)
-                                )
+                                    bits=(size - (end - start + 1)) * 8))
                         if z3.is_expr(result):
                             assert result.sort() == z3.BitVecSort(
                                 8 * size), 'load memory is not BitVecSort(256)'
@@ -1755,11 +1752,15 @@ class EVMInterpreter:
                     for x in list(memory.keys()):
                         if start < x <= end:
                             result = z3.Concat(
-                                util.to_symbolic(0, (x-start)*8),
-                                util.to_symbolic(self.load_memory(x, params, size-x+start), (size-x+start)*8))
+                                util.to_symbolic(0, (x - start) * 8),
+                                util.to_symbolic(
+                                    self.load_memory(x, params,
+                                                     size - x + start),
+                                    (size - x + start) * 8))
                             if z3.is_expr(result):
                                 assert result.sort() == z3.BitVecSort(
-                                    8 * size), 'load memory is not BitVecSort(256)'
+                                    8 *
+                                    size), 'load memory is not BitVecSort(256)'
 
                             return util.convert_result(result)
                 result = z3.BitVecVal(0, 8 * size)
