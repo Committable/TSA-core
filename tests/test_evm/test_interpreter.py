@@ -23,7 +23,9 @@ class TestEvmInterpreter(unittest.TestCase):
         storage = None
         if 'post' in data and 'storage' in list(data['post'].values())[0]:
             storage = list(data['post'].values())[0]['storage']
-        return storage if storage is not None and storage != {} else {"0x0": "0x0"}
+        return storage if storage is not None and storage != {} else {
+            "0x0": "0x0"
+        }
 
     def _memory(self, data):
         memory = None
@@ -52,14 +54,17 @@ class TestEvmInterpreter(unittest.TestCase):
         if hex_memory is not None:
             for x in hex_memory:
                 self.assertIn(int(x, 0), params_memory.keys(), "start not in")
-                self.assertEqual(int(hex_memory[x]["end"]), params_memory[int(x, 0)][0], "end not equal")
-                self.assertEqual(int(hex_memory[x]["value"]), params_memory[int(x, 0)][1], "value not equal")
+                self.assertEqual(int(hex_memory[x]["end"]),
+                                 params_memory[int(x, 0)][0], "end not equal")
+                self.assertEqual(int(hex_memory[x]["value"]),
+                                 params_memory[int(x, 0)][1], "value not equal")
 
     def _test_opcode(self, name):
         with open(os.path.join(self.BASE_PATH, name + ".json")) as json_file:
             all_data = json.load(json_file)
         for x in all_data:
-            log.mylogger.info("------------------Start Testing %s------------------", x)
+            log.mylogger.info(
+                "------------------Start Testing %s------------------", x)
             if x == "push32AndSuicide":
                 log.mylogger.info("here")
             data = all_data[x]
@@ -79,7 +84,8 @@ class TestEvmInterpreter(unittest.TestCase):
             else:
                 self._compare_storage_value(data, params.global_state)
                 self._compare_memory_value(data, params.memory)
-            log.mylogger.info("------------------End Testing %s------------------", x)
+            log.mylogger.info(
+                "------------------End Testing %s------------------", x)
 
     def test_msize0(self):
         self._test_opcode("msize0")

@@ -583,7 +583,8 @@ class EVMInterpreter:
                     if util.is_all_real(first, second, third):
                         computed = (first + second) % third
                     else:
-                        computed = z3.URem(first + second, util.to_symbolic(third))
+                        computed = z3.URem(first + second,
+                                           util.to_symbolic(third))
                     stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
@@ -612,7 +613,8 @@ class EVMInterpreter:
                     if util.is_all_real(first, second, third):
                         computed = (first * second) % third
                     else:
-                        computed = z3.URem(first * second, util.to_symbolic(third))
+                        computed = z3.URem(first * second,
+                                           util.to_symbolic(third))
                     stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
@@ -694,8 +696,9 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = z3.If(util.to_symbolic(first) < second, z3.BitVecVal(1, 256),
-                                 z3.BitVecVal(0, 256))
+                computed = z3.If(
+                    util.to_symbolic(first) < second, z3.BitVecVal(1, 256),
+                    z3.BitVecVal(0, 256))
 
                 stack.insert(0, util.convert_result(computed))
             else:
@@ -706,8 +709,9 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = z3.If(util.to_symbolic(first) > second, z3.BitVecVal(1, 256),
-                                 z3.BitVecVal(0, 256))
+                computed = z3.If(
+                    util.to_symbolic(first) > second, z3.BitVecVal(1, 256),
+                    z3.BitVecVal(0, 256))
 
                 stack.insert(0, util.convert_result(computed))
             else:
@@ -785,7 +789,9 @@ class EVMInterpreter:
                 byte_index = 31 - first
                 second = stack.pop(0)
 
-                computed = z3.LShR(util.to_symbolic(second), (8 * byte_index)) & evm_params.UNSIGNED_BYTE_NUMBER
+                computed = z3.LShR(
+                    util.to_symbolic(second),
+                    (8 * byte_index)) & evm_params.UNSIGNED_BYTE_NUMBER
 
                 stack.insert(0, util.convert_result(computed))
             else:
