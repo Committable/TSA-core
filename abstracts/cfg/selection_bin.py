@@ -6,7 +6,7 @@ class SelectionBin(index.Index):
     def __init__(self, cfg_graphs):
         self.cfg_graphs = cfg_graphs
 
-    def get_index(self):
+    def get_index(self, context):
         selection_bin = 0
         for x in self.cfg_graphs:
             for edge in list(self.cfg_graphs[x].edges):

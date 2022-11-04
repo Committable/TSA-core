@@ -671,6 +671,7 @@ class XGraph:
 
         graph = self.graphs[self.current_function]
         graph.add_node(e_node)
+        # we add last constraint node to the current graph if last constraint not in
         if len(constraint_nodes) > 0:
             if not graph.has_node(constraint_nodes[-1]):
                 graph.add_node(constraint_nodes[-1])

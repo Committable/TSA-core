@@ -279,7 +279,7 @@ class EvmRuntime:
                  directory=global_params.DEST_PATH,
                  view=True)
 
-    def print_visited_cfg(self, visited_edges):
+    def print_visited_cfg(self, visited_edges, impossible_paths, output_path):
         g = graphviz.Digraph(name='ControlFlowGraph', format='pdf')
 
         # TODO(Chao): Avoid using str append (+) in loop,
@@ -355,6 +355,6 @@ class EvmRuntime:
                 g.node(name=start, label=label, color='red')
 
         g.render(os.path.join(
-            global_params.DEST_PATH,
-            f'cfg{self.src_file.split("/")[-1].split(".")[0]}.gv'),
+            output_path,
+            f'visited_cfg_{self.src_file.split("/")[-1].split(".")[0]}.gv'),
                  view=False)

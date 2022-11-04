@@ -2,7 +2,7 @@ import json
 import os
 import time
 import traceback
-
+import cProfile
 import analyzer
 from utils import util, global_params, context, log
 
@@ -97,4 +97,5 @@ def main():
 
 
 if __name__ == '__main__':
+    # cProfile.run("main()")
     main()

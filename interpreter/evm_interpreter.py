@@ -11,7 +11,7 @@ from graph_builder import x_graph
 from interpreter import evm_params
 from interpreter import opcodes
 from interpreter import symbolic_var_generator
-from utils import util, global_params, errors, log
+from utils import util, global_params, errors, log, context
 
 
 class EVMInterpreter:
@@ -101,11 +101,11 @@ class EVMInterpreter:
         except TimeoutError:
             log.mylogger.error('system timeout for %s', self.cname)
             self.context.set_timeout()
-            self.context.set_err()
+            self.context.set_err(context.ExecErrorType.SYMBOL_TIMEOUT)
             return None
         except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
-            self.context.set_err()
+            self.context.set_err(context.ExecErrorType.SYMBOL_TIMEOUT)
             log.mylogger.error(
                 'cause error when symbolic execute for %s, err: %s', self.cname,
                 str(err))
@@ -139,15 +139,18 @@ class EVMInterpreter:
 
         self._exit_block(function_name)
 
-        end_time = time.time()
-        execution_time = end_time - start_time
-        log.mylogger.debug('block: %s symbolic execution time: %.6f s',
-                           str(block), execution_time)
-        log.mylogger.debug('*********************************')
+        if global_params.DEBUG_MOD:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            log.mylogger.debug('block: %s symbolic execution time: %.6f s',
+                               str(block), execution_time)
+            log.mylogger.debug('*********************************')
 
     # Symbolically executing a block from the start address
     def _sym_exec_block(self, params, block, pre_block):
-        start_time = time.time()
+        start_time = None
+        if global_params.DEBUG_MOD:
+            start_time = time.time()
 
         log.mylogger.debug('*********************************')
         log.mylogger.debug('reach block address %d', block)
@@ -173,7 +176,7 @@ class EVMInterpreter:
                 visited[current_edge] > evm_params.LOOP_LIMIT and
                 self.runtime.jump_type[block] == 'conditional'):
             log.mylogger.debug(
-                'overcome a number of loop limit. Terminating this path ...')
+                'overcome a number of loop limit for path visited. Terminating this path ...')
             self._terminate_path('loopLimit', function_name, params, start_time,
                                  block)
             return
@@ -182,7 +185,7 @@ class EVMInterpreter:
                 if current_edge in self.total_visited_edges and \
                         self.total_visited_edges[
                             current_edge] > 10:
-                    log.mylogger.debug('overcome a number of loop limit. '
+                    log.mylogger.debug('overcome a number of loop limit for total visited. '
                                        'Terminating this path ...')
                     self._terminate_path('loopLimit', function_name, params,
                                          start_time, block)
@@ -191,7 +194,7 @@ class EVMInterpreter:
                 if current_edge in self.function_visited_edges and \
                         self.function_visited_edges[
                             current_edge] > 10:
-                    log.mylogger.debug('overcome a number of loop limit. '
+                    log.mylogger.debug('overcome a number of loop limit for function visited. '
                                        'Terminating this path ...')
                     self._terminate_path('loopLimit', function_name, params,
                                          start_time, block)
@@ -301,13 +304,16 @@ class EVMInterpreter:
                 #  even the branch constraint for time consuming, instead
                 #  we get string format of branch condition for simple
                 #  judgement of impossible path
-                str_expr = str(branch_expression)
+                str_expr = ""
+                if z3.is_const(branch_expression):
+                    str_expr = str(branch_expression)
 
                 left_branch = self.runtime.vertices[block].get_jump_target()
                 # find if left_branch is the start block of a new function
                 selector = self.get_function_from_start_block(left_branch)
 
                 if str_expr != 'False':
+                # if True:
                     # we copy params for one branch of conditional jump
                     new_params = params.copy()
                     new_params.global_state['pc'] = left_branch
@@ -331,13 +337,15 @@ class EVMInterpreter:
                         )
                     self._sym_exec_block(new_params, left_branch, block)
                 else:
-                    self.impossible_paths.append(
-                        copy.deepcopy(self.current_path).append(left_branch))
+                    c = copy.deepcopy(self.current_path)
+                    c.append(left_branch)
+                    self.impossible_paths.append(c)
 
                 negated_branch_expression = z3.Not(branch_expression)
                 right_branch = self.runtime.vertices[block].get_falls_to()
 
                 if str_expr != 'True':
+                # if True:
                     params.global_state['pc'] = right_branch
                     params.path_conditions_and_vars['path_condition'].append(
                         negated_branch_expression)
@@ -350,8 +358,9 @@ class EVMInterpreter:
                     )
                     self._sym_exec_block(params, right_branch, block)
                 else:
-                    self.impossible_paths.append(
-                        copy.deepcopy(self.current_path).append(left_branch))
+                    c = copy.deepcopy(self.current_path)
+                    c.append(left_branch)
+                    self.impossible_paths.append(c)
             else:
                 log.mylogger.error(
                     'branch expression of conditional jump is None')
@@ -360,12 +369,12 @@ class EVMInterpreter:
                 return
         else:
             raise NotImplementedError('unknown Jump-Type')
-
-        end_time = time.time()
-        execution_time = end_time - start_time
-        log.mylogger.debug('block: %s symbolic execution time: %.6f s',
-                           str(block), execution_time)
-        log.mylogger.debug('*********************************')
+        if global_params.DEBUG_MOD:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            log.mylogger.debug('block: %s symbolic execution time: %.6f s',
+                               str(block), execution_time)
+            log.mylogger.debug('*********************************')
 
         self._exit_block(function_name)
         return
@@ -583,7 +592,8 @@ class EVMInterpreter:
                     if util.is_all_real(first, second, third):
                         computed = (first + second) % third
                     else:
-                        computed = z3.URem(first + second, util.to_symbolic(third))
+                        computed = z3.URem(first + second,
+                                           util.to_symbolic(third))
                     stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
@@ -612,7 +622,8 @@ class EVMInterpreter:
                     if util.is_all_real(first, second, third):
                         computed = (first * second) % third
                     else:
-                        computed = z3.URem(first * second, util.to_symbolic(third))
+                        computed = z3.URem(first * second,
+                                           util.to_symbolic(third))
                     stack.insert(0, util.convert_result(computed))
             else:
                 raise ValueError('STACK underflow')
@@ -630,6 +641,7 @@ class EVMInterpreter:
                     new_var_name = self.gen.gen_exp_var(base, exponent)
                     computed = z3.BitVec(new_var_name, 256)
                     # add to graph
+                    # todo: should we add pc for exp nodes
                     node = x_graph.ExpNode(new_var_name, computed, base,
                                            exponent)
                     self.x_graph.cache_var_node(computed, node)
@@ -694,8 +706,9 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = z3.If(util.to_symbolic(first) < second, z3.BitVecVal(1, 256),
-                                 z3.BitVecVal(0, 256))
+                computed = z3.If(
+                    util.to_symbolic(first) < second, z3.BitVecVal(1, 256),
+                    z3.BitVecVal(0, 256))
 
                 stack.insert(0, util.convert_result(computed))
             else:
@@ -706,8 +719,9 @@ class EVMInterpreter:
                 first = stack.pop(0)
                 second = stack.pop(0)
 
-                computed = z3.If(util.to_symbolic(first) > second, z3.BitVecVal(1, 256),
-                                 z3.BitVecVal(0, 256))
+                computed = z3.If(
+                    util.to_symbolic(first) > second, z3.BitVecVal(1, 256),
+                    z3.BitVecVal(0, 256))
 
                 stack.insert(0, util.convert_result(computed))
             else:
@@ -785,7 +799,9 @@ class EVMInterpreter:
                 byte_index = 31 - first
                 second = stack.pop(0)
 
-                computed = z3.LShR(util.to_symbolic(second), (8 * byte_index)) & evm_params.UNSIGNED_BYTE_NUMBER
+                computed = z3.LShR(
+                    util.to_symbolic(second),
+                    (8 * byte_index)) & evm_params.UNSIGNED_BYTE_NUMBER
 
                 stack.insert(0, util.convert_result(computed))
             else:
@@ -812,7 +828,7 @@ class EVMInterpreter:
                     self.x_graph.cache_var_node(computed, node)
                 else:
                     # TODO(Yang): push into the stack a fresh symbolic variable,
-                    #  how to deal with symbolic address and size
+                    #  and all the data from which computed sha3 is missing
                     new_var_name = self.gen.gen_sha3_var(
                         str(global_state['pc'] - 1))
                     new_var = z3.BitVec(new_var_name, 256)
@@ -874,11 +890,11 @@ class EVMInterpreter:
                 global_state['pc'] = global_state['pc'] + 1
                 start = stack.pop(0)
 
+                end = util.convert_result(start + 31)
                 new_var_name = self.gen.gen_data_var(
-                    start, util.to_symbolic(start + 31), self.current_function)
+                    start, end, self.current_function)
                 value = z3.BitVec(new_var_name, 256)
-                node = x_graph.InputDataNode(new_var_name, value, start,
-                                             util.convert_result(start + 31))
+                node = x_graph.InputDataNode(new_var_name, value, start, end)
                 self.x_graph.cache_var_node(value, node)
 
                 stack.insert(0, value)
@@ -1498,11 +1514,12 @@ class EVMInterpreter:
         if (a_len - b_len) != (opcodes.opcode_by_name(opcode).push -
                                opcodes.opcode_by_name(opcode).pop):
             raise AssertionError('Stack push and pop un-match')
-        end_time = time.time()
-        execution_time = end_time - start_time
-        log.mylogger.debug('End executing: %s symbolic execution time: %.6f s',
-                           instr, execution_time)
-        log.mylogger.debug('==============================')
+        if global_params.DEBUG_MOD:
+            end_time = time.time()
+            execution_time = end_time - start_time
+            log.mylogger.debug('End executing: %s symbolic execution time: %.6f s',
+                               instr, execution_time)
+            log.mylogger.debug('==============================')
 
     def _init_global_state(self, path_conditions_and_vars, global_state):
         new_var = z3.BitVec('Is', 256)

@@ -1,9 +1,15 @@
 dest_path: /reports
 input_path: /repos
-timeout: 200
+timeout: 120
 listen_address: 0.0.0.0:50055
 debug: false
 compilation:
+  Default:
+    compilation_base:
+      remaps:
+        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
+      allow_paths:
+        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin/contracts
   Dapp-Learning:
     prepare:
       - "npm install @openzeppelin/contracts"

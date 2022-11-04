@@ -1,3 +1,13 @@
+import enum
+
+
+class ExecErrorType(enum.Enum):
+    EMPTY = 0
+    SYMBOL_EXEC = 1
+    SYMBOL_TIMEOUT = 2
+    COMPILATION = 3
+
+
 class Context:
 
     def __init__(self, start, project_dir, src_file, diff, platform,
@@ -31,14 +41,23 @@ class Context:
 
         # if analysis cause an error
         self.err = False
+        self.error_type = ExecErrorType.EMPTY
+        self.index_error = set()
         # timeout
         self.timeout = False
 
     def set_timeout(self):
         self.timeout = True
 
-    def set_err(self):
+    def set_err(self, error_type):
         self.err = True
+        self.error_type = error_type
+
+    def set_index_err(self, index):
+        self.index_error.add(index)
+
+    def is_index_err(self, index):
+        return index in self.index_error
 
     def add_include_path(self, path):
         self.include_paths.append(path)

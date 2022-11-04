@@ -1,32 +1,32 @@
 dest_path: /reports
 input_path: /repos
 listen_address: 0.0.0.0:50054
-timeout: 100
+timeout: 60
 debug: false
 compilation:
+  Default:
+    compilation_base:
+      remaps:
+        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
+      allow_paths:
+        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin/contracts
   Dapp-Learning:
-    prepare:
-      - "npm install @openzeppelin/contracts"
     compilation_base:
       remaps:
-        "@openzeppelin": ./node_modules/@openzeppelin
+        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
       allow_paths:
-        - node_module/@openzeppelin
+        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin/contracts
   avalanche-bridge-resources:
-    prepare:
-      - "npm install @openzeppelin/contracts"
     compilation_base:
       remaps:
-        "@openzeppelin": ./node_modules/@openzeppelin
+        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
       allow_paths:
-        - node_module/@openzeppelin
+        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin
   chainlink:
-    prepare:
-      - "npm install @openzeppelin/contracts"
     compilation_base:
       remaps:
-        "@openzeppelin": ./node_modules/@openzeppelin
+        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
       allow_paths:
-        - node_module/@openzeppelin
+        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin
 
 

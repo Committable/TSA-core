@@ -17,7 +17,7 @@ solidity_service:
 evm_service:
   address: localhost:50055
   enabled: true
-  timeout: 300
+  timeout: 400
 llvm_service:
   address: localhost:50056
   enabled: true
@@ -33,8 +33,10 @@ handler_service:
 result_path: /path/to/result
 repos_path: /path/to/repos
 reports_path: /path/to/reports
-repo_url: "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
+# repo_url: "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
+repo_url: "/home/liyue/transparentCenter/AnalysisService/service_test/test/repos/openzeppelin-contracts"
 # repo_url: "https://github.com/Dapp-Learning-DAO/Dapp-Learning.git"
 # repo_url: "https://github.com/ethereum/go-ethereum.git"
 # repo_url: "https://github.com/aolin118/demo-solidity.git"
+# repo_url: "https://github.com/smartcontractkit/chainlink.git"
 listen_address: 0.0.0.0:50051

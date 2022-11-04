@@ -5,6 +5,7 @@ import traceback
 import memory_profiler as mem
 
 from utils import global_params, log
+from utils import context as ctx
 from input_dealer import input_helper
 from interpreter import evm_interpreter
 from reporter import ast_reporter
@@ -38,16 +39,16 @@ def analyze_evm_from_solidity(output_path,
     # 2. compile
     flag = True  # represent the compilation error caused by source file
     try:
-        inputs, flag = helper.get_solidity_inputs(compilation_cfg)
+        inputs, flag = helper.get_solidity_inputs(compilation_cfg, output_path)
     except Exception as err:  # pylint: disable=broad-except
-        context.set_err()
+        context.set_err(ctx.ExecErrorType.COMPILATION)
         traceback.print_exc()
         log.mylogger.error('fail to compile for %s, err: %s', src_path,
                            str(err))
         inputs = []
     # compilation fail without an exception
     if not flag:
-        context.set_err()
+        context.set_err(ctx.ExecErrorType.COMPILATION)
         log.mylogger.error('fail to compile for %s', src_path)
 
     log.mylogger.info('get compilation outputs for file: %s', src_path)
@@ -84,7 +85,7 @@ def analyze_evm_from_solidity(output_path,
         # add coverage information
         cfg_report.set_coverage_info(inp['contract'], env, interpreter)
         if global_params.DEBUG_MOD:
-            env.print_visited_cfg(interpreter.total_visited_edges)
+            env.print_visited_cfg(interpreter.total_visited_edges, interpreter.impossible_paths, output_path)
         end_mem = mem.memory_usage()
         end_time = time.time()
         execution_time = end_time - start_time
@@ -142,15 +143,15 @@ def analyze_solidity_code(output_path,
     # 2. compile
     flag = True
     try:
-        inputs, flag = helper.get_solidity_inputs(compilation_cfg)
+        inputs, flag = helper.get_solidity_inputs(compilation_cfg, output_path)
         del inputs  # Unused, reserve for name hint
     except Exception as err:  # pylint: disable=broad-except
-        context.set_err()
+        context.set_err(ctx.ExecErrorType.COMPILATION)
         traceback.print_exc()
         log.mylogger.error('fail to compile for %s, err: %s', src_path,
                            str(err))
     if not flag:
-        context.set_err()
+        context.set_err(ctx.ExecErrorType.COMPILATION)
         log.mylogger.error('fail to compile for %s', src_path)
 
     log.mylogger.info('get compilation outputs for file: %s', src_path)

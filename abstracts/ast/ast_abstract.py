@@ -13,6 +13,7 @@ class AstAbstract:
             __import__(f'abstracts.ast.{index_name}').ast, index_name)
 
     def get_ast_abstract_json(self,
+                              context,
                               ast=None,
                               ast_type='legacyAST',
                               source=None):
@@ -20,7 +21,7 @@ class AstAbstract:
         for name, index in self.indexes.items():
             func = getattr(index.get_index_class(ast, ast_type, source),
                            'get_index')
-            abstract[name] = func()
+            abstract[name] = func(context)
 
         return abstract
 

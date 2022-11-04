@@ -9,7 +9,7 @@ class SequenceSrc(index.Index):
         self.source = source
         self.ast_type = ast_type
 
-    def get_index(self):
+    def get_index(self, context):
         if not self.ast or not self.source:
             return 0
 

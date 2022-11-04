@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -212,23 +213,38 @@ func exists(path string) bool {
 		if os.IsExist(err) {
 			return true
 		}
+		_ = os.MkdirAll(path, os.ModePerm)
 		return false
 	}
 	return true
 }
 
-func cloneFromCommitHash(repoPath, repoUrl, commitHash string) (string, error) {
+func cloneFromCommitHash(repoPath, repoUrl, commitHash string, parent bool) (string, error) {
+	var err error
+	var repo *git.Repository
+	// to optimize the clone process, we assume worker_num = 1, and use parentDir and childDir for commits' project dir
+	//if parent{
+	//	repoPath = strings.Replace(repoPath, commitHash, "parentDir", 1)
+	//}else{
+	//	repoPath = strings.Replace(repoPath, commitHash, "childDir", 1)
+	//}
 	if exists(repoPath) {
 		dir, _ := ioutil.ReadDir(repoPath)
-		if len(dir) != 0 {
-			log.Printf("%s already cloned", commitHash)
-			return repoPath, nil
+		if len(dir) == 0 {
+			repo, err = git.PlainClone(repoPath, false, &git.CloneOptions{
+				URL:      repoUrl,
+				Progress: os.Stdout,
+			})
+		}else{
+			repo, err = git.PlainOpen(repoPath)
 		}
+	}else{
+		repo, err = git.PlainClone(repoPath, false, &git.CloneOptions{
+			URL:      repoUrl,
+			Progress: os.Stdout,
+		})
 	}
-	repo, err := git.PlainClone(repoPath, false, &git.CloneOptions{
-		URL:      repoUrl,
-		Progress: os.Stdout,
-	})
+
 	if err != nil {
 		return "", err
 	}
@@ -256,11 +272,11 @@ func handlerUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.AnalysisRe
 	childFile := rowChild[1]
 	parentCommitHash := rowParent[0]
 	parentFile := rowParent[1]
-	if childFile != parentFile {
-		log.Printf("Error: mismatch child and parent of row %d at %s", i, timestamp)
-		return nil, errors.New("mismatch child and parent")
-	}
-	if filepath.Ext(childFile) != ".sol" {
+	//if childFile != parentFile {
+	//	log.Printf("Error: mismatch child and parent of row %d at %s", i, timestamp)
+	//	return nil, errors.New("mismatch child and parent")
+	//}
+	if filepath.Ext(childFile) != ".sol" || filepath.Ext(childFile) != ".sol"{
 		log.Printf("Error: not file of row %d at %s", i, timestamp)
 		return nil, errors.New("mismatch child and parent")
 	}
@@ -274,18 +290,20 @@ func handlerUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.AnalysisRe
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash)
+	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash, false)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", childCommitHash, err)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash)
+	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash, true)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", parentCommitHash, err)
 		return nil, err
 	}
-	after := &pb.AnalysisTarget{RepoPath: childCommitHash, FilePath: childFile}
-	before := &pb.AnalysisTarget{RepoPath: parentCommitHash, FilePath: parentFile}
+	after := &pb.AnalysisTarget{RepoPath: "childDir", FilePath: childFile}
+	before := &pb.AnalysisTarget{RepoPath: "parentDir", FilePath: parentFile}
+	//after := &pb.AnalysisTarget{RepoPath: childCommitHash, FilePath: childFile}
+	//before := &pb.AnalysisTarget{RepoPath: parentCommitHash, FilePath: parentFile}
 
 	response, err := analyze_all(mgr, before, after, "", timestamp)
 	if err != nil {
@@ -342,12 +360,12 @@ func goUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCodeAnaly
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash)
+	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash, false)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", childCommitHash, err)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash)
+	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash, true)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", parentCommitHash, err)
 		return nil, err
@@ -410,12 +428,12 @@ func markdownUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash)
+	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash, false)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", childCommitHash, err)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash)
+	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash, true)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", parentCommitHash, err)
 		return nil, err
@@ -460,11 +478,11 @@ func solidityUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 	childFile := rowChild[1]
 	parentCommitHash := rowParent[0]
 	parentFile := rowParent[1]
-	if childFile != parentFile {
-		log.Printf("Error: mismatch child and parent of row %d at %s", i, timestamp)
-		return nil, errors.New("mismatch child and parent")
-	}
-	if filepath.Ext(childFile) != ".sol" {
+	//if childFile != parentFile {
+	//	log.Printf("Error: mismatch child and parent of row %d at %s", i, timestamp)
+	//	return nil, errors.New("mismatch child and parent")
+	//}
+	if filepath.Ext(childFile) != ".sol" || filepath.Ext(parentFile) != ".sol"{
 		log.Printf("Error: not solidity file of row %d at %s", i, timestamp)
 		return nil, errors.New("not solidity ")
 	}
@@ -478,19 +496,21 @@ func solidityUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash)
+	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash, false)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", childCommitHash, err)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash)
+	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash, true)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", parentCommitHash, err)
 		return nil, err
 	}
-	after := &pb.AnalysisTarget{RepoPath: childCommitHash, FilePath: childFile}
-	before := &pb.AnalysisTarget{RepoPath: parentCommitHash, FilePath: parentFile}
-
+	//after := &pb.AnalysisTarget{RepoPath: childCommitHash, FilePath: childFile}
+	//before := &pb.AnalysisTarget{RepoPath: parentCommitHash, FilePath: parentFile}
+	after := &pb.AnalysisTarget{RepoPath: "childDir", FilePath: childFile}
+	before := &pb.AnalysisTarget{RepoPath: "parentDir", FilePath: parentFile}
+	log.Printf("commitHash: %s, childFile: %s, parentFile %s", childCommitHash, childFile, parentFile)
 	response, err := analyze_solidity(mgr, before, after, "", timestamp)
 	if err != nil {
 		log.Printf("Error: analyze fail for %s and %s, file: %s, error: %s at %s", childCommitHash, parentCommitHash, childFile, err.Error(), timestamp)
@@ -500,6 +520,7 @@ func solidityUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.SourceCod
 		log.Printf("Error: analyze fail for %s and %s, file: %s, error: %s at %s", childCommitHash, parentCommitHash, childFile, response.Message, timestamp)
 		return nil, fmt.Errorf("analysze fail for %s", response.Message)
 	}
+	log.Printf("ast result to %s", response.AstAbstractPath)
 	b, err := json.Marshal(response)
 	if err != nil {
 		log.Printf("Error: marshal for %s result fail: %v at %s", childCommitHash, err, timestamp)
@@ -528,11 +549,11 @@ func evmUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.ByteCodeAnalys
 	childFile := rowChild[1]
 	parentCommitHash := rowParent[0]
 	parentFile := rowParent[1]
-	if childFile != parentFile {
-		log.Printf("Error: mismatch child and parent of row %d at %s", i, timestamp)
-		return nil, errors.New("mismatch child and parent")
-	}
-	if filepath.Ext(childFile) != ".sol" {
+	//if childFile != parentFile {
+	//	log.Printf("Error: mismatch child and parent of row %d at %s", i, timestamp)
+	//	return nil, errors.New("mismatch child and parent")
+	//}
+	if filepath.Ext(childFile) != ".sol" || filepath.Ext(parentFile) != ".sol"{
 		log.Printf("Error: not solidity file of row %d at %s", i, timestamp)
 		return nil, errors.New("not solidity file")
 	}
@@ -546,18 +567,21 @@ func evmUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.ByteCodeAnalys
 		log.Printf("Error: cannot generate parent dir: %v at %s", err, timestamp)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash)
+	_, err = cloneFromCommitHash(dirChild, conf.RepoUrl, childCommitHash, false)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", childCommitHash, err)
 		return nil, err
 	}
-	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash)
+	_, err = cloneFromCommitHash(dirParent, conf.RepoUrl, parentCommitHash, true)
 	if err != nil {
 		log.Printf("Error: cannot clone commitHash: %s, error: %v", parentCommitHash, err)
 		return nil, err
 	}
 	after := &pb.AnalysisTarget{RepoPath: childCommitHash, FilePath: childFile}
 	before := &pb.AnalysisTarget{RepoPath: parentCommitHash, FilePath: parentFile}
+	//after := &pb.AnalysisTarget{RepoPath: "childDir", FilePath: childFile}
+	//before := &pb.AnalysisTarget{RepoPath: "parentDir", FilePath: parentFile}
+	log.Printf("commitHash: %s, childFile: %s, parentFile %s", childCommitHash, childFile, parentFile)
 
 	response, err := analyze_evm(mgr, before, after, "", timestamp)
 	if err != nil {
@@ -568,6 +592,7 @@ func evmUintTest(rows [][]string, mgr *cl.ClientsMgr, i int) (*pb.ByteCodeAnalys
 		log.Printf("Error: analyze fail for %s and %s, file: %s, error: %s at %s", childCommitHash, parentCommitHash, childFile, response.Message, timestamp)
 		return nil, fmt.Errorf("analysze fail for %s", response.Message)
 	}
+	log.Printf("ast result to %s", response.CfgAbstractPath)
 	b, err := json.Marshal(response)
 	if err != nil {
 		log.Printf("Error: marshal for %s result fail: %v at %s", childCommitHash, err, timestamp)
@@ -591,7 +616,7 @@ var reportsDir = flag.String("reports", "", "dirs for reports")
 
 func worker(wait *sync.WaitGroup, id int, s string, rows [][]string, mgr *cl.ClientsMgr, jobs <-chan int, results chan<- Response) {
 	for i := range jobs {
-		fmt.Println("worker", id, "processing job", i)
+		log.Printf("worker %d processing job %d", id, i)
 		var err error
 		if s == "evm" {
 			_, err = evmUintTest(rows, mgr, i)
@@ -644,6 +669,26 @@ func GetAllFiles(dirPth string) (files []string, err error) {
 
 func main() {
 	flag.Parse()
+
+	ex, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	exPath := filepath.Dir(ex)
+
+	if *resultDir != "" {
+		conf.ResultPath = *resultDir
+	}else{
+		conf.ResultPath = exPath
+	}
+	logFile, err := os.OpenFile(filepath.Join(conf.ResultPath, "log.txt"), os.O_CREATE | os.O_APPEND | os.O_RDWR, 0666)
+	if err != nil {
+		log.Printf("cannot open log file")
+	}
+	mw := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(mw)
+	log.Printf("log to %s", conf.ResultPath)
+
 	log.Printf("Testing file: %s, type: %s", *inputFile, *testingType)
 	mgr := cl.NewClientMgr()
 	result := &Result{Detail: make(map[string]string)}
@@ -653,13 +698,17 @@ func main() {
 
     if *reposDir != "" {
         conf.ReposPath = *reposDir
-    }
-    if *resultDir != "" {
-        conf.ResultPath = *resultDir
-    }
+    }else{
+    	conf.ReposPath = exPath
+	}
+
     if *reportsDir != "" {
         conf.ReportsPath = * reportsDir
-    }
+    }else{
+    	conf.ReportsPath = exPath
+	}
+	log.Printf("reposDir: %s, reportsDir: %s", conf.ReposPath, conf.ReportsPath)
+
     if *inputFile != "" {
         f, err := excelize.OpenFile(*inputFile)
         if err != nil {
@@ -679,17 +728,21 @@ func main() {
 
 
 	// for i := 0; i < len(rows); i = i + 2 {
-	jobs := make(chan int, 1000)
-	results := make(chan Response, 1000)
+	jobs := make(chan int, 10000)
+	results := make(chan Response, 10000)
 	wg := sync.WaitGroup{}
-	wg.Add(3)
-	for w := 1; w <= 3; w++ {
-		go worker(&wg, w, *testingType, rows, mgr, jobs, results)
-	}
-	for i := 0; i+1 < 199; i = i + 2 {
+
+	jobsNum := 2001
+	for i := 0; i+1 < jobsNum; i = i + 2 {
 		jobs <- i
 	}
 	close(jobs)
+
+	threadNum := 1
+	wg.Add(threadNum)
+	for w := 1; w <= threadNum; w++ {
+		go worker(&wg, w, *testingType, rows, mgr, jobs, results)
+	}
 
 	wg.Wait()
 	close(results)
@@ -697,7 +750,7 @@ func main() {
 	MetaCommit := make(map[string]int)
 	files, err := GetAllFiles(conf.ReportsPath)
 	for i, file := range files {
-		fmt.Println(strconv.Itoa(i), ":", file)
+		log.Printf("%d : %s", i, file)
 		data, err := ioutil.ReadFile(file)
 		if err != nil {
 			return
@@ -747,7 +800,7 @@ func main() {
 		}
 	}
 	for key := range MetaCommit {
-		fmt.Println(key, ":", MetaCommit[key])
+		log.Printf("%s : %d", key, MetaCommit[key])
 	}
 
 	for response := range results {

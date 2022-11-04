@@ -12,11 +12,11 @@ class CfgAbstract:
         self.indexes[index_name] = getattr(
             __import__(f'abstracts.cfg.{index_name}').cfg, index_name)
 
-    def get_cfg_abstract_json(self, cfg_graphs):
+    def get_cfg_abstract_json(self, cfg_graphs, context):
         abstract = {}
         for name, index in self.indexes.items():
             func = getattr(index.get_index_class(cfg_graphs), 'get_index')
-            abstract[name] = func()
+            abstract[name] = func(context)
 
         return abstract
 

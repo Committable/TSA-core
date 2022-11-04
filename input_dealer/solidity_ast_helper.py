@@ -45,10 +45,10 @@ class AstHelper:
         ast_abstract_instance.register_ast_abstracts(context)
         if filename in self.ast_trees:
             return ast_abstract_instance.get_ast_abstract_json(
-                self.ast_trees[filename], self.ast_type, source)
+                context, self.ast_trees[filename], self.ast_type, source)
         else:
             log.mylogger.warning('Has no %s\'s ast when get abstract', filename)
-            return ast_abstract_instance.get_ast_abstract_json()
+            return ast_abstract_instance.get_ast_abstract_json(context)
 
     def extract_contract_definitions(self):
         if self.ast_type == 'legacyAST':

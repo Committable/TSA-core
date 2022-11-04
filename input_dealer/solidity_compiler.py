@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import signal
@@ -332,7 +333,7 @@ class SolidityCompiler:
                                 command)
         log.mylogger.info('success run compilation prepare')
 
-    def get_compiled_contracts_as_json(self, compilation_cfg):
+    def get_compiled_contracts_as_json(self, compilation_cfg, output_path):
         self.prepare_compilation(compilation_cfg)
         # try solcx with all allowed version until success
         if os.path.exists(self.target):
@@ -340,14 +341,25 @@ class SolidityCompiler:
                 try:
                     if self._compile_with_solcx(v):
                         self._convert_opcodes()
+                        compilation_path = os.path.join(output_path, 'compilation.json')
+                        with open(compilation_path, 'w', encoding='utf8') as output_file:
+                            json.dump(self.combined_json, output_file)
                         return
                 except Exception:  # pylint: disable=broad-except
                     log.mylogger.warning('Compile with solcx version %s fail',
                                          str(v))
                     continue
+            compilation_path = os.path.join(output_path, 'compilation.json')
+            self.combined_json["status"] = "compile fail"
+            with open(compilation_path, 'w', encoding='utf8') as output_file:
+                json.dump(self.combined_json, output_file)
             log.mylogger.error('Can not compile with solcx')
             raise errors.CompileError('Can not compile with solcx')
 
+        compilation_path = os.path.join(output_path, 'compilation.json')
+        self.combined_json["status"] = self.target + "not exist"
+        with open(compilation_path, 'w', encoding='utf8') as output_file:
+            json.dump(self.combined_json, output_file)
         return
 
     def _compile_with_solcx(self, version):
@@ -424,6 +436,9 @@ class SolidityCompiler:
                     self.combined_json['sources'][file] = {
                         'ast': data_dict[key]['ast']
                     }
+        self.combined_json['version'] = version_str
+        self.combined_json["optimize_runs"] = 200
+        self.combined_json["status"] = "success"
         return True
 
     def _convert_opcodes(self):

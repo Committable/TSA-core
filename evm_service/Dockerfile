@@ -45,8 +45,12 @@ RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3
 FROM ubuntu:bionic as prod
 WORKDIR /root
 RUN  apt-get update \
-   && apt-get install graphviz nodejs npm -y --no-install-recommends
+   && apt-get install -y graphviz curl
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash  -
+RUN apt-get install -y nodejs
 COPY --from=evmbuilder /root/dist/evm_service /root
 COPY --from=evmbuilder /root/evm_service/config.yaml /root/
+RUN mkdir -p openzeppelin_4.7.3
+RUN npm install @openzeppelin/contracts@4.7.3 --prefix /root/openzeppelin_4.7.3
 ENTRYPOINT ["./evm_service"]
 

@@ -11,11 +11,11 @@ class SsgAbstract:
         self.indexes[index_name] = getattr(
             __import__(f'abstracts.ssg.{index_name}').ssg, index_name)
 
-    def get_ssg_abstract_json(self, ssg_graphs):
+    def get_ssg_abstract_json(self, ssg_graphs, context):
         abstract = {}
         for name, index in self.indexes.items():
             func = getattr(index.get_index_class(ssg_graphs), 'get_index')
-            abstract[name] = func()
+            abstract[name] = func(context)
 
         return abstract
 

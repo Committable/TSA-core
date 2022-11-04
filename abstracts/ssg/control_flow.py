@@ -1,4 +1,5 @@
 from abstracts import index
+from utils import context as ctx
 
 
 class ControlFlow(index.Index):
@@ -6,7 +7,9 @@ class ControlFlow(index.Index):
     def __init__(self, ssg_graphs):
         self.ssg_graphs = ssg_graphs
 
-    def get_index(self):
+    def get_index(self, context):
+        if context.error_type == ctx.ExecErrorType.SYMBOL_TIMEOUT or context.error_type == ctx.ExecErrorType.SYMBOL_EXEC:
+            return 0
         control_flow = 0
         flows = set()
         for func in self.ssg_graphs:

@@ -72,13 +72,16 @@ class SsgReporter:
                     graph.edges[(e, x)]['style'] = 'dotted'
 
                 graph.edges[(e, x)]['label'] = ''
+                labels = set()
                 for label in graph.edges[(e, x)]['labels']:
-                    if graph.edges[(e, x)]['label']:
-                        graph.edges[(e, x)]['label'] = label
-                    else:
-                        graph.edges[(e, x)]['label'] = (
-                            f'{graph.edges[(e, x)]["label"]} | '
-                            f'{label}')
+                    if label not in labels:
+                        labels.add(label)
+                        if graph.edges[(e, x)]['label'] == "" or graph.edges[(e, x)]['label'] is None:
+                            graph.edges[(e, x)]['label'] = label
+                        else:
+                            graph.edges[(e, x)]['label'] = (
+                                f'{graph.edges[(e, x)]["label"]} | '
+                                f'{label}')
 
                 edge_list.append(f'{node_map[str(e)]} {node_map[str(x)]}\n')
                 self.ssg_json[graph_key]['edges'].append({
@@ -166,7 +169,7 @@ class SsgReporter:
         ssg_abstract_instance = ssg_abstract.SsgAbstract()
         ssg_abstract_instance.register_ssg_abstracts(context)
         self.ssg_abstract = ssg_abstract_instance.get_ssg_abstract_json(
-            self.ssg_graphs)
+            self.ssg_graphs, context)
 
     def dump_ssg_abstract(self):
         self.ssg_abstract_path = os.path.join(self.output_path,

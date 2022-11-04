@@ -41,7 +41,7 @@ class InputHelper:
             else:
                 setattr(self, attr, val)
 
-    def get_solidity_inputs(self, compilation_cfg):
+    def get_solidity_inputs(self, compilation_cfg, output_path):
         inputs = []
         compilation_flag = True
 
@@ -52,7 +52,7 @@ class InputHelper:
                 self.allow_paths, self.remaps, self.include_paths,
                 self.compiler_version, self.compilation_err)
             try:
-                compiler.get_compiled_contracts_as_json(compilation_cfg)
+                compiler.get_compiled_contracts_as_json(compilation_cfg, output_path)
             except errors.CompileError:
                 # TODO(Yang): we still analyze if there's a compilation err,
                 #  and the compilation result is default nil

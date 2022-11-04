@@ -94,7 +94,7 @@ class CfgReporter:
         cfg_abstract_instance = cfg_abstract.CfgAbstract()
         cfg_abstract_instance.register_cfg_abstracts(context)
         self.cfg_abstract = cfg_abstract_instance.get_cfg_abstract_json(
-            self.cfg_graphs)
+            self.cfg_graphs, context)
 
     def dump_cfg_json(self):
         self.cfg_json_path = os.path.join(self.output_path, 'cfg.json')
