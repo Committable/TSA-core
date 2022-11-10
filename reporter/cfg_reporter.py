@@ -32,31 +32,29 @@ class CfgReporter:
 
         for key in env.vertices:
             basic_block = env.vertices[key]
-            label = f'{basic_block.start}_{basic_block.end}'
+
             cfg.add_node(f'{contract_name}:{key}',
                          instructions=basic_block.instructions,
-                         label=label,
+                         start=basic_block.start,
+                         end=basic_block.end,
                          type=basic_block.get_block_type(),
                          changed=basic_block.changed,
                          src=basic_block.position,
                          lines=basic_block.lines,
-                         color='red' if basic_block.changed else 'black')
+                         jump=basic_block.jump_in_type)
         for key in env.edges:
             for target in env.edges[key]:
-                edge_type = env.jump_type[target]
-                color = 'black'
-                if edge_type == 'falls_to':
-                    color = 'black'
-                elif edge_type == 'unconditional':
-                    color = 'blue'
-                elif edge_type == 'conditional':
-                    color = 'green'
-                elif edge_type == 'terminal':
-                    color = 'red'
+                source_type = env.vertices[key].get_block_type()
+                target_type = env.vertices[target].get_block_type()
+                if target_type == "terminal":
+                    edge_type = target_type
+                else:
+                    edge_type = source_type
+
                 cfg.add_edge(f'{contract_name}:{key}',
                              f'{contract_name}:{target}',
-                             type=env.jump_type[target],
-                             color=color)
+                             type=edge_type,
+                             jump=env.vertices[key].jump_in_type)
 
         c_cfg_json = {'nodes': [], 'edges': []}
 
@@ -107,12 +105,22 @@ class CfgReporter:
             g = nx.DiGraph()
             for n in list(cfg.nodes):
                 node = cfg.nodes[n]
-                g.add_node(n, label=node['label'], color=node['color'])
-            for edge in list(cfg.edges):
-                s = edge[0]
-                t = edge[1]
+                g.add_node(n, label=f'{node["start"]}_{node["end"]}', color='red' if node['changed'] else 'black')
+            for e in list(cfg.edges):
+                s = e[0]
+                t = e[1]
 
-                g.add_edge(s, t, color='green')
+                edge = cfg.edges[e]
+                edge_type = edge['type']
+                color = 'black'
+                if edge_type == 'unconditional':
+                    color = 'blue'
+                elif edge_type == 'conditional':
+                    color = 'green'
+                elif edge_type == 'terminal':
+                    color = 'red'
+
+                g.add_edge(s, t, label=edge['jump'], color=color)
 
             g1 = nx.nx_agraph.to_agraph(g)
             g1.graph_attr['rankdir'] = 'TB'
@@ -130,14 +138,25 @@ class CfgReporter:
             del x  # Unused, reserve for name hint
             for n in list(cfg.nodes):
                 node = cfg.nodes[n]
-                g.add_node(n, label=node['label'], color=node['color'])
-            for edge in list(cfg.edges):
-                s = edge[0]
-                t = edge[1]
+                g.add_node(n, label=f'{node["start"]}_{node["end"]}', color='red' if node['changed'] else 'black')
+            for e in list(cfg.edges):
+                s = e[0]
+                t = e[1]
+
+                edge = cfg.edges[e]
+                edge_type = edge['type']
+                color = 'black'
+                if edge_type == 'unconditional':
+                    color = 'blue'
+                elif edge_type == 'conditional':
+                    color = 'green'
+                elif edge_type == 'terminal':
+                    color = 'red'
+
                 g.add_edge(s,
                            t,
-                           label=cfg.edges[(s, t)]['type'],
-                           color=cfg.edges[(s, t)]['color'])
+                           label=edge['jump'],
+                           color=color)
 
         g1 = nx.nx_agraph.to_agraph(g)
         g1.graph_attr['rankdir'] = 'TB'

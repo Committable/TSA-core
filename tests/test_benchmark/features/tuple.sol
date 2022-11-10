@@ -6,10 +6,13 @@ contract SolidityTest {
       storedData = 10;
    }
    function getResult() public view returns(string memory){
-      uint a = 1; // 局部变量
-      uint b = 2;
-      uint result = (a > b? a: b);  //条件运算
+      uint a;
+      uint b;
+      uint result = add(a, b);
       return integerToString(result);
+   }
+   function add(uint a, uint b) internal pure returns (uint){
+        return (a + b);
    }
    function integerToString(uint _i) internal pure
       returns (string memory) {

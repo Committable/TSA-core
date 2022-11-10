@@ -34,6 +34,7 @@ class BasicBlock:
         self.branch_id = []
 
         self.position = ''
+        self.jump_in_type = ''
         self.changed = False
         self.lines = []
 
@@ -107,6 +108,9 @@ class BasicBlock:
 
     def set_position(self, src):
         self.position = src
+
+    def set_jump_in(self, t):
+        self.jump_in_type = t
 
     def set_lines(self, lines):
         self.lines = lines

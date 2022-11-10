@@ -204,6 +204,10 @@ class EvmRuntime:
                 block.set_position('')
             block.set_lines(list(lines))
             block.set_changed(changed)
+
+            if self.source_map is not None and self.source_map.instr_positions:
+                block.set_jump_in(self.source_map.instr_positions[end_address]['j'])
+
             block.set_block_type(self.jump_type[start_address])
 
             self.vertices[start_address] = block

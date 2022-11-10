@@ -3,8 +3,8 @@
   "projects": [],
   "files": [
     {
-      "project_dir": "/home/liyue/transparentCenter/AnalysisService/service_test/test/repos/6c1a6340539be1967e63158fb9f997ef62d47f70",
-      "src_file": "contracts/mocks/GovernorCompMock.sol"
+      "project_dir": "/home/liyue/transparentCenter/Seraph/tests/test_benchmark/features",
+      "src_file": "tuple.sol"
     }
   ]
 }
