@@ -1,5 +1,6 @@
 from abstracts import index
 from input_dealer import solidity_ast_walker
+from solidity_parser import parser
 
 
 class LoopSrc(index.Index):
@@ -8,6 +9,7 @@ class LoopSrc(index.Index):
         self.ast = ast
         self.source = source
         self.ast_type = ast_type
+        self.repetition_src = 0
 
     def get_index(self, context):
         if not self.ast or not self.source:
@@ -15,7 +17,7 @@ class LoopSrc(index.Index):
         content = self.source.get_content()
         del content  # Unused, reserve for name hint
 
-        repetition_src = 0
+        self.repetition_src = 0
 
         if self.ast_type == 'legacyAST':
             walker = solidity_ast_walker.AstWalker(ast_type='legacyAST')
@@ -26,7 +28,7 @@ class LoopSrc(index.Index):
                     if statement['name'] in {
                             'WhileStatement', 'DoWhileStatement', 'ForStatement'
                     }:
-                        repetition_src += 1
+                        self.repetition_src += 1
         elif self.ast_type == 'ast':
             walker = solidity_ast_walker.AstWalker(ast_type='ast')
             nodes = []
@@ -38,9 +40,22 @@ class LoopSrc(index.Index):
                                 'WhileStatement', 'DoWhileStatement',
                                 'ForStatement'
                         }:
-                            repetition_src += 1
+                            self.repetition_src += 1
+        elif self.ast_type == 'antlrAST':
+            self.visit_ast(self.ast)
+        return self.repetition_src
 
-        return repetition_src
+    def visit_ast(self, node):
+        if isinstance(node, parser.Node):
+            if node['type'] in ["ForStatement", "WhileStatement", "DoWhileStatement"]:
+                self.repetition_src += 1
+            for x in node:
+                if isinstance(node[x], parser.Node):
+                    self.visit_ast(node[x])
+                elif isinstance(node[x], list):
+                    for child in node[x]:
+                        if isinstance(child, parser.Node):
+                            self.visit_ast(child)
 
 
 def get_index_class(ast, ast_type, source):

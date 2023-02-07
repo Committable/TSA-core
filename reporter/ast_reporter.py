@@ -31,6 +31,9 @@ class AstReporter:
 
         self._add_ast_edge_list(ast, self.ast_edge_list)
 
+    def get_ast_json(self):
+        return self.ast_json
+
     def set_ast_abstract(self, ast_abstract):
         self.ast_abstract = ast_abstract
 

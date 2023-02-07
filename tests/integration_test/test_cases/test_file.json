@@ -3,8 +3,8 @@
   "projects": [],
   "files": [
     {
-      "project_dir": "/home/liyue/transparentCenter/Seraph/tests/test_benchmark/features",
-      "src_file": "tuple.sol"
+      "project_dir": "/home/liyue/transparentCenter/AnalysisService/service_test/test/repos/7c1625b0e024e90415d705d4323c85fbc6ea993c",
+      "src_file": "contracts/token/ERC721/ERC721.sol"
     }
   ]
 }

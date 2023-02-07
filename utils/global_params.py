@@ -19,7 +19,7 @@ INPUT_PATH = '../tmp'
 COMPILATION_ERR = False
 
 # run in debug mod, which show more logs
-DEBUG_MOD = True
+DEBUG_MOD = False
 
 # big int over 2^256, for not int
 BIG_INT_256 = pow(2, 256)

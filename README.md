@@ -8,7 +8,6 @@ An Implementation of ***Committable Transparent Center Analysis Service*** for s
 
 *This repository is currently maintained by yangzq12 ([@yangzq12](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/Seraph/issues).*
 
-
 ##  APIs for Committable Transparent Center Analysis Service
 
 ### Base Definitions of request and responds in proto:

@@ -47,11 +47,16 @@ def compare_versions(version1, version2):
     return (version1 > version2) - (version1 < version2)
 
 
-def intersect(list1, list2):
-    for x in list2:
-        if x in list1:
-            return True
-    else:
+def intersect(list1, range):
+    if isinstance(range, list):
+        for x in range:
+            if x in list1:
+                return True
+        return False
+    elif isinstance(range, tuple):
+        for x in list1:
+            if x >= range[0] and x <= range[1]:
+                return True
         return False
 
 
