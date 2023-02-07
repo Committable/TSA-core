@@ -193,6 +193,7 @@ def analyze_solidity_code_from_antlr(output_path,
     try:
         sourceUnit = parser.parse(source.get_content(), loc=True)
     except Exception as err:  # pylint: disable=broad-except
+        # todo: should not raise Exception ?
         context.set_err(ctx.ExecErrorType.COMPILATION)
         traceback.print_exc()
         log.mylogger.error('fail to compile for %s, err: %s', src_path,

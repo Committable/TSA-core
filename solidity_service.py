@@ -48,7 +48,7 @@ class SoliditySourceCodeAnalysisService(
         context_before = context.Context(start, project_path, src_path, diff,
                                          '', request_id)
         try:
-            report_b = analyzer.analyze_solidity_code(output_path, src_path,
+            report_b = analyzer.analyze_solidity_code_from_antlr(output_path, src_path,
                                                       project_path,
                                                       context_before,
                                                       cfg['compilation'][project_name])
@@ -73,12 +73,11 @@ class SoliditySourceCodeAnalysisService(
         context_after = context.Context(start, project_path, src_path, diff, '',
                                         request_id)
         try:
-            report_a = analyzer.analyze_solidity_code(output_path, src_path,
+            report_a = analyzer.analyze_solidity_code_from_antlr(output_path, src_path,
                                                       project_path,
                                                       context_after,
                                                       cfg['compilation'][project_name])
         except Exception as err:  # pylint: disable=broad-except
-            traceback.print_exc()
             log.mylogger.error(
                 'fail analyzing sol source file after for %s, err: %s',
                 output_path, str(err))
@@ -99,7 +98,6 @@ class SoliditySourceCodeAnalysisService(
             with open(ast_abstract_path, 'w', encoding='utf8') as output_file:
                 json.dump(ast_abstract, output_file)
         except Exception as err:  # pylint: disable=broad-except
-            traceback.print_exc()
             log.mylogger.error('merge ast abstract err: %s', str(err))
             return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
                 status=500, message='merge ast abstract file fail')

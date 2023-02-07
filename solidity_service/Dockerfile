@@ -30,6 +30,7 @@ RUN pip install six==1.16.0
 RUN pip install urllib3==1.26.9
 RUN pip install z3-solver==4.8.17.0
 RUN pip install memory_profiler==0.60.0
+RUN pip install antlr4-python3-runtime==4.9.3
 
 COPY . /root/
 WORKDIR /root/
