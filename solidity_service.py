@@ -32,7 +32,7 @@ class SoliditySourceCodeAnalysisService(
         start = time.time()
         request_id = str(int(start * 1000000))
         project_name = "Default"
-        output_path = util.generate_output_dir(request_id, 'source_before')
+        output_path = util.generate_output_dir('sol_source_before', request_id)
         src_path = request.before_change.file_path
         project_path = os.path.join(
             global_params.INPUT_PATH,
@@ -60,7 +60,7 @@ class SoliditySourceCodeAnalysisService(
             return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
                 status=500, message='analysis sol before file fail')
 
-        output_path = util.generate_output_dir(request_id, 'source_after')
+        output_path = util.generate_output_dir('sol_source_after', request_id)
         src_path = request.after_change.file_path
         project_path = os.path.join(
             global_params.INPUT_PATH,
@@ -85,7 +85,7 @@ class SoliditySourceCodeAnalysisService(
                 status=500, message='analysis sol after file fail')
         # merge before's and after's abstarct
         try:
-            output_path = util.generate_output_dir(request_id, '')
+            output_path = util.generate_output_dir('sol_ast_abstract', request_id)
             ast_abstract = {}
             for index in report_a.ast_abstract:
                 # todo: if we analyse before or after fail, e.g. complie fail..., we ignore changes

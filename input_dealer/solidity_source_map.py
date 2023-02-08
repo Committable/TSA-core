@@ -16,6 +16,7 @@ class Source:
 
     def _load_content(self):
         if not os.path.exists(self.file_path):
+            log.mylogger.warning("%s not exist", self.file_path)
             content = ''
         else:
             with open(self.file_path, 'r', encoding='utf-8') as f:
