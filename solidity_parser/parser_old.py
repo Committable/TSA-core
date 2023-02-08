@@ -7,9 +7,9 @@
 
 
 from antlr4 import *
-from solidity_parser.solidity_antlr4.SolidityLexer import SolidityLexer
-from solidity_parser.solidity_antlr4.SolidityParser import SolidityParser
-from solidity_parser.solidity_antlr4.SolidityVisitor import SolidityVisitor
+from solidity_parser.solidity_antlr4_old.SolidityLexer import SolidityLexer
+from solidity_parser.solidity_antlr4_old.SolidityParser import SolidityParser
+from solidity_parser.solidity_antlr4_old.SolidityVisitor import SolidityVisitor
 
 
 class Node(dict):
@@ -159,7 +159,7 @@ class AstVisitor(SolidityVisitor):
                     typeName=typename,
                     # debug 5
                     libraryName=libraryname)
-                    # end debug
+        # end debug
 
     def visitInheritanceSpecifier(self, ctx: SolidityParser.InheritanceSpecifierContext):
         return Node(ctx=ctx,

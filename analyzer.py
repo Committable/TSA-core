@@ -12,7 +12,7 @@ from reporter import ast_reporter
 from reporter import cfg_reporter
 from reporter import ssg_reporter
 from runtime import evm_runtime
-from solidity_parser import parser, walker
+from solidity_parser import parser_new, parser_old, walker
 from input_dealer import solidity_source_map
 
 
@@ -190,14 +190,20 @@ def analyze_solidity_code_from_antlr(output_path,
     file_path = os.path.abspath(os.path.join(project_path, src_path))
     source = solidity_source_map.Source(file_path)
     sourceUnit = None
+    flag = True
     try:
-        sourceUnit = parser.parse(source.get_content(), loc=True)
+        sourceUnit = parser_new.parse(source.get_content(), loc=True)
     except Exception as err:  # pylint: disable=broad-except
-        # todo: should not raise Exception ?
-        context.set_err(ctx.ExecErrorType.COMPILATION)
-        traceback.print_exc()
-        log.mylogger.error('fail to compile for %s, err: %s', src_path,
-                           str(err))
+        flag = False
+    if not flag:
+        try:
+            sourceUnit = parser_old.parse(source.get_content(), loc=True)
+        except Exception as err:
+            # todo: should not raise Exception ?
+            context.set_err(ctx.ExecErrorType.COMPILATION)
+            traceback.print_exc()
+            log.mylogger.error('fail to compile for %s, err: %s', src_path,
+                               str(err))
 
     log.mylogger.info('get compilation outputs for file: %s', src_path)
 

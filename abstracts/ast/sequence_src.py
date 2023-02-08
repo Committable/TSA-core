@@ -1,6 +1,6 @@
 from abstracts import index
 from input_dealer import solidity_ast_walker
-from solidity_parser import parser
+from solidity_parser import parser_new as parser
 
 
 class SequenceSrc(index.Index):

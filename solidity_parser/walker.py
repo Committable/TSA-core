@@ -1,6 +1,6 @@
 from abstracts.ast import ast_abstract
 from utils import util
-from solidity_parser import parser
+from solidity_parser import parser_new as parser
 
 
 class AntlrAstWalker:
