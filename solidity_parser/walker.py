@@ -26,7 +26,7 @@ class AntlrAstWalker:
         lines = (node['loc']['start']['line'], node['loc']['end']['line']+1)
         changed = util.intersect(self.diffs, lines)
 
-        json_result['id'] = self.node_id
+        json_result['id'] = str(self.node_id)
         self.node_id += 1
         json_result['name'] = node['type']
         json_result['layer'] = depth
