@@ -10,8 +10,8 @@ class ExecErrorType(enum.Enum):
 
 class Context:
 
-    def __init__(self, start, project_dir, src_file, diff, platform,
-                 request_id):
+    def __init__(self, start, project_dir, src_file, diff, request_id,
+                 platform='', ast_abstracts=[], cfg_abstracts=[], ssg_abstracts=[]):
         self.start = start  # start time
         self.request_id = request_id  # request id
 
@@ -33,11 +33,11 @@ class Context:
         self.allow_paths = []
 
         # default index for abstracts
-        self.ast_abstracts = ["sequence_src", "selection_src", "loop_src"]
+        self.ast_abstracts = ast_abstracts
 
-        self.cfg_abstracts = ["sequence_bin", "selection_bin", "loop_bin"]
+        self.cfg_abstracts = cfg_abstracts
 
-        self.ssg_abstracts = ["data_flow", "control_flow"]
+        self.ssg_abstracts = ssg_abstracts
 
         # if analysis cause an error
         self.err = False

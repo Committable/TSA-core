@@ -188,6 +188,6 @@ def get_diff(diff_file, is_before):
                     if m and m.group(2) != '-':
                         line_num += 1
     except Exception as err:  # pylint: disable=broad-except
-        log.mylogger.error('get diff fail: %s', str(err))
+        log.mylogger.error('get diff fail: %s, for %s ', str(err), diff_file)
         return []
     return diff

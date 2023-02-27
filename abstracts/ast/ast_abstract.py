@@ -4,13 +4,17 @@ import abstracts.ast.sequence_src
 
 
 class AstAbstract:
-
     def __init__(self):
         self.indexes = {}
+        self.registered = False
 
     def register_index(self, index_name):
         self.indexes[index_name] = getattr(
             __import__(f'abstracts.ast.{index_name}').ast, index_name)
+        self.registered = True
+
+    def is_registered(self):
+        return self.registered
 
     def get_ast_abstract_json(self,
                               context,
@@ -26,5 +30,14 @@ class AstAbstract:
         return abstract
 
     def register_ast_abstracts(self, context):
+        if self.registered:
+            return
         for index in context.ast_abstracts:
             self.register_index(index)
+        self.registered = True
+
+    @classmethod
+    def instance(cls, *args, **kwargs):
+        if not hasattr(AstAbstract, "_instance"):
+            AstAbstract._instance = AstAbstract()
+        return AstAbstract._instance

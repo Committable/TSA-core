@@ -43,7 +43,7 @@ class AntlrAstWalker:
         return json_result
 
     def get_ast_abstract(self, ast, source, context):
-        ast_abstract_instance = ast_abstract.AstAbstract()
+        ast_abstract_instance = ast_abstract.AstAbstract.instance()
         ast_abstract_instance.register_ast_abstracts(context)
         return ast_abstract_instance.get_ast_abstract_json(
                 context, ast, self.type, source)

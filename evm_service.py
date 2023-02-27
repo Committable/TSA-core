@@ -7,8 +7,7 @@ import traceback
 import grpc
 from protos.analyzer import bytecode_analyzer_pb2
 from protos.analyzer import evm_engine_pb2_grpc
-
-import analyzer
+from analyzers import solidity_bin as analyzer
 from utils import global_params, context, log, util
 
 cfg = util.get_config('./config.yaml')

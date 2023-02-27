@@ -9,7 +9,7 @@ from protos.analyzer import solidity_analyzer_pb2_grpc
 from protos.analyzer import source_code_analyzer_pb2
 import z3
 
-import analyzer
+from analyzers import solidity_src as analyzer
 from utils import global_params, context, log, util
 
 cfg = util.get_config('./config.yaml')

@@ -1,0 +1,11 @@
+dest_path: /reports
+input_path: /repos
+listen_address: 0.0.0.0:50054
+timeout: 60
+debug: false
+ast_abstracts:
+  -js_loop_src
+
+
+
+

@@ -1,6 +1,6 @@
 import json
 import os
-
+from utils import global_params
 import networkx as nx
 
 
@@ -27,7 +27,8 @@ class AstReporter:
         self.ast_json = ast
         self.ast_json['source'] = self.source
 
-        self._get_ast_graph(ast, self.ast_graph)
+        if global_params.DEBUG_MOD:
+            self._get_ast_graph(ast, self.ast_graph)
 
         self._add_ast_edge_list(ast, self.ast_edge_list)
 

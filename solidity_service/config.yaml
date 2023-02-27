@@ -10,23 +10,6 @@ compilation:
         "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
       allow_paths:
         - /root/openzeppelin_4.7.3/node_modules/@openzeppelin/contracts
-  Dapp-Learning:
-    compilation_base:
-      remaps:
-        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
-      allow_paths:
-        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin/contracts
-  avalanche-bridge-resources:
-    compilation_base:
-      remaps:
-        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
-      allow_paths:
-        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin
-  chainlink:
-    compilation_base:
-      remaps:
-        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
-      allow_paths:
-        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin
+
 
 
