@@ -1,6 +1,7 @@
-import abstracts.ast.selection_src
-import abstracts.ast.loop_src
-import abstracts.ast.sequence_src
+import abstracts.ast.sol_selection_src
+import abstracts.ast.sol_loop_src
+import abstracts.ast.sol_sequence_src
+import abstracts.ast.js_loop_src
 
 
 class AstAbstract:

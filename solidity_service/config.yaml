@@ -3,13 +3,10 @@ input_path: /repos
 listen_address: 0.0.0.0:50054
 timeout: 60
 debug: false
-compilation:
-  Default:
-    compilation_base:
-      remaps:
-        "@openzeppelin": /root/openzeppelin_4.7.3/node_modules/@openzeppelin
-      allow_paths:
-        - /root/openzeppelin_4.7.3/node_modules/@openzeppelin/contracts
+ast_abstracts:
+  -sol_loop_src
+  -sol_selection_src
+  -sol_sequence_src
 
 
 

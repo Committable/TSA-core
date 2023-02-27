@@ -26,8 +26,22 @@ def change_to_relative(path):
 
 def get_config(config_path):
     with open(config_path, 'r', encoding='utf8') as stream:
-        parsed_yaml = yaml.safe_load(stream)
-        return parsed_yaml
+        cfg = yaml.safe_load(stream)
+        if 'dest_path' in cfg:
+            global_params.DEST_PATH = cfg['dest_path']
+        if 'input_path' in cfg:
+            global_params.INPUT_PATH = cfg['input_path']
+        if 'timeout' in cfg:
+            global_params.SYM_TIMEOUT = cfg['timeout']
+        if 'debug' in cfg:
+            global_params.DEBUG_MOD = cfg['debug']
+        if 'ast_abstracts' in cfg:
+            global_params.AST = cfg['ast_abstracts']
+        if 'cfg_abstracts' in cfg:
+            global_params.CFG = cfg['cfg_abstracts']
+        if 'ssg_abstracts' in cfg:
+            global_params.AST = cfg['ssg_abstracts']
+        return cfg
 
 
 def generate_output_dir(first, second):

@@ -12,11 +12,6 @@ from utils import global_params, context, log, util
 
 cfg = util.get_config('./config.yaml')
 
-global_params.DEST_PATH = cfg['dest_path']
-global_params.INPUT_PATH = cfg['input_path']
-global_params.SYM_TIMEOUT = cfg['timeout']
-global_params.DEBUG_MOD = cfg['debug']
-
 log.mylogger = log.get_logger('evm')
 # TODO(Yang): z3-solver will fail for concurrent calls to EvmEngineService
 lock = threading.Lock()

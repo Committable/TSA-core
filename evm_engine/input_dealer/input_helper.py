@@ -3,9 +3,9 @@ import os
 import six
 
 from utils import global_params, errors, log
-from input_dealer import solidity_ast_helper
-from input_dealer import solidity_compiler
-from input_dealer import solidity_source_map
+from evm_engine.input_dealer import solidity_ast_helper
+from evm_engine.input_dealer import solidity_compiler
+from evm_engine.input_dealer import solidity_source_map
 
 
 class InputHelper:

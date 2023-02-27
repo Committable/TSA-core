@@ -7,10 +7,10 @@ import six
 import z3
 import math
 
-from graph_builder import x_graph
-from interpreter import evm_params
-from interpreter import opcodes
-from interpreter import symbolic_var_generator
+from evm_engine.graph_builder import x_graph
+from evm_engine.interpreter import evm_params
+from evm_engine.interpreter import opcodes
+from evm_engine.interpreter import symbolic_var_generator
 from utils import util, global_params, errors, log, context
 
 

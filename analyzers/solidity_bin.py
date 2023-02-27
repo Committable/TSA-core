@@ -6,11 +6,11 @@ import memory_profiler as mem
 
 from utils import global_params, log
 from utils import context as ctx
-from input_dealer import input_helper
-from interpreter import evm_interpreter
+from evm_engine.input_dealer import input_helper
+from evm_engine.interpreter import evm_interpreter
 from reporter import cfg_reporter
 from reporter import ssg_reporter
-from runtime import evm_runtime
+from evm_engine.runtime import evm_runtime
 
 
 def analyze_evm_from_solidity(output_path,

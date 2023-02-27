@@ -1,6 +1,6 @@
 from abstracts.ast import ast_abstract
 from utils import global_params, log
-from input_dealer import solidity_ast_walker
+from evm_engine.input_dealer import solidity_ast_walker
 
 
 class AstHelper:

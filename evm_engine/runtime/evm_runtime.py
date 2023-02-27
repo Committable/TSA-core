@@ -4,7 +4,7 @@ import sys
 import graphviz
 import six
 
-from runtime import basic_block
+from evm_engine.runtime import basic_block
 from utils import util, global_params, log
 
 
