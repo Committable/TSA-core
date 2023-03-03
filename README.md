@@ -1,12 +1,12 @@
-TAS-core(Trusted Analysis Service core)
+TSA-core(Trusted Software Analysis core)
 ======
 
 An Implementation of ***Committable Transparent Center Analysis Service*** for solidity source file which gets two source files as input and produces their differences in form of graphs and abstractions of *ast/cfg/ssg*. 
 
 [![License: GPL v3][license-badge]][license-badge-url]
-[![Build Status](https://img.shields.io/github/workflow/status/Committable/TAS-core/Pytest)]()
+[![Build Status](https://img.shields.io/github/workflow/status/Committable/TSA-core/Pytest)]()
 
-*This repository is currently maintained by yangzq12 ([@yangzq12](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/TAS-core/issues).*
+*This repository is currently maintained by yangzq12 ([@yangzq12](https://github.com/yangzq12)). If you encounter any bugs or usage issues, please feel free to create an issue on [our issue tracker](https://github.com/Committable/TSA-core/issues).*
 
 ##  APIs for Committable Transparent Center Analysis Service
 
@@ -176,8 +176,8 @@ To run the benchmarks, it is best to use the docker container and service_test a
 
 ## Contributing
 
-Checkout out our [contribution guide](https://github.com/Committable/TAS-core/blob/master/CONTRIBUTING.md).
+Checkout out our [contribution guide](https://github.com/Committable/TSA-core/blob/master/CONTRIBUTING.md).
 
 
-[license-badge]: https://img.shields.io/github/license/Committable/TAS-core
+[license-badge]: https://img.shields.io/github/license/Committable/TSA-core
 [license-badge-url]: ./LICENSE
