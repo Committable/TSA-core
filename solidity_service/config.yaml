@@ -4,9 +4,9 @@ listen_address: 0.0.0.0:50054
 timeout: 60
 debug: false
 ast_abstracts:
-  -sol_loop_src
-  -sol_selection_src
-  -sol_sequence_src
+  - sol_loop_src
+  - sol_selection_src
+  - sol_sequence_src
 
 
 

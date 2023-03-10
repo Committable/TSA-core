@@ -3,7 +3,7 @@ import os
 import time
 import traceback
 
-import analyzer
+from analyzers import solidity_src_antlr as analyzer
 from utils import util, global_params, context, log
 
 cfg = util.get_config('solidity_service/config.yaml')
@@ -54,7 +54,7 @@ def main():
     for file in load_test_files(
             './tests/integration_test/test_cases/test_file.json'):
         file_output_path = util.generate_output_dir(
-            str(int(time.time() * 10**6)), '')
+            str(int(time.time() * 10 ** 6)), '')
         total += 1
         log.mylogger.info(
             '-----------------start analysis: %s------------------',
@@ -63,15 +63,16 @@ def main():
         src_file = file['src_file']
         project_dir = file['project_dir']
         project_name = util.get_project_name(project_dir)
-        ctx = context.Context(time.time(), project_dir, src_file, [], '', '')
+        start = time.time()
+        ctx = context.Context(start, project_dir, src_file, [], "test_request", ast_abstracts=global_params.AST)
         try:
             if 'compilation' in cfg and project_name in cfg['compilation']:
-                analyzer.analyze_solidity_code(file_output_path, src_file,
-                                               project_dir, ctx,
-                                               cfg['compilation'][project_name])
+                analyzer.analyze_solidity_code_from_antlr(file_output_path, src_file,
+                                                          project_dir, ctx,
+                                                          cfg['compilation'][project_name])
             else:
-                analyzer.analyze_solidity_code(file_output_path, src_file,
-                                               project_dir, ctx)
+                analyzer.analyze_solidity_code_from_antlr(file_output_path, src_file,
+                                                          project_dir, ctx)
         except Exception as err:  # pylint: disable=broad-except
             traceback.print_exc()
             fail += 1

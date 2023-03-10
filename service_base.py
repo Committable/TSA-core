@@ -38,7 +38,7 @@ def analysis_source_code(request: source_code_analyzer_pb2.SourceCodeAnalysisReq
         log.mylogger.error('fail analyzing js source file before for %s, err: %s', src_path, str(err))
         return source_code_analyzer_pb2.SourceCodeAnalysisResponse(status=500, message='analysis js before file fail')
 
-    output_path = util.generate_output_dir('js_source_after', request_id)
+    output_path = util.generate_output_dir('source_after', request_id)
     src_path = request.after_change.file_path
     project_path = os.path.join(global_params.INPUT_PATH, util.change_to_relative(request.after_change.repo_path))
 

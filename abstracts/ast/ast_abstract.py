@@ -12,7 +12,6 @@ class AstAbstract:
     def register_index(self, index_name):
         self.indexes[index_name] = getattr(
             __import__(f'abstracts.ast.{index_name}').ast, index_name)
-        self.registered = True
 
     def is_registered(self):
         return self.registered

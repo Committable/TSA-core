@@ -3,8 +3,8 @@
   "projects": [],
   "files": [
     {
-      "project_dir": "/home/liyue/transparentCenter/Seraph/tests/test_benchmark/javascript",
-      "src_file": "jquery.js"
+      "project_dir": "/home/liyue/transparentCenter/Seraph/tests/test_benchmark/solidity",
+      "src_file": "assert.sol"
     }
   ]
 }
