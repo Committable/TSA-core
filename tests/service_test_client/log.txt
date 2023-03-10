@@ -1,4 +1,0 @@
-2023/02/08 00:30:06 log to /home/liyue/transparentCenter/Seraph/tests/service_test_client
-2023/02/08 00:30:06 Testing file: xlsx, type: go
-2023/02/08 00:30:06 reposDir: /home/liyue/transparentCenter/Seraph/tests/service_test_client, reportsDir: /home/liyue/transparentCenter/Seraph/tests/service_test_client
-2023/02/08 00:30:06 open xlsx: no such file or directory
