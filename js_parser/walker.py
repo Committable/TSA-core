@@ -44,8 +44,6 @@ class JsAstWalker:
 
         if cursor.goto_first_child():
             self._walk_to_json(cursor, depth + 1, json_result, True)
-        if depth == 3:
-            print('here')
         if cursor.goto_next_sibling():
             self._walk_to_json(cursor, depth, parent_json, False)
         # retrace parent from child

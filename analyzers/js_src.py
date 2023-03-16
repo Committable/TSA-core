@@ -36,7 +36,7 @@ def analyze_js_code_from_treesitter(output_path,
     ast_report.set_ast_json(ast_walker.get_ast_json(sourceUnit, context))
     ast_report.set_ast_abstract(
         ast_walker.get_ast_abstract(
-            sourceUnit,
+            ast_report.get_ast_json(),
             source, context))
     log.mylogger.info('success get ast report: %s', src_path)
     ast_report.dump_ast_json()

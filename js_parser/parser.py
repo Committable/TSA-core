@@ -29,6 +29,3 @@ def parse(text, start="sourceUnit"):
 def parse_file(path, start="sourceUnit"):
     with open(path, 'r', encoding="utf-8") as f:
         return parse(f.read(), start=start)
-
-
-print("here")

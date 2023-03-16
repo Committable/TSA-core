@@ -65,8 +65,6 @@ class TestEvmInterpreter(unittest.TestCase):
         for x in all_data:
             log.mylogger.info(
                 "------------------Start Testing %s------------------", x)
-            if x == "push32AndSuicide":
-                log.mylogger.info("here")
             data = all_data[x]
             cname = x
             context = ctx.Context(time.time(), "", "", "", "", "")
