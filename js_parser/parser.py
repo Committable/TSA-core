@@ -1,17 +1,17 @@
 from tree_sitter import Language, Parser
 from utils import util
 
-# Language.build_library(
-#     # Store the library in the `build` directory
-#     'build/my-languages.so',
-#
-#     # Include one or more languages
-#     [
-#         # 'vendor/tree-sitter-go',
-#         'vendor/tree-sitter-javascript',
-#         # 'vendor/tree-sitter-python'
-#     ]
-# )
+Language.build_library(
+    # Store the library in the `build` directory
+    'js_parser/build/my-languages.so',
+
+    # Include one or more languages
+    [
+        # 'vendor/tree-sitter-go',
+        'js_parser/vendor/tree-sitter-javascript',
+        # 'vendor/tree-sitter-python'
+    ]
+)
 
 # GO_LANGUAGE = Language('build/my-languages.so', 'go')
 JS_LANGUAGE = Language('js_parser/build/my-languages.so', 'javascript')

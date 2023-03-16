@@ -21,3 +21,7 @@ class TestJsLoopSrc(unittest.TestCase):
 
         loop = JsLoopSrc(ast, ast_walker.type, source_obj)
         self.assertEqual(loop.get_index(context), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

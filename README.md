@@ -149,22 +149,23 @@ $ sudo apt-get update
 $ sudo apt-get install python3.6
 $ sudo apt-get install graphviz-dev
 ```
-
 #### python module requirements
 ```
 $ pip3 install -r requiretments.txt
 ```
 
 ### Integration test
-
+eg.
 ```
-./run_evm.py
-```
-Or
-```
-./run_solidity.py
+./tests/integration_test/run_evm.py
+./tests/integration_test/run_solidity.py
 ```
 
+### Unit test
+eg.
+```
+python3 -m unittest abstracts/ast/test_js_loop_src.py 
+```
 And that's it!
 
 
