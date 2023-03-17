@@ -2,11 +2,13 @@ import unittest
 from utils.context import Context
 from utils.source import Source
 from abstracts.ast.js_loop_src import JsLoopSrc
+from abstracts.ast.js_sequence_src import JsSequenceSrc
+from abstracts.ast.js_selection_src import JsSelectionSrc
 from js_parser import parser as js_parser
 from js_parser import walker as js_walker
 
 
-class TestJsLoopSrc(unittest.TestCase):
+class TestJsSrc(unittest.TestCase):
     def test_simple(self):
         source_content = '''for (var i=0;i<cars.length;i++)
                             { 
@@ -20,7 +22,14 @@ class TestJsLoopSrc(unittest.TestCase):
         ast = ast_walker.get_ast_json(source_unit, context)
 
         loop = JsLoopSrc(ast, ast_walker.type, source_obj)
-        self.assertEqual(loop.get_index(context), 1)
+        sequence = JsSequenceSrc(ast, ast_walker.type, source_obj)
+        selection = JsSelectionSrc(ast, ast_walker.type, source_obj)
+        loop_src = loop.get_index(context)
+        sequence_src = sequence.get_index(context)
+        selection_src = selection.get_index(context)
+        self.assertEqual(loop_src, 1)
+        self.assertEqual(sequence_src, 12)
+        self.assertEqual(loop_src, 1)
 
 
 if __name__ == "__main__":
