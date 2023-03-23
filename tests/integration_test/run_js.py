@@ -63,7 +63,7 @@ def main():
         src_file = file['src_file']
         project_dir = file['project_dir']
         project_name = util.get_project_name(project_dir)
-        ctx = context.Context(time.time(), project_dir, src_file, [], '', ast_abstracts=["js_loop_src"])
+        ctx = context.Context(time.time(), project_dir, src_file, [], '', ast_abstracts=["js_loop_src, js_selection_src, js_sequence_src"])
         try:
             analyzer.analyze_js_code_from_treesitter(file_output_path, src_file,
                                                      project_dir, ctx)

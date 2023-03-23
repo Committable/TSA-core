@@ -11,7 +11,7 @@ import service_base
 
 cfg = util.get_config('./config.yaml')
 
-log.mylogger = log.get_logger('solidity')
+log.mylogger = log.get_logger('javascript')
 
 
 class JsSourceCodeAnalysisService(
@@ -30,7 +30,7 @@ async def serve(address) -> None:
     js_analyzer_pb2_grpc.add_JsSourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
         JsSourceCodeAnalysisService(), server)
     server.add_insecure_port(address)
-    log.mylogger.info('Javascript Analysis Serverice is Listening on %s.',
+    log.mylogger.info('Javascript Analysis Service is Listening on %s.',
                       address)
     await server.start()
     await server.wait_for_termination()

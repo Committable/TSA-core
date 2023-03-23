@@ -1,6 +1,6 @@
 dest_path: /reports
 input_path: /repos
-listen_address: 0.0.0.0:50054
+listen_address: 0.0.0.0:50058
 timeout: 60
 debug: false
 ast_abstracts:
