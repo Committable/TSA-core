@@ -4,6 +4,9 @@ import abstracts.ast.sol_sequence_src
 import abstracts.ast.js_loop_src
 import abstracts.ast.js_selection_src
 import abstracts.ast.js_sequence_src
+import abstracts.ast.ts_loop_src
+import abstracts.ast.ts_selection_src
+import abstracts.ast.ts_sequence_src
 
 
 class AstAbstract:
