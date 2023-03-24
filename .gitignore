@@ -7,7 +7,7 @@ __pycache__
 *.png
 *tmp*
 .idea/
-*build*
+*build/
 !graph_builder
 *.evm
 *.disasm
