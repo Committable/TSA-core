@@ -7,6 +7,9 @@ import abstracts.ast.js_sequence_src
 import abstracts.ast.ts_loop_src
 import abstracts.ast.ts_selection_src
 import abstracts.ast.ts_sequence_src
+import abstracts.ast.move_loop_src
+import abstracts.ast.move_selection_src
+import abstracts.ast.move_sequence_src
 
 
 class AstAbstract:

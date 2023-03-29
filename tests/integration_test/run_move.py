@@ -63,7 +63,7 @@ def main():
         src_file = file['src_file']
         project_dir = file['project_dir']
         project_name = util.get_project_name(project_dir)
-        ctx = context.Context(time.time(), project_dir, src_file, [], '', ast_abstracts=["js_loop_src, js_selection_src, js_sequence_src"])
+        ctx = context.Context(time.time(), project_dir, src_file, [], '', ast_abstracts=["move_loop_src", "move_selection_src", "move_sequence_src"])
         try:
             analyzer.analyze_move_code_from_treesitter(file_output_path, src_file,
                                                      project_dir, ctx)

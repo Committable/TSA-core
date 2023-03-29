@@ -4,7 +4,7 @@ from move_parser import parser
 
 
 class MoveAstWalker:
-    def __init__(self, ast_type='jsAST', diffs=None):
+    def __init__(self, ast_type='moveAST', diffs=None):
         if diffs is None:
             diffs = []
         self.type = ast_type
