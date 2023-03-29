@@ -3,8 +3,8 @@
   "projects": [],
   "files": [
     {
-      "project_dir": "/home/liyue/transparentCenter/Seraph/tests/benchmark/typescript",
-      "src_file": "parser.ts"
+      "project_dir": "/home/liyue/transparentCenter/Seraph/tests/benchmark/move",
+      "src_file": "spec_lang/conditions_ok.move"
     }
   ]
 }
