@@ -1,0 +1,13 @@
+dest_path: /reports
+input_path: /repos
+listen_address: 0.0.0.0:50059
+timeout: 60
+debug: false
+ast_abstracts:
+  - ts_loop_src
+  - ts_selection_src
+  - ts_sequence_src
+
+
+
+
