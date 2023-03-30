@@ -1,37 +1,37 @@
 import asyncio
 
 import grpc
-from protos.analyzer import js_analyzer_pb2_grpc
+from protos.analyzer import rust_analyzer_pb2_grpc
 from protos.analyzer import source_code_analyzer_pb2
 
-from analyzers.src_ast_analyzer.js_src import JsAnalyzer
+from analyzers.src_ast_analyzer.rust_src import RustAnalyzer
 from utils import log, util
 
 from services import service_base
 
 cfg = util.get_config('./config.yaml')
 
-log.mylogger = log.get_logger('javascript')
+log.mylogger = log.get_logger('move')
 
 
-class JsSourceCodeAnalysisService(
-    js_analyzer_pb2_grpc.JsSourceCodeAnalysisServicer):
+class RustSourceCodeAnalysisService(
+    rust_analyzer_pb2_grpc.RustSourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
             self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
-        analyzer = JsAnalyzer()
+        analyzer = RustAnalyzer()
         return service_base.analysis_source_code(request, unused_context, analyzer)
 
 
 async def serve(address) -> None:
     server = grpc.aio.server()
 
-    js_analyzer_pb2_grpc.add_JsSourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
-        JsSourceCodeAnalysisService(), server)
+    rust_analyzer_pb2_grpc.add_RustSourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
+        RustSourceCodeAnalysisService(), server)
     server.add_insecure_port(address)
-    log.mylogger.info('Javascript Analysis Service is Listening on %s.',
+    log.mylogger.info('Rust Analysis Service is Listening on %s.',
                       address)
     await server.start()
     await server.wait_for_termination()

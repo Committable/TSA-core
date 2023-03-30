@@ -34,9 +34,10 @@ RUN pip install tree-sitter==0.20.1
 
 COPY . /root/
 WORKDIR /root/
+ENV PYTHONPATH=.:/usr/local/bin/python
 RUN mv /usr/sbin/libgvc6-config-update /usr/bin/dot
 RUN python ./ast_parsers/js_parser/build_parser.py
-RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/js_service.py
+RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/js_service/js_service.py
 
 
 FROM ubuntu:bionic as prod

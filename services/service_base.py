@@ -13,8 +13,7 @@ cfg = util.get_config('./config.yaml')
 
 
 def analysis_source_code(request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
-                         unused_context, analyze) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
-
+                         unused_context, analyzer) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
     start = time.time()
     request_id = str(int(start * 1000000))
     output_path = util.generate_output_dir('source_before', request_id)
@@ -29,10 +28,11 @@ def analysis_source_code(request: source_code_analyzer_pb2.SourceCodeAnalysisReq
     context_before = context.Context(start, project_path, src_path, diff, request_id,
                                      ast_abstracts=global_params.AST)
     try:
-        report_b = analyze(output_path,
-                           src_path,
-                           project_path,
-                           context_before)
+        report_b = analyzer.analyze(output_path,
+                                    src_path,
+                                    project_path,
+                                    context_before,
+                                    {})
     except Exception as err:  # pylint: disable=broad-except
         traceback.print_exc()
         log.mylogger.error('fail analyzing js source file before for %s, err: %s', src_path, str(err))
@@ -49,10 +49,11 @@ def analysis_source_code(request: source_code_analyzer_pb2.SourceCodeAnalysisReq
     context_after = context.Context(start, project_path, src_path, diff, request_id,
                                     ast_abstracts=global_params.AST)
     try:
-        report_a = analyze(output_path,
-                           src_path,
-                           project_path,
-                           context_after)
+        report_a = analyzer.analyze(output_path,
+                                    src_path,
+                                    project_path,
+                                    context_after,
+                                    {})
     except Exception as err:  # pylint: disable=broad-except
         log.mylogger.error(
             'fail analyzing js source file after for %s, err: %s',

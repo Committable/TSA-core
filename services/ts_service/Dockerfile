@@ -34,19 +34,18 @@ RUN pip install tree-sitter==0.20.1
 
 COPY . /root/
 WORKDIR /root/
+ENV PYTHONPATH=.:/usr/local/bin/python
 RUN mv /usr/sbin/libgvc6-config-update /usr/bin/dot
-RUN python ./ts_parser/build_parser.py
-RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F ts_service.py
+RUN python ./ast_parsers/ts_parser/build_parser.py
+RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/ts_service/ts_service.py
 
 
 FROM ubuntu:bionic as prod
 WORKDIR /root
 RUN  apt-get update \
    && apt-get install -y graphviz curl
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash  -
-RUN apt-get install -y nodejs
-COPY --from=tsbuilder /root/ts_parser/build/my-languages.so /root/ts_parser/build/
+COPY --from=tsbuilder /root/ast_parsers/ts_parser/build/my-languages.so /root/ast_parsers/ts_parser/build/
 COPY --from=tsbuilder /root/dist/ts_service /root/
-COPY --from=tsbuilder /root/ts_service/config.yaml /root/
+COPY --from=tsbuilder /root/services/ts_service/config.yaml /root/
 ENTRYPOINT ["./ts_service"]
 

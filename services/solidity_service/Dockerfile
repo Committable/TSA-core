@@ -34,20 +34,16 @@ RUN pip install antlr4-python3-runtime==4.9.3
 
 COPY . /root/
 WORKDIR /root/
-# # # RUN pip install -r requirements.txt
+ENV PYTHONPATH=.:/usr/local/bin/python
 RUN mv /usr/sbin/libgvc6-config-update /usr/bin/dot
-RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F solidity_service.py
+RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/solidity_service/solidity_service.py
 
 
 FROM ubuntu:bionic as prod
 WORKDIR /root
 RUN  apt-get update \
    && apt-get install -y graphviz curl
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash  -
-RUN apt-get install -y nodejs
 COPY --from=soliditybuilder /root/dist/solidity_service /root
-COPY --from=soliditybuilder /root/solidity_service/config.yaml /root/
-RUN mkdir -p openzeppelin_4.7.3
-RUN npm install @openzeppelin/contracts@4.7.3 --prefix /root/openzeppelin_4.7.3
+COPY --from=soliditybuilder /root/services/solidity_service/config.yaml /root/
 ENTRYPOINT ["./solidity_service"]
 

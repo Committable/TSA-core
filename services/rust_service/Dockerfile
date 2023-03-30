@@ -1,4 +1,4 @@
-FROM ubuntu:bionic as jsbuilder
+FROM ubuntu:bionic as rustbuilder
 
 RUN apt-get update \
   && apt-get install -y python3-pip python3-dev graphviz graphviz-dev \
@@ -34,9 +34,10 @@ RUN pip install tree-sitter==0.20.1
 
 COPY . /root/
 WORKDIR /root/
+ENV PYTHONPATH=.:/usr/local/bin/python
 RUN mv /usr/sbin/libgvc6-config-update /usr/bin/dot
-RUN python ./ast_parsers/js_parser/build_parser.py
-RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/js_service.py
+RUN python ./ast_parsers/rust_parser/build_parser.py
+RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/rust_service/rust_service.py
 
 
 FROM ubuntu:bionic as prod
@@ -45,8 +46,8 @@ RUN  apt-get update \
    && apt-get install -y graphviz curl
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash  -
 RUN apt-get install -y nodejs
-COPY --from=jsbuilder /root/ast_parsers/js_parser/build/my-languages.so /root/ast_parsers/js_parser/build/
-COPY --from=jsbuilder /root/dist/js_service /root/
-COPY --from=jsbuilder /root/services/js_service/config.yaml /root/
-ENTRYPOINT ["./js_service"]
+COPY --from=rustbuilder /root/ast_parsers/rust_parser/build/my-languages.so /root/ast_parsers/rust_parser/build/
+COPY --from=rustbuilder /root/dist/rust_service /root/
+COPY --from=rustbuilder /root/services/rust_service/config.yaml /root/
+ENTRYPOINT ["./rust_service"]
 

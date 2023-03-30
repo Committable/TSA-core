@@ -1,12 +1,12 @@
 dest_path: /reports
 input_path: /repos
-listen_address: 0.0.0.0:50058
+listen_address: 0.0.0.0:50062
 timeout: 60
 debug: false
 ast_abstracts:
-  - js_loop_src
-  - js_selection_src
-  - js_sequence_src
+  - rust_loop_src
+  - rust_selection_src
+  - rust_sequence_src
 
 
 
