@@ -1,4 +1,4 @@
-FROM ubuntu:bionic as jsbuilder
+FROM ubuntu:bionic as movebuilder
 
 RUN apt-get update \
   && apt-get install -y python3-pip python3-dev graphviz graphviz-dev \
@@ -35,8 +35,8 @@ RUN pip install tree-sitter==0.20.1
 COPY . /root/
 WORKDIR /root/
 RUN mv /usr/sbin/libgvc6-config-update /usr/bin/dot
-RUN python ./js_parser/build_parser.py
-RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F js_service.py
+RUN python ./move_parser/build_parser.py
+RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F move_service.py
 
 
 FROM ubuntu:bionic as prod
@@ -45,8 +45,8 @@ RUN  apt-get update \
    && apt-get install -y graphviz curl
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash  -
 RUN apt-get install -y nodejs
-COPY --from=jsbuilder //root/js_parser/build/my-languages.so /root/js_parser/build/
-COPY --from=jsbuilder /root/dist/js_service /root/
-COPY --from=jsbuilder /root/js_service/config.yaml /root/
-ENTRYPOINT ["./js_service"]
+COPY --from=jsbuilder //root/move_parser/build/my-languages.so /root/move_parser/build/
+COPY --from=jsbuilder /root/dist/move_service /root/
+COPY --from=jsbuilder /root/move_service/config.yaml /root/
+ENTRYPOINT ["./move_service"]
 

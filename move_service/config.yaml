@@ -4,9 +4,9 @@ listen_address: 0.0.0.0:50061
 timeout: 60
 debug: false
 ast_abstracts:
-  - js_loop_src
-  - js_selection_src
-  - js_sequence_src
+  - move_loop_src
+  - move_selection_src
+  - move_sequence_src
 
 
 
