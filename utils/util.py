@@ -8,10 +8,6 @@ from utils import log
 from z3 import is_expr, BitVecVal, simplify, is_const, unknown
 
 
-def get_project_name(project_dir):
-    return str.split(project_dir, os.sep)[-1]
-
-
 def remove_prefix(text, prefix):
     return text[text.startswith(prefix) and len(prefix):]
 
@@ -51,7 +47,6 @@ def generate_output_dir(first, second):
 
 
 def compare_versions(version1, version2):
-
     def normalize(v):
         return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split('.')]
 

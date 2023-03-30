@@ -1,1 +1,0 @@
-{"Address": {"nodes": [{"id": "0", "name": "0_31", "type": "terminal", "pos": "(33.147, 18.0)", "changed": false, "src": "126:7518", "instructions": ["0 PUSH20 0x0", "21 ADDRESS", "22 EQ", "23 PUSH1 0x80", "25 PUSH1 0x40", "27 MSTORE", "28 PUSH1 0x0", "30 DUP1", "31 REVERT"]}], "edges": []}}

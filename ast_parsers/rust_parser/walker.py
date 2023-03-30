@@ -1,8 +1,6 @@
 from ast_parsers.tree_sitter_adapter.tree_sitter_ast_walker import TreeSitterAstWalker
 
 
-class MoveAstWalker(TreeSitterAstWalker):
-    def __init__(self, ast_type='moveAST', diffs=None):
-        if diffs is None:
-            diffs = []
-        super(MoveAstWalker, self).__init__(ast_type, diffs)
+class RustAstWalker(TreeSitterAstWalker):
+    def __init__(self, ast_type='moveAST'):
+        super(RustAstWalker, self).__init__(ast_type)

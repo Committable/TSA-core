@@ -1,1 +1,0 @@
-{"SignatureChecker:@global": {"nodes": [{"id": "init", "name": "init", "pos": "(27.0, 18.0)", "src": ""}, {"id": "REVERT", "name": "REVERT", "pos": "(141.35, 18.0)", "src": ""}], "edges": [{"source": "init", "target": "REVERT", "type": "constraint_flow"}]}}

@@ -1,7 +1,8 @@
 from tree_sitter import Language, Parser
+from ast_parsers.ast_parser_interface import AstParserInterface
 
 
-class TreeSitterParser:
+class TreeSitterParser(AstParserInterface):
     def __init__(self, language, lib_path):
         language = Language(lib_path, language)
         self.parser = Parser()

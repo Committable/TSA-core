@@ -1,15 +1,15 @@
-import abstracts.ast.sol_selection_src
-import abstracts.ast.sol_loop_src
-import abstracts.ast.sol_sequence_src
-import abstracts.ast.js_loop_src
-import abstracts.ast.js_selection_src
-import abstracts.ast.js_sequence_src
-import abstracts.ast.ts_loop_src
-import abstracts.ast.ts_selection_src
-import abstracts.ast.ts_sequence_src
-import abstracts.ast.move_loop_src
-import abstracts.ast.move_selection_src
-import abstracts.ast.move_sequence_src
+import abstracts.ast.sol.sol_selection_src
+import abstracts.ast.sol.sol_loop_src
+import abstracts.ast.sol.sol_sequence_src
+import abstracts.ast.js.js_loop_src
+import abstracts.ast.js.js_selection_src
+import abstracts.ast.js.js_sequence_src
+import abstracts.ast.ts.ts_loop_src
+import abstracts.ast.ts.ts_selection_src
+import abstracts.ast.ts.ts_sequence_src
+import abstracts.ast.move.move_loop_src
+import abstracts.ast.move.move_selection_src
+import abstracts.ast.move.move_sequence_src
 
 
 class AstAbstract:
@@ -18,8 +18,10 @@ class AstAbstract:
         self.registered = False
 
     def register_index(self, index_name):
-        self.indexes[index_name] = getattr(
-            __import__(f'abstracts.ast.{index_name}').ast, index_name)
+        sub_director = index_name.split("_")[0]
+        self.indexes[index_name] = getattr(getattr(__import__(f'abstracts.ast.{sub_director}.{index_name}').ast,
+                                                   sub_director),
+                                           index_name)
 
     def is_registered(self):
         return self.registered
@@ -49,3 +51,10 @@ class AstAbstract:
         if not hasattr(AstAbstract, "_instance"):
             AstAbstract._instance = AstAbstract()
         return AstAbstract._instance
+
+
+def get_ast_abstract(ast, ast_type, source, context):
+    ast_abstract_instance = AstAbstract.instance()
+    ast_abstract_instance.register_ast_abstracts(context)
+    return ast_abstract_instance.get_ast_abstract_json(
+        context, ast, ast_type, source)
