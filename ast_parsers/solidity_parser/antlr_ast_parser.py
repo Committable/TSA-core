@@ -3,6 +3,7 @@ from ast_parsers.solidity_parser import parser_new, parser_old
 
 
 class AntlrAstParser(AstParserInterface):
+    # todo: add flag to differ old from new parser so walker and implement logics for both
     def parse(self, text, start="sourceUnit"):
         try:
             tree = parser_new.parse(text, loc=True)

@@ -3,8 +3,8 @@
   "projects": [],
   "files": [
     {
-      "project_dir": "/home/liyue/transparentCenter/Seraph/tests/benchmark/rust",
-      "src_file": "ast.rs"
+      "project_dir": "./tests/benchmark/solidity",
+      "src_file": "exampleFlashSwap.sol"
     }
   ]
 }
