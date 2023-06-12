@@ -33,9 +33,9 @@ class TagSrc(index.Index):
                     if graph.has_node(str(callee)):
                         graph.add_node(str(callee))
                     if graph.has_edge(str(func), str(callee)):
-                        graph[str(func)][str(callee)]["pos"].append(callee.location)
+                        graph[str(func)][str(callee)]["pos"].append(str(callee.lines))
                     else:
-                        graph.add_edge(str(func), str(callee), pos=[callee.location])
+                        graph.add_edge(str(func), str(callee), pos=[str(callee.lines)])
                 g1 = nx.nx_agraph.to_agraph(graph)
                 g1.graph_attr['rankdir'] = 'LR'
                 g1.graph_attr['overlap'] = 'scale'
