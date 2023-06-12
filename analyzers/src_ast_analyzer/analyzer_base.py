@@ -59,6 +59,7 @@ class SrcAstAnalyzerBase:
         # 1. parse
         file_path = os.path.abspath(os.path.join(project_path, src_path))
         source = source_dealer.Source(file_path)
+        context.set_source(source)
         source_unit = None
         try:
             source_unit = self.parser.parse(source.get_content())

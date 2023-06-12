@@ -28,14 +28,13 @@ class AntlrAstWalker(AstWalkerInterface):
     def _walk_with_attrs(self, node, attributes, nodes):
         if self._check_attributes(node, attributes):
             nodes.append(node)
-        else:
-            for x in node:
-                if isinstance(node[x], parser.Node):
-                    self._walk_with_attrs(node[x], attributes, nodes)
-                elif isinstance(node[x], list):
-                    for child in node[x]:
-                        if isinstance(child, parser.Node):
-                            self._walk_with_attrs(child, attributes, nodes)
+        for x in node:
+            if isinstance(node[x], parser.Node):
+                self._walk_with_attrs(node[x], attributes, nodes)
+            elif isinstance(node[x], list):
+                for child in node[x]:
+                    if isinstance(child, parser.Node):
+                        self._walk_with_attrs(child, attributes, nodes)
 
     def _walk_with_list_of_attrs(self, node, list_of_attributes, nodes):
         if self._check_list_of_attributes(node, list_of_attributes):

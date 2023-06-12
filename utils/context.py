@@ -45,6 +45,8 @@ class Context:
         self.index_error = set()
         # timeout
         self.timeout = False
+        # file content source
+        self.source = None
 
     def set_timeout(self):
         self.timeout = True
@@ -73,3 +75,9 @@ class Context:
 
     def add_ssg_abstract(self, index):
         self.ssg_abstracts.append(index)
+
+    def set_source(self, source):
+        self.source = source
+
+    def get_source(self):
+        return self.source
