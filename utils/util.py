@@ -4,6 +4,7 @@ import yaml
 
 from utils import global_params
 from utils import log
+from utils import skills
 
 from z3 import is_expr, BitVecVal, simplify, is_const, unknown
 
@@ -37,6 +38,10 @@ def get_config(config_path):
             global_params.CFG = cfg['cfg_abstracts']
         if 'ssg_abstracts' in cfg:
             global_params.AST = cfg['ssg_abstracts']
+        if 'tags' in cfg and cfg["tags"] == True:
+            with open(os.path.dirname(config_path) + "/skills_tag.yaml", 'r', encoding='utf8') as stream:
+                global_params.SKILLS = skills.Skills(yaml.safe_load(stream))
+
         return cfg
 
 

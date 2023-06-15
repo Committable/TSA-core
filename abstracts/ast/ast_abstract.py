@@ -13,7 +13,6 @@ import abstracts.ast.move.move_selection_src
 import abstracts.ast.move.move_sequence_src
 
 
-
 class AstAbstract:
     def __init__(self):
         self.indexes = {}
@@ -37,7 +36,10 @@ class AstAbstract:
         for name, index in self.indexes.items():
             func = getattr(index.get_index_class(ast, ast_type, source),
                            'get_index')
-            abstract[name] = func(context)
+            if "sol_tag_src" == name:
+                abstract["tags"] = func(context)
+            else:
+                abstract[name] = func(context)
 
         return abstract
 

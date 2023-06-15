@@ -29,3 +29,6 @@ BIG_INT_256 = pow(2, 256)
 AST = []
 CFG = []
 SSG = []
+
+# skill tags definition
+SKILLS = None

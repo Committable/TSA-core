@@ -1,4 +1,4 @@
-uniswapV2:
+UniswapV2:
   - IUniswapV2Pair:
       - swap
   - IUniswapV2Factory

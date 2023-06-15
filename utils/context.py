@@ -81,3 +81,6 @@ class Context:
 
     def get_source(self):
         return self.source
+
+    def get_diff(self):
+        return self.diff
