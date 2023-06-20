@@ -67,9 +67,19 @@ def analysis_source_code(request: source_code_analyzer_pb2.SourceCodeAnalysisReq
         for index in report_a.ast_abstract:
             # todo: if we analyse before or after fail, e.g. complie fail..., we ignore changes
             if not context_before.err and not context_after.err:
-                ast_abstract[index] = report_a.ast_abstract[index] - report_b.ast_abstract[index]
+                if index == "tags":
+                    ast_abstract[index] = report_a.ast_abstract[index]
+                else:
+                    ast_abstract[index] = report_a.ast_abstract[index] - report_b.ast_abstract[index]
             else:
-                ast_abstract[index] = 0
+                if index == "tags":
+                    if not context_after.err:
+                        ast_abstract[index] = report_a.ast_abstract[index]
+                    else:
+                        ast_abstract[index] = []
+                else:
+                    ast_abstract[index] = 0
+
         ast_abstract_path = os.path.join(output_path, 'ast_abstract.json')
         with open(ast_abstract_path, 'w', encoding='utf8') as output_file:
             json.dump(ast_abstract, output_file)

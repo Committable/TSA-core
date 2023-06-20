@@ -4,7 +4,7 @@ import grpc
 from protos.analyzer import ts_analyzer_pb2_grpc
 from protos.analyzer import source_code_analyzer_pb2
 
-from analyzers import ts_src as analyzer
+from analyzers.src_ast_analyzer.ts_src import TsAnalyzer
 from utils import log, util
 
 import service_base
@@ -21,7 +21,8 @@ class TsSourceCodeAnalysisService(
             self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
-        return service_base.analysis_source_code(request, unused_context, analyzer.analyze_ts_code_from_treesitter)
+        analyzer = TsAnalyzer()
+        return service_base.analysis_source_code(request, unused_context, analyzer)
 
 
 async def serve(address) -> None:

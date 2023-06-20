@@ -45,5 +45,6 @@ RUN  apt-get update \
    && apt-get install -y graphviz curl
 COPY --from=soliditybuilder /root/dist/solidity_service /root
 COPY --from=soliditybuilder /root/services/solidity_service/config.yaml /root/
+COPY --from=soliditybuilder /root/services/solidity_service/skills_tag.yaml /root/
 ENTRYPOINT ["./solidity_service"]
 
