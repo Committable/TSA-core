@@ -1,0 +1,128 @@
+diff --git a/CodeToken.sol b/CodeToken.sol
+index c55a6b8..b9bd7b3 100644
+--- a/CodeToken.sol
++++ b/CodeToken.sol
+@@ -1,6 +1,20 @@
+-pragma solidity ^0.4.25;
++pragma solidity ^0.5.0;
+
++// ----------------------------------------------------------------------------
++// ERC Token Standard #20 Interface
++//
++// ----------------------------------------------------------------------------
++contract ERC20Interface {
++    function totalSupply() public view returns (uint);
++    function balanceOf(address tokenOwner) public view returns (uint balance);
++    function allowance(address tokenOwner, address spender) public view returns (uint remaining);
++    function transfer(address to, uint tokens) public returns (bool success);
++    function approve(address spender, uint tokens) public returns (bool success);
++    function transferFrom(address from, address to, uint tokens) public returns (bool success);
+
++    event Transfer(address indexed from, address indexed to, uint tokens);
++    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
++}
+
+ // ----------------------------------------------------------------------------
+ // Safe Math Library
+@@ -12,19 +26,29 @@ contract SafeMath {
+     }
+     function safeSub(uint a, uint b) public pure returns (uint c) {
+         require(b <= a);
+-        c = a - b;
++        c = a - b;
++    }
++    function safeMul(uint a, uint b) public pure returns (uint c) {
++        c = a * b;
++        require(a == 0 || c / a == b);
++        }
++    function safeDiv(uint a, uint b) public pure returns (uint c) {
++        require(b > 0);
++        c = a / b;
+     }
+ }
+
+-contract CodeToken is SafeMath {
++
++contract CodeToken is ERC20Interface, SafeMath {
+     string public name;
+     string public symbol;
+     uint8 public decimals; // 18 decimals is the strongly suggested default, avoid changing it
+-
++
+     uint256 public _totalSupply;
++
+     mapping(address => uint) balances;
+     mapping(address => mapping(address => uint)) allowed;
+-    event Transfer(address indexed from, address indexed to, uint tokens);
++
+     /**
+      * Constrctor function
+      *
+@@ -37,47 +61,38 @@ contract CodeToken is SafeMath {
+         _totalSupply = 100000000000000000000000000;
+
+         balances[msg.sender] = _totalSupply;
++        emit Transfer(address(0), msg.sender, _totalSupply);
+     }
+-       /**
+-     * @dev See {IERC20-balanceOf}.
+-     */
+-    function balanceOf(address account) public view returns (uint256) {
+-        return balances[account];
++
++    function totalSupply() public view returns (uint) {
++        return _totalSupply  - balances[address(0)];
+     }
+-       function decimals() public view returns (uint8) {
+-        return 18;
++
++    function balanceOf(address tokenOwner) public view returns (uint balance) {
++        return balances[tokenOwner];
+     }
+
+-    /**
+-     * @dev See {IERC20-totalSupply}.
+-     */
+-    function totalSupply() public view returns (uint256) {
+-        return _totalSupply;
++    function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
++        return allowed[tokenOwner][spender];
++    }
++
++    function approve(address spender, uint tokens) public returns (bool success) {
++        allowed[msg.sender][spender] = tokens;
++        emit Approval(msg.sender, spender, tokens);
++        return true;
+     }
+-    /**
+-     * Requirements:
+-     *
+-     * - `to` cannot be the zero address.
+-     * - the caller must have a balance of at least `tokens`.
+-     */
+     function transfer(address to, uint tokens) public returns (bool success) {
+         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
+         balances[to] = safeAdd(balances[to], tokens);
+-               emit Transfer(msg.sender, to, tokens);
+-               return true;
++        emit Transfer(msg.sender, to, tokens);
++        return true;
+     }
+-    /**
+-     *
+-     * - `from` and `to` cannot be the zero address.
+-     * - `from` must have a balance of at least `amount`.
+-     * - the caller must have allowance for ``from``'s tokens of at least
+-     * `token`.
+-     */
++
+     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
+         balances[from] = safeSub(balances[from], tokens);
+         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
+         balances[to] = safeAdd(balances[to], tokens);
+-               emit Transfer(from, to, tokens);
+-               return true;
++        emit Transfer(from, to, tokens);
++        return true;
+     }
+ }

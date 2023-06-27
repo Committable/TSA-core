@@ -170,10 +170,10 @@ def get_diff(diff_file, is_before):
             for i in range(0, len(differences)):
                 line = differences[i]
 
-                n = re.match(r'([\'|"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)',
+                n = re.match(r'([\'|"]?)@@ (-(\d+)(,(\d+))?)? (\+(\d+)(,(\d+))?)? @@(.*)',
                              line)
                 if n:
-                    start_line = int(n.group(2))
+                    start_line = int(n.group(3))
                     line_num = 0
                     start = True
                     continue
@@ -188,10 +188,10 @@ def get_diff(diff_file, is_before):
             for i in range(0, len(differences)):
                 line = differences[i]
 
-                n = re.match(r'([\'|"]?)@@ -(\d+),(\d+) \+(\d+),(\d+) @@(.*)',
+                n = re.match(r'([\'|"]?)@@ (-(\d+)(,(\d+))?)? (\+(\d+)(,(\d+))?)? @@(.*)',
                              line)
                 if n:
-                    start_line = int(n.group(4))
+                    start_line = int(n.group(7))
                     line_num = 0
                     start = True
                     continue

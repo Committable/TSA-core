@@ -48,7 +48,8 @@ class TestBase:
                               )
             src_file = file['src_file']
             project_dir = file['project_dir']
-            ctx = context.Context(time.time(), project_dir, src_file, [], '', ast_abstracts=global_params.AST)
+            diff = util.get_diff("./tests/integration_test/test_cases/difference3", True)
+            ctx = context.Context(time.time(), project_dir, src_file, diff, '', ast_abstracts=global_params.AST)
             try:
                 self.analyzer.analyze(file_output_path, src_file, project_dir, ctx, {})
             except Exception as err:  # pylint: disable=broad-except

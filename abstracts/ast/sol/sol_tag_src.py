@@ -1,5 +1,5 @@
 import os
-from utils import global_params
+from utils import global_params, log
 from abstracts import index
 import networkx as nx
 from evm_engine.input_dealer import solidity_ast_walker
@@ -22,8 +22,9 @@ class TagSrc(index.Index):
         if self.ast_type == 'antlrAST':
             call_graphs = self.build_call_graph(self.ast, context)
             # self.print_call_graph(call_graphs)
-
+            log.mylogger.info("call graphs: %s", str(call_graphs))
             if global_params.SKILLS is not None:
+                log.mylogger.info("in skill")
                 tag_2_lines = {}
                 for contract in call_graphs:
                     for caller in call_graphs[contract]:
@@ -38,10 +39,14 @@ class TagSrc(index.Index):
                                     if lines is not None:
                                         tag_2_lines[tag].add(lines)
                 # todo with comment lines
+                log.mylogger.info("diff lines: %s", str(context.get_diff()))
+                log.mylogger.info("tag to lines: %s", str(tag_2_lines))
                 for line in context.get_diff():
                     for tag in tag_2_lines:
-                        if tag_2_lines[tag][1] >= line >= tag_2_lines[tag][0]:
-                            self.tag_src.add(tag)
+                        for elem in tag_2_lines[tag]:
+                            if elem[1] >= line >= elem[0]:
+                                self.tag_src.add(tag)
+                                break
 
         return list(self.tag_src)
 

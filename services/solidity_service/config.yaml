@@ -1,5 +1,5 @@
-dest_path: /reports
-input_path: /repos
+dest_path: ./tmp/reports
+input_path: ./tmp/repos
 listen_address: 0.0.0.0:50054
 timeout: 60
 debug: false

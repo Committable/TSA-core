@@ -36,7 +36,7 @@ COPY . /root/
 WORKDIR /root/
 ENV PYTHONPATH=.:/usr/local/bin/python
 RUN mv /usr/sbin/libgvc6-config-update /usr/bin/dot
-RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/solidity_service/solidity_service.py
+RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/aarch64-linux-gnu/graphviz/*:./graphviz -F services/solidity_service/solidity_service.py
 
 
 FROM ubuntu:bionic as prod
