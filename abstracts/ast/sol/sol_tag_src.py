@@ -22,7 +22,7 @@ class TagSrc(index.Index):
         if self.ast_type == 'antlrAST':
             call_graphs = self.build_call_graph(self.ast, context)
             # self.print_call_graph(call_graphs)
-            log.mylogger.info("call graphs: %s", str(call_graphs))
+            # log.mylogger.info("call graphs: %s", str(call_graphs))
             if global_params.SKILLS is not None:
                 log.mylogger.info("in skill")
                 tag_2_lines = {}
@@ -39,8 +39,8 @@ class TagSrc(index.Index):
                                     if lines is not None:
                                         tag_2_lines[tag].add(lines)
                 # todo with comment lines
-                log.mylogger.info("diff lines: %s", str(context.get_diff()))
-                log.mylogger.info("tag to lines: %s", str(tag_2_lines))
+                # log.mylogger.info("diff lines: %s", str(context.get_diff()))
+                # log.mylogger.info("tag to lines: %s", str(tag_2_lines))
                 for line in context.get_diff():
                     for tag in tag_2_lines:
                         for elem in tag_2_lines[tag]:
