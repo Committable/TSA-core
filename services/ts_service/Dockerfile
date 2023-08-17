@@ -7,8 +7,6 @@ RUN apt-get update \
   && pip3 install --upgrade pip
 
 
-RUN pip install pyinstaller
-
 RUN pip install certifi==2021.10.8
 RUN pip install charset-normalizer==2.0.12
 RUN pip install coloredlogs==15.0.1
@@ -37,15 +35,7 @@ WORKDIR /root/
 ENV PYTHONPATH=.:/usr/local/bin/python
 RUN mv /usr/sbin/libgvc6-config-update /usr/bin/dot
 RUN python ./ast_parsers/ts_parser/build_parser.py
-RUN pyinstaller --add-binary /usr/local/lib/python3.6/dist-packages/z3/lib/libz3.so:. --add-binary /usr/lib/x86_64-linux-gnu/graphviz/*:./graphviz -F services/ts_service/ts_service.py
 
+ENTRYPOINT ["python", "ts_service.py"]
 
-FROM ubuntu:bionic as prod
-WORKDIR /root
-RUN  apt-get update \
-   && apt-get install -y graphviz curl
-COPY --from=tsbuilder /root/ast_parsers/ts_parser/build/my-languages.so /root/ast_parsers/ts_parser/build/
-COPY --from=tsbuilder /root/dist/ts_service /root/
-COPY --from=tsbuilder /root/services/ts_service/config.yaml /root/
-ENTRYPOINT ["./ts_service"]
 
