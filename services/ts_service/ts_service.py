@@ -7,7 +7,7 @@ from protos.analyzer import source_code_analyzer_pb2
 from analyzers.src_ast_analyzer.ts_src import TsAnalyzer
 from utils import log, util
 
-import service_base
+from services import service_base
 
 cfg = util.get_config('./config.yaml')
 

@@ -1,62 +1,93 @@
-UniswapV2:
-  - IUniswapV2Pair:
-      - swap
-  - IUniswapV2Factory
-  - IUniswapRouter:
-      - addLiquidity
-      - addLiquidityETH
-      - removeLiquidity
-      - removeLiquidityETH
-      - swapExactTokensForTokens
-      - swapTokensForExactTokens
-      - swapExactETHForTokens
-      - swapTokensForExactETH
-      - swapExactTokensForETH
-      - swapETHForExactTokens
-  - UniswapV2Library
-UniswapV3:
-  - UniswapV3Pool:
-      - swap
-      - flash
-  - UniswapV3Factory
-  - UniswapV3PoolDeployer
-  - IswapRouter:
-      - exactInputSingle
-      - exactInput
-      - exactOutputSingle
-      - exactOutput
-  - INonfungiblePositionManager:
-      - positions
-      - createAndInitializePoolIfNecessary
-      - mint
-      - increaseLiquidity
-      - decreaseLiquidity
-      - collect
-      - burn
-CompoundIII:
-  - Comet:
-      - supply
-      - withdraw
-      - buyCollateral
-CompoundV2:
-  - CToken:
-      - mint
-      - redeem
-      - borrow
-      - repayBorrow
-      - liquidateBorrow
-  - Comptroller
-AaveV3:
-  - Pool:
-      - supply
-      - withdraw
-      - borrow
-      - repay
-      - flashLoan
-      - flashLoanSimple
-  - AToken
-  - DebtToken
-  - AaveOracle
-Lido:
-  - Lido:
-      - submit
+API:
+  UniswapV2:
+      - IUniswapV2Pair:
+          - swap
+      - IUniswapV2Factory
+      - IUniswapRouter:
+          - addLiquidity
+          - addLiquidityETH
+          - removeLiquidity
+          - removeLiquidityETH
+          - swapExactTokensForTokens
+          - swapTokensForExactTokens
+          - swapExactETHForTokens
+          - swapTokensForExactETH
+          - swapExactTokensForETH
+          - swapETHForExactTokens
+      - UniswapV2Library
+  UniswapV3:
+    - UniswapV3Pool:
+        - swap
+        - flash
+    - UniswapV3Factory
+    - UniswapV3PoolDeployer
+    - IswapRouter:
+        - exactInputSingle
+        - exactInput
+        - exactOutputSingle
+        - exactOutput
+    - INonfungiblePositionManager:
+        - positions
+        - createAndInitializePoolIfNecessary
+        - mint
+        - increaseLiquidity
+        - decreaseLiquidity
+        - collect
+        - burn
+  CompoundIII:
+    - Comet:
+        - supply
+        - withdraw
+        - buyCollateral
+  CompoundV2:
+    - CToken:
+        - mint
+        - redeem
+        - borrow
+        - repayBorrow
+        - liquidateBorrow
+    - Comptroller
+  AaveV3:
+    - Pool:
+        - supply
+        - withdraw
+        - borrow
+        - repay
+        - flashLoan
+        - flashLoanSimple
+    - AToken
+    - DebtToken
+    - AaveOracle
+  Lido:
+    - Lido:
+        - submit
+Interface:
+  ERC20:
+    - ERC20Interface:
+        - totalSupply
+        - balanceOf
+        - allowance
+        - transfer
+        - approve
+        - transferFrom
+  ERC721:
+    - ERC721Interface:
+        - balanceOf
+        - ownerOf
+        - safeTransferFrom
+        - transferFrom
+        - approve
+        - setApprovalForAll
+        - getApproval
+        - isApprovedForAll
+  ERC1155:
+    - ERC1155Interface:
+        - safeTransferFrom
+        - safeBatchTransferFrom
+        - balanceOf
+        - balanceOfBatch
+        - setApprovalForAll
+        - isApprovedForAll
+    - ERC1155TokenReceiver:
+        - onERC1155Received
+        - onERC1155BatchReceived

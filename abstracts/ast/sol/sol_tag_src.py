@@ -23,8 +23,7 @@ class TagSrc(index.Index):
             call_graphs = self.build_call_graph(self.ast, context)
             # self.print_call_graph(call_graphs)
             # log.mylogger.info("call graphs: %s", str(call_graphs))
-            if global_params.SKILLS is not None:
-                log.mylogger.info("in skill")
+            if global_params.SKILLS is not None and global_params.SKILLS.has_api():
                 tag_2_lines = {}
                 for contract in call_graphs:
                     for caller in call_graphs[contract]:
@@ -32,7 +31,7 @@ class TagSrc(index.Index):
                         for callee in call_graphs[contract][caller]:
                             callee_contract = callee.get_contract()
                             if callee_contract != "":
-                                tags = global_params.SKILLS.get_tags_from_contract(callee_contract)
+                                tags = global_params.SKILLS.get_api_tags_from_contract(callee_contract)
                                 for tag in tags:
                                     if tag not in tag_2_lines:
                                         tag_2_lines[tag] = set()
@@ -47,6 +46,28 @@ class TagSrc(index.Index):
                             if elem[1] >= line >= elem[0]:
                                 self.tag_src.add(tag)
                                 break
+            if global_params.SKILLS is not None and global_params.SKILLS.has_interface():
+                tag_2_lines = {}
+                for contract in call_graphs:
+                    functions = []
+                    lines_arr = []
+                    for caller in call_graphs[contract]:
+                        functions.append(caller.get_func())
+                        lines_arr.append(caller.get_lines())
+                    tags = global_params.SKILLS.get_interface_tags_from_functions(functions)
+                    for tag in tags:
+                        if tag not in tag_2_lines:
+                            tag_2_lines[tag] = set()
+                        if lines_arr is not None:
+                            for lines in lines_arr:
+                                tag_2_lines[tag].add(lines)
+                for line in context.get_diff():
+                    for tag in tag_2_lines:
+                        for elem in tag_2_lines[tag]:
+                            if elem[1] >= line >= elem[0]:
+                                self.tag_src.add(tag)
+                                break
+
 
         return list(self.tag_src)
 
@@ -175,6 +196,9 @@ class Caller:
 
     def get_lines(self):
         return self.lines
+
+    def get_func(self):
+        return self.func
 
     def __str__(self):
         return self.contract+":"+self.func
