@@ -16,14 +16,16 @@ class TagSrc(index.Index):
         self.walker = wakler.AntlrAstWalker()
 
     def get_index(self, context):
+        log.mylogger.info("step1: %s", context.src_file)
         if not self.ast or not self.source:
             return []
-
+        log.mylogger.info("step2")
         if self.ast_type == 'antlrAST':
             call_graphs = self.build_call_graph(self.ast, context)
             # self.print_call_graph(call_graphs)
             # log.mylogger.info("call graphs: %s", str(call_graphs))
             if global_params.SKILLS is not None and global_params.SKILLS.has_api():
+                log.mylogger.info("step2.5: %s", str(global_params.SKILLS.tags))
                 tag_2_lines = {}
                 for contract in call_graphs:
                     for caller in call_graphs[contract]:
@@ -45,9 +47,11 @@ class TagSrc(index.Index):
                         for elem in tag_2_lines[tag]:
                             if elem[1] >= line >= elem[0]:
                                 # self.tag_src.add(tag)
+                                log.mylogger.info("step3.1")
                                 self.tag_src.add(tag + ":" + context.src_file + ":" + str(elem[0]) + ":" + str(elem[1]))
                                 break
             if global_params.SKILLS is not None and global_params.SKILLS.has_interface():
+                log.mylogger.info("step2.6: %s", str(global_params.SKILLS.tags))
                 tag_2_lines = {}
                 for contract in call_graphs:
                     functions = []
@@ -67,10 +71,11 @@ class TagSrc(index.Index):
                         for elem in tag_2_lines[tag]:
                             if elem[1] >= line >= elem[0]:
                                 # self.tag_src.add(tag)
+                                log.mylogger.info("step3.2")
                                 self.tag_src.add(tag+":"+context.src_file+":"+str(elem[0])+":"+str(elem[1]))
                                 break
 
-
+        log.mylogger.info("step4")
         return list(self.tag_src)
 
     def print_call_graph(self, call_graphs):
