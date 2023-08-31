@@ -44,7 +44,8 @@ class TagSrc(index.Index):
                     for tag in tag_2_lines:
                         for elem in tag_2_lines[tag]:
                             if elem[1] >= line >= elem[0]:
-                                self.tag_src.add(tag)
+                                # self.tag_src.add(tag)
+                                self.tag_src.add(tag + ":" + context.src_file + ":" + str(elem[0]) + ":" + str(elem[1]))
                                 break
             if global_params.SKILLS is not None and global_params.SKILLS.has_interface():
                 tag_2_lines = {}
@@ -65,7 +66,8 @@ class TagSrc(index.Index):
                     for tag in tag_2_lines:
                         for elem in tag_2_lines[tag]:
                             if elem[1] >= line >= elem[0]:
-                                self.tag_src.add(tag)
+                                # self.tag_src.add(tag)
+                                self.tag_src.add(tag+":"+context.src_file+":"+str(elem[0])+":"+str(elem[1]))
                                 break
 
 
