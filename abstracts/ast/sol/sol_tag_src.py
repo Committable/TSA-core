@@ -19,9 +19,13 @@ class TagSrc(index.Index):
         log.mylogger.info("step1: %s", context.src_file)
         if not self.ast or not self.source:
             return []
-        log.mylogger.info("step2")
+        log.mylogger.info("step2: %s", self.ast_type)
         if self.ast_type == 'antlrAST':
+            log.mylogger.info("step2.1")
             call_graphs = self.build_call_graph(self.ast, context)
+            log.mylogger.info("step2.2")
+            if global_params.SKILLS is None:
+                log.mylogger.info("step2.3")
             # self.print_call_graph(call_graphs)
             # log.mylogger.info("call graphs: %s", str(call_graphs))
             if global_params.SKILLS is not None and global_params.SKILLS.has_api():
@@ -40,8 +44,8 @@ class TagSrc(index.Index):
                                     if lines is not None:
                                         tag_2_lines[tag].add(lines)
                 # todo with comment lines
-                # log.mylogger.info("diff lines: %s", str(context.get_diff()))
-                # log.mylogger.info("tag to lines: %s", str(tag_2_lines))
+                log.mylogger.info("diff lines: %s", str(context.get_diff()))
+                log.mylogger.info("tag to lines: %s", str(tag_2_lines))
                 for line in context.get_diff():
                     for tag in tag_2_lines:
                         for elem in tag_2_lines[tag]:
@@ -66,6 +70,8 @@ class TagSrc(index.Index):
                         if lines_arr is not None:
                             for lines in lines_arr:
                                 tag_2_lines[tag].add(lines)
+                log.mylogger.info("diff lines: %s", str(context.get_diff()))
+                log.mylogger.info("tag to lines: %s", str(tag_2_lines))
                 for line in context.get_diff():
                     for tag in tag_2_lines:
                         for elem in tag_2_lines[tag]:
