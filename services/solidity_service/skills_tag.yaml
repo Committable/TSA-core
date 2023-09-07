@@ -64,28 +64,20 @@ API:
 Interface:
   ERC20:
     - ERC20Interface:
-        - totalSupply
-        - balanceOf
-        - allowance
         - transfer
         - approve
         - transferFrom
   ERC721:
     - ERC721Interface:
-        - balanceOf
-        - ownerOf
         - safeTransferFrom
         - transferFrom
         - approve
         - setApprovalForAll
-        - getApproval
         - isApprovedForAll
   ERC1155:
     - ERC1155Interface:
         - safeTransferFrom
         - safeBatchTransferFrom
-        - balanceOf
-        - balanceOfBatch
         - setApprovalForAll
         - isApprovedForAll
     - ERC1155TokenReceiver:

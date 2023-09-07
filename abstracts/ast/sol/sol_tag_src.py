@@ -53,17 +53,28 @@ class TagSrc(index.Index):
                             if elem[1] >= line >= elem[0]:
                                 # self.tag_src.add(tag)
                                 # log.mylogger.info("step3.1")
-                                self.tag_src.add(tag + ":" + context.src_file + ":" + str(elem[0]) + ":" + str(elem[1]))
+                                self.tag_src.add(tag + ":" + context.src_file + ":call at:" + str(elem[0]) + ":" + str(elem[1]))
                                 break
             if global_params.SKILLS is not None and global_params.SKILLS.has_interface():
                 # log.mylogger.info("step2.6: %s", str(global_params.SKILLS.tags))
                 tag_2_lines = {}
                 for contract in call_graphs:
                     functions = []
-                    lines_arr = []
+                    functionName_2_definition = {}
                     for caller in call_graphs[contract]:
                         functions.append(caller.get_func())
-                        lines_arr.append(caller.get_lines())
+                        functionName_2_definition[caller.get_func()] = caller
+                    lines_arr = []
+                    for caller in call_graphs[contract]:
+                        line_ele = caller.get_lines()
+                        if line_ele not in lines_arr:
+                            lines_arr.append(line_ele)
+                        for callee in call_graphs[contract][caller]:
+                            if callee.get_contract() == "":
+                                if callee.get_func() in functionName_2_definition:
+                                    line_ele = functionName_2_definition[callee.get_func()].get_lines()
+                                    if line_ele not in lines_arr:
+                                        lines_arr.append(line_ele)
                     tags = global_params.SKILLS.get_interface_tags_from_functions(functions)
                     for tag in tags:
                         if tag not in tag_2_lines:
@@ -79,7 +90,7 @@ class TagSrc(index.Index):
                             if elem[1] >= line >= elem[0]:
                                 # self.tag_src.add(tag)
                                 # log.mylogger.info("step3.2")
-                                self.tag_src.add(tag+":"+context.src_file+":"+str(elem[0])+":"+str(elem[1]))
+                                self.tag_src.add(tag+":"+context.src_file+":implement at:"+str(elem[0])+":"+str(elem[1]))
                                 break
 
         # log.mylogger.info("step4")
