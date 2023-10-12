@@ -7,10 +7,6 @@ from typing import Dict
 class AnalyzerInterface(metaclass=ABCMeta):
 
     @abstractmethod
-    def analyze(self,
-                output_path: str,
-                src_path: str,
-                project_path: str,
-                context: Context,
-                compilation_cfg: Dict) -> AstReporter:
+    def analyze(self, output_path: str, src_path: str, project_path: str,
+                context: Context, compilation_cfg: Dict) -> AstReporter:
         pass

@@ -14,12 +14,14 @@ threading.SystemExit = SystemExit, StopThread
 
 
 class myThread(threading.Thread):
+
     def __init__(self, graphs):
         threading.Thread.__init__(self)
         self.cfg_graphs = graphs
         self.result = []
 
     def _bootstrap(self, stop_thread=False):
+
         def stop():
             nonlocal stop_thread
             stop_thread = True

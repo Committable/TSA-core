@@ -1,7 +1,8 @@
 class Skills:
+
     def __init__(self, content):
         self.tags = []
-        self.contracts = {"API":{}, "Interface": {}}
+        self.contracts = {"API": {}, "Interface": {}}
         self.contract_2_tags = {"API": {}, "Interface": {}}
         if "API" in content:
             for tag in content["API"]:
@@ -11,7 +12,8 @@ class Skills:
                         for contract_name in contract:
                             self._add_contract_api(contract_name, tag)
                             for func in contract[contract_name]:
-                                self.contracts["API"][contract_name].append(func)
+                                self.contracts["API"][contract_name].append(
+                                    func)
                     else:
                         self._add_contract_api(contract, tag)
         if "Interface" in content:
@@ -22,7 +24,8 @@ class Skills:
                         for contract_name in contract:
                             self._add_contract_interface(contract_name, tag)
                             for func in contract[contract_name]:
-                                self.contracts["Interface"][contract_name].append(func)
+                                self.contracts["Interface"][
+                                    contract_name].append(func)
                     else:
                         self._add_contract_interface(contract, tag)
 

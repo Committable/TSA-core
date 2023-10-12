@@ -11,15 +11,12 @@ from ast_parsers.ast_parser_interface import AstParserInterface
 
 
 class SrcAstAnalyzerBase:
+
     def __init__(self, parser: AstParserInterface, walker: AstWalkerInterface):
         self.parser = parser
         self.walker = walker
 
-    def analyze_json_ast(self,
-                         output_path,
-                         src_path,
-                         project_path,
-                         context):
+    def analyze_json_ast(self, output_path, src_path, project_path, context):
         # 1. parse
         file_path = os.path.abspath(os.path.join(project_path, src_path))
         source = source_dealer.Source(file_path)
@@ -39,7 +36,9 @@ class SrcAstAnalyzerBase:
         ast_walker = self.walker
         ast_report = ast_reporter.AstReporter(source.get_content(), output_path)
         ast_report.set_ast_json(ast_walker.get_ast_json(source_unit, context))
-        ast_report.set_ast_abstract(get_ast_abstract(ast_report.get_ast_json(), ast_walker.get_type(), source, context))
+        ast_report.set_ast_abstract(
+            get_ast_abstract(ast_report.get_ast_json(), ast_walker.get_type(),
+                             source, context))
         log.mylogger.info('success get ast report: %s', src_path)
         ast_report.dump_ast_json()
         ast_report.dump_ast_edge_list()
@@ -51,10 +50,7 @@ class SrcAstAnalyzerBase:
 
         return ast_report
 
-    def analyze_primitive_ast(self,
-                              output_path,
-                              src_path,
-                              project_path,
+    def analyze_primitive_ast(self, output_path, src_path, project_path,
                               context):
         # 1. parse
         file_path = os.path.abspath(os.path.join(project_path, src_path))
@@ -76,7 +72,9 @@ class SrcAstAnalyzerBase:
         ast_walker = self.walker
         ast_report = ast_reporter.AstReporter(source.get_content(), output_path)
         ast_report.set_ast_json(ast_walker.get_ast_json(source_unit, context))
-        ast_report.set_ast_abstract(get_ast_abstract(source_unit, ast_walker.get_type(), source, context))
+        ast_report.set_ast_abstract(
+            get_ast_abstract(source_unit, ast_walker.get_type(), source,
+                             context))
         log.mylogger.info('success get ast report: %s', src_path)
         ast_report.dump_ast_json()
         ast_report.dump_ast_edge_list()
@@ -87,4 +85,3 @@ class SrcAstAnalyzerBase:
                           output_path)
 
         return ast_report
-
