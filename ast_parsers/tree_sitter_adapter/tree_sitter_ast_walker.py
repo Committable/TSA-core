@@ -3,6 +3,7 @@ from ast_parsers.ast_walker_interface import AstWalkerInterface
 
 
 class TreeSitterAstWalker(AstWalkerInterface):
+
     def __init__(self, ast_type):
         self.diffs = None
         self.type = ast_type
@@ -31,7 +32,8 @@ class TreeSitterAstWalker(AstWalkerInterface):
         else:
             json_result = {}
             parent_json['children'].append(json_result)
-        lines = (node.start_point[0] + 1, node.end_point[0] + 2)  # start from 0 and [start, end)
+        lines = (node.start_point[0] + 1, node.end_point[0] + 2
+                )  # start from 0 and [start, end)
         changed = util.intersect(self.diffs, lines)
 
         json_result['id'] = str(self.node_id)
@@ -40,7 +42,8 @@ class TreeSitterAstWalker(AstWalkerInterface):
         json_result['layer'] = depth
         json_result['children'] = []
         json_result['ischanged'] = changed
-        json_result['src'] = f'{node.start_point[0] + 1}:{node.end_point[0] + 2}'
+        json_result[
+            'src'] = f'{node.start_point[0] + 1}:{node.end_point[0] + 2}'
 
         if cursor.goto_first_child():
             self._walk_to_json_inner(cursor, depth + 1, json_result, True)

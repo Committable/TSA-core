@@ -30,6 +30,7 @@ def load_test_files(file_path):
 
 
 class TestBase:
+
     def __init__(self, cfg, analyzer: AnalyzerInterface):
         self.cfg = cfg
         self.analyzer = analyzer
@@ -41,28 +42,46 @@ class TestBase:
         fail = 0
         failed = {'files': [], 'errors': []}
         for file in load_test_files(test_path):
-            file_output_path = util.generate_output_dir(str(int(time.time() * 10 ** 6)), '')
+            file_output_path = util.generate_output_dir(
+                str(int(time.time() * 10**6)), '')
             total += 1
-            log.mylogger.info('-----------------start analysis: %s------------------',
-                              os.path.abspath(os.path.join(file['project_dir'], file['src_file']))
-                              )
+            log.mylogger.info(
+                '-----------------start analysis: %s------------------',
+                os.path.abspath(
+                    os.path.join(file['project_dir'], file['src_file'])))
             src_file = file['src_file']
             project_dir = file['project_dir']
-            diff = util.get_diff("./tests/integration_test/test_cases/difference3", True)
-            ctx = context.Context(time.time(), project_dir, src_file, diff, '', ast_abstracts=global_params.AST)
+            diff = util.get_diff(
+                "./tests/integration_test/test_cases/difference3", True)
+            ctx = context.Context(time.time(),
+                                  project_dir,
+                                  src_file,
+                                  diff,
+                                  '',
+                                  ast_abstracts=global_params.AST)
             try:
-                self.analyzer.analyze(file_output_path, src_file, project_dir, ctx, {})
+                self.analyzer.analyze(file_output_path, src_file, project_dir,
+                                      ctx, {})
             except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 fail += 1
-                failed['files'].append(os.path.abspath(os.path.join(file['project_dir'], file['src_file'])))
+                failed['files'].append(
+                    os.path.abspath(
+                        os.path.join(file['project_dir'], file['src_file'])))
                 failed['errors'].append(str(err))
-                log.mylogger.error('-----------------fail analysis: %s------------------',str(err))
+                log.mylogger.error(
+                    '-----------------fail analysis: %s------------------',
+                    str(err))
                 continue
-            log.mylogger.info('-----------------success analysis to %s------------------', file_output_path)
+            log.mylogger.info(
+                '-----------------success analysis to %s------------------',
+                file_output_path)
             success += 1
 
-        with open(os.path.join(global_params.DEST_PATH, 'result.json'), 'w', encoding='utf8') as result_file:
+        with open(os.path.join(global_params.DEST_PATH, 'result.json'),
+                  'w',
+                  encoding='utf8') as result_file:
             json.dump(failed, result_file)
 
-        log.mylogger.info('total: %d, success: %d, fail: %d', total, success, fail)
+        log.mylogger.info('total: %d, success: %d, fail: %d', total, success,
+                          fail)

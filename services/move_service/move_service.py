@@ -15,14 +15,15 @@ log.mylogger = log.get_logger('move')
 
 
 class MoveSourceCodeAnalysisService(
-    move_analyzer_pb2_grpc.MoveSourceCodeAnalysisServicer):
+        move_analyzer_pb2_grpc.MoveSourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
             self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         analyzer = MoveAnalyzer()
-        return service_base.analysis_source_code(request, unused_context, analyzer)
+        return service_base.analysis_source_code(request, unused_context,
+                                                 analyzer)
 
 
 async def serve(address) -> None:
@@ -31,8 +32,7 @@ async def serve(address) -> None:
     move_analyzer_pb2_grpc.add_MoveSourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
         MoveSourceCodeAnalysisService(), server)
     server.add_insecure_port(address)
-    log.mylogger.info('Move Analysis Service is Listening on %s.',
-                      address)
+    log.mylogger.info('Move Analysis Service is Listening on %s.', address)
     await server.start()
     await server.wait_for_termination()
 

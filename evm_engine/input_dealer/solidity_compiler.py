@@ -341,8 +341,10 @@ class SolidityCompiler:
                 try:
                     if self._compile_with_solcx(v):
                         self._convert_opcodes()
-                        compilation_path = os.path.join(output_path, 'compilation.json')
-                        with open(compilation_path, 'w', encoding='utf8') as output_file:
+                        compilation_path = os.path.join(output_path,
+                                                        'compilation.json')
+                        with open(compilation_path, 'w',
+                                  encoding='utf8') as output_file:
                             json.dump(self.combined_json, output_file)
                         return
                 except Exception:  # pylint: disable=broad-except

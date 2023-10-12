@@ -176,7 +176,8 @@ class EVMInterpreter:
                 visited[current_edge] > evm_params.LOOP_LIMIT and
                 self.runtime.jump_type[block] == 'conditional'):
             log.mylogger.debug(
-                'overcome a number of loop limit for path visited. Terminating this path ...')
+                'overcome a number of loop limit for path visited. Terminating this path ...'
+            )
             self._terminate_path('loopLimit', function_name, params, start_time,
                                  block)
             return
@@ -185,8 +186,9 @@ class EVMInterpreter:
                 if current_edge in self.total_visited_edges and \
                         self.total_visited_edges[
                             current_edge] > 10:
-                    log.mylogger.debug('overcome a number of loop limit for total visited. '
-                                       'Terminating this path ...')
+                    log.mylogger.debug(
+                        'overcome a number of loop limit for total visited. '
+                        'Terminating this path ...')
                     self._terminate_path('loopLimit', function_name, params,
                                          start_time, block)
                     return
@@ -194,8 +196,9 @@ class EVMInterpreter:
                 if current_edge in self.function_visited_edges and \
                         self.function_visited_edges[
                             current_edge] > 10:
-                    log.mylogger.debug('overcome a number of loop limit for function visited. '
-                                       'Terminating this path ...')
+                    log.mylogger.debug(
+                        'overcome a number of loop limit for function visited. '
+                        'Terminating this path ...')
                     self._terminate_path('loopLimit', function_name, params,
                                          start_time, block)
                     return
@@ -313,7 +316,7 @@ class EVMInterpreter:
                 selector = self.get_function_from_start_block(left_branch)
 
                 if str_expr != 'False':
-                # if True:
+                    # if True:
                     # we copy params for one branch of conditional jump
                     new_params = params.copy()
                     new_params.global_state['pc'] = left_branch
@@ -345,7 +348,7 @@ class EVMInterpreter:
                 right_branch = self.runtime.vertices[block].get_falls_to()
 
                 if str_expr != 'True':
-                # if True:
+                    # if True:
                     params.global_state['pc'] = right_branch
                     params.path_conditions_and_vars['path_condition'].append(
                         negated_branch_expression)
@@ -891,8 +894,8 @@ class EVMInterpreter:
                 start = stack.pop(0)
 
                 end = util.convert_result(start + 31)
-                new_var_name = self.gen.gen_data_var(
-                    start, end, self.current_function)
+                new_var_name = self.gen.gen_data_var(start, end,
+                                                     self.current_function)
                 value = z3.BitVec(new_var_name, 256)
                 node = x_graph.InputDataNode(new_var_name, value, start, end)
                 self.x_graph.cache_var_node(value, node)
@@ -1517,8 +1520,9 @@ class EVMInterpreter:
         if global_params.DEBUG_MOD:
             end_time = time.time()
             execution_time = end_time - start_time
-            log.mylogger.debug('End executing: %s symbolic execution time: %.6f s',
-                               instr, execution_time)
+            log.mylogger.debug(
+                'End executing: %s symbolic execution time: %.6f s', instr,
+                execution_time)
             log.mylogger.debug('==============================')
 
     def _init_global_state(self, path_conditions_and_vars, global_state):

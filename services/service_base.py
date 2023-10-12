@@ -12,52 +12,66 @@ from utils import global_params, context, log, util
 cfg = util.get_config('./config.yaml')
 
 
-def analysis_source_code(request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
-                         unused_context, analyzer) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
+def analysis_source_code(
+        request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
+        unused_context,
+        analyzer) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
     start = time.time()
     request_id = str(int(start * 1000000))
     output_path = util.generate_output_dir('source_before', request_id)
     src_path = request.before_change.file_path
-    project_path = os.path.join(global_params.INPUT_PATH, util.change_to_relative(request.before_change.repo_path))
-    diff_path = os.path.join(global_params.INPUT_PATH, util.change_to_relative(request.diffs_log_path))
+    project_path = os.path.join(
+        global_params.INPUT_PATH,
+        util.change_to_relative(request.before_change.repo_path))
+    diff_path = os.path.join(global_params.INPUT_PATH,
+                             util.change_to_relative(request.diffs_log_path))
 
-    log.mylogger.info('starting process  request %s for commit before, project: %s, file: %s',
-                      request_id, project_path, src_path)
+    log.mylogger.info(
+        'starting process  request %s for commit before, project: %s, file: %s',
+        request_id, project_path, src_path)
 
     diff = util.get_diff(diff_path, True)
-    context_before = context.Context(start, project_path, src_path, diff, request_id,
+    context_before = context.Context(start,
+                                     project_path,
+                                     src_path,
+                                     diff,
+                                     request_id,
                                      ast_abstracts=global_params.AST)
     try:
-        report_b = analyzer.analyze(output_path,
-                                    src_path,
-                                    project_path,
-                                    context_before,
-                                    {})
+        report_b = analyzer.analyze(output_path, src_path, project_path,
+                                    context_before, {})
     except Exception as err:  # pylint: disable=broad-except
         traceback.print_exc()
-        log.mylogger.error('fail analyzing js source file before for %s, err: %s', src_path, str(err))
-        return source_code_analyzer_pb2.SourceCodeAnalysisResponse(status=500, message='analysis js before file fail')
+        log.mylogger.error(
+            'fail analyzing js source file before for %s, err: %s', src_path,
+            str(err))
+        return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
+            status=500, message='analysis js before file fail')
 
     output_path = util.generate_output_dir('source_after', request_id)
     src_path = request.after_change.file_path
-    project_path = os.path.join(global_params.INPUT_PATH, util.change_to_relative(request.after_change.repo_path))
+    project_path = os.path.join(
+        global_params.INPUT_PATH,
+        util.change_to_relative(request.after_change.repo_path))
 
-    log.mylogger.info('starting process request %s for commit after, project: %s, file: %s',
-                      request_id, project_path, src_path)
+    log.mylogger.info(
+        'starting process request %s for commit after, project: %s, file: %s',
+        request_id, project_path, src_path)
 
     diff = util.get_diff(diff_path, False)
-    context_after = context.Context(start, project_path, src_path, diff, request_id,
+    context_after = context.Context(start,
+                                    project_path,
+                                    src_path,
+                                    diff,
+                                    request_id,
                                     ast_abstracts=global_params.AST)
     try:
-        report_a = analyzer.analyze(output_path,
-                                    src_path,
-                                    project_path,
-                                    context_after,
-                                    {})
+        report_a = analyzer.analyze(output_path, src_path, project_path,
+                                    context_after, {})
     except Exception as err:  # pylint: disable=broad-except
         log.mylogger.error(
-            'fail analyzing js source file after for %s, err: %s',
-            output_path, str(err))
+            'fail analyzing js source file after for %s, err: %s', output_path,
+            str(err))
         return source_code_analyzer_pb2.SourceCodeAnalysisResponse(
             status=500, message='analysis js after file fail')
     # merge before's and after's abstarct
@@ -70,7 +84,8 @@ def analysis_source_code(request: source_code_analyzer_pb2.SourceCodeAnalysisReq
                 if index == "tags":
                     ast_abstract[index] = report_a.ast_abstract[index]
                 else:
-                    ast_abstract[index] = report_a.ast_abstract[index] - report_b.ast_abstract[index]
+                    ast_abstract[index] = report_a.ast_abstract[
+                        index] - report_b.ast_abstract[index]
             else:
                 if index == "tags":
                     if not context_after.err:

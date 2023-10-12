@@ -206,7 +206,8 @@ class EvmRuntime:
             block.set_changed(changed)
 
             if self.source_map is not None and self.source_map.instr_positions:
-                block.set_jump_in(self.source_map.instr_positions[end_address]['j'])
+                block.set_jump_in(
+                    self.source_map.instr_positions[end_address]['j'])
 
             block.set_block_type(self.jump_type[start_address])
 

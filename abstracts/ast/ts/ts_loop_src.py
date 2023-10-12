@@ -4,6 +4,7 @@ from abstracts.ast.ast_visitor.json_ast_visitor import JsonAstVisitor
 
 
 class JsLoopSrc(index.Index):
+
     def __init__(self, ast, ast_type, source):
         self.ast = ast
         self.source = source
@@ -28,7 +29,10 @@ def get_index_class(ast, ast_type, source):
 
 
 def condition(node, context):
-    if node["name"] in ["for_statement", "for_in_statement", "while_statement", "do_statement"]:
+    if node["name"] in [
+            "for_statement", "for_in_statement", "while_statement",
+            "do_statement"
+    ]:
         return True
     else:
         return False
@@ -36,5 +40,3 @@ def condition(node, context):
 
 def processing(context):
     context.add_data("repetition", context.get_data("repetition") + 1)
-
-
