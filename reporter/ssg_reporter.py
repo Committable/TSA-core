@@ -76,7 +76,8 @@ class SsgReporter:
                 for label in graph.edges[(e, x)]['labels']:
                     if label not in labels:
                         labels.add(label)
-                        if graph.edges[(e, x)]['label'] == "" or graph.edges[(e, x)]['label'] is None:
+                        if graph.edges[(e, x)]['label'] == "" or graph.edges[(
+                                e, x)]['label'] is None:
                             graph.edges[(e, x)]['label'] = label
                         else:
                             graph.edges[(e, x)]['label'] = (

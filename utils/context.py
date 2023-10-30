@@ -10,8 +10,16 @@ class ExecErrorType(enum.Enum):
 
 class Context:
 
-    def __init__(self, start, project_dir, src_file, diff, request_id,
-                 platform='', ast_abstracts=[], cfg_abstracts=[], ssg_abstracts=[]):
+    def __init__(self,
+                 start,
+                 project_dir,
+                 src_file,
+                 diff,
+                 request_id,
+                 platform='',
+                 ast_abstracts=[],
+                 cfg_abstracts=[],
+                 ssg_abstracts=[]):
         self.start = start  # start time
         self.request_id = request_id  # request id
 

@@ -15,14 +15,15 @@ log.mylogger = log.get_logger('javascript')
 
 
 class JsSourceCodeAnalysisService(
-    js_analyzer_pb2_grpc.JsSourceCodeAnalysisServicer):
+        js_analyzer_pb2_grpc.JsSourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
             self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         analyzer = JsAnalyzer()
-        return service_base.analysis_source_code(request, unused_context, analyzer)
+        return service_base.analysis_source_code(request, unused_context,
+                                                 analyzer)
 
 
 async def serve(address) -> None:

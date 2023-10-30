@@ -15,14 +15,15 @@ log.mylogger = log.get_logger('move')
 
 
 class RustSourceCodeAnalysisService(
-    rust_analyzer_pb2_grpc.RustSourceCodeAnalysisServicer):
+        rust_analyzer_pb2_grpc.RustSourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
             self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         analyzer = RustAnalyzer()
-        return service_base.analysis_source_code(request, unused_context, analyzer)
+        return service_base.analysis_source_code(request, unused_context,
+                                                 analyzer)
 
 
 async def serve(address) -> None:
@@ -31,8 +32,7 @@ async def serve(address) -> None:
     rust_analyzer_pb2_grpc.add_RustSourceCodeAnalysisServicer_to_server(  # pylint: disable=line-too-long
         RustSourceCodeAnalysisService(), server)
     server.add_insecure_port(address)
-    log.mylogger.info('Rust Analysis Service is Listening on %s.',
-                      address)
+    log.mylogger.info('Rust Analysis Service is Listening on %s.', address)
     await server.start()
     await server.wait_for_termination()
 

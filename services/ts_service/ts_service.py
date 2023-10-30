@@ -7,7 +7,7 @@ from protos.analyzer import source_code_analyzer_pb2
 from analyzers.src_ast_analyzer.ts_src import TsAnalyzer
 from utils import log, util
 
-import service_base
+from services import service_base
 
 cfg = util.get_config('./config.yaml')
 
@@ -15,14 +15,15 @@ log.mylogger = log.get_logger('typescript')
 
 
 class TsSourceCodeAnalysisService(
-    ts_analyzer_pb2_grpc.TsSourceCodeAnalysisServicer):
+        ts_analyzer_pb2_grpc.TsSourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
             self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         analyzer = TsAnalyzer()
-        return service_base.analysis_source_code(request, unused_context, analyzer)
+        return service_base.analysis_source_code(request, unused_context,
+                                                 analyzer)
 
 
 async def serve(address) -> None:

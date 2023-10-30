@@ -31,7 +31,7 @@ def analyze_evm_from_solidity(output_path,
         root_path=context.root_path,
         remaps=context.remaps,
         allow_paths=context.
-            allow_paths,  # TODO(Yang): allow paths is overlapped by include paths?
+        allow_paths,  # TODO(Yang): allow paths is overlapped by include paths?
         include_paths=context.include_paths,
         compiler_version='',
         compilation_err=global_params.COMPILATION_ERR)
@@ -84,7 +84,8 @@ def analyze_evm_from_solidity(output_path,
         # add coverage information
         cfg_report.set_coverage_info(inp['contract'], env, interpreter)
         if global_params.DEBUG_MOD:
-            env.print_visited_cfg(interpreter.total_visited_edges, interpreter.impossible_paths, output_path)
+            env.print_visited_cfg(interpreter.total_visited_edges,
+                                  interpreter.impossible_paths, output_path)
         end_mem = mem.memory_usage()
         end_time = time.time()
         execution_time = end_time - start_time

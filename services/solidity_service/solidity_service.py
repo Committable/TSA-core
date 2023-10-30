@@ -21,7 +21,8 @@ class SoliditySourceCodeAnalysisService(
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         analyzer = SolidityAnalyzer()
-        return service_base.analysis_source_code(request, unused_context, analyzer)
+        return service_base.analysis_source_code(request, unused_context,
+                                                 analyzer)
 
 
 async def serve(address) -> None:

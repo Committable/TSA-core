@@ -1,4 +1,5 @@
 class JsonAstVisitor:
+
     def __init__(self, ast, condition_func, process_func):
         self.ast = ast
         self.f_condition = condition_func
