@@ -105,7 +105,9 @@ class CfgReporter:
             g = nx.DiGraph()
             for n in list(cfg.nodes):
                 node = cfg.nodes[n]
-                g.add_node(n, label=f'{node["start"]}_{node["end"]}', color='red' if node['changed'] else 'black')
+                g.add_node(n,
+                           label=f'{node["start"]}_{node["end"]}',
+                           color='red' if node['changed'] else 'black')
             for e in list(cfg.edges):
                 s = e[0]
                 t = e[1]
@@ -138,7 +140,9 @@ class CfgReporter:
             del x  # Unused, reserve for name hint
             for n in list(cfg.nodes):
                 node = cfg.nodes[n]
-                g.add_node(n, label=f'{node["start"]}_{node["end"]}', color='red' if node['changed'] else 'black')
+                g.add_node(n,
+                           label=f'{node["start"]}_{node["end"]}',
+                           color='red' if node['changed'] else 'black')
             for e in list(cfg.edges):
                 s = e[0]
                 t = e[1]
@@ -153,10 +157,7 @@ class CfgReporter:
                 elif edge_type == 'terminal':
                     color = 'red'
 
-                g.add_edge(s,
-                           t,
-                           label=edge['jump'],
-                           color=color)
+                g.add_edge(s, t, label=edge['jump'], color=color)
 
         g1 = nx.nx_agraph.to_agraph(g)
         g1.graph_attr['rankdir'] = 'TB'

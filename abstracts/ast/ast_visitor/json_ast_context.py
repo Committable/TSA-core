@@ -1,4 +1,5 @@
 class JsonAstContext:
+
     def __init__(self):
         self.data = {}
 

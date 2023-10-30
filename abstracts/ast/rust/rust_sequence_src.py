@@ -4,6 +4,7 @@ from abstracts.ast.ast_visitor.json_ast_visitor import JsonAstVisitor
 
 
 class RustSequenceSrc(index.Index):
+
     def __init__(self, ast, ast_type, source):
         self.ast = ast
         self.source = source
@@ -36,5 +37,3 @@ def condition(node, context):
 
 def processing(context):
     context.add_data("sequence", context.get_data("sequence") + 1)
-
-

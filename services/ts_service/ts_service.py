@@ -15,14 +15,15 @@ log.mylogger = log.get_logger('typescript')
 
 
 class TsSourceCodeAnalysisService(
-    ts_analyzer_pb2_grpc.TsSourceCodeAnalysisServicer):
+        ts_analyzer_pb2_grpc.TsSourceCodeAnalysisServicer):
 
     def AnalyseSourceCode(
             self, request: source_code_analyzer_pb2.SourceCodeAnalysisRequest,
             unused_context
     ) -> source_code_analyzer_pb2.SourceCodeAnalysisResponse:
         analyzer = TsAnalyzer()
-        return service_base.analysis_source_code(request, unused_context, analyzer)
+        return service_base.analysis_source_code(request, unused_context,
+                                                 analyzer)
 
 
 async def serve(address) -> None:

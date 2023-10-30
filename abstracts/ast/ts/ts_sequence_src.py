@@ -4,6 +4,7 @@ from abstracts.ast.ast_visitor.json_ast_visitor import JsonAstVisitor
 
 
 class JsSequenceSrc(index.Index):
+
     def __init__(self, ast, ast_type, source):
         self.ast = ast
         self.source = source
@@ -28,7 +29,8 @@ def get_index_class(ast, ast_type, source):
 
 
 def condition(node, context):
-    if "statement" in node["name"] or "declaration" in node["name"] or "expression" in node["name"]:
+    if "statement" in node["name"] or "declaration" in node[
+            "name"] or "expression" in node["name"]:
         return True
     else:
         return False
@@ -36,5 +38,3 @@ def condition(node, context):
 
 def processing(context):
     context.add_data("sequence", context.get_data("sequence") + 1)
-
-

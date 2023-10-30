@@ -8,7 +8,6 @@ else:
     from typing.io import TextIO
 
 
-
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\2\u0087")
@@ -864,7 +863,7 @@ class SolidityLexer(Lexer):
 
     atn = ATNDeserializer().deserialize(serializedATN())
 
-    decisionsToDFA = [ DFA(ds, i) for i, ds in enumerate(atn.decisionToState) ]
+    decisionsToDFA = [DFA(ds, i) for i, ds in enumerate(atn.decisionToState)]
 
     T__0 = 1
     T__1 = 2
@@ -1000,77 +999,77 @@ class SolidityLexer(Lexer):
     COMMENT = 132
     LINE_COMMENT = 133
 
-    channelNames = [ u"DEFAULT_TOKEN_CHANNEL", u"HIDDEN" ]
+    channelNames = [u"DEFAULT_TOKEN_CHANNEL", u"HIDDEN"]
 
-    modeNames = [ "DEFAULT_MODE" ]
+    modeNames = ["DEFAULT_MODE"]
 
-    literalNames = [ "<INVALID>",
-            "'pragma'", "';'", "'||'", "'^'", "'~'", "'>='", "'>'", "'<'", 
-            "'<='", "'='", "'as'", "'import'", "'*'", "'from'", "'{'", "','", 
-            "'}'", "'abstract'", "'contract'", "'interface'", "'library'", 
-            "'is'", "'('", "')'", "'error'", "'using'", "'for'", "'struct'", 
-            "'modifier'", "'function'", "'returns'", "'event'", "'enum'", 
-            "'['", "']'", "'address'", "'.'", "'mapping'", "'=>'", "'memory'", 
-            "'storage'", "'calldata'", "'if'", "'else'", "'try'", "'catch'", 
-            "'while'", "'unchecked'", "'assembly'", "'do'", "'return'", 
-            "'throw'", "'emit'", "'revert'", "'var'", "'bool'", "'string'", 
-            "'byte'", "'++'", "'--'", "'new'", "':'", "'+'", "'-'", "'after'", 
-            "'delete'", "'!'", "'**'", "'/'", "'%'", "'<<'", "'>>'", "'&'", 
-            "'|'", "'=='", "'!='", "'&&'", "'?'", "'|='", "'^='", "'&='", 
-            "'<<='", "'>>='", "'+='", "'-='", "'*='", "'/='", "'%='", "'let'", 
-            "':='", "'=:'", "'switch'", "'case'", "'default'", "'->'", "'callback'", 
-            "'override'", "'anonymous'", "'break'", "'constant'", "'immutable'", 
-            "'continue'", "'leave'", "'external'", "'indexed'", "'internal'", 
-            "'payable'", "'private'", "'public'", "'virtual'", "'pure'", 
-            "'type'", "'view'", "'constructor'", "'fallback'", "'receive'" ]
+    literalNames = [
+        "<INVALID>", "'pragma'", "';'", "'||'", "'^'", "'~'", "'>='", "'>'",
+        "'<'", "'<='", "'='", "'as'", "'import'", "'*'", "'from'", "'{'", "','",
+        "'}'", "'abstract'", "'contract'", "'interface'", "'library'", "'is'",
+        "'('", "')'", "'error'", "'using'", "'for'", "'struct'", "'modifier'",
+        "'function'", "'returns'", "'event'", "'enum'", "'['", "']'",
+        "'address'", "'.'", "'mapping'", "'=>'", "'memory'", "'storage'",
+        "'calldata'", "'if'", "'else'", "'try'", "'catch'", "'while'",
+        "'unchecked'", "'assembly'", "'do'", "'return'", "'throw'", "'emit'",
+        "'revert'", "'var'", "'bool'", "'string'", "'byte'", "'++'", "'--'",
+        "'new'", "':'", "'+'", "'-'", "'after'", "'delete'", "'!'", "'**'",
+        "'/'", "'%'", "'<<'", "'>>'", "'&'", "'|'", "'=='", "'!='", "'&&'",
+        "'?'", "'|='", "'^='", "'&='", "'<<='", "'>>='", "'+='", "'-='", "'*='",
+        "'/='", "'%='", "'let'", "':='", "'=:'", "'switch'", "'case'",
+        "'default'", "'->'", "'callback'", "'override'", "'anonymous'",
+        "'break'", "'constant'", "'immutable'", "'continue'", "'leave'",
+        "'external'", "'indexed'", "'internal'", "'payable'", "'private'",
+        "'public'", "'virtual'", "'pure'", "'type'", "'view'", "'constructor'",
+        "'fallback'", "'receive'"
+    ]
 
-    symbolicNames = [ "<INVALID>",
-            "Int", "Uint", "Byte", "Fixed", "Ufixed", "BooleanLiteral", 
-            "DecimalNumber", "HexNumber", "NumberUnit", "HexLiteralFragment", 
-            "ReservedKeyword", "AnonymousKeyword", "BreakKeyword", "ConstantKeyword", 
-            "ImmutableKeyword", "ContinueKeyword", "LeaveKeyword", "ExternalKeyword", 
-            "IndexedKeyword", "InternalKeyword", "PayableKeyword", "PrivateKeyword", 
-            "PublicKeyword", "VirtualKeyword", "PureKeyword", "TypeKeyword", 
-            "ViewKeyword", "ConstructorKeyword", "FallbackKeyword", "ReceiveKeyword", 
-            "Identifier", "StringLiteralFragment", "VersionLiteral", "WS", 
-            "COMMENT", "LINE_COMMENT" ]
+    symbolicNames = [
+        "<INVALID>", "Int", "Uint", "Byte", "Fixed", "Ufixed", "BooleanLiteral",
+        "DecimalNumber", "HexNumber", "NumberUnit", "HexLiteralFragment",
+        "ReservedKeyword", "AnonymousKeyword", "BreakKeyword",
+        "ConstantKeyword", "ImmutableKeyword", "ContinueKeyword",
+        "LeaveKeyword", "ExternalKeyword", "IndexedKeyword", "InternalKeyword",
+        "PayableKeyword", "PrivateKeyword", "PublicKeyword", "VirtualKeyword",
+        "PureKeyword", "TypeKeyword", "ViewKeyword", "ConstructorKeyword",
+        "FallbackKeyword", "ReceiveKeyword", "Identifier",
+        "StringLiteralFragment", "VersionLiteral", "WS", "COMMENT",
+        "LINE_COMMENT"
+    ]
 
-    ruleNames = [ "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", 
-                  "T__7", "T__8", "T__9", "T__10", "T__11", "T__12", "T__13", 
-                  "T__14", "T__15", "T__16", "T__17", "T__18", "T__19", 
-                  "T__20", "T__21", "T__22", "T__23", "T__24", "T__25", 
-                  "T__26", "T__27", "T__28", "T__29", "T__30", "T__31", 
-                  "T__32", "T__33", "T__34", "T__35", "T__36", "T__37", 
-                  "T__38", "T__39", "T__40", "T__41", "T__42", "T__43", 
-                  "T__44", "T__45", "T__46", "T__47", "T__48", "T__49", 
-                  "T__50", "T__51", "T__52", "T__53", "T__54", "T__55", 
-                  "T__56", "T__57", "T__58", "T__59", "T__60", "T__61", 
-                  "T__62", "T__63", "T__64", "T__65", "T__66", "T__67", 
-                  "T__68", "T__69", "T__70", "T__71", "T__72", "T__73", 
-                  "T__74", "T__75", "T__76", "T__77", "T__78", "T__79", 
-                  "T__80", "T__81", "T__82", "T__83", "T__84", "T__85", 
-                  "T__86", "T__87", "T__88", "T__89", "T__90", "T__91", 
-                  "T__92", "T__93", "T__94", "T__95", "T__96", "Int", "Uint", 
-                  "Byte", "Fixed", "Ufixed", "BooleanLiteral", "DecimalNumber", 
-                  "DecimalDigits", "HexNumber", "HexDigits", "NumberUnit", 
-                  "HexLiteralFragment", "HexPair", "HexCharacter", "ReservedKeyword", 
-                  "AnonymousKeyword", "BreakKeyword", "ConstantKeyword", 
-                  "ImmutableKeyword", "ContinueKeyword", "LeaveKeyword", 
-                  "ExternalKeyword", "IndexedKeyword", "InternalKeyword", 
-                  "PayableKeyword", "PrivateKeyword", "PublicKeyword", "VirtualKeyword", 
-                  "PureKeyword", "TypeKeyword", "ViewKeyword", "ConstructorKeyword", 
-                  "FallbackKeyword", "ReceiveKeyword", "Identifier", "IdentifierStart", 
-                  "IdentifierPart", "StringLiteralFragment", "DoubleQuotedStringCharacter", 
-                  "SingleQuotedStringCharacter", "VersionLiteral", "WS", 
-                  "COMMENT", "LINE_COMMENT" ]
+    ruleNames = [
+        "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", "T__7", "T__8",
+        "T__9", "T__10", "T__11", "T__12", "T__13", "T__14", "T__15", "T__16",
+        "T__17", "T__18", "T__19", "T__20", "T__21", "T__22", "T__23", "T__24",
+        "T__25", "T__26", "T__27", "T__28", "T__29", "T__30", "T__31", "T__32",
+        "T__33", "T__34", "T__35", "T__36", "T__37", "T__38", "T__39", "T__40",
+        "T__41", "T__42", "T__43", "T__44", "T__45", "T__46", "T__47", "T__48",
+        "T__49", "T__50", "T__51", "T__52", "T__53", "T__54", "T__55", "T__56",
+        "T__57", "T__58", "T__59", "T__60", "T__61", "T__62", "T__63", "T__64",
+        "T__65", "T__66", "T__67", "T__68", "T__69", "T__70", "T__71", "T__72",
+        "T__73", "T__74", "T__75", "T__76", "T__77", "T__78", "T__79", "T__80",
+        "T__81", "T__82", "T__83", "T__84", "T__85", "T__86", "T__87", "T__88",
+        "T__89", "T__90", "T__91", "T__92", "T__93", "T__94", "T__95", "T__96",
+        "Int", "Uint", "Byte", "Fixed", "Ufixed", "BooleanLiteral",
+        "DecimalNumber", "DecimalDigits", "HexNumber", "HexDigits",
+        "NumberUnit", "HexLiteralFragment", "HexPair", "HexCharacter",
+        "ReservedKeyword", "AnonymousKeyword", "BreakKeyword",
+        "ConstantKeyword", "ImmutableKeyword", "ContinueKeyword",
+        "LeaveKeyword", "ExternalKeyword", "IndexedKeyword", "InternalKeyword",
+        "PayableKeyword", "PrivateKeyword", "PublicKeyword", "VirtualKeyword",
+        "PureKeyword", "TypeKeyword", "ViewKeyword", "ConstructorKeyword",
+        "FallbackKeyword", "ReceiveKeyword", "Identifier", "IdentifierStart",
+        "IdentifierPart", "StringLiteralFragment",
+        "DoubleQuotedStringCharacter", "SingleQuotedStringCharacter",
+        "VersionLiteral", "WS", "COMMENT", "LINE_COMMENT"
+    ]
 
     grammarFileName = "Solidity.g4"
 
-    def __init__(self, input=None, output:TextIO = sys.stdout):
+    def __init__(self, input=None, output: TextIO = sys.stdout):
         super().__init__(input, output)
         self.checkVersion("4.9.3")
-        self._interp = LexerATNSimulator(self, self.atn, self.decisionsToDFA, PredictionContextCache())
+        self._interp = LexerATNSimulator(self, self.atn, self.decisionsToDFA,
+                                         PredictionContextCache())
         self._actions = None
         self._predicates = None
-
-
