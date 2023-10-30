@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class AstParserInterface(metaclass=ABCMeta):
+
     @abstractmethod
     def parse(self, text, start="sourceUnit"):
         pass

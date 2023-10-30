@@ -4,6 +4,7 @@ from ast_parsers.solidity_parser import parser_new as parser
 
 
 class SequenceSrc(index.Index):
+
     def __init__(self, ast, ast_type, source):
         self.ast = ast
         self.source = source

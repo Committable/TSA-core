@@ -3,14 +3,17 @@ from utils import log
 
 
 class Source:
+
     def __init__(self, file_path=None, content=None):
         if file_path:
             self.file_path = file_path
-            self.content = self._load_content()  # the all file content in string type
+            self.content = self._load_content(
+            )  # the all file content in string type
         else:
             self.file_path = None
             self.content = content
-        self.line_break_positions = self._load_line_break_positions()  # the position of all '\n'
+        self.line_break_positions = self._load_line_break_positions(
+        )  # the position of all '\n'
         self.index = 0
 
     def _load_content(self):
@@ -38,16 +41,17 @@ class Source:
             start = self.line_break_positions[line - 2] + 1
         return self.content[start:end]
 
-    def get_content_from_position(self, start_line, start_column, end_line, end_column):
+    def get_content_from_position(self, start_line, start_column, end_line,
+                                  end_column):
         start = self.line_start(start_line) + start_column
         end = self.line_start(end_line) + end_column
-        return self.content[start:end+1] # start and end all in content
+        return self.content[start:end + 1]  # start and end all in content
 
     def line_start(self, line):
         if line == 1:
             return 0
         else:
-            return self.line_break_positions[line-2]+1
+            return self.line_break_positions[line - 2] + 1
 
     def get_lines_from_position(self, start, end):  # [start,end)
         lines = []

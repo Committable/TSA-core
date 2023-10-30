@@ -74,7 +74,8 @@ class SelectionSrc(index.Index):
     def visit_ast(self, node):
         if isinstance(node, parser.Node):
             if node['type'] == 'FunctionCall' and 'expression' in node:
-                if 'name' in node['expression'] and node['expression']['name'] in ['require', 'assert']:
+                if 'name' in node['expression'] and node['expression'][
+                        'name'] in ['require', 'assert']:
                     self.selection_src += 1
             if node['type'] == "IfStatement":
                 self.selection_src += 1

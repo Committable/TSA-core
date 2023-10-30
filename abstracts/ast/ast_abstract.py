@@ -14,15 +14,17 @@ import abstracts.ast.move.move_sequence_src
 
 
 class AstAbstract:
+
     def __init__(self):
         self.indexes = {}
         self.registered = False
 
     def register_index(self, index_name):
         sub_director = index_name.split("_")[0]
-        self.indexes[index_name] = getattr(getattr(__import__(f'abstracts.ast.{sub_director}.{index_name}').ast,
-                                                   sub_director),
-                                           index_name)
+        self.indexes[index_name] = getattr(
+            getattr(
+                __import__(f'abstracts.ast.{sub_director}.{index_name}').ast,
+                sub_director), index_name)
 
     def is_registered(self):
         return self.registered
@@ -60,5 +62,5 @@ class AstAbstract:
 def get_ast_abstract(ast, ast_type, source, context):
     ast_abstract_instance = AstAbstract.instance()
     ast_abstract_instance.register_ast_abstracts(context)
-    return ast_abstract_instance.get_ast_abstract_json(
-        context, ast, ast_type, source)
+    return ast_abstract_instance.get_ast_abstract_json(context, ast, ast_type,
+                                                       source)

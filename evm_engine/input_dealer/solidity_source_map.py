@@ -9,7 +9,8 @@ class Source:
 
     def __init__(self, file_path):
         self.file_path = file_path
-        self.content = self._load_content()  # the all file content in string type
+        self.content = self._load_content(
+        )  # the all file content in string type
         self.line_break_positions = self._load_line_break_positions(
         )  # the position of all '\n'
         self.index = 0

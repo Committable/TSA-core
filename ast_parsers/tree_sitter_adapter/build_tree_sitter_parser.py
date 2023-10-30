@@ -9,5 +9,4 @@ def build_tree_sitter_library(code_path, lib_path):
         # Include one or more languages
         [
             code_path,
-        ]
-    )
+        ])
