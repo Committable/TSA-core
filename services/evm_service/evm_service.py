@@ -51,7 +51,8 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
                                              diff, '', request_id)
             try:
                 cfg_b, ssg_b = analyzer.analyze_evm_from_solidity(
-                    output_path, src_path, project_path, context_before, cfg['compilation'][project_name])
+                    output_path, src_path, project_path, context_before,
+                    cfg['compilation'][project_name])
             except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 context_before.set_err(context.ExecErrorType.SYMBOL_EXEC)
@@ -76,7 +77,8 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
                                             '', request_id)
             try:
                 cfg_a, ssg_a = analyzer.analyze_evm_from_solidity(
-                    output_path, src_path, project_path, context_after, cfg['compilation'][project_name])
+                    output_path, src_path, project_path, context_after,
+                    cfg['compilation'][project_name])
             except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 context_after.set_err(context.ExecErrorType.SYMBOL_EXEC)
@@ -93,11 +95,12 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
                 # TODO(Chao): Use `zip` function instead
                 for index in cfg_a.cfg_abstract:
                     if not context_before.err and not context_after.err:
-                        if context_before.is_index_err(index) or context_after.is_index_err(index):
+                        if context_before.is_index_err(
+                                index) or context_after.is_index_err(index):
                             cfg_abstract[index] = 0
                         else:
                             cfg_abstract[index] = cfg_a.cfg_abstract[
-                                                      index] - cfg_b.cfg_abstract[index]
+                                index] - cfg_b.cfg_abstract[index]
                     else:
                         cfg_abstract[index] = 0
                 cfg_abstract_path = os.path.join(output_path,
@@ -107,7 +110,9 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
                     json.dump(cfg_abstract, output_file)
             except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
-                log.mylogger.error('fail merge cfg abstract for request: %s, err: %s', request_id, str(err))
+                log.mylogger.error(
+                    'fail merge cfg abstract for request: %s, err: %s',
+                    request_id, str(err))
                 return bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='merge cfg abstract fail')
 
@@ -118,11 +123,12 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
                 # TODO(Chao): Use `zip` function instead
                 for index in ssg_a.ssg_abstract:
                     if not context_before.err and not context_after.err:
-                        if context_before.is_index_err(index) or context_after.is_index_err(index):
+                        if context_before.is_index_err(
+                                index) or context_after.is_index_err(index):
                             ssg_abstract[index] = 0
                         else:
                             ssg_abstract[index] = ssg_a.ssg_abstract[
-                                                      index] - ssg_b.ssg_abstract[index]
+                                index] - ssg_b.ssg_abstract[index]
                     else:
                         ssg_abstract[index] = 0
                 ssg_abstract_path = os.path.join(output_path,
@@ -132,7 +138,9 @@ class EvmEngineService(evm_engine_pb2_grpc.EVMEngineServicer):
                     json.dump(ssg_abstract, output_file)
             except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
-                log.mylogger.error('fail merge ssg abstract for request: %s, err: %s', request_id, str(err))
+                log.mylogger.error(
+                    'fail merge ssg abstract for request: %s, err: %s',
+                    request_id, str(err))
                 return bytecode_analyzer_pb2.ByteCodeAnalysisResponse(
                     status=500, message='merge ssg abstract fail')
 

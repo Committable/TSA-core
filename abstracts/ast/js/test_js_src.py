@@ -9,6 +9,7 @@ from js_parser import walker as js_walker
 
 
 class TestJsSrc(unittest.TestCase):
+
     def test_simple(self):
         source_content = '''for (var i=0;i<cars.length;i++)
                             { 

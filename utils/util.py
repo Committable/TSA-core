@@ -39,7 +39,9 @@ def get_config(config_path):
         if 'ssg_abstracts' in cfg:
             global_params.AST = cfg['ssg_abstracts']
         if 'tags' in cfg and cfg["tags"] == True:
-            with open(os.path.dirname(config_path) + "/skills_tag.yaml", 'r', encoding='utf8') as stream:
+            with open(os.path.dirname(config_path) + "/skills_tag.yaml",
+                      'r',
+                      encoding='utf8') as stream:
                 global_params.SKILLS = skills.Skills(yaml.safe_load(stream))
 
         return cfg
@@ -52,6 +54,7 @@ def generate_output_dir(first, second):
 
 
 def compare_versions(version1, version2):
+
     def normalize(v):
         return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split('.')]
 
@@ -170,8 +173,9 @@ def get_diff(diff_file, is_before):
             for i in range(0, len(differences)):
                 line = differences[i]
 
-                n = re.match(r'([\'|"]?)@@ (-(\d+)(,(\d+))?)? (\+(\d+)(,(\d+))?)? @@(.*)',
-                             line)
+                n = re.match(
+                    r'([\'|"]?)@@ (-(\d+)(,(\d+))?)? (\+(\d+)(,(\d+))?)? @@(.*)',
+                    line)
                 if n:
                     start_line = int(n.group(3))
                     line_num = 0
@@ -188,8 +192,9 @@ def get_diff(diff_file, is_before):
             for i in range(0, len(differences)):
                 line = differences[i]
 
-                n = re.match(r'([\'|"]?)@@ (-(\d+)(,(\d+))?)? (\+(\d+)(,(\d+))?)? @@(.*)',
-                             line)
+                n = re.match(
+                    r'([\'|"]?)@@ (-(\d+)(,(\d+))?)? (\+(\d+)(,(\d+))?)? @@(.*)',
+                    line)
                 if n:
                     start_line = int(n.group(7))
                     line_num = 0

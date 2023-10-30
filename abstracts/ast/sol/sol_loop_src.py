@@ -47,7 +47,9 @@ class LoopSrc(index.Index):
 
     def visit_ast(self, node):
         if isinstance(node, parser.Node):
-            if node['type'] in ["ForStatement", "WhileStatement", "DoWhileStatement"]:
+            if node['type'] in [
+                    "ForStatement", "WhileStatement", "DoWhileStatement"
+            ]:
                 self.repetition_src += 1
             for x in node:
                 if isinstance(node[x], parser.Node):
